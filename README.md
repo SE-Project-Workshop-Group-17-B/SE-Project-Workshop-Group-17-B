@@ -19,4 +19,4 @@ Daniel Bril - brildan@post.bgu.ac.il
 Evyatar Kopans - kopansev@post.bgu.ac.il
 
 ## Course Schedule
-![image](https://github.com/PintoGal/SE-Project-Workshop/assets/102467423/c110794f-c204-48b1-b948-ff4a3fdc22b8)
+![image](https://github.com/SE-Project-Workshop-Group-17-B/SE-Project-Workshop-Group-17-B/assets/102467423/59362f16-a9b7-4269-ac85-3ffd80b045d4)
