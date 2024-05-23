@@ -1,4 +1,5 @@
 ﻿using Microsoft.IdentityModel.Tokens;
+using Sadna_17_B.Utils;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -13,6 +14,7 @@ namespace Sadna_17_B.DomainLayer.User
     {
         private const string SecretKey = "this_is_a_very_secret_key_for_jwt_token"; // This should be stored securely
         private readonly SymmetricSecurityKey _signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(SecretKey));
+        private List<string> invalidatedTokens = new List<string>();
 
         public string GenerateToken(string username)
         {
@@ -24,7 +26,7 @@ namespace Sadna_17_B.DomainLayer.User
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.UtcNow.AddHours(24),
+                Expires = DateTime.UtcNow.AddHours(2),
                 SigningCredentials = new SigningCredentials(_signingKey, SecurityAlgorithms.HmacSha256Signature)
             };
 
@@ -32,8 +34,39 @@ namespace Sadna_17_B.DomainLayer.User
             return tokenHandler.WriteToken(token);
         }
 
+        public string GetNameFromToken(string token)
+        {
+            ClaimsPrincipal principal = ValidateToken(token);
+            if (principal == null)
+            {
+                throw new Sadna17BException("Invalid access token was given.");
+            }
+            else if (invalidatedTokens.Contains(token))
+            {
+                throw new Sadna17BException("Given access token is no longer valid.");
+            }
+            return principal.FindFirst(ClaimTypes.Name).Value;
+        }
+
+        public int GetGuestIDFromToken(string token)
+        {
+            string guestIDstring = GetNameFromToken(token);
+            int guestID;
+            bool validGuestID = int.TryParse(guestIDstring, out guestID);
+            if (!validGuestID)
+            {
+                throw new Sadna17BException("Invalid GuestID was saved in the system.");
+            }
+            return guestID;
+        }
+
         public ClaimsPrincipal ValidateToken(string token)
         {
+            if (invalidatedTokens.Contains(token))
+            {
+                return null;
+            }
+
             var tokenHandler = new JwtSecurityTokenHandler();
             try
             {
@@ -52,6 +85,17 @@ namespace Sadna_17_B.DomainLayer.User
             catch
             {
                 return null;
+            }
+        }
+
+        public void InvalidateToken(string token)
+        {
+            if (!invalidatedTokens.Contains(token))
+            {
+                invalidatedTokens.Add(token);
+            } else
+            {
+                throw new Sadna17BException("Given token is already logged out of the system.");
             }
         }
     }

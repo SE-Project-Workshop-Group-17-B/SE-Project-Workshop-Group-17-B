@@ -44,7 +44,14 @@ namespace Sadna_17_B.ServiceLayer.Services
 
         public Response Logout(string token)
         {
-            throw new NotImplementedException();
+            try
+            {
+                userController.Logout(token);
+                return new Response(true);
+            } catch (Sadna17BException e)
+            {
+                return Response.GetErrorResponse(e);
+            }
         }
     }
 }

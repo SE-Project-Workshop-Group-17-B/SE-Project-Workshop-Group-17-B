@@ -9,7 +9,7 @@ namespace Sadna_17_B.Utils
     {
         public string Message { get; }
         public bool Success { get; }
-        private object Data { get; }
+        public object Data { get; }
 
         public Response(string message, bool success, object data)
         {
