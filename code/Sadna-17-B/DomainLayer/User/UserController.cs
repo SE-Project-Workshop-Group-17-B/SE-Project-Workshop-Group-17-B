@@ -58,7 +58,7 @@ namespace Sadna_17_B.DomainLayer.User
             }
         }
 
-        public Subscriber GetSubscriberByUsername(string username)
+        private Subscriber GetSubscriberByUsername(string username)
         {
             if (admins.ContainsKey(username))
             {
