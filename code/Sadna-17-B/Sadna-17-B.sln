@@ -5,7 +5,7 @@ VisualStudioVersion = 17.1.32407.343
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sadna-17-B", "Sadna-17-B.csproj", "{BE6F03A6-FC98-4179-BCDA-AA9EF7FE97BA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sadna-17-B.Tests", "..\Sadna-17-B.Tests\Sadna-17-B.Tests.csproj", "{14E699EA-98D8-4C45-99F0-6446958A5A3B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sadna-17-B-Test", "..\Sadna-17-B-Test\Sadna-17-B-Test.csproj", "{84A48D23-DBC2-4811-974F-CCC5C33C8D91}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +17,10 @@ Global
 		{BE6F03A6-FC98-4179-BCDA-AA9EF7FE97BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BE6F03A6-FC98-4179-BCDA-AA9EF7FE97BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BE6F03A6-FC98-4179-BCDA-AA9EF7FE97BA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{14E699EA-98D8-4C45-99F0-6446958A5A3B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{14E699EA-98D8-4C45-99F0-6446958A5A3B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{14E699EA-98D8-4C45-99F0-6446958A5A3B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{14E699EA-98D8-4C45-99F0-6446958A5A3B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{84A48D23-DBC2-4811-974F-CCC5C33C8D91}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{84A48D23-DBC2-4811-974F-CCC5C33C8D91}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{84A48D23-DBC2-4811-974F-CCC5C33C8D91}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{84A48D23-DBC2-4811-974F-CCC5C33C8D91}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

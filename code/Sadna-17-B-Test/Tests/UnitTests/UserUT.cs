@@ -1,8 +1,8 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Sadna_17_B.DomainLayer.User;
 using System;
+using Sadna_17_B.DomainLayer.User;
 
-namespace Sadna_17_B.Tests.UnitTests
+namespace Sadna_17_B_Test.Tests.UnitTests
 {
     [TestClass]
     public class UserUT
