@@ -1,6 +1,6 @@
-<mxfile host="Electron" modified="2024-05-12T13:35:00.898Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/24.2.5 Chrome/120.0.6099.109 Electron/28.1.0 Safari/537.36" etag="_EQeDFCO3mvgW-1Wgk7o" version="24.2.5" type="device" pages="3">
+<mxfile host="Electron" modified="2024-05-23T09:26:05.064Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/24.4.0 Chrome/120.0.6099.109 Electron/28.1.0 Safari/537.36" etag="WsGa4WUmVjkc4gbI2u81" version="24.4.0" type="device" pages="3">
   <diagram name="White Class Diagram" id="xx6mofLlzCFI5YK1O4nq">
-    <mxGraphModel dx="1434" dy="3180" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="2336" math="0" shadow="0">
+    <mxGraphModel dx="1195" dy="3039" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="2336" math="0" shadow="0">
       <root>
         <mxCell id="Fns9ew5D7KYSEn1IwAE0-0" />
         <mxCell id="Fns9ew5D7KYSEn1IwAE0-1" parent="Fns9ew5D7KYSEn1IwAE0-0" />
@@ -713,7 +713,7 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="Fns9ew5D7KYSEn1IwAE0-154" value="Each Owner/Manager object represents an ownership/management of a single store by a single user, therefore a single user can be an owner in some stores and a manager in other stores with no problem" style="shape=note;size=20;whiteSpace=wrap;html=1;fontSize=13;" parent="Fns9ew5D7KYSEn1IwAE0-1" vertex="1">
+        <mxCell id="Fns9ew5D7KYSEn1IwAE0-154" value="Each Owner/Manager object represents an ownership/management of a &lt;b&gt;single store&lt;/b&gt; by a single user, therefore a &lt;b&gt;single user can be an owner in some stores and a manager in other stores&lt;/b&gt; with no problem" style="shape=note;size=20;whiteSpace=wrap;html=1;fontSize=13;" parent="Fns9ew5D7KYSEn1IwAE0-1" vertex="1">
           <mxGeometry x="1430" y="515" width="140" height="193" as="geometry" />
         </mxCell>
         <mxCell id="Fns9ew5D7KYSEn1IwAE0-155" value="NotificationSystem" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="Fns9ew5D7KYSEn1IwAE0-1" vertex="1">
@@ -730,7 +730,7 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="Fns9ew5D7KYSEn1IwAE0-158" value="&lt;font style=&quot;font-size: 13px;&quot;&gt;Each shopping basket contains the requested products from a single store&lt;/font&gt;" style="shape=note;size=20;whiteSpace=wrap;html=1;fontSize=13;" parent="Fns9ew5D7KYSEn1IwAE0-1" vertex="1">
+        <mxCell id="Fns9ew5D7KYSEn1IwAE0-158" value="&lt;font style=&quot;font-size: 13px;&quot;&gt;Each &lt;b&gt;shopping basket&lt;/b&gt; contains the requested products &lt;b&gt;from a single store&lt;/b&gt;&lt;/font&gt;" style="shape=note;size=20;whiteSpace=wrap;html=1;fontSize=13;" parent="Fns9ew5D7KYSEn1IwAE0-1" vertex="1">
           <mxGeometry x="1430" y="721" width="140" height="100" as="geometry" />
         </mxCell>
         <mxCell id="Fns9ew5D7KYSEn1IwAE0-159" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;endArrow=none;endFill=0;" parent="Fns9ew5D7KYSEn1IwAE0-1" source="Fns9ew5D7KYSEn1IwAE0-162" target="Fns9ew5D7KYSEn1IwAE0-104" edge="1">
@@ -809,8 +809,8 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="Fns9ew5D7KYSEn1IwAE0-177" value="Each registered user (subscriber) has a unique username" style="shape=note;size=20;whiteSpace=wrap;html=1;fontSize=13;" parent="Fns9ew5D7KYSEn1IwAE0-1" vertex="1">
-          <mxGeometry x="1430" y="264" width="140" height="100" as="geometry" />
+        <mxCell id="Fns9ew5D7KYSEn1IwAE0-177" value="Each registered user (subscriber) has a &lt;b&gt;unique username&lt;/b&gt;" style="shape=note;size=20;whiteSpace=wrap;html=1;fontSize=13;" parent="Fns9ew5D7KYSEn1IwAE0-1" vertex="1">
+          <mxGeometry x="1430" y="270" width="140" height="94" as="geometry" />
         </mxCell>
         <mxCell id="Fns9ew5D7KYSEn1IwAE0-178" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.25;entryDx=0;entryDy=0;dashed=1;" parent="Fns9ew5D7KYSEn1IwAE0-1" source="Fns9ew5D7KYSEn1IwAE0-179" target="Fns9ew5D7KYSEn1IwAE0-38" edge="1">
           <mxGeometry relative="1" as="geometry">
@@ -820,7 +820,7 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="Fns9ew5D7KYSEn1IwAE0-179" value="&lt;font style=&quot;font-size: 13px;&quot;&gt;Represents the order history of the user, each order is created from the current shopping cart, all of its information is copied from the baskets once the order system successfully processed it.&lt;br&gt;&lt;/font&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;If the order failed it could still be saved in the order history as failed.&lt;/span&gt;" style="shape=note;size=20;whiteSpace=wrap;html=1;fontSize=13;" parent="Fns9ew5D7KYSEn1IwAE0-1" vertex="1">
+        <mxCell id="Fns9ew5D7KYSEn1IwAE0-179" value="&lt;font style=&quot;font-size: 13px;&quot;&gt;Represents the &lt;b&gt;order history&lt;/b&gt; of the user, each order is created from the current shopping cart, all of its information is &lt;b&gt;copied &lt;/b&gt;from the baskets once the order system successfully processed it.&lt;br&gt;&lt;/font&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;If the order failed it could still be saved in the order history as failed.&lt;/span&gt;" style="shape=note;size=20;whiteSpace=wrap;html=1;fontSize=13;" parent="Fns9ew5D7KYSEn1IwAE0-1" vertex="1">
           <mxGeometry x="1430" y="830" width="140" height="260" as="geometry" />
         </mxCell>
         <mxCell id="Fns9ew5D7KYSEn1IwAE0-180" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.25;entryDx=0;entryDy=0;dashed=1;" parent="Fns9ew5D7KYSEn1IwAE0-1" source="Fns9ew5D7KYSEn1IwAE0-181" target="Fns9ew5D7KYSEn1IwAE0-171" edge="1">
@@ -832,7 +832,7 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="Fns9ew5D7KYSEn1IwAE0-181" value="System Administrator (admin) is a kind of subscriber with managing permissions, there has to be at least 1 at all times" style="shape=note;size=20;whiteSpace=wrap;html=1;fontSize=13;" parent="Fns9ew5D7KYSEn1IwAE0-1" vertex="1">
+        <mxCell id="Fns9ew5D7KYSEn1IwAE0-181" value="System Administrator (admin) is a kind of subscriber with managing permissions, &lt;b&gt;there has to be at least 1 at all times&lt;/b&gt;" style="shape=note;size=20;whiteSpace=wrap;html=1;fontSize=13;" parent="Fns9ew5D7KYSEn1IwAE0-1" vertex="1">
           <mxGeometry x="1430" y="370" width="140" height="136" as="geometry" />
         </mxCell>
         <mxCell id="Fns9ew5D7KYSEn1IwAE0-182" value="notifies" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=-0.001;entryY=0.11;entryDx=0;entryDy=0;entryPerimeter=0;endArrow=none;endFill=0;" parent="Fns9ew5D7KYSEn1IwAE0-1" source="Fns9ew5D7KYSEn1IwAE0-155" target="Fns9ew5D7KYSEn1IwAE0-65" edge="1">
@@ -867,10 +867,10 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="Fns9ew5D7KYSEn1IwAE0-188" value="The notification system implements the Observer design pattern, it holds a data structure containing all the notifications that are needed to be displayed in the UI, once the UI initiates a checkNotifications request (every 500 msec for example), the UserService returns all the notifications back to the UI, simulating a real time response of the server." style="shape=note;size=20;whiteSpace=wrap;html=1;fontSize=13;" parent="Fns9ew5D7KYSEn1IwAE0-1" vertex="1">
+        <mxCell id="Fns9ew5D7KYSEn1IwAE0-188" value="The notification system implements the &lt;b&gt;Observer design pattern&lt;/b&gt;, it holds a data structure containing all the notifications that are needed to be displayed in the UI, once the UI initiates a checkNotifications request (every 500 msec for example), the UserService returns all the notifications back to the UI, simulating a real time response of the server." style="shape=note;size=20;whiteSpace=wrap;html=1;fontSize=13;" parent="Fns9ew5D7KYSEn1IwAE0-1" vertex="1">
           <mxGeometry x="160" y="313" width="140" height="327" as="geometry" />
         </mxCell>
-        <mxCell id="z2EpCJs6ikKyKI41-Hr6-5" value="uses" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;endArrow=none;endFill=0;startArrow=classic;startFill=1;" parent="Fns9ew5D7KYSEn1IwAE0-1" source="z2EpCJs6ikKyKI41-Hr6-1" target="Fns9ew5D7KYSEn1IwAE0-102" edge="1">
+        <mxCell id="z2EpCJs6ikKyKI41-Hr6-5" value="uses concurrently" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;endArrow=none;endFill=0;startArrow=classic;startFill=1;" parent="Fns9ew5D7KYSEn1IwAE0-1" source="z2EpCJs6ikKyKI41-Hr6-1" target="Fns9ew5D7KYSEn1IwAE0-102" edge="1">
           <mxGeometry x="-0.8578" relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="1096" y="1020" />
@@ -903,8 +903,36 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="z2EpCJs6ikKyKI41-Hr6-6" value="Checks the availability using the external services and the store package." style="shape=note;size=20;whiteSpace=wrap;html=1;fontSize=13;" parent="Fns9ew5D7KYSEn1IwAE0-1" vertex="1">
-          <mxGeometry x="1430" y="1100" width="140" height="110" as="geometry" />
+        <mxCell id="z2EpCJs6ikKyKI41-Hr6-6" value="Checks the &lt;b&gt;availability &lt;/b&gt;using the &lt;b&gt;external services&lt;/b&gt; and the &lt;b&gt;store package&lt;/b&gt;.&lt;br&gt;Supports &lt;b&gt;concurrent runtime&lt;/b&gt; meaning customers won&#39;t need to wait for each operation of other users before beginning its their runtime" style="shape=note;size=20;whiteSpace=wrap;html=1;fontSize=13;" parent="Fns9ew5D7KYSEn1IwAE0-1" vertex="1">
+          <mxGeometry x="1430" y="1100" width="140" height="220" as="geometry" />
+        </mxCell>
+        <mxCell id="Wq_iZd1M6uHKNJinB8xJ-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;entryX=0;entryY=1;entryDx=0;entryDy=0;exitX=0;exitY=0;exitDx=130;exitDy=10;exitPerimeter=0;" edge="1" parent="Fns9ew5D7KYSEn1IwAE0-1" source="Wq_iZd1M6uHKNJinB8xJ-0" target="Fns9ew5D7KYSEn1IwAE0-18">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="230" y="657" as="sourcePoint" />
+            <mxPoint x="850" y="557" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="290" y="657" />
+              <mxPoint x="350" y="657" />
+              <mxPoint x="350" y="603" />
+              <mxPoint x="800" y="603" />
+              <mxPoint x="800" y="583" />
+              <mxPoint x="850" y="583" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Wq_iZd1M6uHKNJinB8xJ-0" value="Each Owner &lt;b&gt;cannot appoint itself&lt;/b&gt; (or any other subscriber that is already an owner/manager of this store), this condition is enforced and explained in the relevant appointment use-cases" style="shape=note;size=20;whiteSpace=wrap;html=1;fontSize=13;" vertex="1" parent="Fns9ew5D7KYSEn1IwAE0-1">
+          <mxGeometry x="160" y="654" width="140" height="206" as="geometry" />
+        </mxCell>
+        <mxCell id="Wq_iZd1M6uHKNJinB8xJ-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.25;entryDx=0;entryDy=0;dashed=1;" edge="1" parent="Fns9ew5D7KYSEn1IwAE0-1" source="Wq_iZd1M6uHKNJinB8xJ-2" target="Fns9ew5D7KYSEn1IwAE0-102">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1360" y="240" />
+              <mxPoint x="1360" y="339" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Wq_iZd1M6uHKNJinB8xJ-2" value="The UserController will allow &lt;b&gt;user authentication&lt;/b&gt;, but if the authentication process is complex (consists of tokens, etc) it will split up and pass the responsibility to a smaller &lt;b&gt;Authenticator &lt;/b&gt;entity" style="shape=note;size=20;whiteSpace=wrap;html=1;fontSize=13;" vertex="1" parent="Fns9ew5D7KYSEn1IwAE0-1">
+          <mxGeometry x="1430" y="70" width="140" height="194" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
