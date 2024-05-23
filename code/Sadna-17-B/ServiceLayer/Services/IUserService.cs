@@ -1,4 +1,5 @@
 ﻿using Sadna_17_B.ServiceLayer.ServiceDTOs;
+using Sadna_17_B.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,8 +10,8 @@ namespace Sadna_17_B.ServiceLayer.Services
 {
     public interface IUserService
     {
-        UserDTO Login(string username, string password);
-        void Logout(string username);
-        void Register(string username, string password);
+        Response /*UserDTO*/ Login(string username, string password);
+        Response Logout(string username);
+        Response CreateUser(string username, string password);
     }
 }

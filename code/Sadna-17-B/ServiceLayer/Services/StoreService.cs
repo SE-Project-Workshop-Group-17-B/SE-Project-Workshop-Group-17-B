@@ -1,5 +1,6 @@
 ﻿using Sadna_17_B.DomainLayer.Store;
 using Sadna_17_B.ServiceLayer.ServiceDTOs;
+using Sadna_17_B.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,12 +18,12 @@ namespace Sadna_17_B.ServiceLayer.Services
             this.storeController = storeController;
         }
 
-        public void DeleteStore(string username, string storeID)
+        public Response DeleteStore(string username, string storeID)
         {
             throw new NotImplementedException();
         }
 
-        public StoreDTO GetStore(string storeID)
+        public Response /*StoreDTO*/ GetStore(string storeID)
         {
             throw new NotImplementedException();
         }

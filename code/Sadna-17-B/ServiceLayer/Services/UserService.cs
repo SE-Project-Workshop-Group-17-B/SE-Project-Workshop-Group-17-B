@@ -1,6 +1,7 @@
 ﻿using Sadna_17_B.DomainLayer.Order;
 using Sadna_17_B.DomainLayer.User;
 using Sadna_17_B.ServiceLayer.ServiceDTOs;
+using Sadna_17_B.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,17 +19,33 @@ namespace Sadna_17_B.ServiceLayer.Services
             this.orderSystem = orderSystem;
         }
 
-        public UserDTO Login(string username, string password)
+        public Response Login(string username, string password)
         {
-            throw new NotImplementedException();
+            string accessToken;
+            try
+            {
+                accessToken = userController.Login(username, password);
+            } catch (Sadna17BException e)
+            {
+                return Response.GetErrorResponse(e);
+            }
+            UserDTO returnValue = new UserDTO(username, accessToken);
+            return new Response(true, returnValue);
         }
 
-        public void Logout(string username)
+        public Response CreateUser(string username, string password)
         {
-            throw new NotImplementedException();
+            try
+            {
+                userController.CreateUser(username, password);
+                return new Response(true);
+            } catch (Sadna17BException e)
+            {
+                return Response.GetErrorResponse(e);
+            }
         }
 
-        public void Register(string username, string password)
+        public Response Logout(string token)
         {
             throw new NotImplementedException();
         }
