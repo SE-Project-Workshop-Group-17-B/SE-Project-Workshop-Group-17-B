@@ -1,7 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 
-namespace Sadna_17_B.UnitTests
+namespace Sadna_17_B.Tests.UnitTests
 {
     [TestClass]
     public class SystemAT
