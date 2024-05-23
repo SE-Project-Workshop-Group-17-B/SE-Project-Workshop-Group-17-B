@@ -142,6 +142,7 @@
     <Compile Include="DomainLayer\Store\Store.cs" />
     <Compile Include="DomainLayer\Store\StoreController.cs" />
     <Compile Include="DomainLayer\User\Admin.cs" />
+    <Compile Include="DomainLayer\User\Authenticator.cs" />
     <Compile Include="DomainLayer\User\Guest.cs" />
     <Compile Include="DomainLayer\User\Subscriber.cs" />
     <Compile Include="DomainLayer\User\User.cs" />
@@ -156,6 +157,7 @@
     <Compile Include="ServiceLayer\Services\IUserService.cs" />
     <Compile Include="ServiceLayer\Services\StoreService.cs" />
     <Compile Include="ServiceLayer\Services\UserService.cs" />
+    <Compile Include="Utils\Response.cs" />
     <Compile Include="Utils\Sadna17BException.cs" />
   </ItemGroup>
   <ItemGroup>

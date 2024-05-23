@@ -1,4 +1,5 @@
-﻿using Sadna_17_B.Utils;
+﻿using Sadna_17_B.DomainLayer.Order;
+using Sadna_17_B.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,10 +9,17 @@ namespace Sadna_17_B.DomainLayer.User
 {
     public class UserController
     {
+        private OrderSystem orderSystem;
+
         private Dictionary<string, Guest> guests = new Dictionary<string, Guest>();
         private Dictionary<string, Subscriber> subscribers = new Dictionary<string, Subscriber>();
         private Dictionary<string, Admin> admins = new Dictionary<string, Admin>();
         private Authenticator authenticator = new Authenticator();
+
+        public UserController(OrderSystem orderSystem)
+        {
+            this.orderSystem = orderSystem;
+        }
 
         public string Login(string username, string password)
         {

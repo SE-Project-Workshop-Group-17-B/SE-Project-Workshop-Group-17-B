@@ -29,7 +29,7 @@ namespace Sadna_17_B.ServiceLayer
         /// </summary>
         private void BuildInstances()
         {
-            UserService = new UserService(domainFactory.UserController, domainFactory.OrderSystem);
+            UserService = new UserService(domainFactory.UserController);
             StoreService = new StoreService(UserService, domainFactory.StoreController);
         }
     }

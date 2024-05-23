@@ -12,11 +12,9 @@ namespace Sadna_17_B.ServiceLayer.Services
     public class UserService : IUserService
     {
         private readonly UserController userController;
-        private readonly OrderSystem orderSystem;
-        public UserService(UserController userController, OrderSystem orderSystem)
+        public UserService(UserController userController)
         {
             this.userController = userController;
-            this.orderSystem = orderSystem;
         }
 
         public Response Login(string username, string password)
