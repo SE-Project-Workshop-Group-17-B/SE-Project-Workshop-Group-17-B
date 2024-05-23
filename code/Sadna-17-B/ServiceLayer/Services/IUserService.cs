@@ -14,7 +14,7 @@ namespace Sadna_17_B.ServiceLayer.Services
         /// <summary>
         /// Logs the subscriber with the given username and password in to the system.
         /// Returns an error message if the username and password do not correspond to a subscriber in the system.
-        /// Otherwise returns a success Response with a validated access token (user is logged in).
+        /// Otherwise returns a success Response with a UserDTO containing a validated access token (user is logged in).
         /// </summary>
         Response /*UserDTO*/ Login(string username, string password);
 

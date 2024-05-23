@@ -20,9 +20,9 @@ namespace Sadna_17_B.ServiceLayer.Services
         /// <summary>
         /// Logs the subscriber with the given username and password in to the system.
         /// Returns an error message if the username and password do not correspond to a subscriber in the system.
-        /// Otherwise returns a success Response with a validated access token (user is logged in).
+        /// Otherwise returns a success Response with a UserDTO containing a validated access token (user is logged in).
         /// </summary>
-        public Response Login(string username, string password)
+        public Response /*UserDTO*/ Login(string username, string password)
         {
             string accessToken;
             try
@@ -72,7 +72,7 @@ namespace Sadna_17_B.ServiceLayer.Services
         /// <summary>
         /// Returns a Response with Success "true" and Data "true" iff the given token corresponds to an admin in the system.
         /// </summary>
-        public Response IsAdmin(string token)
+        public Response /*bool*/ IsAdmin(string token)
         {
             bool result = userController.IsAdmin(token);
             return new Response(result, result);
@@ -90,7 +90,7 @@ namespace Sadna_17_B.ServiceLayer.Services
         /// <summary>
         /// Returns a Response with Success "true" and Data "true" iff the given token corresponds to a subscriber in the system.
         /// </summary>
-        public Response IsSubscriber(string token)
+        public Response /*bool*/ IsSubscriber(string token)
         {
             bool result = userController.IsSubscriber(token);
             return new Response(result, result);
@@ -108,7 +108,7 @@ namespace Sadna_17_B.ServiceLayer.Services
         /// <summary>
         /// Returns a Response with Success "true" and Data "true" iff the given token corresponds to a guest in the system.
         /// </summary>
-        public Response IsGuest(string token)
+        public Response /*bool*/ IsGuest(string token)
         {
             bool result = userController.IsGuest(token);
             return new Response(result, result);
@@ -126,7 +126,7 @@ namespace Sadna_17_B.ServiceLayer.Services
         /// <summary>
         /// Returns a Response with Success "true" and Data "true" iff the given token corresponds to a store owner of the given store with the given storeID.
         /// </summary>
-        public Response IsOwner(string token, string storeID)
+        public Response /*bool*/ IsOwner(string token, string storeID)
         {
             bool result = userController.IsOwner(token, storeID);
             return new Response(result, result);
@@ -144,7 +144,7 @@ namespace Sadna_17_B.ServiceLayer.Services
         /// <summary>
         /// Returns a Response with Success "true" and Data "true" iff the given token corresponds to a store manager of the given store with the given storeID.
         /// </summary>
-        public Response IsManager(string token, string storeID)
+        public Response /*bool*/ IsManager(string token, string storeID)
         {
             bool result = userController.IsManager(token, storeID);
             return new Response(result, result);
@@ -162,7 +162,7 @@ namespace Sadna_17_B.ServiceLayer.Services
         /// <summary>
         /// Returns a Response with Success "true" and Data "true" iff the given token corresponds to a store manager of the given store with the given storeID and with the given ManagerAuthorization.
         /// </summary>
-        public Response HasManagerAuthorization(string token, string storeID, Manager.ManagerAuthorization auth)
+        public Response /*bool*/ HasManagerAuthorization(string token, string storeID, Manager.ManagerAuthorization auth)
         {
             bool result = userController.HasManagerAuthorization(token, storeID, auth);
             return new Response(result, result);
