@@ -24,9 +24,9 @@ namespace Sadna_17_B.ServiceLayer
             BuildInstances();
         }
 
-        /*
-         * Builds the service instances, injects all dependencies in the their constructors.
-         */
+        /// <summary>
+        /// Builds the service instances, injects all dependencies in the their constructors.
+        /// </summary>
         private void BuildInstances()
         {
             UserService = new UserService(domainFactory.UserController, domainFactory.OrderSystem);
