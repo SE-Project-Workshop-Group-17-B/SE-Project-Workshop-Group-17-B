@@ -1,11 +1,11 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using Sadna_17_B.ServiceLayer;
 using Sadna_17_B.ServiceLayer.Services;
 using Sadna_17_B.ServiceLayer.ServiceDTOs;
 using Sadna_17_B.Utils;
 
-namespace Sadna_17_B.Tests.AcceptanceTests
+namespace Sadna_17_B_Test.Tests.AcceptanceTests
 {
     [TestClass]
     public class SystemAT
@@ -28,7 +28,7 @@ namespace Sadna_17_B.Tests.AcceptanceTests
         [TestMethod]
         public void TestLogin()
         {
-            Response res = userService.Login(username1 , password1);
+            Response res = userService.Login(username1, password1);
             Assert.IsTrue(res.Success);
             userDTO = res.Data as UserDTO;
             Assert.IsTrue(userDTO.Username.Equals(username1));

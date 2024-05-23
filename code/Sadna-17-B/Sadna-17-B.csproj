@@ -182,6 +182,8 @@
     <Compile Include="DomainLayer\User\Admin.cs" />
     <Compile Include="DomainLayer\User\Authenticator.cs" />
     <Compile Include="DomainLayer\User\Guest.cs" />
+    <Compile Include="DomainLayer\User\Manager.cs" />
+    <Compile Include="DomainLayer\User\Owner.cs" />
     <Compile Include="DomainLayer\User\Subscriber.cs" />
     <Compile Include="DomainLayer\User\User.cs" />
     <Compile Include="DomainLayer\User\UserController.cs" />
