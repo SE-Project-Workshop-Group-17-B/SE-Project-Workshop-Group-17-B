@@ -1,19 +1,36 @@
-﻿using System;
+﻿using Sadna_17_B.DomainLayer;
+using Sadna_17_B.ServiceLayer.Services;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
 namespace Sadna_17_B.ServiceLayer
 {
+    /// <summary>
+    /// The Service Factory takes care of initializing all the services of the system,
+    /// it injects all dependencies in their constructors.
+    /// </summary>
     public class ServiceFactory
     {
-        public UserService UserService { get; }
-        public StoreService StoreService { get; }
+        public IUserService UserService { get; set; }
+        public IStoreService StoreService { get; set; }
+
+        private DomainFactory domainFactory;
 
         public ServiceFactory()
         {
-            UserService = new UserService();
-            StoreService = new StoreService();
+            domainFactory = new DomainFactory();
+            BuildInstances();
+        }
+
+        /*
+         * Builds the service instances, injects all dependencies in the their constructors.
+         */
+        private void BuildInstances()
+        {
+            UserService = new UserService(domainFactory.UserController, domainFactory.OrderSystem);
+            StoreService = new StoreService(UserService, domainFactory.StoreController);
         }
     }
 }
