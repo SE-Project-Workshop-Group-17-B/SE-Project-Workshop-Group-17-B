@@ -20,9 +20,9 @@ namespace Sadna_17_B.DomainLayer
 
         public DomainFactory()
         {
-            OrderSystem = new OrderSystem();
-            UserController = new UserController(OrderSystem);
             StoreController = new StoreController();
+            OrderSystem = new OrderSystem(StoreController);
+            UserController = new UserController(OrderSystem);
         }
     }
 }

@@ -10,9 +10,9 @@ namespace Sadna_17_B.ServiceLayer.Services
 {
     public class StoreService : IStoreService
     {
-        private readonly IUserService userService;
+        private readonly UserService userService;
         private readonly StoreController storeController;
-        public StoreService(IUserService userService, StoreController storeController)
+        public StoreService(UserService userService, StoreController storeController)
         {
             this.userService = userService;
             this.storeController = storeController;

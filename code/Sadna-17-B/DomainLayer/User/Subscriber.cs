@@ -16,7 +16,7 @@ namespace Sadna_17_B.DomainLayer.User
             passwordHash = password; // TODO: hash the password
         }
 
-        public bool checkPassword(string password)
+        public bool CheckPassword(string password)
         {
             return passwordHash == password; // TODO: hash the given password
         }

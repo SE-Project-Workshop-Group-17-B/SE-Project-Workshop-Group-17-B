@@ -29,7 +29,7 @@ namespace Sadna_17_B.ServiceLayer
         public void GenerateData()
         {
             // Create an admin
-            UserService.CreateUser("admin", "password"); // Should use CreateAdmin(..) instead
+            UserService.CreateSubscriber("admin", "password"); // Should use CreateAdmin(..) instead
             // Create a store, add products to the store, ...
         }
 
@@ -38,8 +38,9 @@ namespace Sadna_17_B.ServiceLayer
         /// </summary>
         private void BuildInstances()
         {
-            UserService = new UserService(domainFactory.UserController);
-            StoreService = new StoreService(UserService, domainFactory.StoreController);
+            UserService us = new UserService(domainFactory.UserController);
+            UserService = us;
+            StoreService = new StoreService(us, domainFactory.StoreController);
         }
     }
 }

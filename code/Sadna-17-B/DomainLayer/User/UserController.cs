@@ -40,14 +40,14 @@ namespace Sadna_17_B.DomainLayer.User
         public string Login(string username, string password)
         {
             Subscriber subscriber = GetSubscriberByUsername(username); // Throws an exception if the username was invalid
-            if (!subscriber.checkPassword(password)) {
+            if (!subscriber.CheckPassword(password)) {
                 throw new Sadna17BException("Invalid password given.");
             }
-            string accessToken = authenticator.GenerateToken(username);
+            string accessToken = authenticator.GenerateToken(username); // Note: the user gets a new access token if logs in again.
             return accessToken;
         }
 
-        public void CreateUser(string username, string password)
+        public void CreateSubscriber(string username, string password)
         {
             try {
                 GetSubscriberByUsername(username);
@@ -102,6 +102,56 @@ namespace Sadna_17_B.DomainLayer.User
         {
             int guestID = authenticator.GetGuestIDFromToken(token); // Throws an exception if the given access token doesn't exist (not a valid guest session token).
             return GetGuestByID(guestID);
+        }
+
+        public bool IsAdmin(string token)
+        {
+            try
+            {
+                Subscriber subscriber = GetSubscriberByToken(token); // Throws an exception if the given token doesn't correspond to a subscriber.
+                return (admins.ContainsKey(subscriber.Username));
+            } catch (Sadna17BException) {
+                return false;
+            }
+        }
+
+        public bool IsSubscriber(string token)
+        {
+            try
+            {
+                Subscriber subscriber = GetSubscriberByToken(token); // Throws an exception if the given token doesn't correspond to a subscriber.
+                return true;
+            } catch (Sadna17BException) {
+                return false;
+            }
+        }
+
+        public bool IsGuest(string token)
+        {
+            try
+            {
+                Guest guest = GetGuestByToken(token);
+                return true;
+            }
+            catch (Sadna17BException)
+            {
+                return false;
+            }
+        }
+
+        public bool IsOwner(string token, string storeID)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool IsManager(string token, string storeID)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool HasManagerAuthorization(string token, string storeID, Manager.ManagerAuthorization auth)
+        {
+            throw new NotImplementedException();
         }
     }
 }

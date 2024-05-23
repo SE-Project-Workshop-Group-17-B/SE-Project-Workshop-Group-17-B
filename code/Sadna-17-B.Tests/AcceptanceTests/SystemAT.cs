@@ -22,7 +22,7 @@ namespace Sadna_17_B.Tests.AcceptanceTests
             ServiceFactory serviceFactory = new ServiceFactory();
             userService = serviceFactory.UserService;
             storeService = serviceFactory.StoreService;
-            Response ignore = userService.CreateUser(username1, password1);
+            Response ignore = userService.CreateSubscriber(username1, password1);
         }
 
         [TestMethod]
