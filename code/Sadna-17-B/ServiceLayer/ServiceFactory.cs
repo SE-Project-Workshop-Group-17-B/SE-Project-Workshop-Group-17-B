@@ -22,6 +22,14 @@ namespace Sadna_17_B.ServiceLayer
         {
             domainFactory = new DomainFactory();
             BuildInstances();
+            GenerateData(); // Comment this out in version 3 when we load the data from the database.
+            // LoadData(); // Will be used to load the data from the database in version 3.
+        }
+
+        public void GenerateData()
+        {
+            // Create an admin
+            // Create a store, add products to the store, ...
         }
 
         /// <summary>

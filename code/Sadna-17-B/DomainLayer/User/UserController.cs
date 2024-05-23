@@ -11,7 +11,7 @@ namespace Sadna_17_B.DomainLayer.User
     {
         private OrderSystem orderSystem;
 
-        private Dictionary<string, Guest> guests = new Dictionary<string, Guest>();
+        private Dictionary<string, Guest> guests = new Dictionary<string, Guest>(); // TODO: Check if the guests also need guest tokens.
         private Dictionary<string, Subscriber> subscribers = new Dictionary<string, Subscriber>();
         private Dictionary<string, Admin> admins = new Dictionary<string, Admin>();
         private Authenticator authenticator = new Authenticator();
@@ -44,13 +44,13 @@ namespace Sadna_17_B.DomainLayer.User
 
         public Subscriber GetSubscriber(string username)
         {
-            if (subscribers.ContainsKey(username))
-            {
-                return subscribers[username];
-            }
-            else if (admins.ContainsKey(username))
+            if (admins.ContainsKey(username))
             {
                 return admins[username];
+            }
+            else if (subscribers.ContainsKey(username))
+            {
+                return subscribers[username];
             }
             else
             {

@@ -23,8 +23,7 @@ namespace Sadna_17_B.ServiceLayer.Services
             try
             {
                 accessToken = userController.Login(username, password);
-            } catch (Sadna17BException e)
-            {
+            } catch (Sadna17BException e) {
                 return Response.GetErrorResponse(e);
             }
             UserDTO returnValue = new UserDTO(username, accessToken);
