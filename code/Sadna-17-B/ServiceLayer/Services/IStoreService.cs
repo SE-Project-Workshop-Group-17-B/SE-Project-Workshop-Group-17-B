@@ -11,6 +11,6 @@ namespace Sadna_17_B.ServiceLayer.Services
     public interface IStoreService
     {
         Response /*StoreDTO*/ GetStore(string storeID);
-        Response DeleteStore(string username, string storeID); // Note: Could be changed to receive authentication token instead of username
+        Response CloseStore(string token, string storeID); // Note: 'token' corresponds to the authentication token / access token of the requesting user
     }
 }

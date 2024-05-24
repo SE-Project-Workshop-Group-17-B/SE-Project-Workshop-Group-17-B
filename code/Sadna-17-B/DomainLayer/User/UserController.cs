@@ -144,6 +144,11 @@ namespace Sadna_17_B.DomainLayer.User
             throw new NotImplementedException();
         }
 
+        public bool IsFounder(string token, string storeID)
+        {
+            throw new NotImplementedException();
+        }
+
         public bool IsManager(string token, string storeID)
         {
             throw new NotImplementedException();

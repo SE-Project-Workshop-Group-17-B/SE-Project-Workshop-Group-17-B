@@ -18,8 +18,15 @@ namespace Sadna_17_B.ServiceLayer.Services
             this.storeController = storeController;
         }
 
-        public Response DeleteStore(string username, string storeID)
+        public Response CloseStore(string token, string storeID)
         {
+            // Authentication & Authorization check using UserService:
+            if (!userService.IsFounderBool(token, storeID)
+             && !userService.IsAdminBool(token))
+            {
+                return new Response("Cannot close the store, given token doesn't correspond to the store founder or a system administrator.", false, null);
+            }
+            // call storeController.CloseStore(storeID), return a matching Response
             throw new NotImplementedException();
         }
 
@@ -27,5 +34,7 @@ namespace Sadna_17_B.ServiceLayer.Services
         {
             throw new NotImplementedException();
         }
+        
+        // ...
     }
 }

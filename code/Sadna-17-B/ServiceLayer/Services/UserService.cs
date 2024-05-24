@@ -80,9 +80,9 @@ namespace Sadna_17_B.ServiceLayer.Services
 
         /// <summary>
         /// Returns true iff the given token corresponds to an admin in the system,
-        /// can be used as an authorization check between services without the need for parsing a Response object, hence the 'protected' access modifier.
+        /// can be used as an authorization check between services without the need for parsing a Response object.
         /// </summary>
-        protected bool IsAdminBool(string token) 
+        public bool IsAdminBool(string token) 
         {
             return userController.IsAdmin(token);
         }
@@ -98,9 +98,9 @@ namespace Sadna_17_B.ServiceLayer.Services
 
         /// <summary>
         /// Returns true iff the given token corresponds to a subscriber in the system,
-        /// can be used as an authorization check between services without the need for parsing a Response object, hence the 'protected' access modifier.
+        /// can be used as an authorization check between services without the need for parsing a Response object.
         /// </summary>
-        protected bool IsSubscriberBool(string token)
+        public bool IsSubscriberBool(string token)
         {
             return userController.IsSubscriber(token);
         }
@@ -116,15 +116,15 @@ namespace Sadna_17_B.ServiceLayer.Services
 
         /// <summary>
         /// Returns true iff the given token corresponds to a guest in the system,
-        /// can be used as an authorization check between services without the need for parsing a Response object, hence the 'protected' access modifier.
+        /// can be used as an authorization check between services without the need for parsing a Response object.
         /// </summary>
-        protected bool IsGuestBool(string token)
+        public bool IsGuestBool(string token)
         {
             return userController.IsGuest(token);
         }
 
         /// <summary>
-        /// Returns a Response with Success "true" and Data "true" iff the given token corresponds to a store owner of the given store with the given storeID.
+        /// Returns a Response with Success "true" and Data "true" iff the given token corresponds to a store owner of the store with the given storeID.
         /// </summary>
         public Response /*bool*/ IsOwner(string token, string storeID)
         {
@@ -134,15 +134,33 @@ namespace Sadna_17_B.ServiceLayer.Services
 
         /// <summary>
         /// Returns true iff the given token corresponds to a store owner of the store with the given storeID,
-        /// can be used as an authorization check between services without the need for parsing a Response object, hence the 'protected' access modifier.
+        /// can be used as an authorization check between services without the need for parsing a Response object.
         /// </summary>
-        protected bool IsOwnerBool(string token, string storeID)
+        public bool IsOwnerBool(string token, string storeID)
         {
             return userController.IsOwner(token, storeID);
         }
 
         /// <summary>
-        /// Returns a Response with Success "true" and Data "true" iff the given token corresponds to a store manager of the given store with the given storeID.
+        /// Returns a Response with Success "true" and Data "true" iff the given token corresponds to the store founder of the store with the given storeID.
+        /// </summary>
+        public Response /*bool*/ IsFounder(string token, string storeID)
+        {
+            bool result = userController.IsFounder(token, storeID);
+            return new Response(result, result);
+        }
+
+        /// <summary>
+        /// Returns true iff the given token corresponds to the store founder of the store with the given storeID,
+        /// can be used as an authorization check between services without the need for parsing a Response object.
+        /// </summary>
+        public bool IsFounderBool(string token, string storeID)
+        {
+            return userController.IsFounder(token, storeID);
+        }
+
+        /// <summary>
+        /// Returns a Response with Success "true" and Data "true" iff the given token corresponds to a store manager of the store with the given storeID.
         /// </summary>
         public Response /*bool*/ IsManager(string token, string storeID)
         {
@@ -152,15 +170,15 @@ namespace Sadna_17_B.ServiceLayer.Services
 
         /// <summary>
         /// Returns true iff the given token corresponds to a store manager of the store with the given storeID,
-        /// can be used as an authorization check between services without the need for parsing a Response object, hence the 'protected' access modifier.
+        /// can be used as an authorization check between services without the need for parsing a Response object.
         /// </summary>
-        protected bool IsManagerBool(string token, string storeID)
+        public bool IsManagerBool(string token, string storeID)
         {
             return userController.IsManager(token, storeID);
         }
 
         /// <summary>
-        /// Returns a Response with Success "true" and Data "true" iff the given token corresponds to a store manager of the given store with the given storeID and with the given ManagerAuthorization.
+        /// Returns a Response with Success "true" and Data "true" iff the given token corresponds to a store manager of the store with the given storeID and with the given ManagerAuthorization.
         /// </summary>
         public Response /*bool*/ HasManagerAuthorization(string token, string storeID, Manager.ManagerAuthorization auth)
         {
@@ -169,10 +187,10 @@ namespace Sadna_17_B.ServiceLayer.Services
         }
 
         /// <summary>
-        /// Returns true iff the given token corresponds to a store manager of the given store with the given storeID and with the given ManagerAuthorization,
-        /// can be used as an authorization check between services without the need for parsing a Response object, hence the 'protected' access modifier.
+        /// Returns true iff the given token corresponds to a store manager of the store with the given storeID and with the given ManagerAuthorization,
+        /// can be used as an authorization check between services without the need for parsing a Response object.
         /// </summary>
-        protected bool HasManagerAuthorizationBool(string token, string storeID, Manager.ManagerAuthorization auth)
+        public bool HasManagerAuthorizationBool(string token, string storeID, Manager.ManagerAuthorization auth)
         {
             return userController.HasManagerAuthorization(token, storeID, auth);
         }
