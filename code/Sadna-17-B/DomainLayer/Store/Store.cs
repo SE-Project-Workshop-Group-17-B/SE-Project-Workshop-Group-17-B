@@ -39,12 +39,18 @@ namespace Sadna_17_B.DomainLayer.Store
 
         public void RemoveProduct(string productName)
         {
-            _inventory.RemoveProduct(productName);
+            Product product_to_remove = _inventory.searchProductByName(productName);
+            if (product_to_remove == null)
+                return;
+            _inventory.RemoveProduct(product_to_remove);
         }
 
         public void ReduceProductAmount(string productName, int amount)
         {
-            _inventory.ReduceProductAmount(productName, amount);
+            Product product_to_reduce = _inventory.searchProductByName(productName);
+            if (product_to_reduce == null)
+                return;
+            _inventory.ReduceProductAmount(product_to_reduce, amount);
         }
 
         public int GetProductAmount(string productName)
@@ -52,14 +58,21 @@ namespace Sadna_17_B.DomainLayer.Store
             return _inventory.GetProductAmount(productName);
         }
 
-        public List<string> GetAllProductNames()
+
+        public Product searchProductByName(string productName)
         {
-            return _inventory.GetAllProductNames();
+
+            if (string.IsNullOrEmpty(productName)) {
+                throw new ArgumentNullException("cannot search null as name");
+            }
+            return _inventory.searchProductByName(productName);
         }
 
-        public Dictionary<string, int> GetAllProductsFromInventory()
+        public List<Product> SearchProductByCategory(string category)
         {
-            return _inventory.GetAllProducts();
+            List<Product> result = _inventory.SearchProductByCategory(category);
+
+            return result.Any() ? result : null;
         }
     }
 }

@@ -7,70 +7,98 @@ namespace Sadna_17_B.DomainLayer.Store
 {
     public class Inventory
     {
-        private Dictionary<string, int> _allProducts = new Dictionary<string, int>();
+        private Dictionary<Product, int> _allProducts = new Dictionary<Product, int>();
 
         public void AddProduct(Product product, int amount)
         {
-            if (_allProducts.ContainsKey(product.Name))
+            if (_allProducts.ContainsKey(product))
             {
-                _allProducts[product.Name] += amount;
+                _allProducts[product] += amount;
             }
             else
             {
-                _allProducts[product.Name] = amount;
+                _allProducts[product] = amount;
             }
         }
 
-        public void RemoveProduct(string productName)
+        public void RemoveProduct(Product product)
         {
-            if (_allProducts.ContainsKey(productName))
+            if (_allProducts.ContainsKey(product))  
             {
-                _allProducts.Remove(productName);
+                _allProducts.Remove(product);
             }
         }
-        public void ReduceProductAmount(string productName, int amount)
+
+        public void ReduceProductAmount(Product product, int amount)
         {
-            if (_allProducts.ContainsKey(productName) && amount <= _allProducts[productName])
+            if (_allProducts.ContainsKey(product) && amount <= _allProducts[product])
             {
-                _allProducts[productName] -= amount;
-                Console.WriteLine("reduced " + amount + " items from " + productName + "\n" +
-                    "current amount is:\t" + _allProducts[productName]);
+                _allProducts[product] -= amount;
+                Console.WriteLine("Reduced " + amount + " items from " + product.Name + "\n" +
+                    "Current amount is:\t" + _allProducts[product]);
             }
-            else if (!_allProducts.ContainsKey(productName))
+            else if (!_allProducts.ContainsKey(product))
             {
-                Console.WriteLine("could not find " + productName + " in the Inventory");
+                Console.WriteLine("Could not find " + product.Name + " in the inventory");
             }
             else
             {
-                Console.WriteLine("current " + productName + "'s amount is " + _allProducts[productName] +
+                Console.WriteLine("Current " + product.Name + "'s amount is " + _allProducts[product] +
                     ", you cannot reduce " + amount);
+            }
+        }
 
-            }
-        }
-        public void EditProductName(string oldName, string newName)
+        public void EditProductName(Product product, string newName)
         {
-            if (_allProducts.ContainsKey(oldName))
+            if (_allProducts.ContainsKey(product))
             {
-                int amount = _allProducts[oldName];
-                _allProducts.Remove(oldName);
-                _allProducts[newName] = amount;
+                product.Name = newName;
             }
         }
+
+        public Product searchProductByName(string name)
+        {
+            foreach (var product in _allProducts.Keys)
+            {
+                if (product.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
+                {
+                    return product;
+                }
+            }
+            return null;
+        }
+
+        public List<Product> SearchProductByCategory(string category)
+        {
+            var result = _allProducts.Keys
+                .Where(product => product.Category.Equals(category))
+                .ToList();
+
+            return result.Any() ? result : null; // if empty return null
+        }
+
 
         public int GetProductAmount(string productName)
         {
-            return _allProducts.ContainsKey(productName) ? _allProducts[productName] : 0;
+            foreach (var product in _allProducts.Keys)
+            {
+                if (product.Name.Equals(productName, StringComparison.OrdinalIgnoreCase))
+                {
+                    return _allProducts[product];
+                }
+            }
+            return 0; // Or throw an exception if product not found, based on your requirements
         }
 
-        public List<string> GetAllProductNames()
+        public List<Product> GetAllProducts()
         {
             return _allProducts.Keys.ToList();
         }
 
-        public Dictionary<string, int> GetAllProducts()
+        public Dictionary<Product, int> GetAllProductDetails()
         {
-            return new Dictionary<string, int>(_allProducts);
+            return new Dictionary<Product, int>(_allProducts);
         }
     }
-
 }
+
