@@ -8,6 +8,9 @@ namespace Sadna_17_B.DomainLayer.Store
 {
     public class StoreController
     {
+        private List<Store> _stores;
+        public StoreController() { _stores = new List<Store>(); }
+
         public class StoreBuilder
         {
             private string _name;
@@ -59,8 +62,6 @@ namespace Sadna_17_B.DomainLayer.Store
             }
         }
 
-        private List<Store> _stores = new List<Store>();
-
         public StoreBuilder GetStoreBuilder()
         {
             return new StoreBuilder();
@@ -84,6 +85,30 @@ namespace Sadna_17_B.DomainLayer.Store
         public Store GetStoreByName(string name)
         {
             return _stores.FirstOrDefault(store => store._name == name);
+        }
+
+        public List<Product> searchProductByName(string productName)
+        {
+            return _stores
+                    .Select(store => store.searchProductByName(productName))
+                    .Where(product => product != null)
+                    .ToList();
+        }
+
+        public List<Product> SearchProductByCategory(string category)
+        {
+            List<Product> result = new List<Product>();
+
+            foreach (Store store in _stores)
+            {
+                var products = store.SearchProductByCategory(category);
+                if (products != null)
+                {
+                    result.AddRange(products);
+                }
+            }
+
+            return result.Any() ? result : null;
         }
     }
 }
