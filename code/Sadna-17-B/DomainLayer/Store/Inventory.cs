@@ -68,6 +68,18 @@ namespace Sadna_17_B.DomainLayer.Store
             return null;
         }
 
+        public Product searchProductById(int id)
+        {
+            foreach (var product in _allProducts.Keys)
+            {
+                if(product.Id == id)
+                {
+                    return product;
+                }
+            }
+            return null;
+        }
+
         public List<Product> SearchProductByCategory(string category)
         {
             var result = _allProducts.Keys
@@ -88,6 +100,12 @@ namespace Sadna_17_B.DomainLayer.Store
                 }
             }
             return 0; // Or throw an exception if product not found, based on your requirements
+        }
+
+        public int GetProductAmount(Product lookup_product)
+        {
+            return _allProducts.ContainsKey(lookup_product) ? _allProducts[lookup_product] : 0;
+            
         }
 
         public List<Product> GetAllProducts()
