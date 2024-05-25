@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace Sadna_17_B.DomainLayer.Store
+namespace Sadna_17_B.DomainLayer.StoreDom
 {
     public class StoreController
     {
@@ -72,7 +72,7 @@ namespace Sadna_17_B.DomainLayer.Store
             _stores.Add(store);
         }
 
-        public void RemoveStore(Store store)
+        public void CloseStore(Store store)
         {
             _stores.Remove(store);
         }
@@ -85,6 +85,11 @@ namespace Sadna_17_B.DomainLayer.Store
         public Store GetStoreByName(string name)
         {
             return _stores.FirstOrDefault(store => store._name == name);
+        }
+
+        public Store GetStoreById(int id)
+        {
+            return _stores.FirstOrDefault(store => store._id == id);
         }
 
         public List<Product> searchProductByName(string productName)

@@ -1,40 +1,79 @@
-﻿using Sadna_17_B.DomainLayer.Store;
-using Sadna_17_B.ServiceLayer.ServiceDTOs;
-using Sadna_17_B.Utils;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+using Sadna_17_B.DomainLayer.StoreDom;
 
 namespace Sadna_17_B.ServiceLayer.Services
 {
     public class StoreService : IStoreService
     {
+        private readonly StoreController _storeController;
         private readonly UserService userService;
-        private readonly StoreController storeController;
-        public StoreService(UserService userService, StoreController storeController)
+
+
+        public StoreService()
         {
-            this.userService = userService;
-            this.storeController = storeController;
+            _storeController = new StoreController();
         }
 
-        public Response CloseStore(string token, string storeID)
+        public StoreService(UserService us, StoreController storeController)
         {
-            // Authentication & Authorization check using UserService:
-            if (!userService.IsFounderBool(token, storeID)
-             && !userService.IsAdminBool(token))
+            userService = us;
+            _storeController = storeController;
+        }
+
+        public Store CreateStore(string name, string email, string phoneNumber, string storeDescription, string address, Inventory inventory)
+        {
+            var storeBuilder = _storeController.GetStoreBuilder()
+                                .SetName(name)
+                                .SetEmail(email)
+                                .SetPhoneNumber(phoneNumber)
+                                .SetStoreDescription(storeDescription)
+                                .SetAddress(address)
+                                .SetInventory(inventory);
+            var store = storeBuilder.Build();
+            _storeController.AddStore(store);
+            return store;
+        }
+
+        public bool RemoveStore(string storeName)
+        {
+            var store = _storeController.GetStoreByName(storeName);
+            if (store != null)
             {
-                return new Response("Cannot close the store, given token doesn't correspond to the store founder or a system administrator.", false, null);
+                _storeController.CloseStore(store);
+                return true;
             }
-            // call storeController.CloseStore(storeID), return a matching Response
-            throw new NotImplementedException();
+            return false;
         }
 
-        public Response /*StoreDTO*/ GetStore(string storeID)
+        public List<Store> GetAllStores()
         {
-            throw new NotImplementedException();
+            return _storeController.GetAllStores();
         }
-        
-        // ...
+
+        public Store GetStoreByName(string name)
+        {
+            return _storeController.GetStoreByName(name);
+        }
+
+        public bool CanProcessOrder(int storeId, Dictionary<Product, int> order)
+        {
+            var store = _storeController.GetStoreById(storeId);
+            if (store != null)
+            {
+                return store.CanProcessOrder(order);
+            }
+            return false;
+        }
+
+        public void ProcessOrder(int storeId, Dictionary<Product, int> order)
+        {
+            var store = _storeController.GetStoreById(storeId);
+
+            if (store == null)
+                return;
+
+            store.ProcessOrder(order);
+        }
     }
 }

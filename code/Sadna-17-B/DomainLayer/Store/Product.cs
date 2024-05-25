@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace Sadna_17_B.DomainLayer.Store
+namespace Sadna_17_B.DomainLayer.StoreDom
 {
     public class Product
     {

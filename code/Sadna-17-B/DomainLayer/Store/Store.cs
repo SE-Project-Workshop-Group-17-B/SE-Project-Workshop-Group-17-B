@@ -1,15 +1,19 @@
 ﻿
 
 using Sadna_17_B.DomainLayer.User;
+using Sadna_17_B.DomainLayer.Order;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace Sadna_17_B.DomainLayer.Store
+
+namespace Sadna_17_B.DomainLayer.StoreDom
 {
     public class Store
     {
+        private static int idCounter = 1;
+        public int _id { get; private set; }
         public string _name { get; set; }
         public string _email { get; set; }
         public string _phone_number { get; set; }
@@ -22,6 +26,7 @@ namespace Sadna_17_B.DomainLayer.Store
                         string address, Inventory inventory)
         {
             // stores can be created via controller only
+            _id = idCounter++;
             _name = name;
             _email = email;
             _phone_number = phone_number;
@@ -45,9 +50,9 @@ namespace Sadna_17_B.DomainLayer.Store
             _inventory.RemoveProduct(product_to_remove);
         }
 
-        public void ReduceProductAmount(string productName, int amount)
+        public void ReduceProductAmount(int p_id, int amount)
         {
-            Product product_to_reduce = _inventory.searchProductByName(productName);
+            Product product_to_reduce = _inventory.searchProductById(p_id);
             if (product_to_reduce == null)
                 return;
             _inventory.ReduceProductAmount(product_to_reduce, amount);
@@ -58,11 +63,42 @@ namespace Sadna_17_B.DomainLayer.Store
             return _inventory.GetProductAmount(productName);
         }
 
+        public bool CanProcessOrder(Dictionary<Product, int> order)
+        {
+            if (order == null)
+                return false;
 
+            foreach (var item in order)
+            {
+                Product product = item.Key;
+                int requiredAmount = item.Value;
+                int availableAmount = _inventory.GetProductAmount(product);
+
+                if (availableAmount < requiredAmount)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public void ProcessOrder(Dictionary<Product, int> order)
+        {
+            if (!CanProcessOrder(order))
+                return;
+
+            foreach (var item in order)
+            {
+                int p_id = item.Key.Id;
+                int requiredAmount = item.Value;
+                ReduceProductAmount(p_id, requiredAmount);
+            }
+        }
         public Product searchProductByName(string productName)
         {
 
-            if (string.IsNullOrEmpty(productName)) {
+            if (string.IsNullOrEmpty(productName))
+            {
                 throw new ArgumentNullException("cannot search null as name");
             }
             return _inventory.searchProductByName(productName);
