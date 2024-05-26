@@ -173,8 +173,11 @@
   <ItemGroup>
     <Compile Include="DomainLayer\DomainFactory.cs" />
     <Compile Include="DomainLayer\Order\OrderSystem.cs" />
+    <Compile Include="DomainLayer\Store\Discount.cs" />
+    <Compile Include="DomainLayer\Store\DiscountPolicy.cs" />
     <Compile Include="DomainLayer\Store\Inventory.cs" />
     <Compile Include="DomainLayer\Store\Product.cs" />
+    <Compile Include="DomainLayer\Store\PurchasePolicy.cs" />
     <Compile Include="DomainLayer\Store\Store.cs" />
     <Compile Include="DomainLayer\Store\StoreController.cs" />
     <Compile Include="DomainLayer\User\Admin.cs" />
