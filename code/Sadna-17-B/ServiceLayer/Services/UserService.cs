@@ -430,6 +430,11 @@ namespace Sadna_17_B.ServiceLayer.Services
             }
         }
 
+        /// <summary>
+        /// Attempts to return the order history of the user with the given UserID (username/GuestID). (part of requirement 6.4)
+        /// Returns an error Response if the token doesn't correspond to a system administrator.
+        /// Otherwise, returns a Response containing a list of OrderDTO containing the order history of the user.
+        /// </summary>
         public Response /*List<OrderDTO>*/ GetUserOrderHistory(string token, string userID)
         {
             try
@@ -447,6 +452,11 @@ namespace Sadna_17_B.ServiceLayer.Services
             }
         }
 
+        /// <summary>
+        /// Attempts to return the order history of the store with the given storeID. (Requirement 4.13)
+        /// /// Returns an error Response if the token doesn't correspond to an admin or a store owner of the store with the given storeID.
+        /// Otherwise, returns a Response containing a list of SubOrderDTO containing the order history of the store.
+        /// </summary>
         public Response /*List<SubOrderDTO>*/ GetStoreOrderHistory(string token, string storeID)
         {
             try
