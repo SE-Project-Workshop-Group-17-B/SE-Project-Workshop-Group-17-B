@@ -32,7 +32,7 @@ namespace Sadna_17_B.DomainLayer.User
         public string CreateGuest()
         {
             string guestToken = authenticator.GenerateToken(guestCount.ToString());
-            Guest guest = new Guest();
+            Guest guest = new Guest(guestCount);
             guests[guestCount] = guest;
             guestCount++;
             return guestToken;
@@ -122,6 +122,22 @@ namespace Sadna_17_B.DomainLayer.User
         {
             int guestID = authenticator.GetGuestIDFromToken(token); // Throws an exception if the given access token doesn't exist (not a valid guest session token).
             return GetGuestByID(guestID);
+        }
+
+        private User GetUserByToken(string token)
+        {
+            if (IsSubscriber(token))
+            {
+                return GetSubscriberByToken(token);
+            }
+            else if (IsGuest(token))
+            {
+                return GetGuestByToken(token);
+            }
+            else
+            {
+                throw new Sadna17BException("Invalid access token, given access token doesn't correspond to any user in the system.");
+            }
         }
 
         public bool IsAdmin(string token)
@@ -343,6 +359,45 @@ namespace Sadna_17_B.DomainLayer.User
             Subscriber requestingSubscriber = GetSubscriberByToken(token);
             requestingSubscriber.RemoveManagerAppointment(storeID, managerUsername); // Will throw an exception if the requesting subscriber isn't a store owner or didn't appoint a manager with the given managerUsername
             RemoveManagement(managerUsername, storeID); // Should not throw an exception as long as the requesting subscriber did appoint him before
+        }
+
+        public void AddToCart(string token, string storeID, string productID, int quantity)
+        {
+            User user = GetUserByToken(token);
+            if (quantity <= 0)
+            {
+                throw new Sadna17BException("Invalid quantity given: " + quantity + ".");
+            }
+            user.AddToCart(storeID, productID, quantity);
+        }
+
+        public ShoppingCart GetShoppingCart(string token)
+        {
+            User user = GetUserByToken(token);
+            return user.ShoppingCart;
+        }
+
+        public void UpdateCartProduct(string token, string storeID, string productID, int quantity)
+        {
+            User user = GetUserByToken(token);
+            if (quantity < 0)
+            {
+                throw new Sadna17BException("Invalid quantity given: " + quantity + ".");
+            }
+            user.UpdateCartProduct(storeID, productID, quantity);
+        }
+
+        public void CompletePurchase(string token, string destinationAddress, string creditCardInfo)
+        {
+            User user = GetUserByToken(token); // Throws an exception if the token is invalid
+            if (user is Guest)
+            {
+                orderSystem.ProcessOrder(user.ShoppingCart, (user as Guest).GuestID.ToString(), true, destinationAddress, creditCardInfo);
+            }
+            else if (user is Subscriber)
+            {
+                orderSystem.ProcessOrder(user.ShoppingCart, (user as Subscriber).Username, false, destinationAddress, creditCardInfo);
+            }
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Sadna_17_B.DomainLayer.Order;
+using Sadna_17_B.DomainLayer.StoreDom;
 using Sadna_17_B.DomainLayer.User;
 using Sadna_17_B.ServiceLayer.ServiceDTOs;
 using Sadna_17_B.Utils;
@@ -334,6 +335,61 @@ namespace Sadna_17_B.ServiceLayer.Services
                 userController.RevokeOwnership(token, storeID, ownerUsername); // Not fully implemented yet in this version
                 return new Response(true);
             } catch (Sadna17BException e)
+            {
+                return Response.GetErrorResponse(e);
+            }
+        }
+
+        public Response AddToCart(string token, string storeID, string productID, int quantity)
+        {
+            try
+            {
+                // Note: should probably check with StoreService if the given productID exists in the given store.
+                userController.AddToCart(token, storeID, productID, quantity);
+                return new Response(true);
+            } catch (Sadna17BException e)
+            {
+                return Response.GetErrorResponse(e);
+            }
+        }
+
+        public Response /*ShoppingCartDTO*/ GetShoppingCart(string token)
+        {
+            try
+            {
+                ShoppingCart shoppingCart = userController.GetShoppingCart(token);
+                // Note: Possible to extend this to call StoreService to get the actual products info
+                // Dictionary<string, Product> products = new Dictionary<string, Product>();
+                return new Response(true, new ShoppingCartDTO(shoppingCart));
+            }
+            catch (Sadna17BException e)
+            {
+                return Response.GetErrorResponse(e);
+            }
+        }
+
+        public Response UpdateCartProduct(string token, string storeID, string productID, int quantity)
+        {
+            try
+            {
+                // Note: should probably check with StoreService if the given productID exists in the given store.
+                userController.UpdateCartProduct(token, storeID, productID, quantity); // Note: Quantity = 0 removes the item from the cart and basket
+                return new Response(true);
+            }
+            catch (Sadna17BException e)
+            {
+                return Response.GetErrorResponse(e);
+            }
+        }
+
+        public Response CompletePurchase(string token, string destinationAddress, string creditCardInfo)
+        {
+            try
+            {
+                userController.CompletePurchase(token, destinationAddress, creditCardInfo);
+                return new Response(true);
+            }
+            catch (Sadna17BException e)
             {
                 return Response.GetErrorResponse(e);
             }
