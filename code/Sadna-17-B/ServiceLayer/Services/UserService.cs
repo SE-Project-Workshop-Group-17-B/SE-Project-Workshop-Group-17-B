@@ -24,15 +24,32 @@ namespace Sadna_17_B.ServiceLayer.Services
         /// </summary>
         public Response /*UserDTO*/ Login(string username, string password)
         {
-            string accessToken;
             try
             {
-                accessToken = userController.Login(username, password);
+                string accessToken = userController.Login(username, password);
+                UserDTO returnValue = new UserDTO(username, accessToken);
+                return new Response(true, returnValue);
             } catch (Sadna17BException e) {
                 return Response.GetErrorResponse(e);
             }
-            UserDTO returnValue = new UserDTO(username, accessToken);
-            return new Response(true, returnValue);
+        }
+
+        /// <summary>
+        /// When a guest enters the system, he is added to the system's data structures.
+        /// Returns an error message if any system errors has occurred.
+        /// Otherwise returns a success Response with a UserDTO containing a validated access token and username 'null' (guest entered the system).
+        /// </summary>
+        public Response /*UserDTO*/ GuestEntry()
+        {
+            try
+            {
+                string accessToken = userController.CreateGuest();
+                UserDTO returnValue = new UserDTO(accessToken);
+                return new Response(true, returnValue);
+            } catch (Sadna17BException e)
+            {
+                return Response.GetErrorResponse(e);
+            }
         }
 
         /// <summary>
@@ -55,13 +72,30 @@ namespace Sadna_17_B.ServiceLayer.Services
         /// <summary>
         /// Logs the subscriber with the given token out of the system.
         /// Returns an error message if the token does not correspond to a subscriber in the system, or if the subscriber is already logged out.
-        /// Otherwise returns a success Response and the given access token is invalidated (user is logged out).
+        /// Otherwise returns a success Response with a UerDTO containing a validated Guest access token and username 'null', and the previous access token is invalidated (user is logged out, guest entered the system).
         /// </summary>
-        public Response Logout(string token)
+        public Response /*UserDTO*/ Logout(string token)
         {
             try
             {
                 userController.Logout(token);
+                return GuestEntry();
+            } catch (Sadna17BException e)
+            {
+                return Response.GetErrorResponse(e);
+            }
+        }
+
+        /// <summary>
+        /// When the guest exits the system, he is removed from system's data structures.
+        /// Returns an error message if the token does not correspond to a guest in the system, or if the guest has already exited.
+        /// Otherwise returns a success Response and the given access token is invalidated (user is logged out).
+        /// </summary>
+        public Response GuestExit(string token)
+        {
+            try
+            {
+                userController.GuestExit(token);
                 return new Response(true);
             } catch (Sadna17BException e)
             {

@@ -80,6 +80,13 @@ namespace Sadna_17_B.DomainLayer.User
             authenticator.InvalidateToken(token); // Invalides the token if it isn't invalidated (isn't logged out already), otherwise (somehow) throws an exception.
         }
 
+        public void GuestExit(string token)
+        {
+            int guestID = authenticator.GetGuestIDFromToken(token); // Throws an exception if the given access token doesn't exist (no such guest).
+            authenticator.InvalidateToken(token);
+            RemoveGuest(guestID); // Removes and forgets the guest from the system's data structure after its exit
+        }
+
         private Subscriber GetSubscriberByToken(string token)
         {
             string username = authenticator.GetNameFromToken(token); // Throws an exception if the given access token doesn't exist (user isn't logged in).
@@ -95,6 +102,18 @@ namespace Sadna_17_B.DomainLayer.User
             else
             {
                 throw new Sadna17BException("Invalid guestID given.");
+            }
+        }
+
+        private void RemoveGuest(int guestID)
+        {
+            if (!guests.ContainsKey(guestID))
+            {
+                throw new Sadna17BException("Invalid guestID given.");
+            }
+            else
+            {
+                guests.Remove(guestID);
             }
         }
 
