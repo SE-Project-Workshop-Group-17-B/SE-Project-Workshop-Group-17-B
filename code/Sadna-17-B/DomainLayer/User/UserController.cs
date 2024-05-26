@@ -507,37 +507,5 @@ namespace Sadna_17_B.DomainLayer.User
             }
             return new Tuple<HashSet<string>, Dictionary<string, HashSet<Manager.ManagerAuthorization>>>(owners, managers);
         }
-
-        private Dictionary<string,Owner> GetStoreOwners(string storeID)
-        {
-            Dictionary<string,Owner> owners = new Dictionary<string,Owner>();
-            foreach (var subscriber in subscribers)
-            {
-                foreach (var ownership in subscriber.Value.Ownerships)
-                {
-                    if (ownership.Key == storeID)
-                    {
-                        owners[subscriber.Key] = ownership.Value;
-                    }
-                }
-            }
-            return owners;
-        }
-
-        private Dictionary<string, Manager> GetStoreManagers(string storeID)
-        {
-            Dictionary<string, Manager> managers = new Dictionary<string, Manager>();
-            foreach (var subscriber in subscribers)
-            {
-                foreach (var ownership in subscriber.Value.Ownerships)
-                {
-                    if (ownership.Key == storeID)
-                    {
-                        owners[subscriber.Key] = ownership.Value;
-                    }
-                }
-            }
-            return owners;
-        }
     }
 }
