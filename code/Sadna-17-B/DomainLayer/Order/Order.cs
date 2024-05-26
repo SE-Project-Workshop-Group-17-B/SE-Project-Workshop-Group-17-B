@@ -51,5 +51,15 @@ namespace Sadna_17_B.DomainLayer.Order
             }
             return productNumbers;
         }
+
+        public List<SubOrder> GetSubOrders()
+        {
+            List<SubOrder> subOrders = new List<SubOrder>();
+            foreach (string storeID in Products.Keys)
+            {
+                subOrders.Add(new SubOrder(storeID, this));
+            }
+            return subOrders;
+        }
     }
 }

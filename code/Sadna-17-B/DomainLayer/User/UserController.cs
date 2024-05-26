@@ -55,7 +55,21 @@ namespace Sadna_17_B.DomainLayer.User
                 throw new Sadna17BException("Given username already exists in the system.");
             } catch (Sadna17BException) {
                 Subscriber subscriber = new Subscriber(username, password);
-                subscribers.Add(username, subscriber);
+                subscribers[username] = subscriber;
+            }
+        }
+
+        public void CreateAdmin(string username, string password)
+        {
+            try
+            {
+                GetSubscriberByUsername(username);
+                throw new Sadna17BException("Given username already exists in the system.");
+            }
+            catch (Sadna17BException)
+            {
+                Admin admin = new Admin(username, password);
+                admins[username] = admin;
             }
         }
 
@@ -138,6 +152,26 @@ namespace Sadna_17_B.DomainLayer.User
             {
                 throw new Sadna17BException("Invalid access token, given access token doesn't correspond to any user in the system.");
             }
+        }
+
+        private User GetUserByUserID(string userID)
+        {
+            try {
+                return GetSubscriberByUsername(userID);
+            }
+            catch (Sadna17BException e)
+            {
+                try
+                {
+                    int guestID;
+                    bool isNumeric = int.TryParse(userID, out guestID);
+                    if (isNumeric)
+                    {
+                        return GetGuestByID(guestID);
+                    }
+                } catch (Sadna17BException ignore) { }
+            }
+            throw new Sadna17BException("Invalid userID, given userID doesn't correspond to any user in the system.");
         }
 
         public bool IsAdmin(string token)
@@ -398,6 +432,50 @@ namespace Sadna_17_B.DomainLayer.User
             {
                 orderSystem.ProcessOrder(user.ShoppingCart, (user as Subscriber).Username, false, destinationAddress, creditCardInfo);
             }
+        }
+
+        public List<Order.Order> GetOrderHistoryByToken(string token)
+        {
+            User user = GetUserByToken(token);
+            return GetOrderHistoryByUser(user);
+        }
+        
+        private List<Order.Order> GetOrderHistoryByUser(User user)
+        {
+            if (user is Guest)
+            {
+                return orderSystem.GetUserOrderHistory((user as Guest).GuestID.ToString());
+            }
+            else if (user is Subscriber)
+            {
+                return orderSystem.GetUserOrderHistory((user as Subscriber).Username);
+            }
+            else
+            {
+                throw new Sadna17BException("Given user is not a Guest or a Subscriber."); // Unreachable
+            }
+        }
+
+        public List<Order.Order> GetUserOrderHistory(string token, string userID)
+        {
+            Subscriber subscriber = GetSubscriberByToken(token);
+            if (!(subscriber is Admin))
+            {
+                throw new Sadna17BException("Invalid operation, only admins can retrieve order history of users.");
+            }
+            User user = GetUserByUserID(userID);
+            return GetOrderHistoryByUser(user);
+        }
+
+        public List<SubOrder> GetStoreOrderHistory(string token, string storeID)
+        {
+            Subscriber subscriber = GetSubscriberByToken(token);
+            if (!(subscriber is Admin))
+            {
+                throw new Sadna17BException("Invalid operation, only admins can retrieve order history of stores.");
+            }
+            // Should probably check the StoreID exists in the system, currently returns an empty sub-orders list
+            return orderSystem.GetStoreOrderHistory(storeID);
         }
     }
 }

@@ -17,9 +17,9 @@ namespace Sadna_17_B.DomainLayer.Order
 
         // All these data structures will move to DAL in version 3, it is currently held in memory. TODO: use a repository
         private Dictionary<int, Order> orderHistory; // OrderId -> Order
-        private Dictionary<int, Order> guestOrders; // GuestID -> Order
-        private Dictionary<string, Order> subscriberOrders; // Username -> Order
-        private Dictionary<string, Order> storeOrders; // StoreID -> Order
+        private Dictionary<int, List<Order>> guestOrders; // GuestID -> List<Order>
+        private Dictionary<string, List<Order>> subscriberOrders; // Username -> List<Order>
+        private Dictionary<string, List<SubOrder>> storeOrders; // StoreID -> Order
         private int orderCount = 0;
 
         public OrderSystem(StoreController storeController)
@@ -96,6 +96,62 @@ namespace Sadna_17_B.DomainLayer.Order
             paymentSystem.ExecutePayment(creditCardInfo, order.TotalPrice());
             // Execute Order by SupplySystem external service:
             supplySystem.ExecuteDelivery(destinationAddress, manufacturerProductNumbers);
+
+            AddOrderToHistory(order);
+        }
+
+        private void AddOrderToHistory(Order order)
+        {
+            orderHistory[orderCount] = order; // Insert to order history
+            orderCount++;
+            if (order.IsGuestOrder) // Insert to guests order history
+            {
+                try
+                {
+                    guestOrders[int.Parse(order.UserID)].Add(order); // Should be valid integer when it is a guest order
+                } catch (Exception e) {
+                    throw new Sadna17BException("Invalid Guest ID given when inserting order to history: " + order.UserID, e);
+                }
+            }
+            else // Insert to subscribers order history
+            {
+                subscriberOrders[order.UserID].Add(order);
+            }
+            foreach (SubOrder subOrder in order.GetSubOrders()) { // insert to store sub-orders history
+                storeOrders[subOrder.StoreID].Add(subOrder);
+            }
+        }
+
+        public List<Order> GetUserOrderHistory(string userID)
+        {
+            if (subscriberOrders.ContainsKey(userID))
+            {
+                return subscriberOrders[userID];
+            }
+            else {
+                int guestID;
+                bool isNumeric = int.TryParse(userID, out guestID);
+                if (isNumeric && guestOrders.ContainsKey(guestID))
+                {
+                    return guestOrders[guestID];
+                }
+                else
+                {
+                    return new List<Order>(); // Return an empty orders list
+                }
+            }
+        }
+
+        public List<SubOrder> GetStoreOrderHistory(string storeID)
+        {
+            if (storeOrders.ContainsKey(storeID))
+            {
+                return storeOrders[storeID];
+            }
+            else
+            {
+                return new List<SubOrder>(); // Return an empty sub-orders list
+            }
         }
     }
 }
