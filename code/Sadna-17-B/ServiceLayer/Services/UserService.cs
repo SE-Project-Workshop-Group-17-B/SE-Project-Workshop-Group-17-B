@@ -239,6 +239,70 @@ namespace Sadna_17_B.ServiceLayer.Services
             userController.CreateStoreFounder(token, storeID); // Throws an exception if the token doesn't correspond to an actual subscriber or if the subscriber is already a store owner/founder/manager.
         }
 
+        public Response OfferOwnerAppointment(string token, string storeID, string newOwnerUsername)
+        {
+            try
+            {
+                userController.OfferOwnerAppointment(token, storeID, newOwnerUsername);
+                return new Response(true);
+            } catch (Sadna17BException e)
+            {
+                return Response.GetErrorResponse(e);
+            }
+        }
+
+        public Response OfferManagerAppointment(string token, string storeID, string newManagerUsername)
+        {
+            try
+            {
+                userController.OfferManagerAppointment(token, storeID, newManagerUsername);
+                return new Response(true);
+            }
+            catch (Sadna17BException e)
+            {
+                return Response.GetErrorResponse(e);
+            }
+        }
+
+        public Response OfferManagerAppointment(string token, string storeID, string newManagerUsername, HashSet<Manager.ManagerAuthorization> authorizations)
+        {
+            try
+            {
+                userController.OfferManagerAppointment(token, storeID, newManagerUsername, authorizations);
+                return new Response(true);
+            }
+            catch (Sadna17BException e)
+            {
+                return Response.GetErrorResponse(e);
+            }
+        }
+
+        public Response RespondToOwnerAppointmentOffer(string token, string storeID, bool offerResponse)
+        {
+            try
+            {
+                userController.RespondToOwnerAppointmentOffer(token, storeID, offerResponse);
+                return new Response(true);
+            }
+            catch (Sadna17BException e)
+            {
+                return Response.GetErrorResponse(e);
+            }
+        }
+
+        public Response RespondToManagerAppointmentOffer(string token, string storeID, bool offerResponse)
+        {
+            try
+            {
+                userController.RespondToManagerAppointmentOffer(token, storeID, offerResponse);
+                return new Response(true);
+            }
+            catch (Sadna17BException e)
+            {
+                return Response.GetErrorResponse(e);
+            }
+        }
+
         /// <summary>
         /// Attempts to remove the ownership of the user with the given username by the user corresponding to the given token, from the store with the given storeID.
         /// Removing the ownership of this user should also remove all ownerships and managements that this user has appointed. (Requirement 4.4 - which is not required in this version)
@@ -256,7 +320,8 @@ namespace Sadna_17_B.ServiceLayer.Services
             }
         }
 
-        //internal void NotifyStoreClosing(string token, stirng storeID)
+        // TODO: in next version, when implementing notification system, should be called by StoreService when the store closes (4.9)
+        //internal void NotifyStoreClosing(string token, string storeID)
         //{
         //
         //}

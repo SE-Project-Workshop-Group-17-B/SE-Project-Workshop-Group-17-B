@@ -87,6 +87,22 @@ namespace Sadna_17_B.DomainLayer.User
             }
         }
 
+        public void AddManagement(string storeID)
+        {
+            if (managements.ContainsKey(storeID))
+            {
+                throw new Sadna17BException("User is already a store manager of the store with the given storeID.");
+            }
+            else if (ownerships.ContainsKey(storeID))
+            {
+                throw new Sadna17BException("User is already a store owner of the store with the given storeID.");
+            }
+            else
+            {
+                managements[storeID] = new Manager();
+            }
+        }
+
         public void RemoveManagement(string storeID)
         {
             if (!managements.ContainsKey(storeID))
@@ -145,6 +161,18 @@ namespace Sadna_17_B.DomainLayer.User
             {
                 throw new Sadna17BException("The user is not a manager of the store with the given storeID.");
             }
+        }
+
+        public void AppointOwner(string storeID, string newOwnerUsername, Owner newOwner)
+        {
+            Owner requestingOwner = GetOwnership(storeID); // Will throw an exception if the requesting subscriber is not an owner of the store with the given storeID
+            requestingOwner.AppointOwner(newOwnerUsername, newOwner); // Will throw an exception if the requesting subscriber has already appointed an owner with the given ownerUsername somehow
+        }
+
+        public void AppointManager(string storeID, string newManagerUsername, Manager newManager)
+        {
+            Owner requestingOwner = GetOwnership(storeID); // Will throw an exception if the requesting subscriber is not an owner of the store with the given storeID
+            requestingOwner.AppointManager(newManagerUsername, newManager); // Will throw an exception if the requesting subscriber has already appointed a manager with the given ownerUsername somehow
         }
 
         public void RemoveOwnerAppointment(string storeID, string ownerUsername)

@@ -11,6 +11,7 @@ namespace Sadna_17_B.DomainLayer.User
     {
         private OrderSystem orderSystem;
         private Authenticator authenticator = new Authenticator();
+        private OfferSystem offerSystem = new OfferSystem();
 
         // All these data structures will move to DAL in version 3, it is currently held in memory. TODO: use a repository
         private int guestCount = 0;
@@ -186,6 +187,115 @@ namespace Sadna_17_B.DomainLayer.User
         {
             Subscriber subscriber = GetSubscriberByToken(token); // Will throw an exception if the token is invalid
             subscriber.CreateFounder(storeID); // Will throw an exception if the subscriber is already a store owner/founder/manager
+        }
+
+        public void OfferOwnerAppointment(string token, string storeID, string newOwnerUsername)
+        {
+            Subscriber requestingSubscriber = GetSubscriberByToken(token);
+            if (!requestingSubscriber.IsOwnerOf(storeID))
+            {
+                throw new Sadna17BException("The requesting subscriber is not a store owner of the store with the given storeID, so cannot appoint new owners.");
+            }
+            Subscriber newOwner = GetSubscriberByUsername(newOwnerUsername);
+            if (newOwner.IsOwnerOf(storeID))
+            {
+                throw new Sadna17BException("The user with the given username is already an owner of the store with the given storeID.");
+            }
+            else if(newOwner.IsManagerOf(storeID))
+            {
+                throw new Sadna17BException("The user with the given username is already a manager of the store with the given storeID.");
+            }
+            offerSystem.AddOwnerAppointmentOffer(storeID, newOwnerUsername, requestingSubscriber.Username);
+            // TODO: notificationSystem.notify(newOwnerUsername, Notification.IncomingOffer)
+        }
+
+        public void OfferManagerAppointment(string token, string storeID, string newManagerUsername)
+        {
+            OfferManagerAppointment(token, storeID, newManagerUsername, Manager.GetDefaultAuthorizations());
+        }
+
+        public void OfferManagerAppointment(string token, string storeID, string newManagerUsername, HashSet<Manager.ManagerAuthorization> authorizations)
+        {
+            Subscriber requestingSubscriber = GetSubscriberByToken(token);
+            Subscriber newManager = GetSubscriberByUsername(newManagerUsername);
+            if (newManager.IsOwnerOf(storeID))
+            {
+                throw new Sadna17BException("The user with the given username is already an owner of the store with the given storeID.");
+            }
+            else if (newManager.IsManagerOf(storeID))
+            {
+                throw new Sadna17BException("The user with the given username is already a manager of the store with the given storeID.");
+            }
+            if (!requestingSubscriber.IsOwnerOf(storeID))
+            {
+                throw new Sadna17BException("The requesting subscriber is not a store owner of the store with the given storeID, so cannot appoint new owners.");
+            }
+            offerSystem.AddManagerAppointmentOffer(storeID, newManagerUsername, requestingSubscriber.Username, authorizations);
+            // TODO: notificationSystem.notify(newOwnerUsername, Notification.IncomingOffer)
+        }
+
+        public void RespondToOwnerAppointmentOffer(string token, string storeID, bool offerResponse)
+        {
+            Subscriber respondingSubscriber = GetSubscriberByToken(token);
+            string appointerUsername = offerSystem.GetOwnerAppointmentOfferAppointer(storeID, respondingSubscriber.Username); // Throws an exception if there's no owner appointment offer for this subscriber in the store
+
+            Subscriber requestingSubscriber = GetSubscriberByUsername(appointerUsername);
+            if (offerResponse == true)
+            {
+                AddOwnership(respondingSubscriber.Username, storeID);
+                requestingSubscriber.AppointOwner(storeID, respondingSubscriber.Username, respondingSubscriber.GetOwnership(storeID));
+                // TODO: notificationSystem.notify(appointerUsername, Notification.OfferResponse, offerResponse)
+                offerSystem.RemoveOwnerAppointmentOffer(storeID, respondingSubscriber.Username);
+            }
+            else
+            {
+                AddOwnership(respondingSubscriber.Username, storeID);
+                requestingSubscriber.AppointOwner(storeID, respondingSubscriber.Username, respondingSubscriber.GetOwnership(storeID));
+                // notificationSystem.notify(requestingSubscriber.Username, Notification.OfferResponse, offerResponse)
+                offerSystem.RemoveOwnerAppointmentOffer(storeID, respondingSubscriber.Username);
+            }
+        }
+
+        public void RespondToManagerAppointmentOffer(string token, string storeID, bool offerResponse)
+        {
+            Subscriber respondingSubscriber = GetSubscriberByToken(token);
+            Tuple<string, HashSet<Manager.ManagerAuthorization>> appointmentOffer = offerSystem.GetManagerAppointmentOfferAppointer(storeID, respondingSubscriber.Username); // Throws an exception if there's no owner appointment offer for this subscriber in the store
+            string appointerUsername = appointmentOffer.Item1;
+            HashSet<Manager.ManagerAuthorization> authorizations = appointmentOffer.Item2;
+
+            Subscriber requestingSubscriber = GetSubscriberByUsername(appointerUsername);
+            if (offerResponse == true)
+            {
+                AddManagement(respondingSubscriber.Username, storeID, authorizations);
+                requestingSubscriber.AppointManager(storeID, respondingSubscriber.Username, respondingSubscriber.GetManagement(storeID));
+                // TODO: notificationSystem.notify(appointerUsername, Notification.OfferResponse, offerResponse)
+                offerSystem.RemoveManagerAppointmentOffer(storeID, respondingSubscriber.Username);
+            }
+            else
+            {
+                AddManagement(respondingSubscriber.Username, storeID, authorizations);
+                requestingSubscriber.AppointManager(storeID, respondingSubscriber.Username, respondingSubscriber.GetManagement(storeID));
+                // TODO: notificationSystem.notify(appointerUsername, Notification.OfferResponse, offerResponse)
+                offerSystem.RemoveManagerAppointmentOffer(storeID, respondingSubscriber.Username);
+            }
+        }
+
+        private void AddOwnership(string username, string storeID)
+        {
+            Subscriber subscriber = GetSubscriberByUsername(username);
+            subscriber.AddOwnership(storeID);
+        }
+
+        private void AddManagement(string username, string storeID)
+        {
+            Subscriber subscriber = GetSubscriberByUsername(username);
+            subscriber.AddManagement(storeID);
+        }
+
+        private void AddManagement(string username, string storeID, HashSet<Manager.ManagerAuthorization> authorizations)
+        {
+            Subscriber subscriber = GetSubscriberByUsername(username);
+            subscriber.AddManagement(storeID, authorizations);
         }
 
         private void RemoveOwnership(string username, string storeID)

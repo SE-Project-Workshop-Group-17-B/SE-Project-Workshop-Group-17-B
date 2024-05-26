@@ -12,14 +12,20 @@ namespace Sadna_17_B.DomainLayer.User
 
         public Manager()
         {
-            Authorizations = new HashSet<ManagerAuthorization>();
-            // Add default manager authorizations
-            Authorizations.Add(ManagerAuthorization.View);
+            Authorizations = GetDefaultAuthorizations();
         }
 
         public Manager(HashSet<ManagerAuthorization> authorizations)
         {
             Authorizations = new HashSet<ManagerAuthorization>(authorizations); // Makes a copy of the given hashset
+        }
+
+        public static HashSet<ManagerAuthorization> GetDefaultAuthorizations()
+        {
+            HashSet<ManagerAuthorization> authorizations = new HashSet<ManagerAuthorization>();
+            // Add default manager authorizations
+            authorizations.Add(ManagerAuthorization.View);
+            return authorizations;
         }
 
         public void AddAuthorization(ManagerAuthorization authorization)
