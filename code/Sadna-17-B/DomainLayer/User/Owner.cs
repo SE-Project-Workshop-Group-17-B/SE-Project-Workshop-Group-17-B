@@ -8,13 +8,39 @@ namespace Sadna_17_B.DomainLayer.User
 {
     public class Owner
     {
-        public Dictionary<string,Owner> AppointedOwners { get; set; } // username -> Owner object
-        public Dictionary<string,Manager> AppointedManagers { get; set; } // username -> Manager object
+        // Note: Owner doesn't necessarily have to hold the Owner & Manager objects, right now it can function with the identifier alone,
+        // but it could help to hold it too in the future in case we'll need it.
+        public Dictionary<string,Owner> AppointedOwners { get; } // username -> Owner object
+        public Dictionary<string,Manager> AppointedManagers { get; } // username -> Manager object
         public bool IsFounder { get; set; }
 
         public Owner(bool isFounder)
         {
             IsFounder = isFounder;
+        }
+
+        public void AppointOwner(string newOwnerUsername, Owner newOwner)
+        {
+            if (AppointedOwners.ContainsKey(newOwnerUsername))
+            {
+                throw new Sadna17BException("The user has already appointed an owner with the given ownerUsername.");
+            }
+            else
+            {
+                AppointedOwners[newOwnerUsername] = newOwner;
+            }
+        }
+
+        public void AppointManager(string newManagerUsername, Manager newManager)
+        {
+            if (AppointedManagers.ContainsKey(newManagerUsername))
+            {
+                throw new Sadna17BException("The user has already appointed a manager with the given managerUsername.");
+            }
+            else
+            {
+                AppointedManagers[newManagerUsername] = newManager;
+            }
         }
 
         public void RemoveOwnerAppointment(string ownerUsername)
@@ -39,6 +65,16 @@ namespace Sadna_17_B.DomainLayer.User
             {
                 AppointedManagers.Remove(managerUsername);
             }
+        }
+
+        public bool HasAppointedOwner(string ownerUsername)
+        {
+            return AppointedOwners.ContainsKey(ownerUsername);
+        }
+
+        public bool HasAppointedManager(string managerUsername)
+        {
+            return AppointedManagers.ContainsKey(managerUsername);
         }
     }
 }
