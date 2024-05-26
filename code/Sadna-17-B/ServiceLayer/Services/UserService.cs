@@ -80,9 +80,9 @@ namespace Sadna_17_B.ServiceLayer.Services
 
         /// <summary>
         /// Returns true iff the given token corresponds to an admin in the system,
-        /// can be used as an authorization check between services without the need for parsing a Response object.
+        /// can be used as an authorization check between services without the need for parsing a Response object, hence the 'internal' access modifier.
         /// </summary>
-        public bool IsAdminBool(string token) 
+        internal bool IsAdminBool(string token) 
         {
             return userController.IsAdmin(token);
         }
@@ -98,9 +98,9 @@ namespace Sadna_17_B.ServiceLayer.Services
 
         /// <summary>
         /// Returns true iff the given token corresponds to a subscriber in the system,
-        /// can be used as an authorization check between services without the need for parsing a Response object.
+        /// can be used as an authorization check between services without the need for parsing a Response object, hence the 'internal' access modifier.
         /// </summary>
-        public bool IsSubscriberBool(string token)
+        internal bool IsSubscriberBool(string token)
         {
             return userController.IsSubscriber(token);
         }
@@ -116,9 +116,9 @@ namespace Sadna_17_B.ServiceLayer.Services
 
         /// <summary>
         /// Returns true iff the given token corresponds to a guest in the system,
-        /// can be used as an authorization check between services without the need for parsing a Response object.
+        /// can be used as an authorization check between services without the need for parsing a Response object, hence the 'internal' access modifier.
         /// </summary>
-        public bool IsGuestBool(string token)
+        internal bool IsGuestBool(string token)
         {
             return userController.IsGuest(token);
         }
@@ -134,9 +134,9 @@ namespace Sadna_17_B.ServiceLayer.Services
 
         /// <summary>
         /// Returns true iff the given token corresponds to a store owner of the store with the given storeID,
-        /// can be used as an authorization check between services without the need for parsing a Response object.
+        /// can be used as an authorization check between services without the need for parsing a Response object, hence the 'internal' access modifier.
         /// </summary>
-        public bool IsOwnerBool(string token, string storeID)
+        internal bool IsOwnerBool(string token, string storeID)
         {
             return userController.IsOwner(token, storeID);
         }
@@ -152,9 +152,9 @@ namespace Sadna_17_B.ServiceLayer.Services
 
         /// <summary>
         /// Returns true iff the given token corresponds to the store founder of the store with the given storeID,
-        /// can be used as an authorization check between services without the need for parsing a Response object.
+        /// can be used as an authorization check between services without the need for parsing a Response object, hence the 'internal' access modifier.
         /// </summary>
-        public bool IsFounderBool(string token, string storeID)
+        internal bool IsFounderBool(string token, string storeID)
         {
             return userController.IsFounder(token, storeID);
         }
@@ -170,9 +170,9 @@ namespace Sadna_17_B.ServiceLayer.Services
 
         /// <summary>
         /// Returns true iff the given token corresponds to a store manager of the store with the given storeID,
-        /// can be used as an authorization check between services without the need for parsing a Response object.
+        /// can be used as an authorization check between services without the need for parsing a Response object, hence the 'internal' access modifier.
         /// </summary>
-        public bool IsManagerBool(string token, string storeID)
+        internal bool IsManagerBool(string token, string storeID)
         {
             return userController.IsManager(token, storeID);
         }
@@ -188,11 +188,43 @@ namespace Sadna_17_B.ServiceLayer.Services
 
         /// <summary>
         /// Returns true iff the given token corresponds to a store manager of the store with the given storeID and with the given ManagerAuthorization,
-        /// can be used as an authorization check between services without the need for parsing a Response object.
+        /// can be used as an authorization check between services without the need for parsing a Response object, hence the 'internal' access modifier.
         /// </summary>
-        public bool HasManagerAuthorizationBool(string token, string storeID, Manager.ManagerAuthorization auth)
+        internal bool HasManagerAuthorizationBool(string token, string storeID, Manager.ManagerAuthorization auth)
         {
             return userController.HasManagerAuthorization(token, storeID, auth);
         }
+
+        /// <summary>
+        /// Attempts to make the user with the corresponding token a new store founder with the given storeID.
+        /// Throws an exception if the token doesn't correspond to an actual subscriber or if the subscriber is already a store owner/founder/manager.
+        /// Can be used as an update call between services without the need for parsing a Response object, hence the 'internal' access modifier.
+        /// </summary>
+        internal void CreateStoreFounder(string token, string storeID) // StoreService should check the needed conditions and permissions (valid subscriber, newly generated storeID) before executing the operation in its module and calling this update call, so won't need to catch an exception.
+        {
+            userController.CreateStoreFounder(token, storeID); // Throws an exception if the token doesn't correspond to an actual subscriber or if the subscriber is already a store owner/founder/manager.
+        }
+
+        /// <summary>
+        /// Attempts to remove the ownership of the user with the given username by the user corresponding to the given token, from the store with the given storeID.
+        /// Removing the ownership of this user should also remove all ownerships and managements that this user has appointed. (Requirement 4.4 - which is not required in this version)
+        /// Returns an error Response if the token doesn't correspond to an actual subscriber or if the subscriber isn't store owner.
+        /// </summary>
+        public Response RevokeOwnership(string token, string storeID, string ownerUsername)
+        {
+            try
+            {
+                userController.RevokeOwnership(token, storeID, ownerUsername); // Not fully implemented yet in this version
+                return new Response(true);
+            } catch (Sadna17BException e)
+            {
+                return Response.GetErrorResponse(e);
+            }
+        }
+
+        //internal void NotifyStoreClosing(string token, stirng storeID)
+        //{
+        //
+        //}
     }
 }

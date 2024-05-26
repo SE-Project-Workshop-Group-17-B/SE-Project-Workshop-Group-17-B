@@ -141,22 +141,67 @@ namespace Sadna_17_B.DomainLayer.User
 
         public bool IsOwner(string token, string storeID)
         {
-            throw new NotImplementedException();
+            Subscriber subscriber = GetSubscriberByToken(token); // Throws an exception if the given token doesn't correspond to a subscriber.
+            return subscriber.IsOwnerOf(storeID);
         }
 
         public bool IsFounder(string token, string storeID)
         {
-            throw new NotImplementedException();
+            Subscriber subscriber = GetSubscriberByToken(token); // Throws an exception if the given token doesn't correspond to a subscriber.
+            return subscriber.IsFounderOf(storeID);
         }
 
         public bool IsManager(string token, string storeID)
         {
-            throw new NotImplementedException();
+            Subscriber subscriber = GetSubscriberByToken(token); // Throws an exception if the given token doesn't correspond to a subscriber.
+            return subscriber.IsManagerOf(storeID);
         }
 
         public bool HasManagerAuthorization(string token, string storeID, Manager.ManagerAuthorization auth)
         {
-            throw new NotImplementedException();
+            Subscriber subscriber = GetSubscriberByToken(token); // Throws an exception if the given token doesn't correspond to a subscriber.
+            return subscriber.HasManagerAuthorization(storeID, auth);
+        }
+
+        public void CreateStoreFounder(string token, string storeID)
+        {
+            Subscriber subscriber = GetSubscriberByToken(token); // Will throw an exception if the token is invalid
+            subscriber.CreateFounder(storeID); // Will throw an exception if the subscriber is already a store owner/founder/manager
+        }
+
+        private void RemoveOwnership(string username, string storeID)
+        {
+            Subscriber oldOwner = GetSubscriberByUsername(username);
+            Owner oldOwnership = oldOwner.GetOwnership(storeID);
+            foreach (KeyValuePair<string, Owner> appointedOwner in oldOwnership.AppointedOwners)
+            {
+                RemoveOwnership(appointedOwner.Key, storeID);
+            }
+            foreach (KeyValuePair<string, Manager> appointedManager in oldOwnership.AppointedManagers)
+            {
+                RemoveManagement(appointedManager.Key, storeID);
+            }
+            oldOwner.RemoveOwnership(storeID);
+        }
+
+        private void RemoveManagement(string username, string storeID)
+        {
+            Subscriber oldManager = GetSubscriberByUsername(username);
+            oldManager.RemoveManagement(storeID);
+        }
+
+        public void RevokeOwnership(string token, string storeID, string ownerUsername)
+        {
+            Subscriber requestingSubscriber = GetSubscriberByToken(token);
+            requestingSubscriber.RemoveOwnerAppointment(storeID, ownerUsername); // Will throw an exception if the requesting subscriber isn't the store owner or didn't appoint an owner with the given ownerUsername
+            RemoveOwnership(ownerUsername, storeID); // Should not throw an exception as long as the requesting subscriber did appoint him before
+        }
+
+        public void RevokeManagement(string token, string storeID, string managerUsername)
+        {
+            Subscriber requestingSubscriber = GetSubscriberByToken(token);
+            requestingSubscriber.RemoveManagerAppointment(storeID, managerUsername); // Will throw an exception if the requesting subscriber isn't a store owner or didn't appoint a manager with the given managerUsername
+            RemoveManagement(managerUsername, storeID); // Should not throw an exception as long as the requesting subscriber did appoint him before
         }
     }
 }
