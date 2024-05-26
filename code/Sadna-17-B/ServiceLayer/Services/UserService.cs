@@ -230,6 +230,25 @@ namespace Sadna_17_B.ServiceLayer.Services
         }
 
         /// <summary>
+        /// Attempts to update the manager authorizations of a manager appointed by the requesting user.
+        /// The user has to be a store owner of the specified store, the given managerUsername has to correspond to a manager of the same store and has to be appointed by the requesting owner.
+        /// Returns an error Response if the token doesn't correspond to an actual store owner of the store with the given storeID or if the given managerUsername doesn't satisfy the conditions above.
+        /// Otherwise, returns a Success Response and the manager authorizations are updated to the given ones.
+        /// </summary>
+        public Response UpdateManagerAuthorizations(string token, string storeID, string managerUsername, HashSet<Manager.ManagerAuthorization> authorizations)
+        {
+            try
+            {
+                userController.UpdateManagerAuthorizations(token, storeID, managerUsername, authorizations);
+                return new Response(true);
+            }
+            catch (Sadna17BException e)
+            {
+                return Response.GetErrorResponse(e);
+            }
+        }
+
+        /// <summary>
         /// Attempts to make the user with the corresponding token a new store founder with the given storeID.
         /// Throws an exception if the token doesn't correspond to an actual subscriber or if the subscriber is already a store owner/founder/manager.
         /// Can be used as an update call between services without the need for parsing a Response object, hence the 'internal' access modifier.
