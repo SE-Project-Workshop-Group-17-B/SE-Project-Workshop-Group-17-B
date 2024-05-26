@@ -47,6 +47,13 @@ namespace Sadna_17_B.ServiceLayer.Services
         Response CreateSubscriber(string username, string password);
 
         /// <summary>
+        /// Creates a new system administrator with the given username and password.
+        /// Returns an error message if the username already corresponds to a subscriber/admin in the system.
+        /// Otherwise returns a success Response.
+        /// </summary>
+        Response CreateAdmin(string username, string password);
+
+        /// <summary>
         /// Returns a Response with Success "true" and Data "true" iff the given token corresponds to an admin in the system.
         /// </summary>
         Response /*bool*/ IsAdmin(string token);

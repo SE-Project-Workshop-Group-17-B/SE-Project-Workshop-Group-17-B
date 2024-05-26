@@ -71,6 +71,24 @@ namespace Sadna_17_B.ServiceLayer.Services
         }
 
         /// <summary>
+        /// Creates a new system administrator with the given username and password.
+        /// Returns an error message if the username already corresponds to a subscriber/admin in the system.
+        /// Otherwise returns a success Response.
+        /// </summary>
+        public Response CreateAdmin(string username, string password)
+        {
+            try
+            {
+                userController.CreateAdmin(username, password);
+                return new Response(true);
+            }
+            catch (Sadna17BException e)
+            {
+                return Response.GetErrorResponse(e);
+            }
+        }
+
+        /// <summary>
         /// Logs the subscriber with the given token out of the system.
         /// Returns an error message if the token does not correspond to a subscriber in the system, or if the subscriber is already logged out.
         /// Otherwise returns a success Response with a UerDTO containing a validated Guest access token and username 'null', and the previous access token is invalidated (user is logged out, guest entered the system).
@@ -388,6 +406,58 @@ namespace Sadna_17_B.ServiceLayer.Services
             {
                 userController.CompletePurchase(token, destinationAddress, creditCardInfo);
                 return new Response(true);
+            }
+            catch (Sadna17BException e)
+            {
+                return Response.GetErrorResponse(e);
+            }
+        }
+
+        public Response /*List<OrderDTO>*/ GetMyOrderHistory(string token)
+        {
+            try
+            {
+                List<Order> orders = userController.GetOrderHistoryByToken(token);
+                List<OrderDTO> result = new List<OrderDTO>();
+                foreach (Order order in orders)
+                {
+                    result.Add(new OrderDTO(order));
+                }
+                return new Response(true, result);
+            } catch (Sadna17BException e)
+            {
+                return Response.GetErrorResponse(e);
+            }
+        }
+
+        public Response /*List<OrderDTO>*/ GetUserOrderHistory(string token, string userID)
+        {
+            try
+            {
+                List<Order> orders = userController.GetUserOrderHistory(token, userID);
+                List<OrderDTO> result = new List<OrderDTO>();
+                foreach (Order order in orders)
+                {
+                    result.Add(new OrderDTO(order));
+                }
+                return new Response(true, result);
+            } catch (Sadna17BException e)
+            {
+                return Response.GetErrorResponse(e);
+            }
+        }
+
+        public Response /*List<SubOrderDTO>*/ GetStoreOrderHistory(string token, string storeID)
+        {
+            try
+            {
+                List<SubOrder> subOrders = userController.GetStoreOrderHistory(token, storeID);
+                List<SubOrderDTO> result = new List<SubOrderDTO>();
+                foreach (SubOrder subOrder in subOrders)
+                {
+                    result.Add(new SubOrderDTO(subOrder));
+                }
+                return new Response(true, result);
             }
             catch (Sadna17BException e)
             {
