@@ -477,5 +477,67 @@ namespace Sadna_17_B.DomainLayer.User
             // Should probably check the StoreID exists in the system, currently returns an empty sub-orders list
             return orderSystem.GetStoreOrderHistory(storeID);
         }
+
+        public Tuple<HashSet<string>,Dictionary<string,HashSet<Manager.ManagerAuthorization>>> GetStoreRoles(string token, string storeID)
+        {
+            Subscriber requestingSubscriber = GetSubscriberByToken(token);
+            if (!requestingSubscriber.IsOwnerOf(storeID))
+            {
+                throw new Sadna17BException("Invalid operation, only store owners can retrieve store roles of a store.");
+            }
+            
+            HashSet<string> owners = new HashSet<string>();
+            Dictionary<string, HashSet<Manager.ManagerAuthorization>> managers = new Dictionary<string, HashSet<Manager.ManagerAuthorization>>();
+            foreach (var subscriber in subscribers)
+            {
+                foreach (var ownership in subscriber.Value.Ownerships)
+                {
+                    if (ownership.Key == storeID)
+                    {
+                        owners.Add(subscriber.Key);
+                    }
+                }
+                foreach (var management in subscriber.Value.Managements)
+                {
+                    if (management.Key == storeID)
+                    {
+                        managers[subscriber.Key] = new HashSet<Manager.ManagerAuthorization>(management.Value.Authorizations);
+                    }
+                }
+            }
+            return new Tuple<HashSet<string>, Dictionary<string, HashSet<Manager.ManagerAuthorization>>>(owners, managers);
+        }
+
+        private Dictionary<string,Owner> GetStoreOwners(string storeID)
+        {
+            Dictionary<string,Owner> owners = new Dictionary<string,Owner>();
+            foreach (var subscriber in subscribers)
+            {
+                foreach (var ownership in subscriber.Value.Ownerships)
+                {
+                    if (ownership.Key == storeID)
+                    {
+                        owners[subscriber.Key] = ownership.Value;
+                    }
+                }
+            }
+            return owners;
+        }
+
+        private Dictionary<string, Manager> GetStoreManagers(string storeID)
+        {
+            Dictionary<string, Manager> managers = new Dictionary<string, Manager>();
+            foreach (var subscriber in subscribers)
+            {
+                foreach (var ownership in subscriber.Value.Ownerships)
+                {
+                    if (ownership.Key == storeID)
+                    {
+                        owners[subscriber.Key] = ownership.Value;
+                    }
+                }
+            }
+            return owners;
+        }
     }
 }

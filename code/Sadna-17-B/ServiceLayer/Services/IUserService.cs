@@ -131,5 +131,12 @@ namespace Sadna_17_B.ServiceLayer.Services
         /// Otherwise, returns a Response containing a list of SubOrderDTO containing the order history of the store.
         /// </summary>
         Response /*List<SubOrderDTO>*/ GetStoreOrderHistory(string token, string storeID);
+
+        /// <summary>
+        /// Attempts to return the store roles of the store with the given storeID. (Requirement 4.11)
+        /// Returns an error Response if the token doesn't correspond to a store owner of the store with the given storeID.
+        /// Otherwise, returns a Response containing a Tuple containing the owners in the first entry (as a HashSet of usernames), and the managers in the second entry (as a Dictionary from usernames to HashSet of ManagerAuthorization).
+        /// </summary>
+        Response /*Tuple<owners,managers>*/ GetStoreRoles(string token, string storeID);
     }
 }

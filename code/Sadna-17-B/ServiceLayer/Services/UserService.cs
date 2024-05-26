@@ -454,7 +454,7 @@ namespace Sadna_17_B.ServiceLayer.Services
 
         /// <summary>
         /// Attempts to return the order history of the store with the given storeID. (Requirement 4.13)
-        /// /// Returns an error Response if the token doesn't correspond to an admin or a store owner of the store with the given storeID.
+        /// Returns an error Response if the token doesn't correspond to an admin or a store owner of the store with the given storeID.
         /// Otherwise, returns a Response containing a list of SubOrderDTO containing the order history of the store.
         /// </summary>
         public Response /*List<SubOrderDTO>*/ GetStoreOrderHistory(string token, string storeID)
@@ -468,6 +468,23 @@ namespace Sadna_17_B.ServiceLayer.Services
                     result.Add(new SubOrderDTO(subOrder));
                 }
                 return new Response(true, result);
+            }
+            catch (Sadna17BException e)
+            {
+                return Response.GetErrorResponse(e);
+            }
+        }
+
+        /// <summary>
+        /// Attempts to return the store roles of the store with the given storeID. (Requirement 4.11)
+        /// Returns an error Response if the token doesn't correspond to a store owner of the store with the given storeID.
+        /// Otherwise, returns a Response containing a Tuple containing the owners in the first entry (as a HashSet of usernames), and the managers in the second entry (as a Dictionary from usernames to HashSet of ManagerAuthorization).
+        /// </summary>
+        public Response /*Tuple<owners,managers>*/ GetStoreRoles(string token, string storeID)
+        {
+            try
+            {
+                return new Response(true, userController.GetStoreRoles(token, storeID));
             }
             catch (Sadna17BException e)
             {
