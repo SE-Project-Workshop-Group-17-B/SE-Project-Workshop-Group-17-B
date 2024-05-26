@@ -1,13 +1,22 @@
-﻿using System;
+﻿using Sadna_17_B.DomainLayer.Store;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.Xml.Linq;
 
-namespace Sadna_17_B.DomainLayer.Store
+namespace Sadna_17_B.DomainLayer.StoreDom
 {
     public class Inventory
     {
+
+        // ---------------- Variables -------------------------------------------------------------------------------------------
+
         private Dictionary<Product, int> _allProducts = new Dictionary<Product, int>();
+
+
+
+        // ---------------- Adjust product -------------------------------------------------------------------------------------------
 
         public void AddProduct(Product product, int amount)
         {
@@ -23,7 +32,7 @@ namespace Sadna_17_B.DomainLayer.Store
 
         public void RemoveProduct(Product product)
         {
-            if (_allProducts.ContainsKey(product))  
+            if (_allProducts.ContainsKey(product))
             {
                 _allProducts.Remove(product);
             }
@@ -56,11 +65,27 @@ namespace Sadna_17_B.DomainLayer.Store
             }
         }
 
+
+        // ---------------- Search by -------------------------------------------------------------------------------------------
+
+
         public Product searchProductByName(string name)
         {
             foreach (var product in _allProducts.Keys)
             {
                 if (product.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
+                {
+                    return product;
+                }
+            }
+            return null;
+        }
+
+        public Product searchProductById(int id)
+        {
+            foreach (var product in _allProducts.Keys)
+            {
+                if (product.Id == id)
                 {
                     return product;
                 }
@@ -78,6 +103,10 @@ namespace Sadna_17_B.DomainLayer.Store
         }
 
 
+
+        // ---------------- Getters -------------------------------------------------------------------------------------------
+
+
         public int GetProductAmount(string productName)
         {
             foreach (var product in _allProducts.Keys)
@@ -90,6 +119,11 @@ namespace Sadna_17_B.DomainLayer.Store
             return 0; // Or throw an exception if product not found, based on your requirements
         }
 
+        public int GetProductAmount(Product lookup_product)
+        {
+            return _allProducts.ContainsKey(lookup_product) ? _allProducts[lookup_product] : 0;
+        }
+
         public List<Product> GetAllProducts()
         {
             return _allProducts.Keys.ToList();
@@ -99,6 +133,17 @@ namespace Sadna_17_B.DomainLayer.Store
         {
             return new Dictionary<Product, int>(_allProducts);
         }
+
+        public string getInfo()
+        {
+            string s = string.Empty;
+
+            foreach (Product product in _allProducts.Keys)
+            {
+                s += product.getInfo() + "\n";
+            }
+
+            return s;
+        }
     }
 }
-
