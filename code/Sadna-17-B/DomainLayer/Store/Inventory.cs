@@ -72,7 +72,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         {
             foreach (var product in _allProducts.Keys)
             {
-                if (product.Id == id)
+                if(product.Id == id)
                 {
                     return product;
                 }
@@ -105,7 +105,6 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         public int GetProductAmount(Product lookup_product)
         {
             return _allProducts.ContainsKey(lookup_product) ? _allProducts[lookup_product] : 0;
-
         }
 
         public List<Product> GetAllProducts()
