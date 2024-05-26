@@ -27,5 +27,12 @@ namespace Sadna_17_B.DomainLayer.User
             }
             ShoppingCart.UpdateCartProduct(storeID, productID, quantity);
         }
+
+        public enum StoreRole
+        {
+            StoreManager,
+            StoreOwner,
+            StoreFounder
+        }
     }
 }
