@@ -7,10 +7,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace Sadna_17_B.DomainLayer.Store
+
+namespace Sadna_17_B.DomainLayer.StoreDom
 {
     public class Store
     {
+        private static int idCounter = 1;
+        public int _id { get; private set; }
         public string _name { get; set; }
         public string _email { get; set; }
         public string _phone_number { get; set; }
@@ -23,6 +26,7 @@ namespace Sadna_17_B.DomainLayer.Store
                         string address, Inventory inventory)
         {
             // stores can be created via controller only
+            _id = idCounter++;
             _name = name;
             _email = email;
             _phone_number = phone_number;
@@ -59,9 +63,9 @@ namespace Sadna_17_B.DomainLayer.Store
             return _inventory.GetProductAmount(productName);
         }
 
-        public bool canProcessOrder(Dictionary<Product, int> order)
+        public bool CanProcessOrder(Dictionary<Product, int> order)
         {
-            if(order == null)
+            if (order == null)
                 return false;
 
             foreach (var item in order)
@@ -78,9 +82,9 @@ namespace Sadna_17_B.DomainLayer.Store
             return true;
         }
 
-        public void processOrder(Dictionary<Product, int> order)
+        public void ProcessOrder(Dictionary<Product, int> order)
         {
-            if (!canProcessOrder(order))
+            if (!CanProcessOrder(order))
                 return;
 
             foreach (var item in order)
@@ -93,7 +97,8 @@ namespace Sadna_17_B.DomainLayer.Store
         public Product searchProductByName(string productName)
         {
 
-            if (string.IsNullOrEmpty(productName)) {
+            if (string.IsNullOrEmpty(productName))
+            {
                 throw new ArgumentNullException("cannot search null as name");
             }
             return _inventory.searchProductByName(productName);

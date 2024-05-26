@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace Sadna_17_B.DomainLayer.Store
+namespace Sadna_17_B.DomainLayer.StoreDom
 {
     public class Inventory
     {
@@ -23,7 +23,7 @@ namespace Sadna_17_B.DomainLayer.Store
 
         public void RemoveProduct(Product product)
         {
-            if (_allProducts.ContainsKey(product))  
+            if (_allProducts.ContainsKey(product))
             {
                 _allProducts.Remove(product);
             }
@@ -105,7 +105,6 @@ namespace Sadna_17_B.DomainLayer.Store
         public int GetProductAmount(Product lookup_product)
         {
             return _allProducts.ContainsKey(lookup_product) ? _allProducts[lookup_product] : 0;
-            
         }
 
         public List<Product> GetAllProducts()

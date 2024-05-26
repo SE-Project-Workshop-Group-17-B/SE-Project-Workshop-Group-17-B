@@ -1,10 +1,10 @@
 ﻿using Sadna_17_B.DomainLayer.User;
-using Sadna_17_B.DomainLayer.Store;
 using Sadna_17_B.DomainLayer.Order;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using Sadna_17_B.DomainLayer.StoreDom;
 
 namespace Sadna_17_B.DomainLayer
 {
@@ -21,7 +21,7 @@ namespace Sadna_17_B.DomainLayer
         public DomainFactory()
         {
             StoreController = new StoreController();
-            OrderSystem = new OrderSystem(StoreController);
+            OrderSystem = new OrderSystem(storeController: StoreController);
             UserController = new UserController(OrderSystem);
         }
     }
