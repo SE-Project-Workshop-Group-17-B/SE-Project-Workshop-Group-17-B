@@ -17,6 +17,12 @@ namespace Sadna_17_B.ServiceLayer.ServiceDTOs
             AccessToken = accessToken;
         }
 
+        public UserDTO(string accessToken)
+        {
+            Username = null;
+            AccessToken = accessToken;
+        }
+
         public UserDTO(Subscriber subscriber, string accessToken)
         {
             Username = subscriber.Username;

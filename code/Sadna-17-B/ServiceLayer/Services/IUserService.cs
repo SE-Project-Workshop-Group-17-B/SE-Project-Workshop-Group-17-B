@@ -19,11 +19,25 @@ namespace Sadna_17_B.ServiceLayer.Services
         Response /*UserDTO*/ Login(string username, string password);
 
         /// <summary>
+        /// When a guest enters the system, he is added to the system's data structures.
+        /// Returns an error message if any system errors has occurred.
+        /// Otherwise returns a success Response with a UserDTO containing a validated access token and username 'null' (guest entered the system).
+        /// </summary>
+        Response /*UserDTO*/ GuestEntry();
+
+        /// <summary>
         /// Logs the subscriber with the given token out of the system.
         /// Returns an error message if the token does not correspond to a subscriber in the system, or if the subscriber is already logged out.
+        /// Otherwise returns a success Response with a UerDTO containing a validated Guest access token and username 'null', and the previous access token is invalidated (user is logged out, guest entered the system).
+        /// </summary>
+        Response /*UserDTO*/ Logout(string token);
+
+        /// <summary>
+        /// When the guest exits the system, he is removed from system's data structures.
+        /// Returns an error message if the token does not correspond to a guest in the system, or if the guest has already exited.
         /// Otherwise returns a success Response and the given access token is invalidated (user is logged out).
         /// </summary>
-        Response Logout(string token);
+        Response GuestExit(string token);
 
         /// <summary>
         /// Creates a new subscriber with the given username and password.
