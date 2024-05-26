@@ -470,9 +470,9 @@ namespace Sadna_17_B.DomainLayer.User
         public List<SubOrder> GetStoreOrderHistory(string token, string storeID)
         {
             Subscriber subscriber = GetSubscriberByToken(token);
-            if (!(subscriber is Admin))
+            if (!(subscriber is Admin) && !subscriber.IsOwnerOf(storeID))
             {
-                throw new Sadna17BException("Invalid operation, only admins can retrieve order history of stores.");
+                throw new Sadna17BException("Invalid operation, only admins and store owners can retrieve order history of stores.");
             }
             // Should probably check the StoreID exists in the system, currently returns an empty sub-orders list
             return orderSystem.GetStoreOrderHistory(storeID);
