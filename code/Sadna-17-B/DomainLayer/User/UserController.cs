@@ -183,6 +183,18 @@ namespace Sadna_17_B.DomainLayer.User
             return subscriber.HasManagerAuthorization(storeID, auth);
         }
 
+        public void UpdateManagerAuthorizations(string token, string storeID, string managerUsername, HashSet<Manager.ManagerAuthorization> authorizations)
+        {
+            Subscriber subscriber = GetSubscriberByToken(token); // Throws an exception if the given token doesn't correspond to a subscriber.
+            Owner owner = subscriber.GetOwnership(storeID); // Throws an exception if the subscriber isn't an owner of the store with the given storeID
+            Subscriber manager = GetSubscriberByUsername(managerUsername); // Throws an exception if the given managerUsername doesn't correspond to an actual subscriber
+            if (!manager.IsManagerOf(storeID)) // Note: it should also be checked in the next call but the check here assures the condition without implementation assumptions
+            {
+                throw new Sadna17BException("The given manager username doesn't correspond to a manager of the store with the given storeID.");
+            }
+            owner.UpdateManagerAuthorizations(managerUsername, authorizations); // Throws an exception if the given managerUsername doesn't correspond to a manager that has been appointed by the requesting owner
+        }
+
         public void CreateStoreFounder(string token, string storeID)
         {
             Subscriber subscriber = GetSubscriberByToken(token); // Will throw an exception if the token is invalid

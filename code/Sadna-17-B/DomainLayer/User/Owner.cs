@@ -76,5 +76,34 @@ namespace Sadna_17_B.DomainLayer.User
         {
             return AppointedManagers.ContainsKey(managerUsername);
         }
+
+        private Owner GetAppointedOwner(string ownerUsername)
+        {
+            if (!AppointedOwners.ContainsKey(ownerUsername))
+            {
+                throw new Sadna17BException("The user didn't appoint an owner with the given ownerUsername.");
+            }
+            return AppointedOwners[ownerUsername];
+        }
+
+        private Manager GetAppointedManager(string managerUsername)
+        {
+            if (!AppointedManagers.ContainsKey(managerUsername))
+            {
+                throw new Sadna17BException("The user didn't appoint a manager with the given managerUsername.");
+            }
+            return AppointedManagers[managerUsername];
+        }
+
+        public void UpdateManagerAuthorizations(string managerUsername, HashSet<Manager.ManagerAuthorization> authorizations)
+        {
+            // Note: according to requirement 4.7, it says that only the owner that is the appointer of the manager is allowed to update his authorizations
+            // If this requirement changes we only need to move the update responsibility one step back to the UserController to pass the call to the Manager directly
+            if (!HasAppointedManager(managerUsername))
+            {
+                throw new Sadna17BException("The owner didn't appoint the manager with the given managerUsername, so cannot update his authorizations");
+            }
+            GetAppointedManager(managerUsername).Authorizations = authorizations;
+        }
     }
 }
