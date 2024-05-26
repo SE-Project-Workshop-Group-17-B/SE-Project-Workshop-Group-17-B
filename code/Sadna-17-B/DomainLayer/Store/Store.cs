@@ -1,6 +1,7 @@
 ﻿
 
 using Sadna_17_B.DomainLayer.User;
+using Sadna_17_B.DomainLayer.Order;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -45,9 +46,9 @@ namespace Sadna_17_B.DomainLayer.Store
             _inventory.RemoveProduct(product_to_remove);
         }
 
-        public void ReduceProductAmount(string productName, int amount)
+        public void ReduceProductAmount(int p_id, int amount)
         {
-            Product product_to_reduce = _inventory.searchProductByName(productName);
+            Product product_to_reduce = _inventory.searchProductById(p_id);
             if (product_to_reduce == null)
                 return;
             _inventory.ReduceProductAmount(product_to_reduce, amount);
@@ -58,7 +59,37 @@ namespace Sadna_17_B.DomainLayer.Store
             return _inventory.GetProductAmount(productName);
         }
 
+        public bool canProcessOrder(Dictionary<Product, int> order)
+        {
+            if(order == null)
+                return false;
 
+            foreach (var item in order)
+            {
+                Product product = item.Key;
+                int requiredAmount = item.Value;
+                int availableAmount = _inventory.GetProductAmount(product);
+
+                if (availableAmount < requiredAmount)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public void processOrder(Dictionary<Product, int> order)
+        {
+            if (!canProcessOrder(order))
+                return;
+
+            foreach (var item in order)
+            {
+                int p_id = item.Key.Id;
+                int requiredAmount = item.Value;
+                ReduceProductAmount(p_id, requiredAmount);
+            }
+        }
         public Product searchProductByName(string productName)
         {
 
