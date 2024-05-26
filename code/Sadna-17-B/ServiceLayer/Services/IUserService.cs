@@ -75,5 +75,39 @@ namespace Sadna_17_B.ServiceLayer.Services
         /// Returns a Response with Success "true" and Data "true" iff the given token corresponds to a store manager of the given store with the given storeID and with the given ManagerAuthorization.
         /// </summary>
         Response /*bool*/ HasManagerAuthorization(string token, string storeID, Manager.ManagerAuthorization auth);
+
+        /// <summary>
+        /// Attempts to update the manager authorizations of a manager appointed by the requesting user.
+        /// The user has to be a store owner of the specified store, the given managerUsername has to correspond to a manager of the same store and has to be appointed by the requesting owner.
+        /// Returns an error Response if the token doesn't correspond to an actual store owner of the store with the given storeID or if the given managerUsername doesn't satisfy the conditions above.
+        /// Otherwise, returns a Success Response and the manager authorizations are updated to the given ones.
+        /// </summary>
+        Response UpdateManagerAuthorizations(string token, string storeID, string managerUsername, HashSet<Manager.ManagerAuthorization> authorizations);
+
+        Response OfferOwnerAppointment(string token, string storeID, string newOwnerUsername);
+
+        Response OfferManagerAppointment(string token, string storeID, string newManagerUsername);
+
+        Response OfferManagerAppointment(string token, string storeID, string newManagerUsername, HashSet<Manager.ManagerAuthorization> authorizations);
+
+        Response RespondToOwnerAppointmentOffer(string token, string storeID, bool offerResponse);
+
+        Response RespondToManagerAppointmentOffer(string token, string storeID, bool offerResponse);
+
+        /// <summary>
+        /// Attempts to remove the ownership of the user with the given username by the user corresponding to the given token, from the store with the given storeID.
+        /// Removing the ownership of this user should also remove all ownerships and managements that this user has appointed. (Requirement 4.4 - which is not required in this version)
+        /// Returns an error Response if the token doesn't correspond to an actual subscriber or if the subscriber isn't store owner.
+        /// </summary>
+        Response RevokeOwnership(string token, string storeID, string ownerUsername);
+
+        Response AddToCart(string token, string storeID, string productID, int quantity);
+
+        Response /*ShoppingCartDTO*/ GetShoppingCart(string token);
+
+        Response UpdateCartProduct(string token, string storeID, string productID, int quantity);
+
+        Response CompletePurchase(string token, string destinationAddress, string creditCardInfo);
+
     }
 }

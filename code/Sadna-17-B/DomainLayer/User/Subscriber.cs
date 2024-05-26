@@ -17,6 +17,14 @@ namespace Sadna_17_B.DomainLayer.User
         public Subscriber(string username, string password)
         {
             Username = username;
+            if (!IsValidUsername(password))
+            {
+                throw new Sadna17BException("Given username isn't valid, it has to be alphanumeric, contain at least 1 letter and be at least 4 characters long.");
+            }
+            if (!IsValidPassword(password))
+            {
+                throw new Sadna17BException("Given password isn't valid, it has to be at least 6 characters long.");
+            }
             passwordHash = Cryptography.HashString(password);
             ownerships = new Dictionary<string, Owner>();
             managements = new Dictionary<string, Manager>();
@@ -25,6 +33,16 @@ namespace Sadna_17_B.DomainLayer.User
         public bool CheckPassword(string password)
         {
             return passwordHash == Cryptography.HashString(password);
+        }
+
+        public static bool IsValidUsername(string username)
+        {
+            return username != null && username.Length >= 4 && username.All(char.IsLetterOrDigit) & username.Any(char.IsLetter);
+        }
+
+        public static bool IsValidPassword(string password)
+        {
+            return password != null && password.Length >= 6;
         }
 
         public void CreateFounder(string storeID)

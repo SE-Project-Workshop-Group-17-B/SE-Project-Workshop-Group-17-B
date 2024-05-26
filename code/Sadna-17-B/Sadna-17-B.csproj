@@ -172,6 +172,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DomainLayer\DomainFactory.cs" />
+    <Compile Include="DomainLayer\Order\Order.cs" />
     <Compile Include="DomainLayer\Order\OrderSystem.cs" />
     <Compile Include="DomainLayer\Store\Inventory.cs" />
     <Compile Include="DomainLayer\Store\Product.cs" />
@@ -183,12 +184,20 @@
     <Compile Include="DomainLayer\User\Manager.cs" />
     <Compile Include="DomainLayer\User\OfferSystem.cs" />
     <Compile Include="DomainLayer\User\Owner.cs" />
+    <Compile Include="DomainLayer\User\ShoppingBasket.cs" />
+    <Compile Include="DomainLayer\User\ShoppingCart.cs" />
     <Compile Include="DomainLayer\User\Subscriber.cs" />
     <Compile Include="DomainLayer\User\User.cs" />
     <Compile Include="DomainLayer\User\UserController.cs" />
+    <Compile Include="ExternalServices\ISupplySystem.cs" />
+    <Compile Include="ExternalServices\IPaymentSystem.cs" />
+    <Compile Include="ExternalServices\PaymentSystemProxy.cs" />
+    <Compile Include="ExternalServices\SupplySystemProxy.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServiceLayer\ServiceDTOs\ProductDTO.cs" />
+    <Compile Include="ServiceLayer\ServiceDTOs\ShoppingBasketDTO.cs" />
+    <Compile Include="ServiceLayer\ServiceDTOs\ShoppingCartDTO.cs" />
     <Compile Include="ServiceLayer\ServiceDTOs\StoreDTO.cs" />
     <Compile Include="ServiceLayer\ServiceDTOs\UserDTO.cs" />
     <Compile Include="ServiceLayer\ServiceFactory.cs" />
