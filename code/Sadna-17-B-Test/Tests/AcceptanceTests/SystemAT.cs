@@ -14,7 +14,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         IStoreService storeService;
         UserDTO userDTO;
         string username1 = "test1";
-        string password1 = "pass1";
+        string password1 = "password1";
 
         [TestInitialize]
         public void SetUp()

@@ -1,22 +1,13 @@
-﻿using Sadna_17_B.DomainLayer.Store;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using System.Xml.Linq;
 
 namespace Sadna_17_B.DomainLayer.StoreDom
 {
     public class Inventory
     {
-
-        // ---------------- Variables -------------------------------------------------------------------------------------------
-
         private Dictionary<Product, int> _allProducts = new Dictionary<Product, int>();
-
-
-
-        // ---------------- Adjust product -------------------------------------------------------------------------------------------
 
         public void AddProduct(Product product, int amount)
         {
@@ -65,10 +56,6 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             }
         }
 
-
-        // ---------------- Search by -------------------------------------------------------------------------------------------
-
-
         public Product searchProductByName(string name)
         {
             foreach (var product in _allProducts.Keys)
@@ -85,7 +72,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         {
             foreach (var product in _allProducts.Keys)
             {
-                if (product.Id == id)
+                if(product.Id == id)
                 {
                     return product;
                 }
@@ -101,10 +88,6 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
             return result.Any() ? result : null; // if empty return null
         }
-
-
-
-        // ---------------- Getters -------------------------------------------------------------------------------------------
 
 
         public int GetProductAmount(string productName)
@@ -133,17 +116,6 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         {
             return new Dictionary<Product, int>(_allProducts);
         }
-
-        public string getInfo()
-        {
-            string s = string.Empty;
-
-            foreach (Product product in _allProducts.Keys)
-            {
-                s += product.getInfo() + "\n";
-            }
-
-            return s;
-        }
     }
 }
+

@@ -29,7 +29,7 @@ namespace Sadna_17_B.ServiceLayer
         public void GenerateData()
         {
             // Create an admin
-            UserService.CreateSubscriber("admin", "password"); // Should use CreateAdmin(..) instead
+            UserService.CreateAdmin("admin", "password");
             // Create a store, add products to the store, ...
         }
 
