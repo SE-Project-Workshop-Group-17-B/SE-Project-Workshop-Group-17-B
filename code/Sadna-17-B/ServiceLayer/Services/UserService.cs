@@ -13,9 +13,11 @@ namespace Sadna_17_B.ServiceLayer.Services
     public class UserService : IUserService
     {
         private readonly UserController userController;
+        private readonly Logger infoLogger;
         public UserService(UserController userController)
         {
             this.userController = userController;
+            infoLogger = InfoLogger.Instance;
         }
 
         /// <summary>
@@ -27,6 +29,7 @@ namespace Sadna_17_B.ServiceLayer.Services
         {
             try
             {
+                infoLogger.Log($"LOGIN| username:{username} and a password");
                 string accessToken = userController.Login(username, password);
                 UserDTO returnValue = new UserDTO(username, accessToken);
                 return new Response(true, returnValue);
@@ -44,6 +47,7 @@ namespace Sadna_17_B.ServiceLayer.Services
         {
             try
             {
+                infoLogger.Log("Guest entered");
                 string accessToken = userController.CreateGuest();
                 UserDTO returnValue = new UserDTO(accessToken);
                 return new Response(true, returnValue);
@@ -62,6 +66,7 @@ namespace Sadna_17_B.ServiceLayer.Services
         {
             try
             {
+                infoLogger.Log($"User signed up with username:{username}");
                 userController.CreateSubscriber(username, password);
                 return new Response(true);
             } catch (Sadna17BException e)
@@ -79,6 +84,7 @@ namespace Sadna_17_B.ServiceLayer.Services
         {
             try
             {
+                infoLogger.Log($"Admin was created");
                 userController.CreateAdmin(username, password);
                 return new Response(true);
             }
@@ -332,6 +338,7 @@ namespace Sadna_17_B.ServiceLayer.Services
         {
             try
             {
+
                 userController.RespondToManagerAppointmentOffer(token, storeID, offerResponse);
                 return new Response(true);
             }
