@@ -5,12 +5,13 @@ namespace Sadna_17_B.ServiceLayer.Services
 {
     public interface IStoreService
     {
-        Store CreateStore(string name, string email, string phoneNumber, string storeDescription,
-            string address, Inventory inventory); //Builder design pattern
+        void CreateStore(string name, string email, string phoneNumber, string storeDescription, string address, Inventory inventory);
+
+        bool isValidOrder(int storeId, Dictionary<int, int> quantities);
+        void ReduceProductsQuantities(int storeID, Dictionary<int, int> quantities);
         bool RemoveStore(string storeName);
         List<Store> GetAllStores();
         Store GetStoreByName(string name);
-        bool CanProcessOrder(int storeId, Dictionary<Product, int> order);
-        void ProcessOrder(int storeId, Dictionary<Product, int> order);
+
     }
 }

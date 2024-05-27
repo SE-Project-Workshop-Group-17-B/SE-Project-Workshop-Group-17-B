@@ -1,13 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.IdentityModel.Tokens;
 using Sadna_17_B.DomainLayer.StoreDom;
+
 
 namespace Sadna_17_B.ServiceLayer.Services
 {
     public class StoreService : IStoreService
     {
+
+        // ---------------- readonly Variables -------------------------------------------------------------------------------------------
+
+
         private readonly StoreController _storeController;
         private readonly UserService userService;
+
+
+        // ---------------- Constructors -------------------------------------------------------------------------------------------
 
 
         public StoreService()
@@ -21,7 +30,10 @@ namespace Sadna_17_B.ServiceLayer.Services
             _storeController = storeController;
         }
 
-        public Store CreateStore(string name, string email, string phoneNumber, string storeDescription, string address, Inventory inventory)
+
+        // ---------------- adjust stores -------------------------------------------------------------------------------------------
+
+        public void CreateStore(string name, string email, string phoneNumber, string storeDescription, string address, Inventory inventory)
         {
             var storeBuilder = _storeController.GetStoreBuilder()
                                 .SetName(name)
@@ -32,7 +44,7 @@ namespace Sadna_17_B.ServiceLayer.Services
                                 .SetInventory(inventory);
             var store = storeBuilder.Build();
             _storeController.AddStore(store);
-            return store;
+             
         }
 
         public bool RemoveStore(string storeName)
@@ -46,6 +58,27 @@ namespace Sadna_17_B.ServiceLayer.Services
             return false;
         }
 
+        public bool isValidOrder(int storeId, Dictionary<int, int> quantities)
+        {
+            return _storeController.isOrderValid(storeId, quantities);
+        }
+
+        public void ReduceProductsQuantities(int storeID, Dictionary<int, int> quantities)
+        {
+            Dictionary<int, int> toRetrieve = _storeController.ReduceProductQuantities(storeID, quantities);
+
+            if (!toRetrieve.IsNullOrEmpty())
+            {
+                _storeController.AddProductQuantities(storeID, quantities);
+            }
+
+            
+        }
+
+
+        // ---------------- Variables -------------------------------------------------------------------------------------------
+
+
         public List<Store> GetAllStores()
         {
             return _storeController.GetAllStores();
@@ -56,24 +89,6 @@ namespace Sadna_17_B.ServiceLayer.Services
             return _storeController.GetStoreByName(name);
         }
 
-        public bool CanProcessOrder(int storeId, Dictionary<Product, int> order)
-        {
-            var store = _storeController.GetStoreById(storeId);
-            if (store != null)
-            {
-                return store.CanProcessOrder(order);
-            }
-            return false;
-        }
-
-        public void ProcessOrder(int storeId, Dictionary<Product, int> order)
-        {
-            var store = _storeController.GetStoreById(storeId);
-
-            if (store == null)
-                return;
-
-            store.ProcessOrder(order);
-        }
+        
     }
 }

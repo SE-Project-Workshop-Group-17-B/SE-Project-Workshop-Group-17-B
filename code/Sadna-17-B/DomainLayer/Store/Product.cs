@@ -52,6 +52,11 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return s;
         }
 
+        public static int amount()
+        {
+            return idCounter;
+        }
+
 
     }
 }

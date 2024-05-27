@@ -1,4 +1,5 @@
-﻿using Sadna_17_B.DomainLayer.User;
+﻿using Microsoft.IdentityModel.Tokens;
+using Sadna_17_B.DomainLayer.User;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,8 +9,16 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 {
     public class StoreController
     {
+
+        // ---------------- Variables -------------------------------------------------------------------------------------------
+
+
         private List<Store> _stores;
         public StoreController() { _stores = new List<Store>(); }
+
+
+        // ---------------- Store Builder -------------------------------------------------------------------------------------------
+
 
         public class StoreBuilder
         {
@@ -18,6 +27,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             private string _phone_number;
             private string _store_description;
             private string _address;
+            private DiscountPolicy _discount_policy;
             private Inventory _inventory;
 
             public StoreBuilder SetName(string name)
@@ -45,6 +55,11 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                 _address = address;
                 return this;
             }
+            public StoreBuilder SetDiscountPolicy(DiscountPolicy discountPolicy)
+            {
+                _discount_policy = discountPolicy;
+                return this;
+            }
             public StoreBuilder SetInventory(Inventory inventory)
             {
                 _inventory = inventory;
@@ -58,14 +73,15 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                     throw new InvalidOperationException("Store must have a name");
                 }
 
-                return new Store(_name, _email, _phone_number, _store_description, _address, _inventory);
+                return new Store(_name, _email, _phone_number, _store_description, _address, _inventory, _discount_policy);
             }
+        
+        
         }
 
-        public StoreBuilder GetStoreBuilder()
-        {
-            return new StoreBuilder();
-        }
+
+        // ---------------- readonly Variables -------------------------------------------------------------------------------------------
+
 
         public void AddStore(Store store)
         {
@@ -76,6 +92,83 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         {
             _stores.Remove(store);
         }
+
+
+        public bool isOrderValid(int storeId, Dictionary<int, int> quantities)
+        {
+
+            Store store = GetStoreById(storeId);
+
+            if (store == null)
+                return false;
+
+            if (quantities.IsNullOrEmpty())
+                return false;
+
+
+            foreach (var item in quantities)
+            {
+                Product product = store.searchProductByID(item.Key);
+                int requiredAmount = item.Value;
+                int availableAmount = store._inventory.GetProductAmount(product);
+
+                if (availableAmount < requiredAmount)
+                    return false;
+
+            }
+            return true;
+        }
+
+        public Dictionary<int, int> ReduceProductQuantities(int storeID, Dictionary<int, int> quantities)
+        {
+            Dictionary<int, int> to_retrieve = new Dictionary<int, int>();
+
+            Store store = GetStoreById(storeID);
+
+            if (!isOrderValid(storeID, quantities))
+                return to_retrieve;
+
+            foreach (var item in quantities)
+            {
+                int p_id = item.Key;
+                int p_amount = item.Value;
+
+                if (store.ReduceProductQuantities(p_id, p_amount))
+                    to_retrieve.Add(p_id, p_amount);
+            }
+
+            return to_retrieve;
+        }
+
+
+        public void AddProductQuantities(int storeID, Dictionary<int, int> quantities)
+        {
+            Store store = GetStoreById(storeID);
+
+            foreach (var item in quantities)
+            {
+                int p_id = item.Key;
+                int p_amount = item.Value;
+
+                store.AddProductQuantities(p_id, p_amount);
+            }
+
+        }
+
+        public Dictionary<int, int> CalculateProductsPrices(int storeID, Dictionary<int, int> quantities)
+        {
+            Store store = GetStoreById(storeID);
+
+            if (store == null)
+                throw new Exception("Invalid Parameter : store not found");
+
+            return store.CalculateProductsPrices(quantities);
+        }
+
+
+
+        // ---------------- get / search -------------------------------------------------------------------------------------------
+
 
         public List<Store> GetAllStores()
         {
@@ -91,6 +184,13 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         {
             return _stores.FirstOrDefault(store => store._id == id);
         }
+
+        public StoreBuilder GetStoreBuilder()
+        {
+            return new StoreBuilder();
+        }
+
+
 
         public List<Product> searchProductByName(string productName)
         {
@@ -113,30 +213,38 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         {
             var store = GetStoreById(storeId);
 
+<<<<<<< 58-implement-synchronization-for-product
             if (store == null)
                 return;
 
             store.ProcessOrder(order);
         }
         public List<Product> SearchProductByCategory(string category)
+=======
+        public Dictionary<Product, int> SearchProductsByCategory(string category) // example: each of every store's product (in "fruits" category)
+>>>>>>> main
         {
-            List<Product> result = new List<Product>();
+            Dictionary<Product, int> result = new Dictionary<Product, int>();
 
             foreach (Store store in _stores)
             {
-                var products = store.SearchProductByCategory(category);
+                List<Product> products = store.SearchProductsByCategory(category);
+
                 if (products != null)
-                {
-                    result.AddRange(products);
-                }
+                    foreach (Product product in products)
+                        result.Add(product,store._id);
             }
 
             return result.Any() ? result : null;
         }
 
+<<<<<<< 58-implement-synchronization-for-product
         public void clearAllStores()
         {
            _stores.Clear();
         }
+=======
+        
+>>>>>>> main
     }
 }
