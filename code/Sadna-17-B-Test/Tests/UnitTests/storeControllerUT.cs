@@ -9,6 +9,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Sadna_17_B.DomainLayer.Store;
 using Sadna_17_B.DomainLayer.StoreDom;
 using Sadna_17_B.DomainLayer.User;
+using static Sadna_17_B.DomainLayer.StoreDom.StoreController;
 
 namespace Sadna_17_B_Test.Tests.UnitTests
 {
@@ -16,21 +17,32 @@ namespace Sadna_17_B_Test.Tests.UnitTests
     public class StoreControllerTests
     {
         private StoreController _storeController;
+        private Store _store;
         private Inventory _inventory;
         private Subscriber _owner;
+        private Product _product;
+
 
         [TestInitialize]
-        public void SetUp()
+        public void Setup()
         {
-            _storeController = new StoreController();
             _inventory = new Inventory();
+            _product = new Product ("test product", 100, "tests", 5, "","");
+            _inventory.AddProduct(_product, 10);
+
+            var storeBuilder = new StoreBuilder()
+                                    .SetName("Test Store")
+                                    .SetInventory(_inventory);
+            _store = storeBuilder.Build();
+
+            _storeController = new StoreController();
+            _storeController.AddStore(_store);
         }
+
 
         [TestMethod]
         public void TestCreateStore()
         {
-            SetUp();
-
             // Act
             var storeBuilder = _storeController.GetStoreBuilder()
                                 .SetName("Test Store")
@@ -113,7 +125,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
             _storeController.AddStore(store);
 
             // Act
-            //_storeController.RemoveStore(store);
+            _storeController.CloseStore(store);
             var result = _storeController.GetStoreByName("Test Store");
 
             // Assert
@@ -151,6 +163,21 @@ namespace Sadna_17_B_Test.Tests.UnitTests
             Assert.AreEqual(2, result.Count);
             CollectionAssert.Contains(result, _storeController.GetStoreByName("Test Store 1"));
             CollectionAssert.Contains(result, _storeController.GetStoreByName("Test Store 2"));
+        }
+
+        [TestMethod]
+        public void TestReduceProductAmount_Synchronization()
+        {
+            int initialAmount = _inventory.GetProductAmount(_product);
+
+            Task task1 = Task.Run(() => _storeController.ProcessOrder());
+            Task task2 = Task.Run(() => _storeController.ProcessOrder());
+
+            Task.WaitAll(task1, task2);
+
+            int finalAmount = _inventory.GetProductAmount(_product);
+
+            Assert.AreEqual(initialAmount - 10, finalAmount);
         }
     }
 }

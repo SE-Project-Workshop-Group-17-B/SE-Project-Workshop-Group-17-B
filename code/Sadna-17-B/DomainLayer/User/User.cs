@@ -10,6 +10,11 @@ namespace Sadna_17_B.DomainLayer.User
     {
         public ShoppingCart ShoppingCart { get; }
 
+        public User()
+        {
+            ShoppingCart = new ShoppingCart();
+        }
+
         public void AddToCart(int storeID, int productID, int quantity)
         {
             if (quantity <= 0)

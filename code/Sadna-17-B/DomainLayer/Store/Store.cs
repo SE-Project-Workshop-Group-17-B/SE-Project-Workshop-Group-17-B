@@ -65,7 +65,8 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             Product product_to_reduce = _inventory.searchProductById(p_id);
             if (product_to_reduce == null)
                 return;
-            _inventory.ReduceProductAmount(product_to_reduce, amount);
+            try { _inventory.ReduceProductAmount(product_to_reduce, amount); }
+            catch (Exception e) { }
         }
 
         public int GetProductAmount(string productName)

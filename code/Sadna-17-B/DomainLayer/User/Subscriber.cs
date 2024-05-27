@@ -14,7 +14,7 @@ namespace Sadna_17_B.DomainLayer.User
         public Dictionary<int, Owner> Ownerships { get; } // storeID -> Owner object
         public Dictionary<int, Manager> Managements { get; } // storeID -> Manager object
 
-        public Subscriber(string username, string password)
+        public Subscriber(string username, string password) : base()
         {
             Username = username;
             if (!IsValidUsername(password))

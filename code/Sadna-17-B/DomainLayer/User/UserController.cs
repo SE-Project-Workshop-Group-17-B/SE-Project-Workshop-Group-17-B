@@ -311,9 +311,7 @@ namespace Sadna_17_B.DomainLayer.User
             }
             else
             {
-                AddOwnership(respondingSubscriber.Username, storeID);
-                requestingSubscriber.AppointOwner(storeID, respondingSubscriber.Username, respondingSubscriber.GetOwnership(storeID));
-                // notificationSystem.notify(requestingSubscriber.Username, Notification.OfferResponse, offerResponse)
+                // TODO: notificationSystem.notify(requestingSubscriber.Username, Notification.OfferResponse, offerResponse)
                 offerSystem.RemoveOwnerAppointmentOffer(storeID, respondingSubscriber.Username);
             }
         }
@@ -335,8 +333,6 @@ namespace Sadna_17_B.DomainLayer.User
             }
             else
             {
-                AddManagement(respondingSubscriber.Username, storeID, authorizations);
-                requestingSubscriber.AppointManager(storeID, respondingSubscriber.Username, respondingSubscriber.GetManagement(storeID));
                 // TODO: notificationSystem.notify(appointerUsername, Notification.OfferResponse, offerResponse)
                 offerSystem.RemoveManagerAppointmentOffer(storeID, respondingSubscriber.Username);
             }

@@ -16,6 +16,8 @@ namespace Sadna_17_B.DomainLayer.User
 
         public Owner(bool isFounder)
         {
+            AppointedOwners = new Dictionary<string, Owner>();
+            AppointedManagers = new Dictionary<string, Manager>();
             IsFounder = isFounder;
         }
 
