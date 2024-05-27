@@ -5,7 +5,7 @@ using System.Web;
 using Sadna_17_B.DomainLayer.StoreDom;
 using Sadna_17_B.ServiceLayer;
 using Sadna_17_B.ServiceLayer.Services;
-
+using Sadna_17_B.Utils;
 namespace Sadna_17_B
 {
     public class Program
@@ -17,6 +17,12 @@ namespace Sadna_17_B
             IStoreService storeService = serviceFactory.StoreService;
 
             Console.WriteLine("Welcome to the server of Group 17B's Workshop Project\nit's lovely to see you");
+
+            ErrorLogger error = new ErrorLogger();
+            InfoLogger info = new InfoLogger();
+
+            error.Log("hi");
+            info.Log("hi");
 
             Console.ReadKey();
         }
