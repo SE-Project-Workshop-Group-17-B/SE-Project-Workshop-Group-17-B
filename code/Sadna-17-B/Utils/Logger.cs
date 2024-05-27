@@ -18,7 +18,8 @@ public class Logger
         this.logFilePath = Path.Combine(Directory.GetCurrentDirectory(), "Log", file_name);
 
 
-        if (!Directory.Exists(logFolderPath)) {
+        if (!Directory.Exists(logFolderPath))
+        {
             Directory.CreateDirectory(logFolderPath);
         }
 
@@ -31,7 +32,7 @@ public class Logger
     public void Log(string message)
     {
         string logMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss}\t\t {message}";
-   
+
         File.AppendAllText(logFilePath, logMessage + Environment.NewLine);
     }
 }
@@ -47,7 +48,7 @@ public class ErrorLogger : Logger
 
     // -------------- singleton related --------------------------------------
 
-    
+
     private static ErrorLogger instance;
     private static readonly object error_lock = new object();
 
@@ -80,14 +81,14 @@ public class ErrorLogger : Logger
 
     public void Log(string message)
     {
-        Log("error", message);
+        Log("ERROR", message);
     }
 
     public void Log(string type, string message)
     {
         string informative_message = $"| {type,15} | " + message;
 
-        base.Log(message);
+        base.Log(informative_message);
     }
 
     public void LogSpecialError()
@@ -133,7 +134,7 @@ public class InfoLogger : Logger
                 return instance;
             }
         }
-        
+
     }
 
 
@@ -142,7 +143,7 @@ public class InfoLogger : Logger
 
     public void Log(string message)
     {
-        Log("info", message);
+        Log("INFO", message);
     }
 
     private void Log(string type, string message)

@@ -23,7 +23,12 @@ namespace Sadna_17_B
 
             error.Log("hi");
             info.Log("hi");
-
+            string username = "yossi";
+            info.Log($"LOGIN| username:{username} and a password");
+            HashSet<string> roles = new HashSet<string>();
+            roles.Add("yos");
+            roles.Add("yos2");
+            info.Log(roles.ToString());
             Console.ReadKey();
         }
     }
