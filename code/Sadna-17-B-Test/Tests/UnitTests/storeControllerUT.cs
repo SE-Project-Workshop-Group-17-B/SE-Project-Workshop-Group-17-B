@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,7 +9,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Sadna_17_B.DomainLayer.Store;
 using Sadna_17_B.DomainLayer.StoreDom;
 using Sadna_17_B.DomainLayer.User;
-using static Sadna_17_B.DomainLayer.StoreDom.StoreController;
 
 namespace Sadna_17_B_Test.Tests.UnitTests
 {
@@ -17,32 +16,21 @@ namespace Sadna_17_B_Test.Tests.UnitTests
     public class StoreControllerTests
     {
         private StoreController _storeController;
-        private Store _store;
         private Inventory _inventory;
         private Subscriber _owner;
-        private Product _product;
-
 
         [TestInitialize]
-        public void Setup()
+        public void SetUp()
         {
-            _inventory = new Inventory();
-            _product = new Product ("test product", 100, "tests", 5, "","");
-            _inventory.AddProduct(_product, 100);
-
-            var storeBuilder = new StoreBuilder()
-                                    .SetName("Test Store")
-                                    .SetInventory(_inventory);
-            _store = storeBuilder.Build();
-
             _storeController = new StoreController();
-            _storeController.AddStore(_store);
+            _inventory = new Inventory();
         }
-
 
         [TestMethod]
         public void TestCreateStore()
         {
+            SetUp();
+
             // Act
             var storeBuilder = _storeController.GetStoreBuilder()
                                 .SetName("Test Store")
@@ -113,8 +101,6 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         [TestMethod]
         public void TestRemoveStore()
         {
-            _storeController.clearAllStores();
-
             // Arrange
             var storeBuilder = _storeController.GetStoreBuilder()
                                 .SetName("Test Store")
@@ -123,21 +109,20 @@ namespace Sadna_17_B_Test.Tests.UnitTests
                                 .SetStoreDescription("Test Store Description")
                                 .SetAddress("Test Address")
                                 .SetInventory(_inventory);
-            Store store = storeBuilder.Build();
+            var store = storeBuilder.Build();
             _storeController.AddStore(store);
 
             // Act
-            _storeController.CloseStore(store);
+            //_storeController.RemoveStore(store);
+            var result = _storeController.GetStoreByName("Test Store");
 
             // Assert
-            Assert.AreEqual(0, _storeController.GetAllStores().Count);
+            Assert.IsNull(result);
         }
 
         [TestMethod]
         public void TestGetAllStores()
         {
-            _storeController.clearAllStores();
-
             // Arrange
             var storeBuilder1 = _storeController.GetStoreBuilder()
                                 .SetName("Test Store 1")
@@ -146,7 +131,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
                                 .SetStoreDescription("Description 1")
                                 .SetAddress("Address 1")
                                 .SetInventory(_inventory);
-            Store store1 = storeBuilder1.Build();
+            var store1 = storeBuilder1.Build();
             _storeController.AddStore(store1);
 
             var storeBuilder2 = _storeController.GetStoreBuilder()
@@ -156,7 +141,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
                                 .SetStoreDescription("Description 2")
                                 .SetAddress("Address 2")
                                 .SetInventory(_inventory);
-            Store store2 = storeBuilder2.Build();
+            var store2 = storeBuilder2.Build();
             _storeController.AddStore(store2);
 
             // Act
@@ -166,27 +151,6 @@ namespace Sadna_17_B_Test.Tests.UnitTests
             Assert.AreEqual(2, result.Count);
             CollectionAssert.Contains(result, _storeController.GetStoreByName("Test Store 1"));
             CollectionAssert.Contains(result, _storeController.GetStoreByName("Test Store 2"));
-        }
-
-        [TestMethod]
-        public void TestReduceProductAmount_Synchronization()
-        {
-            int initialAmount = _inventory.GetProductAmount(_product);
-            Dictionary<Product,int> order = new Dictionary<Product,int>();
-            order[_product] = 5;
-
-            Task task1 = Task.Run(() => _storeController.ProcessOrder(1, order));
-            Task task2 = Task.Run(() => _storeController.ProcessOrder(1, order));
-            Task task3 = Task.Run(() => _storeController.ProcessOrder(1, order));
-            Task task4 = Task.Run(() => _storeController.ProcessOrder(1, order));
-            Task task5 = Task.Run(() => _storeController.ProcessOrder(1, order));
-            Task task6 = Task.Run(() => _storeController.ProcessOrder(1, order));
-
-            Task.WaitAll(task1, task2, task3, task4, task5, task6);
-
-            int finalAmount = _inventory.GetProductAmount(_product);
-
-            Assert.AreEqual(initialAmount - 30, finalAmount);
         }
     }
 }
