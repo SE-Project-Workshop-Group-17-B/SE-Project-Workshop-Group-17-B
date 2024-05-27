@@ -6,11 +6,23 @@ using System.Threading.Tasks;
 
 namespace Sadna_17_B.DomainLayer.Store
 {
+
+
+    // ---------------- Policy ----------------------------------------------------------------------------------------
+
+
     public class PurchasePolicy
     {
 
+        // ---------------- variables ----------------------------------------------------
+
+
         public string PolicyName { get; set; }
         public List<PurchaseType> AllowedPurchaseTypes { get; set; }
+
+
+
+        // ---------------- functions -----------------------------------------------------
 
 
         public void AllowPurchaseType(PurchaseType type)
@@ -28,6 +40,9 @@ namespace Sadna_17_B.DomainLayer.Store
             AllowedPurchaseTypes.Remove(type);
         }
     }
+
+
+    // ---------------- Purchase ----------------------------------------------------------------------------------------
 
 
     public abstract class PurchaseType
@@ -74,8 +89,6 @@ namespace Sadna_17_B.DomainLayer.Store
             //implement bid accept logic
         }
     }
-
-
 
 
     public class AuctionPurchase : PurchaseType

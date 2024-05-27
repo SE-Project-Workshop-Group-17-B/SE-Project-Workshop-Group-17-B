@@ -21,6 +21,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         public int CustomerRate { get; set; }
         public string CustomerReview { get; set; } // up to 75 char
         public string Description { get; set; } // up to 100 char
+        public bool locked { get; set; }
 
 
         // ---------------- Constructor -------------------------------------------------------------------------------------------
@@ -35,6 +36,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             CustomerRate = customerRate;
             CustomerReview = customerReview.Length <= 75 ? customerReview : customerReview.Substring(0, 75);
             Description = description.Length <= 100 ? description : description.Substring(0, 100);
+            locked = false;
         }
 
         public string getInfo()
@@ -48,6 +50,11 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             s += $"Ratings:  {CustomerRate,-4}";
 
             return s;
+        }
+
+        public static int amount()
+        {
+            return idCounter;
         }
 
 
