@@ -1,29 +1,37 @@
-﻿
-
-using Sadna_17_B.DomainLayer.User;
+﻿using Sadna_17_B.DomainLayer.User;
 using Sadna_17_B.DomainLayer.Order;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using Sadna_17_B.DomainLayer.Store;
 
 
 namespace Sadna_17_B.DomainLayer.StoreDom
 {
     public class Store
     {
+
+        // ---------------- Variables -------------------------------------------------------------------------------------------
+
+
         private static int idCounter = 1;
+
         public int _id { get; private set; }
         public string _name { get; set; }
         public string _email { get; set; }
         public string _phone_number { get; set; }
         public string _store_description { get; set; }
-
         public string _address { get; set; }
         public Inventory _inventory { get; set; }
 
-        public Store(string name, string email, string phone_number, string store_description,
-                        string address, Inventory inventory)
+
+
+
+        // ---------------- Constructor -------------------------------------------------------------------------------------------
+
+        public Store(string name, string email, string phone_number,
+                                  string store_description, string address, Inventory inventory)
         {
             // stores can be created via controller only
             _id = idCounter++;
@@ -36,7 +44,9 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         }
 
 
-        // Facade methods to control the inventory
+
+        // ---------------- Facade methods ----------------------------------------------------------------------------------------
+
         public void AddProduct(Product product, int amount)
         {
             _inventory.AddProduct(product, amount);
@@ -94,6 +104,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                 ReduceProductAmount(p_id, requiredAmount);
             }
         }
+
         public Product searchProductByName(string productName)
         {
 
@@ -109,6 +120,26 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             List<Product> result = _inventory.SearchProductByCategory(category);
 
             return result.Any() ? result : null;
+        }
+
+        public string getInfo()
+        {
+            string s = string.Empty;
+
+            s += "----------------------------------------------------------------------------------------------------------------------\n\n";
+
+            s += "Store   : " + _name + "\n";
+            s += "Email   : " + _email + "\n";
+            s += "Phone   : " + _phone_number + "\n";
+            s += "address : " + _address + "\n\n";
+
+            s += " ------ DESCRIPTION ------ \n\n" + _store_description + "\n\n";
+
+            s += " ------ INVENTORY ------ \n\n" + _inventory.getInfo() + "\n\n";
+
+            s += "----------------------------------------------------------------------------------------------------------------------\n\n";
+
+            return s;
         }
     }
 }
