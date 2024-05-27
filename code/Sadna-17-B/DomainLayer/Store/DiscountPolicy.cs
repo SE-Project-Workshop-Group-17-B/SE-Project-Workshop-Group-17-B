@@ -16,6 +16,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
 
         // ----------- functions --------------------------------------------------------------------------------
+
         public void AddDiscount(Discount discount)
         {
             AllowedDiscounts.Add(discount);
@@ -28,6 +29,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
     }
 
     // ----------- Discout Types ------------------------------------------------------------------------------------------------------------------
+
     public abstract class Discount
     {
         public double precentage { get; set; }
@@ -36,11 +38,12 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
 
         public abstract void applyDiscount(String code);
+        
         public TimeSpan discount_duration()
         {
             return (EndDate - StartDate);
         }
-
+        
         public bool discout_expired()
         {
             return DateTime.Now > EndDate;

@@ -6,6 +6,8 @@ namespace Sadna_17_B.ServiceLayer.Services
 {
     public class StoreService : IStoreService
     {
+
+
         private readonly StoreController _storeController;
         private readonly UserService userService;
 
@@ -20,6 +22,8 @@ namespace Sadna_17_B.ServiceLayer.Services
             userService = us;
             _storeController = storeController;
         }
+
+
 
         public Store CreateStore(string name, string email, string phoneNumber, string storeDescription, string address, Inventory inventory)
         {
@@ -45,6 +49,8 @@ namespace Sadna_17_B.ServiceLayer.Services
             }
             return false;
         }
+
+
 
         public List<Store> GetAllStores()
         {

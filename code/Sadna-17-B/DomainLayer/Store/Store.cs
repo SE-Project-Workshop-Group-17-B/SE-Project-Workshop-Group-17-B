@@ -141,5 +141,23 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
             return s;
         }
+
+
+        public void example_test()
+        {
+           
+            Product p1 = new Product("cucumber", 9, "vegetables", 3, "fuck this product", "HI");
+            Product p2 = new Product("chocolate", 100, "candy", 8, "nice one", "BYE");
+            Product p3 = new Product("iphone", 3500, "apple", 10, "blat", "nahuy");
+
+            Inventory inv = new Inventory();
+            inv.AddProduct(p1, 13);
+            inv.AddProduct(p2, 43);
+            inv.AddProduct(p3, 1);
+
+            Store s1 = new Store("BBL DRIZZY", "notlikeus@pedofile.com", "051213141516", "tryna strike a chord but it's probably a MINORRRRRRRRRRRRRRRRRRRRR\nRRRRRRRRRRRRRRRRRRRRRR\nRRRRRRRRRRRRRRRRRRR", "pedofile st.", inv);
+
+            Console.WriteLine(s1.getInfo());
+        }
     }
 }

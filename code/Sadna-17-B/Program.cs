@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using Sadna_17_B.DomainLayer.StoreDom;
 using Sadna_17_B.ServiceLayer;
 using Sadna_17_B.ServiceLayer.Services;
 
@@ -16,7 +17,7 @@ namespace Sadna_17_B
             IStoreService storeService = serviceFactory.StoreService;
 
             Console.WriteLine("Welcome to the server of Group 17B's Workshop Project\nit's lovely to see you");
-           
+
             Console.ReadKey();
         }
     }
