@@ -16,10 +16,10 @@ namespace Sadna_17_B.DomainLayer.Order
         private ISupplySystem supplySystem = new SupplySystemProxy();
 
         // All these data structures will move to DAL in version 3, it is currently held in memory. TODO: use a repository
-        private Dictionary<int, Order> orderHistory; // OrderId -> Order
-        private Dictionary<int, List<Order>> guestOrders; // GuestID -> List<Order>
-        private Dictionary<string, List<Order>> subscriberOrders; // Username -> List<Order>
-        private Dictionary<string, List<SubOrder>> storeOrders; // StoreID -> Order
+        private Dictionary<int, Order> orderHistory = new Dictionary<int, Order>();                         // OrderId -> Order
+        private Dictionary<int, List<Order>> guestOrders = new Dictionary<int, List<Order>>();              // GuestID -> List<Order>
+        private Dictionary<string, List<Order>> subscriberOrders = new Dictionary<string, List<Order>>();   // Username -> List<Order>
+        private Dictionary<string, List<SubOrder>> storeOrders = new Dictionary<string, List<SubOrder>>();  // StoreID -> Order
         private int orderCount = 0;
 
         public OrderSystem(StoreController storeController)
