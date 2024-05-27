@@ -14,7 +14,13 @@ public class Logger
 
     public Logger(string file_name)
     {
+        string logFolderPath = Path.Combine(Directory.GetCurrentDirectory(), "Log");
         this.logFilePath = Path.Combine(Directory.GetCurrentDirectory(), "Log", file_name);
+
+
+        if (!Directory.Exists(logFolderPath)) {
+            Directory.CreateDirectory(logFolderPath);
+        }
 
         if (!File.Exists(logFilePath))
         {
@@ -49,7 +55,7 @@ public class ErrorLogger : Logger
     public ErrorLogger() : base("error_logger.txt")
     {
         Log("");
-        Log("\t\t\t\t\t ----- Error Logger ----- \n\n\n");
+        Log("\n\n ----- Error Logger ----- \n\n");
 
     }
 
