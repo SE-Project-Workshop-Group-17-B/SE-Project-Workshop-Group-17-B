@@ -39,22 +39,30 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         public void ReduceProductAmount(Product product, int amount)
         {
-            if (_allProducts.ContainsKey(product) && amount <= _allProducts[product])
-            {
-                _allProducts[product] -= amount;
-                Console.WriteLine("Reduced " + amount + " items from " + product.Name + "\n" +
-                    "Current amount is:\t" + _allProducts[product]);
-            }
-            else if (!_allProducts.ContainsKey(product))
-            {
-                Console.WriteLine("Could not find " + product.Name + " in the inventory");
-            }
-            else
-            {
-                Console.WriteLine("Current " + product.Name + "'s amount is " + _allProducts[product] +
-                    ", you cannot reduce " + amount);
-            }
-        }
+            try {
+                lock (product)
+                {
+                    product.locked = true;
+                    if (_allProducts.ContainsKey(product) && amount <= _allProducts[product])
+                    {
+                        _allProducts[product] -= amount;
+                        Console.WriteLine("Reduced " + amount + " items from " + product.Name + "\n" +
+                            "Current amount is:\t" + _allProducts[product]);
+                    }
+                    else if (!_allProducts.ContainsKey(product))
+                    {
+                        Console.WriteLine("Could not find " + product.Name + " in the inventory");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Current " + product.Name + "'s amount is " + _allProducts[product] +
+                            ", you cannot reduce " + amount);
+                    }
+                    product.locked = false;
+                }
+            } catch(Exception ex) { Console.WriteLine("Failed to access a product, error message below:\n"+
+                ex.ToString()); }
+         }
 
         public void AddProductAmount(int p_id, int p_amount)
         {

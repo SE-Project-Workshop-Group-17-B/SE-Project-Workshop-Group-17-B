@@ -68,11 +68,17 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             Product product_to_reduce = _inventory.searchProductById(p_id);
 
             if (product_to_reduce == null)
+<<<<<<< 58-implement-synchronization-for-product
+                return;
+            try { _inventory.ReduceProductAmount(product_to_reduce, amount); }
+            catch (Exception e) { }
+=======
                 return false;
 
             _inventory.ReduceProductAmount(product_to_reduce, amount);
 
             return true;
+>>>>>>> main
         }
 
 
