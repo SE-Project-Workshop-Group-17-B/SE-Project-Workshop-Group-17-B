@@ -10,16 +10,16 @@ namespace Sadna_17_B.DomainLayer.Order
     /// </summary>
     public class SubOrder 
     {
-        public string StoreID { get; }
+        public int StoreID { get; }
         public int OrderID { get; }
         public string UserID { get; } // Can be either GuestID or Username, according to the order type
         public bool IsGuestOrder { get; }
         public DateTime Timestamp { get; }
-        public Dictionary<string, Tuple<int, float>> Products { get; } // ProductID -> (quantity,unitPrice)
+        public Dictionary<int, Tuple<int, float>> Products { get; } // ProductID -> (quantity,unitPrice)
         public string DestinationAddress { get; }
         public string CreditCardInfo { get; }
 
-        public SubOrder(string storeID, Order order)
+        public SubOrder(int storeID, Order order)
         {
             StoreID = StoreID;
             OrderID = order.OrderID;

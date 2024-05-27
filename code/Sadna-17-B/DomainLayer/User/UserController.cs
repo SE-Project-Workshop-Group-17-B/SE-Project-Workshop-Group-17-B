@@ -209,31 +209,31 @@ namespace Sadna_17_B.DomainLayer.User
             }
         }
 
-        public bool IsOwner(string token, string storeID)
+        public bool IsOwner(string token, int storeID)
         {
             Subscriber subscriber = GetSubscriberByToken(token); // Throws an exception if the given token doesn't correspond to a subscriber.
             return subscriber.IsOwnerOf(storeID);
         }
 
-        public bool IsFounder(string token, string storeID)
+        public bool IsFounder(string token, int storeID)
         {
             Subscriber subscriber = GetSubscriberByToken(token); // Throws an exception if the given token doesn't correspond to a subscriber.
             return subscriber.IsFounderOf(storeID);
         }
 
-        public bool IsManager(string token, string storeID)
+        public bool IsManager(string token, int storeID)
         {
             Subscriber subscriber = GetSubscriberByToken(token); // Throws an exception if the given token doesn't correspond to a subscriber.
             return subscriber.IsManagerOf(storeID);
         }
 
-        public bool HasManagerAuthorization(string token, string storeID, Manager.ManagerAuthorization auth)
+        public bool HasManagerAuthorization(string token, int storeID, Manager.ManagerAuthorization auth)
         {
             Subscriber subscriber = GetSubscriberByToken(token); // Throws an exception if the given token doesn't correspond to a subscriber.
             return subscriber.HasManagerAuthorization(storeID, auth);
         }
 
-        public void UpdateManagerAuthorizations(string token, string storeID, string managerUsername, HashSet<Manager.ManagerAuthorization> authorizations)
+        public void UpdateManagerAuthorizations(string token, int storeID, string managerUsername, HashSet<Manager.ManagerAuthorization> authorizations)
         {
             Subscriber subscriber = GetSubscriberByToken(token); // Throws an exception if the given token doesn't correspond to a subscriber.
             Owner owner = subscriber.GetOwnership(storeID); // Throws an exception if the subscriber isn't an owner of the store with the given storeID
@@ -245,13 +245,13 @@ namespace Sadna_17_B.DomainLayer.User
             owner.UpdateManagerAuthorizations(managerUsername, authorizations); // Throws an exception if the given managerUsername doesn't correspond to a manager that has been appointed by the requesting owner
         }
 
-        public void CreateStoreFounder(string token, string storeID)
+        public void CreateStoreFounder(string token, int storeID)
         {
             Subscriber subscriber = GetSubscriberByToken(token); // Will throw an exception if the token is invalid
             subscriber.CreateFounder(storeID); // Will throw an exception if the subscriber is already a store owner/founder/manager
         }
 
-        public void OfferOwnerAppointment(string token, string storeID, string newOwnerUsername)
+        public void OfferOwnerAppointment(string token, int storeID, string newOwnerUsername)
         {
             Subscriber requestingSubscriber = GetSubscriberByToken(token);
             if (!requestingSubscriber.IsOwnerOf(storeID))
@@ -271,12 +271,12 @@ namespace Sadna_17_B.DomainLayer.User
             // TODO: notificationSystem.notify(newOwnerUsername, Notification.IncomingOffer)
         }
 
-        public void OfferManagerAppointment(string token, string storeID, string newManagerUsername)
+        public void OfferManagerAppointment(string token, int storeID, string newManagerUsername)
         {
             OfferManagerAppointment(token, storeID, newManagerUsername, Manager.GetDefaultAuthorizations());
         }
 
-        public void OfferManagerAppointment(string token, string storeID, string newManagerUsername, HashSet<Manager.ManagerAuthorization> authorizations)
+        public void OfferManagerAppointment(string token, int storeID, string newManagerUsername, HashSet<Manager.ManagerAuthorization> authorizations)
         {
             Subscriber requestingSubscriber = GetSubscriberByToken(token);
             Subscriber newManager = GetSubscriberByUsername(newManagerUsername);
@@ -296,7 +296,7 @@ namespace Sadna_17_B.DomainLayer.User
             // TODO: notificationSystem.notify(newOwnerUsername, Notification.IncomingOffer)
         }
 
-        public void RespondToOwnerAppointmentOffer(string token, string storeID, bool offerResponse)
+        public void RespondToOwnerAppointmentOffer(string token, int storeID, bool offerResponse)
         {
             Subscriber respondingSubscriber = GetSubscriberByToken(token);
             string appointerUsername = offerSystem.GetOwnerAppointmentOfferAppointer(storeID, respondingSubscriber.Username); // Throws an exception if there's no owner appointment offer for this subscriber in the store
@@ -318,7 +318,7 @@ namespace Sadna_17_B.DomainLayer.User
             }
         }
 
-        public void RespondToManagerAppointmentOffer(string token, string storeID, bool offerResponse)
+        public void RespondToManagerAppointmentOffer(string token, int storeID, bool offerResponse)
         {
             Subscriber respondingSubscriber = GetSubscriberByToken(token);
             Tuple<string, HashSet<Manager.ManagerAuthorization>> appointmentOffer = offerSystem.GetManagerAppointmentOfferAppointer(storeID, respondingSubscriber.Username); // Throws an exception if there's no owner appointment offer for this subscriber in the store
@@ -342,25 +342,25 @@ namespace Sadna_17_B.DomainLayer.User
             }
         }
 
-        private void AddOwnership(string username, string storeID)
+        private void AddOwnership(string username, int storeID)
         {
             Subscriber subscriber = GetSubscriberByUsername(username);
             subscriber.AddOwnership(storeID);
         }
 
-        private void AddManagement(string username, string storeID)
+        private void AddManagement(string username, int storeID)
         {
             Subscriber subscriber = GetSubscriberByUsername(username);
             subscriber.AddManagement(storeID);
         }
 
-        private void AddManagement(string username, string storeID, HashSet<Manager.ManagerAuthorization> authorizations)
+        private void AddManagement(string username, int storeID, HashSet<Manager.ManagerAuthorization> authorizations)
         {
             Subscriber subscriber = GetSubscriberByUsername(username);
             subscriber.AddManagement(storeID, authorizations);
         }
 
-        private void RemoveOwnership(string username, string storeID)
+        private void RemoveOwnership(string username, int storeID)
         {
             Subscriber oldOwner = GetSubscriberByUsername(username);
             Owner oldOwnership = oldOwner.GetOwnership(storeID);
@@ -375,27 +375,27 @@ namespace Sadna_17_B.DomainLayer.User
             oldOwner.RemoveOwnership(storeID);
         }
 
-        private void RemoveManagement(string username, string storeID)
+        private void RemoveManagement(string username, int storeID)
         {
             Subscriber oldManager = GetSubscriberByUsername(username);
             oldManager.RemoveManagement(storeID);
         }
 
-        public void RevokeOwnership(string token, string storeID, string ownerUsername)
+        public void RevokeOwnership(string token, int storeID, string ownerUsername)
         {
             Subscriber requestingSubscriber = GetSubscriberByToken(token);
             requestingSubscriber.RemoveOwnerAppointment(storeID, ownerUsername); // Will throw an exception if the requesting subscriber isn't the store owner or didn't appoint an owner with the given ownerUsername
             RemoveOwnership(ownerUsername, storeID); // Should not throw an exception as long as the requesting subscriber did appoint him before
         }
 
-        public void RevokeManagement(string token, string storeID, string managerUsername)
+        public void RevokeManagement(string token, int storeID, string managerUsername)
         {
             Subscriber requestingSubscriber = GetSubscriberByToken(token);
             requestingSubscriber.RemoveManagerAppointment(storeID, managerUsername); // Will throw an exception if the requesting subscriber isn't a store owner or didn't appoint a manager with the given managerUsername
             RemoveManagement(managerUsername, storeID); // Should not throw an exception as long as the requesting subscriber did appoint him before
         }
 
-        public void AddToCart(string token, string storeID, string productID, int quantity)
+        public void AddToCart(string token, int storeID, int productID, int quantity)
         {
             User user = GetUserByToken(token);
             if (quantity <= 0)
@@ -411,7 +411,7 @@ namespace Sadna_17_B.DomainLayer.User
             return user.ShoppingCart;
         }
 
-        public void UpdateCartProduct(string token, string storeID, string productID, int quantity)
+        public void UpdateCartProduct(string token, int storeID, int productID, int quantity)
         {
             User user = GetUserByToken(token);
             if (quantity < 0)
@@ -467,7 +467,7 @@ namespace Sadna_17_B.DomainLayer.User
             return GetOrderHistoryByUser(user);
         }
 
-        public List<SubOrder> GetStoreOrderHistory(string token, string storeID)
+        public List<SubOrder> GetStoreOrderHistory(string token, int storeID)
         {
             Subscriber subscriber = GetSubscriberByToken(token);
             if (!(subscriber is Admin) && !subscriber.IsOwnerOf(storeID))
@@ -478,7 +478,7 @@ namespace Sadna_17_B.DomainLayer.User
             return orderSystem.GetStoreOrderHistory(storeID);
         }
 
-        public Tuple<HashSet<string>,Dictionary<string,HashSet<Manager.ManagerAuthorization>>> GetStoreRoles(string token, string storeID)
+        public Tuple<HashSet<string>,Dictionary<string,HashSet<Manager.ManagerAuthorization>>> GetStoreRoles(string token, int storeID)
         {
             Subscriber requestingSubscriber = GetSubscriberByToken(token);
             if (!requestingSubscriber.IsOwnerOf(storeID))

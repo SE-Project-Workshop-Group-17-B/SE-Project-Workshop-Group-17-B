@@ -19,7 +19,7 @@ namespace Sadna_17_B.DomainLayer.Order
         private Dictionary<int, Order> orderHistory = new Dictionary<int, Order>();                         // OrderId -> Order
         private Dictionary<int, List<Order>> guestOrders = new Dictionary<int, List<Order>>();              // GuestID -> List<Order>
         private Dictionary<string, List<Order>> subscriberOrders = new Dictionary<string, List<Order>>();   // Username -> List<Order>
-        private Dictionary<string, List<SubOrder>> storeOrders = new Dictionary<string, List<SubOrder>>();  // StoreID -> Order
+        private Dictionary<int, List<SubOrder>> storeOrders = new Dictionary<int, List<SubOrder>>();        // StoreID -> Order
         private int orderCount = 0;
 
         public OrderSystem(StoreController storeController)
@@ -27,12 +27,12 @@ namespace Sadna_17_B.DomainLayer.Order
             this.storeController = storeController;
         }
 
-        private Dictionary<string, Dictionary<string, int>> GetShoppingCartQuantities(ShoppingCart shoppingCart)
+        private Dictionary<int, Dictionary<int, int>> GetShoppingCartQuantities(ShoppingCart shoppingCart)
         {
-            Dictionary<string, Dictionary<string, int>> quantities = new Dictionary<string, Dictionary<string, int>>();
+            Dictionary<int, Dictionary<int, int>> quantities = new Dictionary<int, Dictionary<int, int>>();
             foreach (var basket in shoppingCart.ShoppingBaskets)
             {
-                quantities[basket.Key] = new Dictionary<string, int>();
+                quantities[basket.Key] = new Dictionary<int, int>();
                 foreach (var productQuantity in basket.Value.ProductQuantities)
                 {
                     quantities[basket.Key][productQuantity.Key] = productQuantity.Value;
@@ -43,11 +43,11 @@ namespace Sadna_17_B.DomainLayer.Order
 
         public void ProcessOrder(ShoppingCart shoppingCart, string userID, bool isGuest, string destinationAddress, string creditCardInfo)
         {
-            Dictionary<string, Dictionary<string, int>> quantities = GetShoppingCartQuantities(shoppingCart);
+            Dictionary<int, Dictionary<int, int>> quantities = GetShoppingCartQuantities(shoppingCart);
             // Check Order Validity with StoreController: satisfies the store policies and all product quantities exist in the inventory
             foreach (var quantitiesOfStore in quantities)
             {
-                string storeID = quantitiesOfStore.Key;
+                int storeID = quantitiesOfStore.Key;
                 // TODO: Fix Store API to match this
                 //if (!storeController.CanProcessOrder(storeID,quantitiesOfStore.Value))
                 //{
@@ -56,10 +56,10 @@ namespace Sadna_17_B.DomainLayer.Order
             }
 
             // Calculate Product Final Prices with StoreController: containing all product prices after discounts
-            Dictionary<string, Dictionary<string, Tuple<int, float>>> products = new Dictionary<string, Dictionary<string, Tuple<int, float>>>();
+            Dictionary<int, Dictionary<int, Tuple<int, float>>> products = new Dictionary<int, Dictionary<int, Tuple<int, float>>>();
             foreach (var quantitiesOfStore in quantities)
             {
-                string storeID = quantitiesOfStore.Key;
+                int storeID = quantitiesOfStore.Key;
                 // TODO: Fix Store API to match this
                 //Dictionary<string, Tuple<int, float>> storeProductsPrices = storeController.CalculateProductPrices(storeID, quantities);
                 //products[storeID] = storeProductsPrices;
@@ -71,7 +71,7 @@ namespace Sadna_17_B.DomainLayer.Order
             {
                 throw new Sadna17BException("Invalid order price: " + orderPrice);
             }
-            List<string> manufacturerProductNumbers = order.GetManufacturerProductNumbers();
+            List<int> manufacturerProductNumbers = order.GetManufacturerProductNumbers();
 
             // Check availability of PaymentSystem external service:
             if (paymentSystem.IsValidPayment(creditCardInfo, order.TotalPrice()))
@@ -87,7 +87,7 @@ namespace Sadna_17_B.DomainLayer.Order
             // Process Order by StoreController: Executes the reduction of the product quantities from the inventory
             foreach (var quantitiesOfStore in quantities)
             {
-                string storeID = quantitiesOfStore.Key;
+                int storeID = quantitiesOfStore.Key;
                 // TODO: Fix Store API to match this
                 //storeController.ProcessOrder(storeID, quantitiesOfStore.Value);
             }
@@ -142,7 +142,7 @@ namespace Sadna_17_B.DomainLayer.Order
             }
         }
 
-        public List<SubOrder> GetStoreOrderHistory(string storeID)
+        public List<SubOrder> GetStoreOrderHistory(int storeID)
         {
             if (storeOrders.ContainsKey(storeID))
             {

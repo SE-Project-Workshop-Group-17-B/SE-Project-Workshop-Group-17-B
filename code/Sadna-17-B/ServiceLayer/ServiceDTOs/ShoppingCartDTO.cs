@@ -9,30 +9,30 @@ namespace Sadna_17_B.ServiceLayer.ServiceDTOs
 {
     public class ShoppingCartDTO
     {
-        public Dictionary<string, ShoppingBasketDTO> ShoppingBaskets { get; }
+        public Dictionary<int, ShoppingBasketDTO> ShoppingBaskets { get; } // StoreID -> ShoppingBasketDTO
 
         public ShoppingCartDTO()
         {
-            ShoppingBaskets = new Dictionary<string, ShoppingBasketDTO>();
+            ShoppingBaskets = new Dictionary<int, ShoppingBasketDTO>();
         }
 
-        public ShoppingCartDTO(Dictionary<string, ShoppingBasketDTO> baskets)
+        public ShoppingCartDTO(Dictionary<int, ShoppingBasketDTO> baskets)
         {
             ShoppingBaskets = baskets;
         }
 
         public ShoppingCartDTO(ShoppingCart shoppingCart)
         {
-            ShoppingBaskets = new Dictionary<string, ShoppingBasketDTO>();
+            ShoppingBaskets = new Dictionary<int, ShoppingBasketDTO>();
             foreach (ShoppingBasket basket in shoppingCart.ShoppingBaskets.Values)
             {
                 ShoppingBaskets[basket.StoreID] = new ShoppingBasketDTO(basket);
             }
         }
 
-        public ShoppingCartDTO(ShoppingCart shoppingCart, Dictionary<string,Product> products)
+        public ShoppingCartDTO(ShoppingCart shoppingCart, Dictionary<int,Product> products)
         {
-            ShoppingBaskets = new Dictionary<string, ShoppingBasketDTO>();
+            ShoppingBaskets = new Dictionary<int, ShoppingBasketDTO>();
             foreach (ShoppingBasket basket in shoppingCart.ShoppingBaskets.Values)
             {
                 ShoppingBaskets[basket.StoreID] = new ShoppingBasketDTO(basket, products);

@@ -24,16 +24,16 @@ namespace Sadna_17_B.ServiceLayer.ServiceDTOs
         public ShoppingBasketDTO(ShoppingBasket shoppingBasket)
         {
             ProductQuantities = new Dictionary<ProductDTO, int>();
-            foreach (KeyValuePair<string, int> productQuantity in shoppingBasket.ProductQuantities)
+            foreach (KeyValuePair<int, int> productQuantity in shoppingBasket.ProductQuantities)
             {
                 ProductQuantities[new ProductDTO(productQuantity.Key)] = productQuantity.Value;
             }
         }
 
-        public ShoppingBasketDTO(ShoppingBasket shoppingBasket, Dictionary<string,Product> products)
+        public ShoppingBasketDTO(ShoppingBasket shoppingBasket, Dictionary<int,Product> products)
         {
             ProductQuantities = new Dictionary<ProductDTO, int>();
-            foreach (KeyValuePair<string, int> productQuantity in shoppingBasket.ProductQuantities)
+            foreach (KeyValuePair<int, int> productQuantity in shoppingBasket.ProductQuantities)
             {
                 ProductQuantities[new ProductDTO(products[productQuantity.Key])] = productQuantity.Value;
             }

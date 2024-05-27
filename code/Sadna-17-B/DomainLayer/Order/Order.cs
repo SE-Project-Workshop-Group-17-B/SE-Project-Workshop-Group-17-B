@@ -11,11 +11,11 @@ namespace Sadna_17_B.DomainLayer.Order
         public string UserID { get; } // Can be either GuestID or Username, according to the order type
         public bool IsGuestOrder { get; }
         public DateTime Timestamp { get; }
-        public Dictionary<string, Dictionary<string, Tuple<int,float>>> Products { get; } // StoreID -> ProductID -> (quantity,unitPrice)
+        public Dictionary<int, Dictionary<int, Tuple<int,float>>> Products { get; } // StoreID -> ProductID -> (quantity,unitPrice)
         public string DestinationAddress { get; }
         public string CreditCardInfo { get; }
 
-        public Order(int orderID, string userID, bool isGuestOrder, Dictionary<string,Dictionary<string,Tuple<int,float>>> products, string destinationAddress, string creditCardInfo)
+        public Order(int orderID, string userID, bool isGuestOrder, Dictionary<int,Dictionary<int,Tuple<int,float>>> products, string destinationAddress, string creditCardInfo)
         {
             OrderID = orderID;
             UserID = userID;
@@ -39,12 +39,12 @@ namespace Sadna_17_B.DomainLayer.Order
             return price;
         }
 
-        public List<string> GetManufacturerProductNumbers()
+        public List<int> GetManufacturerProductNumbers()
         {
-            List<string> productNumbers = new List<string>();
+            List<int> productNumbers = new List<int>();
             foreach (var productsInStore in Products.Values)
             {
-                foreach (string productID in productsInStore.Keys)
+                foreach (int productID in productsInStore.Keys)
                 {
                     productNumbers.Add(productID);
                 }
@@ -55,7 +55,7 @@ namespace Sadna_17_B.DomainLayer.Order
         public List<SubOrder> GetSubOrders()
         {
             List<SubOrder> subOrders = new List<SubOrder>();
-            foreach (string storeID in Products.Keys)
+            foreach (int storeID in Products.Keys)
             {
                 subOrders.Add(new SubOrder(storeID, this));
             }

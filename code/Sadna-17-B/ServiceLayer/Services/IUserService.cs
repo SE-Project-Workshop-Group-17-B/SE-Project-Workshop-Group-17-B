@@ -71,17 +71,17 @@ namespace Sadna_17_B.ServiceLayer.Services
         /// <summary>
         /// Returns a Response with Success "true" and Data "true" iff the given token corresponds to a store owner of the given store with the given storeID.
         /// </summary>
-        Response /*bool*/ IsOwner(string token, string storeID);
+        Response /*bool*/ IsOwner(string token, int storeID);
 
         /// <summary>
         /// Returns a Response with Success "true" and Data "true" iff the given token corresponds to a store manager of the given store with the given storeID.
         /// </summary>
-        Response /*bool*/ IsManager(string token, string storeID);
+        Response /*bool*/ IsManager(string token, int storeID);
 
         /// <summary>
         /// Returns a Response with Success "true" and Data "true" iff the given token corresponds to a store manager of the given store with the given storeID and with the given ManagerAuthorization.
         /// </summary>
-        Response /*bool*/ HasManagerAuthorization(string token, string storeID, Manager.ManagerAuthorization auth);
+        Response /*bool*/ HasManagerAuthorization(string token, int storeID, Manager.ManagerAuthorization auth);
 
         /// <summary>
         /// Attempts to update the manager authorizations of a manager appointed by the requesting user.
@@ -89,30 +89,30 @@ namespace Sadna_17_B.ServiceLayer.Services
         /// Returns an error Response if the token doesn't correspond to an actual store owner of the store with the given storeID or if the given managerUsername doesn't satisfy the conditions above.
         /// Otherwise, returns a Success Response and the manager authorizations are updated to the given ones.
         /// </summary>
-        Response UpdateManagerAuthorizations(string token, string storeID, string managerUsername, HashSet<Manager.ManagerAuthorization> authorizations);
+        Response UpdateManagerAuthorizations(string token, int storeID, string managerUsername, HashSet<Manager.ManagerAuthorization> authorizations);
 
-        Response OfferOwnerAppointment(string token, string storeID, string newOwnerUsername);
+        Response OfferOwnerAppointment(string token, int storeID, string newOwnerUsername);
 
-        Response OfferManagerAppointment(string token, string storeID, string newManagerUsername);
+        Response OfferManagerAppointment(string token, int storeID, string newManagerUsername);
 
-        Response OfferManagerAppointment(string token, string storeID, string newManagerUsername, HashSet<Manager.ManagerAuthorization> authorizations);
+        Response OfferManagerAppointment(string token, int storeID, string newManagerUsername, HashSet<Manager.ManagerAuthorization> authorizations);
 
-        Response RespondToOwnerAppointmentOffer(string token, string storeID, bool offerResponse);
+        Response RespondToOwnerAppointmentOffer(string token, int storeID, bool offerResponse);
 
-        Response RespondToManagerAppointmentOffer(string token, string storeID, bool offerResponse);
+        Response RespondToManagerAppointmentOffer(string token, int storeID, bool offerResponse);
 
         /// <summary>
         /// Attempts to remove the ownership of the user with the given username by the user corresponding to the given token, from the store with the given storeID.
         /// Removing the ownership of this user should also remove all ownerships and managements that this user has appointed. (Requirement 4.4 - which is not required in this version)
         /// Returns an error Response if the token doesn't correspond to an actual subscriber or if the subscriber isn't store owner.
         /// </summary>
-        Response RevokeOwnership(string token, string storeID, string ownerUsername);
+        Response RevokeOwnership(string token, int storeID, string ownerUsername);
 
-        Response AddToCart(string token, string storeID, string productID, int quantity);
+        Response AddToCart(string token, int storeID, int productID, int quantity);
 
         Response /*ShoppingCartDTO*/ GetShoppingCart(string token);
 
-        Response UpdateCartProduct(string token, string storeID, string productID, int quantity);
+        Response UpdateCartProduct(string token, int storeID, int productID, int quantity);
 
         Response CompletePurchase(string token, string destinationAddress, string creditCardInfo);
 
@@ -130,13 +130,13 @@ namespace Sadna_17_B.ServiceLayer.Services
         /// Returns an error Response if the token doesn't correspond to an admin or a store owner of the store with the given storeID.
         /// Otherwise, returns a Response containing a list of SubOrderDTO containing the order history of the store.
         /// </summary>
-        Response /*List<SubOrderDTO>*/ GetStoreOrderHistory(string token, string storeID);
+        Response /*List<SubOrderDTO>*/ GetStoreOrderHistory(string token, int storeID);
 
         /// <summary>
         /// Attempts to return the store roles of the store with the given storeID. (Requirement 4.11)
         /// Returns an error Response if the token doesn't correspond to a store owner of the store with the given storeID.
         /// Otherwise, returns a Response containing a Tuple containing the owners in the first entry (as a HashSet of usernames), and the managers in the second entry (as a Dictionary from usernames to HashSet of ManagerAuthorization).
         /// </summary>
-        Response /*Tuple<owners,managers>*/ GetStoreRoles(string token, string storeID);
+        Response /*Tuple<owners,managers>*/ GetStoreRoles(string token, int storeID);
     }
 }

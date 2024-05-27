@@ -8,7 +8,7 @@ namespace Sadna_17_B.ExternalServices
 {
     internal interface ISupplySystem
     {
-        bool IsValidDelivery(string destinationAddress, List<string> productNumbers);
-        bool ExecuteDelivery(string destinationAddress, List<string> productNumbers);
+        bool IsValidDelivery(string destinationAddress, List<int> productNumbers);
+        bool ExecuteDelivery(string destinationAddress, List<int> productNumbers);
     }
 }

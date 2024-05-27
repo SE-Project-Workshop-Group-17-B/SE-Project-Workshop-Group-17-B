@@ -10,7 +10,7 @@ namespace Sadna_17_B.DomainLayer.User
     {
         public ShoppingCart ShoppingCart { get; }
 
-        public void AddToCart(string storeID, string productID, int quantity)
+        public void AddToCart(int storeID, int productID, int quantity)
         {
             if (quantity <= 0)
             {
@@ -19,7 +19,7 @@ namespace Sadna_17_B.DomainLayer.User
             ShoppingCart.AddToCart(storeID, productID, quantity);
         }
 
-        public void UpdateCartProduct(string storeID, string productID, int quantity)
+        public void UpdateCartProduct(int storeID, int productID, int quantity)
         {
             if (quantity < 0)
             {

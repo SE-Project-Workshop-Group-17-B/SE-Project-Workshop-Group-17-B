@@ -11,8 +11,8 @@ namespace Sadna_17_B.DomainLayer.User
         public string Username { get; }
         private string passwordHash;
 
-        public Dictionary<string, Owner> Ownerships { get; } // storeID -> Owner object
-        public Dictionary<string, Manager> Managements { get; } // storeID -> Manager object
+        public Dictionary<int, Owner> Ownerships { get; } // storeID -> Owner object
+        public Dictionary<int, Manager> Managements { get; } // storeID -> Manager object
 
         public Subscriber(string username, string password)
         {
@@ -26,8 +26,8 @@ namespace Sadna_17_B.DomainLayer.User
                 throw new Sadna17BException("Given password isn't valid, it has to be at least 6 characters long.");
             }
             passwordHash = Cryptography.HashString(password);
-            Ownerships = new Dictionary<string, Owner>();
-            Managements = new Dictionary<string, Manager>();
+            Ownerships = new Dictionary<int, Owner>();
+            Managements = new Dictionary<int, Manager>();
         }
 
         public bool CheckPassword(string password)
@@ -45,7 +45,7 @@ namespace Sadna_17_B.DomainLayer.User
             return password != null && password.Length >= 6;
         }
 
-        public void CreateFounder(string storeID)
+        public void CreateFounder(int storeID)
         {
             if (Ownerships.ContainsKey(storeID))
             {
@@ -61,7 +61,7 @@ namespace Sadna_17_B.DomainLayer.User
             }
         }
 
-        public void AddOwnership(string storeID)
+        public void AddOwnership(int storeID)
         {
             if (Ownerships.ContainsKey(storeID))
             {
@@ -77,7 +77,7 @@ namespace Sadna_17_B.DomainLayer.User
             }
         }
 
-        public void RemoveOwnership(string storeID)
+        public void RemoveOwnership(int storeID)
         {
             if (!Ownerships.ContainsKey(storeID))
             {
@@ -89,7 +89,7 @@ namespace Sadna_17_B.DomainLayer.User
             }
         }
 
-        public void AddManagement(string storeID, HashSet<Manager.ManagerAuthorization> authorizations)
+        public void AddManagement(int storeID, HashSet<Manager.ManagerAuthorization> authorizations)
         {
             if (Managements.ContainsKey(storeID))
             {
@@ -105,7 +105,7 @@ namespace Sadna_17_B.DomainLayer.User
             }
         }
 
-        public void AddManagement(string storeID)
+        public void AddManagement(int storeID)
         {
             if (Managements.ContainsKey(storeID))
             {
@@ -121,7 +121,7 @@ namespace Sadna_17_B.DomainLayer.User
             }
         }
 
-        public void RemoveManagement(string storeID)
+        public void RemoveManagement(int storeID)
         {
             if (!Managements.ContainsKey(storeID))
             {
@@ -133,7 +133,7 @@ namespace Sadna_17_B.DomainLayer.User
             }
         }
 
-        public void AddManagerAuthorization(string storeID, Manager.ManagerAuthorization authorization)
+        public void AddManagerAuthorization(int storeID, Manager.ManagerAuthorization authorization)
         {
             if (!Managements.ContainsKey(storeID))
             {
@@ -145,7 +145,7 @@ namespace Sadna_17_B.DomainLayer.User
             }
         }
 
-        public void UpdateManagerAuthorizations(string storeID, HashSet<Manager.ManagerAuthorization> authorizations)
+        public void UpdateManagerAuthorizations(int storeID, HashSet<Manager.ManagerAuthorization> authorizations)
         {
             if (!Managements.ContainsKey(storeID))
             {
@@ -157,7 +157,7 @@ namespace Sadna_17_B.DomainLayer.User
             }
         }
 
-        public Owner GetOwnership(string storeID)
+        public Owner GetOwnership(int storeID)
         {
             if (Ownerships.ContainsKey(storeID))
             {
@@ -169,7 +169,7 @@ namespace Sadna_17_B.DomainLayer.User
             }
         }
 
-        public Manager GetManagement(string storeID)
+        public Manager GetManagement(int storeID)
         {
             if (Managements.ContainsKey(storeID))
             {
@@ -181,46 +181,46 @@ namespace Sadna_17_B.DomainLayer.User
             }
         }
 
-        public void AppointOwner(string storeID, string newOwnerUsername, Owner newOwner)
+        public void AppointOwner(int storeID, string newOwnerUsername, Owner newOwner)
         {
             Owner requestingOwner = GetOwnership(storeID); // Will throw an exception if the requesting subscriber is not an owner of the store with the given storeID
             requestingOwner.AppointOwner(newOwnerUsername, newOwner); // Will throw an exception if the requesting subscriber has already appointed an owner with the given ownerUsername somehow
         }
 
-        public void AppointManager(string storeID, string newManagerUsername, Manager newManager)
+        public void AppointManager(int storeID, string newManagerUsername, Manager newManager)
         {
             Owner requestingOwner = GetOwnership(storeID); // Will throw an exception if the requesting subscriber is not an owner of the store with the given storeID
             requestingOwner.AppointManager(newManagerUsername, newManager); // Will throw an exception if the requesting subscriber has already appointed a manager with the given ownerUsername somehow
         }
 
-        public void RemoveOwnerAppointment(string storeID, string ownerUsername)
+        public void RemoveOwnerAppointment(int storeID, string ownerUsername)
         {
             Owner requestingOwner = GetOwnership(storeID); // Will throw an exception if the requesting subscriber is not an owner of the store with the given storeID
             requestingOwner.RemoveOwnerAppointment(ownerUsername); // Will throw an exception if the requesting subscriber didn't appoint an owner with the given ownerUsername
         }
 
-        public void RemoveManagerAppointment(string storeID, string managerUsername)
+        public void RemoveManagerAppointment(int storeID, string managerUsername)
         {
             Owner requestingOwner = GetOwnership(storeID); // Will throw an exception if the requesting subscriber is not an owner of the store with the given storeID
             requestingOwner.RemoveManagerAppointment(managerUsername); // Will throw an exception if the requesting subscriber didn't appoint a manager with the given managerUsername
         }
 
-        public bool IsOwnerOf(string storeID)
+        public bool IsOwnerOf(int storeID)
         {
             return Ownerships.ContainsKey(storeID);
         }
 
-        public bool IsFounderOf(string storeID)
+        public bool IsFounderOf(int storeID)
         {
             return IsOwnerOf(storeID) && GetOwnership(storeID).IsFounder;
         }
 
-        public bool IsManagerOf(string storeID)
+        public bool IsManagerOf(int storeID)
         {
             return Managements.ContainsKey(storeID);
         }
 
-        public bool HasManagerAuthorization(string storeID, Manager.ManagerAuthorization auth)
+        public bool HasManagerAuthorization(int storeID, Manager.ManagerAuthorization auth)
         {
             return IsManagerOf(storeID) && GetManagement(storeID).HasAuthorization(auth);
         }

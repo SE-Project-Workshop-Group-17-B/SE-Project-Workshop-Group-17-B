@@ -8,7 +8,7 @@ namespace Sadna_17_B.ServiceLayer.ServiceDTOs
 {
     public class ProductDTO
     {
-        public string Id { get; }
+        public int Id { get; }
         
         // Note: Can extend this ProductDTO to hold all product information
         //public string Name { get; }
@@ -18,14 +18,14 @@ namespace Sadna_17_B.ServiceLayer.ServiceDTOs
         //public string CustomerReview { get; } // up to 75 char
         //public string Description { get; } // up to 100 char
 
-        public ProductDTO(string productID)
+        public ProductDTO(int productID)
         {
             Id = productID;
         }
 
         public ProductDTO(Product product)
         {
-            Id = product.Id.ToString();
+            Id = product.Id;
             //Name = product.Name;
             //Price = product.Price;
             //Category = product.Category;

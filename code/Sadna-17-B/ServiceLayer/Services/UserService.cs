@@ -179,7 +179,7 @@ namespace Sadna_17_B.ServiceLayer.Services
         /// <summary>
         /// Returns a Response with Success "true" and Data "true" iff the given token corresponds to a store owner of the store with the given storeID.
         /// </summary>
-        public Response /*bool*/ IsOwner(string token, string storeID)
+        public Response /*bool*/ IsOwner(string token, int storeID)
         {
             bool result = userController.IsOwner(token, storeID);
             return new Response(result, result);
@@ -189,7 +189,7 @@ namespace Sadna_17_B.ServiceLayer.Services
         /// Returns true iff the given token corresponds to a store owner of the store with the given storeID,
         /// can be used as an authorization check between services without the need for parsing a Response object, hence the 'internal' access modifier.
         /// </summary>
-        internal bool IsOwnerBool(string token, string storeID)
+        internal bool IsOwnerBool(string token, int storeID)
         {
             return userController.IsOwner(token, storeID);
         }
@@ -197,7 +197,7 @@ namespace Sadna_17_B.ServiceLayer.Services
         /// <summary>
         /// Returns a Response with Success "true" and Data "true" iff the given token corresponds to the store founder of the store with the given storeID.
         /// </summary>
-        public Response /*bool*/ IsFounder(string token, string storeID)
+        public Response /*bool*/ IsFounder(string token, int storeID)
         {
             bool result = userController.IsFounder(token, storeID);
             return new Response(result, result);
@@ -207,7 +207,7 @@ namespace Sadna_17_B.ServiceLayer.Services
         /// Returns true iff the given token corresponds to the store founder of the store with the given storeID,
         /// can be used as an authorization check between services without the need for parsing a Response object, hence the 'internal' access modifier.
         /// </summary>
-        internal bool IsFounderBool(string token, string storeID)
+        internal bool IsFounderBool(string token, int storeID)
         {
             return userController.IsFounder(token, storeID);
         }
@@ -215,7 +215,7 @@ namespace Sadna_17_B.ServiceLayer.Services
         /// <summary>
         /// Returns a Response with Success "true" and Data "true" iff the given token corresponds to a store manager of the store with the given storeID.
         /// </summary>
-        public Response /*bool*/ IsManager(string token, string storeID)
+        public Response /*bool*/ IsManager(string token, int storeID)
         {
             bool result = userController.IsManager(token, storeID);
             return new Response(result, result);
@@ -225,7 +225,7 @@ namespace Sadna_17_B.ServiceLayer.Services
         /// Returns true iff the given token corresponds to a store manager of the store with the given storeID,
         /// can be used as an authorization check between services without the need for parsing a Response object, hence the 'internal' access modifier.
         /// </summary>
-        internal bool IsManagerBool(string token, string storeID)
+        internal bool IsManagerBool(string token, int storeID)
         {
             return userController.IsManager(token, storeID);
         }
@@ -233,7 +233,7 @@ namespace Sadna_17_B.ServiceLayer.Services
         /// <summary>
         /// Returns a Response with Success "true" and Data "true" iff the given token corresponds to a store manager of the store with the given storeID and with the given ManagerAuthorization.
         /// </summary>
-        public Response /*bool*/ HasManagerAuthorization(string token, string storeID, Manager.ManagerAuthorization auth)
+        public Response /*bool*/ HasManagerAuthorization(string token, int storeID, Manager.ManagerAuthorization auth)
         {
             bool result = userController.HasManagerAuthorization(token, storeID, auth);
             return new Response(result, result);
@@ -243,7 +243,7 @@ namespace Sadna_17_B.ServiceLayer.Services
         /// Returns true iff the given token corresponds to a store manager of the store with the given storeID and with the given ManagerAuthorization,
         /// can be used as an authorization check between services without the need for parsing a Response object, hence the 'internal' access modifier.
         /// </summary>
-        internal bool HasManagerAuthorizationBool(string token, string storeID, Manager.ManagerAuthorization auth)
+        internal bool HasManagerAuthorizationBool(string token, int storeID, Manager.ManagerAuthorization auth)
         {
             return userController.HasManagerAuthorization(token, storeID, auth);
         }
@@ -254,7 +254,7 @@ namespace Sadna_17_B.ServiceLayer.Services
         /// Returns an error Response if the token doesn't correspond to an actual store owner of the store with the given storeID or if the given managerUsername doesn't satisfy the conditions above.
         /// Otherwise, returns a Success Response and the manager authorizations are updated to the given ones.
         /// </summary>
-        public Response UpdateManagerAuthorizations(string token, string storeID, string managerUsername, HashSet<Manager.ManagerAuthorization> authorizations)
+        public Response UpdateManagerAuthorizations(string token, int storeID, string managerUsername, HashSet<Manager.ManagerAuthorization> authorizations)
         {
             try
             {
@@ -272,12 +272,12 @@ namespace Sadna_17_B.ServiceLayer.Services
         /// Throws an exception if the token doesn't correspond to an actual subscriber or if the subscriber is already a store owner/founder/manager.
         /// Can be used as an update call between services without the need for parsing a Response object, hence the 'internal' access modifier.
         /// </summary>
-        internal void CreateStoreFounder(string token, string storeID) // StoreService should check the needed conditions and permissions (valid subscriber, newly generated storeID) before executing the operation in its module and calling this update call, so won't need to catch an exception.
+        internal void CreateStoreFounder(string token, int storeID) // StoreService should check the needed conditions and permissions (valid subscriber, newly generated storeID) before executing the operation in its module and calling this update call, so won't need to catch an exception.
         {
             userController.CreateStoreFounder(token, storeID); // Throws an exception if the token doesn't correspond to an actual subscriber or if the subscriber is already a store owner/founder/manager.
         }
 
-        public Response OfferOwnerAppointment(string token, string storeID, string newOwnerUsername)
+        public Response OfferOwnerAppointment(string token, int storeID, string newOwnerUsername)
         {
             try
             {
@@ -289,7 +289,7 @@ namespace Sadna_17_B.ServiceLayer.Services
             }
         }
 
-        public Response OfferManagerAppointment(string token, string storeID, string newManagerUsername)
+        public Response OfferManagerAppointment(string token, int storeID, string newManagerUsername)
         {
             try
             {
@@ -302,7 +302,7 @@ namespace Sadna_17_B.ServiceLayer.Services
             }
         }
 
-        public Response OfferManagerAppointment(string token, string storeID, string newManagerUsername, HashSet<Manager.ManagerAuthorization> authorizations)
+        public Response OfferManagerAppointment(string token, int storeID, string newManagerUsername, HashSet<Manager.ManagerAuthorization> authorizations)
         {
             try
             {
@@ -315,7 +315,7 @@ namespace Sadna_17_B.ServiceLayer.Services
             }
         }
 
-        public Response RespondToOwnerAppointmentOffer(string token, string storeID, bool offerResponse)
+        public Response RespondToOwnerAppointmentOffer(string token, int storeID, bool offerResponse)
         {
             try
             {
@@ -328,7 +328,7 @@ namespace Sadna_17_B.ServiceLayer.Services
             }
         }
 
-        public Response RespondToManagerAppointmentOffer(string token, string storeID, bool offerResponse)
+        public Response RespondToManagerAppointmentOffer(string token, int storeID, bool offerResponse)
         {
             try
             {
@@ -346,7 +346,7 @@ namespace Sadna_17_B.ServiceLayer.Services
         /// Removing the ownership of this user should also remove all ownerships and managements that this user has appointed. (Requirement 4.4 - which is not required in this version)
         /// Returns an error Response if the token doesn't correspond to an actual subscriber or if the subscriber isn't store owner.
         /// </summary>
-        public Response RevokeOwnership(string token, string storeID, string ownerUsername)
+        public Response RevokeOwnership(string token, int storeID, string ownerUsername)
         {
             try
             {
@@ -358,7 +358,7 @@ namespace Sadna_17_B.ServiceLayer.Services
             }
         }
 
-        public Response AddToCart(string token, string storeID, string productID, int quantity)
+        public Response AddToCart(string token, int storeID, int productID, int quantity)
         {
             try
             {
@@ -386,7 +386,7 @@ namespace Sadna_17_B.ServiceLayer.Services
             }
         }
 
-        public Response UpdateCartProduct(string token, string storeID, string productID, int quantity)
+        public Response UpdateCartProduct(string token, int storeID, int productID, int quantity)
         {
             try
             {
@@ -457,7 +457,7 @@ namespace Sadna_17_B.ServiceLayer.Services
         /// Returns an error Response if the token doesn't correspond to an admin or a store owner of the store with the given storeID.
         /// Otherwise, returns a Response containing a list of SubOrderDTO containing the order history of the store.
         /// </summary>
-        public Response /*List<SubOrderDTO>*/ GetStoreOrderHistory(string token, string storeID)
+        public Response /*List<SubOrderDTO>*/ GetStoreOrderHistory(string token, int storeID)
         {
             try
             {
@@ -480,7 +480,7 @@ namespace Sadna_17_B.ServiceLayer.Services
         /// Returns an error Response if the token doesn't correspond to a store owner of the store with the given storeID.
         /// Otherwise, returns a Response containing a Tuple containing the owners in the first entry (as a HashSet of usernames), and the managers in the second entry (as a Dictionary from usernames to HashSet of ManagerAuthorization).
         /// </summary>
-        public Response /*Tuple<owners,managers>*/ GetStoreRoles(string token, string storeID)
+        public Response /*Tuple<owners,managers>*/ GetStoreRoles(string token, int storeID)
         {
             try
             {
@@ -493,7 +493,7 @@ namespace Sadna_17_B.ServiceLayer.Services
         }
 
         // TODO: in next version, when implementing notification system, should be called by StoreService when the store closes (4.9)
-        //internal void NotifyStoreClosing(string token, string storeID)
+        //internal void NotifyStoreClosing(string token, int storeID)
         //{
         //
         //}

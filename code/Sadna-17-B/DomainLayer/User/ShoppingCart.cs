@@ -8,14 +8,14 @@ namespace Sadna_17_B.DomainLayer.User
 {
     public class ShoppingCart
     {
-        public Dictionary<string, ShoppingBasket> ShoppingBaskets { get; } // storeID -> ShoppingBasket object
+        public Dictionary<int, ShoppingBasket> ShoppingBaskets { get; } // storeID -> ShoppingBasket object
 
         public ShoppingCart()
         {
-            ShoppingBaskets = new Dictionary<string, ShoppingBasket>();
+            ShoppingBaskets = new Dictionary<int, ShoppingBasket>();
         }
 
-        private ShoppingBasket GetShoppingBasket(string storeID)
+        private ShoppingBasket GetShoppingBasket(int storeID)
         {
             if (!ShoppingBaskets.ContainsKey(storeID))
             {
@@ -24,7 +24,7 @@ namespace Sadna_17_B.DomainLayer.User
             return ShoppingBaskets[storeID];
         }
 
-        public void AddToCart(string storeID, string productID, int quantity)
+        public void AddToCart(int storeID, int productID, int quantity)
         {
             if (quantity <= 0)
             {
@@ -32,12 +32,12 @@ namespace Sadna_17_B.DomainLayer.User
             }
             else if (!ShoppingBaskets.ContainsKey(storeID))
             {
-                ShoppingBaskets[storeID] = new ShoppingBasket();
+                ShoppingBaskets[storeID] = new ShoppingBasket(storeID);
             }
             ShoppingBaskets[storeID].AddToBasket(productID, quantity);
         }
 
-        public void UpdateCartProduct(string storeID, string productID, int quantity)
+        public void UpdateCartProduct(int storeID, int productID, int quantity)
         {
             if (quantity < 0)
             {
