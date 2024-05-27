@@ -24,14 +24,16 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         public string _store_description { get; set; }
         public string _address { get; set; }
         public Inventory _inventory { get; set; }
+        public DiscountPolicy _discount_policy { get; set; }
 
 
 
 
         // ---------------- Constructor -------------------------------------------------------------------------------------------
 
+
         public Store(string name, string email, string phone_number,
-                                  string store_description, string address, Inventory inventory)
+                                  string store_description, string address, Inventory inventory, DiscountPolicy discount_policy)
         {
             // stores can be created via controller only
             _id = idCounter++;
@@ -41,11 +43,12 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             _store_description = store_description;
             _address = address;
             _inventory = inventory;
+            _discount_policy = discount_policy;
         }
 
 
 
-        // ---------------- Facade methods ----------------------------------------------------------------------------------------
+        // ---------------- adjust inventory ----------------------------------------------------------------------------------------
 
         public void AddProduct(Product product, int amount)
         {
@@ -60,19 +63,70 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             _inventory.RemoveProduct(product_to_remove);
         }
 
-        public void ReduceProductAmount(int p_id, int amount)
+        public bool ReduceProductQuantities(int p_id, int amount)
         {
             Product product_to_reduce = _inventory.searchProductById(p_id);
+
             if (product_to_reduce == null)
-                return;
+                return false;
+
             _inventory.ReduceProductAmount(product_to_reduce, amount);
+
+            return true;
+        }
+
+
+        // ---------------- discount related ----------------------------------------------------------------------------------------
+
+
+        public void AddDiscount(Discount discount)
+        {
+            _discount_policy.AddDiscount(discount);
+        }
+
+        public void RemoveDiscount(Discount discount)
+        {
+            _discount_policy.AddDiscount(discount);
+        }
+
+        public Dictionary<int,int> CalculateProductsPrices(Dictionary<int, int> quantities)
+        {
+            
+        }
+
+
+
+        // ---------------- search / get ----------------------------------------------------------------------------------------
+
+        public static int amount()
+        {
+            return idCounter;
+        }
+        
+        public string getInfo()
+        {
+            string s = string.Empty;
+
+            s += "----------------------------------------------------------------------------------------------------------------------\n\n";
+
+            s += "Store   : " + _name + "\n";
+            s += "Email   : " + _email + "\n";
+            s += "Phone   : " + _phone_number + "\n";
+            s += "address : " + _address + "\n\n";
+
+            s += " ------ DESCRIPTION ------ \n\n" + _store_description + "\n\n";
+
+            s += " ------ INVENTORY ------ \n\n" + _inventory.getInfo() + "\n\n";
+
+            s += "----------------------------------------------------------------------------------------------------------------------\n\n";
+
+            return s;
         }
 
         public int GetProductAmount(string productName)
         {
             return _inventory.GetProductAmount(productName);
         }
-
 
         public Product searchProductByID(int productId)
         {
@@ -95,33 +149,15 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return _inventory.searchProductByName(productName);
         }
 
-        public List<Product> SearchProductByCategory(string category)
+        public List<Product> SearchProductsByCategory(string category)
         {
-            List<Product> result = _inventory.SearchProductByCategory(category);
+            List<Product> result = _inventory.SearchProductsByCategory(category);
 
             return result.Any() ? result : null;
         }
 
-        public string getInfo()
-        {
-            string s = string.Empty;
 
-            s += "----------------------------------------------------------------------------------------------------------------------\n\n";
-
-            s += "Store   : " + _name + "\n";
-            s += "Email   : " + _email + "\n";
-            s += "Phone   : " + _phone_number + "\n";
-            s += "address : " + _address + "\n\n";
-
-            s += " ------ DESCRIPTION ------ \n\n" + _store_description + "\n\n";
-
-            s += " ------ INVENTORY ------ \n\n" + _inventory.getInfo() + "\n\n";
-
-            s += "----------------------------------------------------------------------------------------------------------------------\n\n";
-
-            return s;
-        }
-
+        
         public void example_test()
         {
            
@@ -139,9 +175,5 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             Console.WriteLine(s1.getInfo());
         }
 
-        public static int amount()
-        {
-            return idCounter;
-        }
     }
 }

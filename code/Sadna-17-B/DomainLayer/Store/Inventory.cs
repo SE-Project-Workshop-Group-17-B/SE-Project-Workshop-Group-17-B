@@ -92,7 +92,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return null;
         }
 
-        public List<Product> SearchProductByCategory(string category)
+        public List<Product> SearchProductsByCategory(string category)
         {
             var result = _allProducts.Keys
                 .Where(product => product.Category.Equals(category))

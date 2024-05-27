@@ -9,8 +9,16 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 {
     public class StoreController
     {
+
+        // ---------------- Variables -------------------------------------------------------------------------------------------
+
+
         private List<Store> _stores;
         public StoreController() { _stores = new List<Store>(); }
+
+
+        // ---------------- Store Builder -------------------------------------------------------------------------------------------
+
 
         public class StoreBuilder
         {
@@ -61,12 +69,13 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
                 return new Store(_name, _email, _phone_number, _store_description, _address, _inventory);
             }
+        
+        
         }
 
-        public StoreBuilder GetStoreBuilder()
-        {
-            return new StoreBuilder();
-        }
+
+        // ---------------- readonly Variables -------------------------------------------------------------------------------------------
+
 
         public void AddStore(Store store)
         {
@@ -77,6 +86,68 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         {
             _stores.Remove(store);
         }
+
+
+        public bool isOrderValid(int storeId, Dictionary<int, int> quantities)
+        {
+
+            Store store = GetStoreById(storeId);
+
+            if (store == null)
+                return false;
+
+            if (quantities.IsNullOrEmpty())
+                return false;
+
+
+            foreach (var item in quantities)
+            {
+                Product product = store.searchProductByID(item.Key);
+                int requiredAmount = item.Value;
+                int availableAmount = store._inventory.GetProductAmount(product);
+
+                if (availableAmount < requiredAmount)
+                    return false;
+
+            }
+            return true;
+        }
+
+        public Dictionary<int, int> ReduceProductQuantities(int storeID, Dictionary<int, int> quantities)
+        {
+            Dictionary<int, int> to_retrieve = new Dictionary<int, int>();
+
+            Store store = GetStoreById(storeID);
+
+            if (!isOrderValid(storeID, quantities))
+                return to_retrieve;
+
+            foreach (var item in quantities)
+            {
+                int p_id = item.Key;
+                int p_amount = item.Value;
+
+                if (store.ReduceProductQuantities(p_id, p_amount))
+                    to_retrieve.Add(p_id, p_amount);
+            }
+
+            return to_retrieve;
+        }
+
+        public Dictionary<int, int> CalculateProductsPrices(int storeID, Dictionary<int, int> quantities)
+        {
+            Store store = GetStoreById(storeID);
+
+            if (store == null)
+                throw new Exception("Invalid Parameter : store not found");
+
+            return store.CalculateProductsPrices(quantities);
+        }
+
+
+
+        // ---------------- get / search -------------------------------------------------------------------------------------------
+
 
         public List<Store> GetAllStores()
         {
@@ -93,67 +164,12 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return _stores.FirstOrDefault(store => store._id == id);
         }
 
-
-
-        public bool isOrderValid(int storeId, Dictionary<int, int> quantities)
+        public StoreBuilder GetStoreBuilder()
         {
-
-            Store store = GetStoreById(storeId);
-
-            if ( store == null )
-                return false;
-
-            if (quantities.IsNullOrEmpty())
-                return false;
-
-
-            foreach (var item in quantities)
-            {
-                Product product = store.searchProductByID(item.Key);
-                int requiredAmount = item.Value;
-                int availableAmount = store._inventory.GetProductAmount(product);
-
-                if (availableAmount < requiredAmount)
-                    return false;
-                
-            }
-            return true;
-        }
-
-        public void ProcessOrder(Dictionary<Product, int> order)
-        {
-            if (!CanProcessOrder(order))
-                return;
-
-            foreach (var item in order)
-            {
-                int p_id = item.Key.Id;
-                int requiredAmount = item.Value;
-                ReduceProductAmount(p_id, requiredAmount);
-            }
+            return new StoreBuilder();
         }
 
 
-        public bool isOrderValid(int storeID, Dictionary<int, int> quantities)
-        {
-            Store curr_store = _stores[storeID];
-
-            foreach (Product product in curr_store)
-            {
-
-            }
-
-        }
-
-        public bool ReduceProductQuantities(int storeID, Dictionary<string, int> quantities)
-        {
-            // todo
-        }
-
-        public bool CalculateProductPrices(int storeID, Dictionary<int, int> quantities)
-        {
-            // todo
-        }
 
         public List<Product> searchProductByName(string productName)
         {
@@ -163,13 +179,29 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                     .ToList();
         }
 
-        public List<Product> SearchProductByCategory(string category)
+        public Dictionary<Product, int> SearchProductsByCategory(string category) // example: each of every store's product (in "fruits" category)
+        {
+            Dictionary<Product, int> result = new List<Product, int>();
+
+            foreach (Store store in _stores)
+            {
+                var products = store.SearchProductsByCategory(category);
+                if (products != null)
+                { 
+                    result.AddRange(products,store._id);
+                }
+            }
+
+            return result.Any() ? result : null;
+        }
+
+        public List<Product> SearchProductsByCategory(string category) 
         {
             List<Product> result = new List<Product>();
 
             foreach (Store store in _stores)
             {
-                var products = store.SearchProductByCategory(category);
+                var products = store.SearchProductsByCategory(category);
                 if (products != null)
                 {
                     result.AddRange(products);

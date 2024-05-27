@@ -10,7 +10,7 @@ namespace Sadna_17_B.ServiceLayer.Services
         bool RemoveStore(string storeName);
         List<Store> GetAllStores();
         Store GetStoreByName(string name);
-        bool CanProcessOrder(int storeId, Dictionary<Product, int> order);
-        void ProcessOrder(int storeId, Dictionary<Product, int> order);
+        bool isValidOrder(int storeId, Dictionary<int, int> quantities);
+        void ReduceProductQuantities(int storeId, Dictionary<int, int> quantities);
     }
 }
