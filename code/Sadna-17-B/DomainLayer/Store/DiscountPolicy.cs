@@ -6,15 +6,8 @@ using System.Threading.Tasks;
 
 namespace Sadna_17_B.DomainLayer.StoreDom
 {
-
-    
-    // ----------- Discout Types -----------------------------------------------------------------------------------------------------------------
-
-
     public class DiscountPolicy 
     {
-
-
         // ----------- variables --------------------------------------------------------------------------------
 
 
@@ -23,8 +16,6 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
 
         // ----------- functions --------------------------------------------------------------------------------
-
-
         public void AddDiscount(Discount discount)
         {
             AllowedDiscounts.Add(discount);
@@ -36,16 +27,13 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         }
     }
 
-
-
     // ----------- Discout Types ------------------------------------------------------------------------------------------------------------------
-
-
     public abstract class Discount
     {
         public double precentage { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
+
 
         public abstract void applyDiscount(String code);
         public TimeSpan discount_duration()
@@ -59,7 +47,6 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         }
     }
 
-    
     public class VisibleDiscount : Discount
     {
 
