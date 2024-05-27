@@ -62,14 +62,9 @@ namespace Sadna_17_B.ServiceLayer.Services
             return _storeController.GetStoreByName(name);
         }
 
-        public bool CanProcessOrder(int storeId, Dictionary<Product, int> order)
+        public bool isValidOrder(int storeId, Dictionary<int, int> order)
         {
-            var store = _storeController.GetStoreById(storeId);
-            if (store != null)
-            {
-                return store.CanProcessOrder(order);
-            }
-            return false;
+            return _storeController.isValidOrder(storeId,order);
         }
 
         public void ProcessOrder(int storeId, Dictionary<Product, int> order)

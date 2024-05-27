@@ -1,4 +1,5 @@
-﻿using Sadna_17_B.DomainLayer.User;
+﻿using Microsoft.IdentityModel.Tokens;
+using Sadna_17_B.DomainLayer.User;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -90,6 +91,68 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         public Store GetStoreById(int id)
         {
             return _stores.FirstOrDefault(store => store._id == id);
+        }
+
+
+
+        public bool isOrderValid(int storeId, Dictionary<int, int> quantities)
+        {
+
+            Store store = GetStoreById(storeId);
+
+            if ( store == null )
+                return false;
+
+            if (quantities.IsNullOrEmpty())
+                return false;
+
+
+            foreach (var item in quantities)
+            {
+                Product product = store.searchProductByID(item.Key);
+                int requiredAmount = item.Value;
+                int availableAmount = store._inventory.GetProductAmount(product);
+
+                if (availableAmount < requiredAmount)
+                    return false;
+                
+            }
+            return true;
+        }
+
+        public void ProcessOrder(Dictionary<Product, int> order)
+        {
+            if (!CanProcessOrder(order))
+                return;
+
+            foreach (var item in order)
+            {
+                int p_id = item.Key.Id;
+                int requiredAmount = item.Value;
+                ReduceProductAmount(p_id, requiredAmount);
+            }
+        }
+
+
+        public bool isOrderValid(int storeID, Dictionary<int, int> quantities)
+        {
+            Store curr_store = _stores[storeID];
+
+            foreach (Product product in curr_store)
+            {
+
+            }
+
+        }
+
+        public bool ReduceProductQuantities(int storeID, Dictionary<string, int> quantities)
+        {
+            // todo
+        }
+
+        public bool CalculateProductPrices(int storeID, Dictionary<int, int> quantities)
+        {
+            // todo
         }
 
         public List<Product> searchProductByName(string productName)

@@ -73,36 +73,16 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return _inventory.GetProductAmount(productName);
         }
 
-        public bool CanProcessOrder(Dictionary<Product, int> order)
+
+        public Product searchProductByID(int productId)
         {
-            if (order == null)
-                return false;
 
-            foreach (var item in order)
+            if (productId < 0 || productId > Product.amount())
             {
-                Product product = item.Key;
-                int requiredAmount = item.Value;
-                int availableAmount = _inventory.GetProductAmount(product);
-
-                if (availableAmount < requiredAmount)
-                {
-                    return false;
-                }
+                throw new ArgumentNullException("id not valid");
             }
-            return true;
-        }
 
-        public void ProcessOrder(Dictionary<Product, int> order)
-        {
-            if (!CanProcessOrder(order))
-                return;
-
-            foreach (var item in order)
-            {
-                int p_id = item.Key.Id;
-                int requiredAmount = item.Value;
-                ReduceProductAmount(p_id, requiredAmount);
-            }
+            return _inventory.searchProductById(productId);
         }
 
         public Product searchProductByName(string productName)
@@ -142,7 +122,6 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return s;
         }
 
-
         public void example_test()
         {
            
@@ -158,6 +137,11 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             Store s1 = new Store("BBL DRIZZY", "notlikeus@pedofile.com", "051213141516", "tryna strike a chord but it's probably a MINORRRRRRRRRRRRRRRRRRRRR\nRRRRRRRRRRRRRRRRRRRRRR\nRRRRRRRRRRRRRRRRRRR", "pedofile st.", inv);
 
             Console.WriteLine(s1.getInfo());
+        }
+
+        public static int amount()
+        {
+            return idCounter;
         }
     }
 }
