@@ -28,7 +28,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         {
             _inventory = new Inventory();
             _product = new Product ("test product", 100, "tests", 5, "","");
-            _inventory.AddProduct(_product, 10);
+            _inventory.AddProduct(_product, 100);
 
             var storeBuilder = new StoreBuilder()
                                     .SetName("Test Store")
@@ -113,6 +113,8 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         [TestMethod]
         public void TestRemoveStore()
         {
+            _storeController.clearAllStores();
+
             // Arrange
             var storeBuilder = _storeController.GetStoreBuilder()
                                 .SetName("Test Store")
@@ -121,20 +123,21 @@ namespace Sadna_17_B_Test.Tests.UnitTests
                                 .SetStoreDescription("Test Store Description")
                                 .SetAddress("Test Address")
                                 .SetInventory(_inventory);
-            var store = storeBuilder.Build();
+            Store store = storeBuilder.Build();
             _storeController.AddStore(store);
 
             // Act
             _storeController.CloseStore(store);
-            var result = _storeController.GetStoreByName("Test Store");
 
             // Assert
-            Assert.IsNull(result);
+            Assert.AreEqual(0, _storeController.GetAllStores().Count);
         }
 
         [TestMethod]
         public void TestGetAllStores()
         {
+            _storeController.clearAllStores();
+
             // Arrange
             var storeBuilder1 = _storeController.GetStoreBuilder()
                                 .SetName("Test Store 1")
@@ -143,7 +146,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
                                 .SetStoreDescription("Description 1")
                                 .SetAddress("Address 1")
                                 .SetInventory(_inventory);
-            var store1 = storeBuilder1.Build();
+            Store store1 = storeBuilder1.Build();
             _storeController.AddStore(store1);
 
             var storeBuilder2 = _storeController.GetStoreBuilder()
@@ -153,7 +156,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
                                 .SetStoreDescription("Description 2")
                                 .SetAddress("Address 2")
                                 .SetInventory(_inventory);
-            var store2 = storeBuilder2.Build();
+            Store store2 = storeBuilder2.Build();
             _storeController.AddStore(store2);
 
             // Act
@@ -169,15 +172,21 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         public void TestReduceProductAmount_Synchronization()
         {
             int initialAmount = _inventory.GetProductAmount(_product);
+            Dictionary<Product,int> order = new Dictionary<Product,int>();
+            order[_product] = 5;
 
-            Task task1 = Task.Run(() => _storeController.ProcessOrder());
-            Task task2 = Task.Run(() => _storeController.ProcessOrder());
+            Task task1 = Task.Run(() => _storeController.ProcessOrder(1, order));
+            Task task2 = Task.Run(() => _storeController.ProcessOrder(1, order));
+            Task task3 = Task.Run(() => _storeController.ProcessOrder(1, order));
+            Task task4 = Task.Run(() => _storeController.ProcessOrder(1, order));
+            Task task5 = Task.Run(() => _storeController.ProcessOrder(1, order));
+            Task task6 = Task.Run(() => _storeController.ProcessOrder(1, order));
 
-            Task.WaitAll(task1, task2);
+            Task.WaitAll(task1, task2, task3, task4, task5, task6);
 
             int finalAmount = _inventory.GetProductAmount(_product);
 
-            Assert.AreEqual(initialAmount - 10, finalAmount);
+            Assert.AreEqual(initialAmount - 30, finalAmount);
         }
     }
 }

@@ -99,7 +99,25 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                     .Where(product => product != null)
                     .ToList();
         }
+        public bool CanProcessOrder(int storeId, Dictionary<Product, int> order)
+        {
+            var store = GetStoreById(storeId);
+            if (store != null)
+            {
+                return store.CanProcessOrder(order);
+            }
+            return false;
+        }
 
+        public void ProcessOrder(int storeId, Dictionary<Product, int> order)
+        {
+            var store = GetStoreById(storeId);
+
+            if (store == null)
+                return;
+
+            store.ProcessOrder(order);
+        }
         public List<Product> SearchProductByCategory(string category)
         {
             List<Product> result = new List<Product>();
@@ -114,6 +132,11 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             }
 
             return result.Any() ? result : null;
+        }
+
+        public void clearAllStores()
+        {
+           _stores.Clear();
         }
     }
 }
