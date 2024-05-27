@@ -199,25 +199,6 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                     .Where(product => product != null)
                     .ToList();
         }
-        public bool CanProcessOrder(int storeId, Dictionary<Product, int> order)
-        {
-            var store = GetStoreById(storeId);
-            if (store != null)
-            {
-                return store.CanProcessOrder(order);
-            }
-            return false;
-        }
-
-        public void ProcessOrder(int storeId, Dictionary<Product, int> order)
-        {
-            var store = GetStoreById(storeId);
-
-            if (store == null)
-                return;
-
-            store.ProcessOrder(order);
-        }
 
         public Dictionary<Product, int> SearchProductsByCategory(string category) // example: each of every store's product (in "fruits" category)
         {
