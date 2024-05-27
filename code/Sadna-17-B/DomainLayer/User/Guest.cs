@@ -8,7 +8,7 @@ namespace Sadna_17_B.DomainLayer.User
     public class Guest : User
     {
         public int GuestID { get; }
-        public Guest(int guestID)
+        public Guest(int guestID) : base()
         {
             GuestID = guestID;
         }
