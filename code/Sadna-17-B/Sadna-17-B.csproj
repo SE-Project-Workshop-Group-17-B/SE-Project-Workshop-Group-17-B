@@ -174,7 +174,7 @@
     <Compile Include="DomainLayer\DomainFactory.cs" />
     <Compile Include="DomainLayer\Order\Order.cs" />
     <Compile Include="DomainLayer\Order\OrderSystem.cs" />
-    <Compile Include="DomainLayer\Store\Discount.cs" />
+    <Compile Include="DomainLayer\Order\SubOrder.cs" />
     <Compile Include="DomainLayer\Store\DiscountPolicy.cs" />
     <Compile Include="DomainLayer\Store\Inventory.cs" />
     <Compile Include="DomainLayer\Store\Product.cs" />
@@ -198,10 +198,12 @@
     <Compile Include="ExternalServices\SupplySystemProxy.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ServiceLayer\ServiceDTOs\OrderDTO.cs" />
     <Compile Include="ServiceLayer\ServiceDTOs\ProductDTO.cs" />
     <Compile Include="ServiceLayer\ServiceDTOs\ShoppingBasketDTO.cs" />
     <Compile Include="ServiceLayer\ServiceDTOs\ShoppingCartDTO.cs" />
     <Compile Include="ServiceLayer\ServiceDTOs\StoreDTO.cs" />
+    <Compile Include="ServiceLayer\ServiceDTOs\SubOrderDTO.cs" />
     <Compile Include="ServiceLayer\ServiceDTOs\UserDTO.cs" />
     <Compile Include="ServiceLayer\ServiceFactory.cs" />
     <Compile Include="ServiceLayer\Services\IStoreService.cs" />
