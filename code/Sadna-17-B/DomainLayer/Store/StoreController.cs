@@ -213,16 +213,13 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         {
             var store = GetStoreById(storeId);
 
-<<<<<<< 58-implement-synchronization-for-product
             if (store == null)
                 return;
 
             store.ProcessOrder(order);
         }
-        public List<Product> SearchProductByCategory(string category)
-=======
+
         public Dictionary<Product, int> SearchProductsByCategory(string category) // example: each of every store's product (in "fruits" category)
->>>>>>> main
         {
             Dictionary<Product, int> result = new Dictionary<Product, int>();
 
@@ -238,13 +235,9 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return result.Any() ? result : null;
         }
 
-<<<<<<< 58-implement-synchronization-for-product
         public void clearAllStores()
         {
            _stores.Clear();
         }
-=======
-        
->>>>>>> main
     }
 }
