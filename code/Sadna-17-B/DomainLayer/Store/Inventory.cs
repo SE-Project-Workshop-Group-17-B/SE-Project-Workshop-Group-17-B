@@ -56,6 +56,16 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             }
         }
 
+        public void AddProductAmount(int p_id, int p_amount)
+        {
+            Product product = searchProductById(p_id);
+
+            if (! _allProducts.ContainsKey(product))
+                throw new Exception("no such product");
+
+            _allProducts[product] += p_amount;
+        }
+
         public void EditProductName(Product product, string newName)
         {
             if (_allProducts.ContainsKey(product))

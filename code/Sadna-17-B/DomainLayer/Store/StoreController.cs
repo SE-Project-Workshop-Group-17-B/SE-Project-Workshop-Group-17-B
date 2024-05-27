@@ -27,6 +27,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             private string _phone_number;
             private string _store_description;
             private string _address;
+            private DiscountPolicy _discount_policy;
             private Inventory _inventory;
 
             public StoreBuilder SetName(string name)
@@ -54,6 +55,11 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                 _address = address;
                 return this;
             }
+            public StoreBuilder SetDiscountPolicy(DiscountPolicy discountPolicy)
+            {
+                _discount_policy = discountPolicy;
+                return this;
+            }
             public StoreBuilder SetInventory(Inventory inventory)
             {
                 _inventory = inventory;
@@ -67,7 +73,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                     throw new InvalidOperationException("Store must have a name");
                 }
 
-                return new Store(_name, _email, _phone_number, _store_description, _address, _inventory);
+                return new Store(_name, _email, _phone_number, _store_description, _address, _inventory, _discount_policy);
             }
         
         
@@ -134,6 +140,21 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return to_retrieve;
         }
 
+
+        public void AddProductQuantities(int storeID, Dictionary<int, int> quantities)
+        {
+            Store store = GetStoreById(storeID);
+
+            foreach (var item in quantities)
+            {
+                int p_id = item.Key;
+                int p_amount = item.Value;
+
+                store.AddProductQuantities(p_id, p_amount);
+            }
+
+        }
+
         public Dictionary<int, int> CalculateProductsPrices(int storeID, Dictionary<int, int> quantities)
         {
             Store store = GetStoreById(storeID);
@@ -181,34 +202,20 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         public Dictionary<Product, int> SearchProductsByCategory(string category) // example: each of every store's product (in "fruits" category)
         {
-            Dictionary<Product, int> result = new List<Product, int>();
+            Dictionary<Product, int> result = new Dictionary<Product, int>();
 
             foreach (Store store in _stores)
             {
-                var products = store.SearchProductsByCategory(category);
+                List<Product> products = store.SearchProductsByCategory(category);
+
                 if (products != null)
-                { 
-                    result.AddRange(products,store._id);
-                }
+                    foreach (Product product in products)
+                        result.Add(product,store._id);
             }
 
             return result.Any() ? result : null;
         }
 
-        public List<Product> SearchProductsByCategory(string category) 
-        {
-            List<Product> result = new List<Product>();
-
-            foreach (Store store in _stores)
-            {
-                var products = store.SearchProductsByCategory(category);
-                if (products != null)
-                {
-                    result.AddRange(products);
-                }
-            }
-
-            return result.Any() ? result : null;
-        }
+        
     }
 }

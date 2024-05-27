@@ -91,9 +91,15 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         public Dictionary<int,int> CalculateProductsPrices(Dictionary<int, int> quantities)
         {
-            
+            // todo
+
+            return null;
         }
 
+        public void AddProductQuantities(int id, int amount)
+        { 
+            _inventory.AddProductAmount(id, amount);
+        }
 
 
         // ---------------- search / get ----------------------------------------------------------------------------------------
@@ -165,12 +171,14 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             Product p2 = new Product("chocolate", 100, "candy", 8, "nice one", "BYE");
             Product p3 = new Product("iphone", 3500, "apple", 10, "blat", "nahuy");
 
+            DiscountPolicy dp = new DiscountPolicy();
             Inventory inv = new Inventory();
+
             inv.AddProduct(p1, 13);
             inv.AddProduct(p2, 43);
             inv.AddProduct(p3, 1);
 
-            Store s1 = new Store("BBL DRIZZY", "notlikeus@pedofile.com", "051213141516", "tryna strike a chord but it's probably a MINORRRRRRRRRRRRRRRRRRRRR\nRRRRRRRRRRRRRRRRRRRRRR\nRRRRRRRRRRRRRRRRRRR", "pedofile st.", inv);
+            Store s1 = new Store("BBL DRIZZY", "notlikeus@pedofile.com", "051213141516", "tryna strike a chord but it's probably a MINORRRRRRRRRRRRRRRRRRRRR\nRRRRRRRRRRRRRRRRRRRRRR\nRRRRRRRRRRRRRRRRRRR", "pedofile st.", inv, dp);
 
             Console.WriteLine(s1.getInfo());
         }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.IdentityModel.Tokens;
 using Sadna_17_B.DomainLayer.StoreDom;
-using ./Utils
+
 
 namespace Sadna_17_B.ServiceLayer.Services
 {
@@ -65,15 +65,14 @@ namespace Sadna_17_B.ServiceLayer.Services
 
         public void ReduceProductsQuantities(int storeID, Dictionary<int, int> quantities)
         {
-            Dictionary<int, int> toRetrieve = _storeController.ReduceProductsQuantities(storeID, quantities);
+            Dictionary<int, int> toRetrieve = _storeController.ReduceProductQuantities(storeID, quantities);
 
             if (!toRetrieve.IsNullOrEmpty())
             {
                 _storeController.AddProductQuantities(storeID, quantities);
-                return false;
             }
 
-            return true;
+            
         }
 
 
