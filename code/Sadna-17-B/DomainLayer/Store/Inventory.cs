@@ -41,6 +41,13 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         }
 
+        public bool AddProductReview(int product_id, string review)
+        {
+            Product product = searchProductById(product_id);
+            product.AddReview(review);
+            return true;
+        }
+
         public bool RemoveProduct(Product product)
         {
             lock (product)
