@@ -156,16 +156,16 @@ namespace Sadna_17_B.ServiceLayer.Services
 
         public Response reduce_products(string token, int storeID, Dictionary<int, int> quantities)
         {
+            bool result = false;
+            string message = "something wrong";
 
-            if (_userService.IsOwnerBool(token, storeID))
+            if (_userService.IsOwnerBool(token, storeID) || _userService.HasManagerAuthorizationBool(token, storeID, DomainLayer.User.Manager.ManagerAuthorization.UpdateSupply))
             {
-                bool result = false;
-                string message = "something wrong";
 
                 try
                 {
                     result = _storeController.ReduceProductQuantities(storeID, quantities);
-                    string message = result ? "Products reduced successfully.\n" : "Failed to reduce products.\n";
+                    message = result ? "Products reduced successfully.\n" : "Failed to reduce products.\n";
 
                     info_logger.Log("Store", message);
                     return new Response(result, message);
@@ -173,25 +173,23 @@ namespace Sadna_17_B.ServiceLayer.Services
                 catch (Sadna17BException e)
                 {
                     error_logger.Log( message);
-                    return new Response(result, message);
+                    return Response.GetErrorResponse(e);
                 }
             }
-
-            
-            
+            return new Response(result, message);
         }
 
         public Response add_products_to_store(string token, int storeID, int productID, int amount)
         {
-            if (_userService.IsOwnerBool(token, storeID))
+            bool result = false;
+            string message = "something wrong";
+            if (_userService.IsOwnerBool(token, storeID) || _userService.HasManagerAuthorizationBool(token, storeID, DomainLayer.User.Manager.ManagerAuthorization.UpdateSupply))
             {
-                bool result = false;
-                string message = "something wrong";
 
                 try
                 {
                     result = _storeController.AddProductsToStore(storeID, productID, amount);
-                    string message = result ? "Products reduced successfully.\n" : "Failed to reduce products.\n";
+                    message = result ? "Products reduced successfully.\n" : "Failed to reduce products.\n";
 
                     info_logger.Log("Store", message);
                     return new Response(result, message);
@@ -199,24 +197,24 @@ namespace Sadna_17_B.ServiceLayer.Services
                 catch (Sadna17BException e)
                 {
                     error_logger.Log(message);
-                    return new Response(result, message);
+                    return Response.GetErrorResponse(e);
                 }
             }
-     
+            return new Response(result, message);
         }
 
-        public Response edit_product_in_store(int storeID, int productID)
+        public Response edit_product_in_store(string token, int storeID, int productID)
         {
             bool result = false;
             string message = "something wrong";
 
-            if (_userService.IsOwnerBool(token, storeID))
+            if (_userService.IsOwnerBool(token, storeID) || _userService.HasManagerAuthorizationBool(token, storeID, DomainLayer.User.Manager.ManagerAuthorization.UpdateSupply))
             { 
 
                 try
                 {
                     result = _storeController.EditProductProperties(storeID, productID);
-                    string message = result ? "Products edited successfully.\n" : "Failed to edit products.\n";
+                    message = result ? "Products edited successfully.\n" : "Failed to edit products.\n";
 
                     info_logger.Log("Store", message);
                     return new Response(result, message);
@@ -224,7 +222,7 @@ namespace Sadna_17_B.ServiceLayer.Services
                 catch (Sadna17BException e)
                 {
                     error_logger.Log(message);
-                    return new Response(result, message);
+                    return Response.GetErrorResponse(e);
                 }
             }
 
