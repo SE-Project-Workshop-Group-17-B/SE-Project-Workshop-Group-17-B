@@ -74,10 +74,16 @@ namespace Sadna_17_B.ServiceLayer.Services
         {
             if (_userService.IsFounderBool(token, storeID))
             {
-                _storeController.CloseStore(storeID);
-                info_logger.Log("Store", "the store '" + _storeController.GetStoreById(storeID) + "' closed by user");
-
-                return new Response(true, "Store closed successfully\n"); ;
+                try
+                {
+                    _storeController.CloseStore(storeID);
+                    info_logger.Log("Store", "the store '" + _storeController.GetStoreById(storeID) + "' closed by user");
+                    return new Response(true, "Store closed successfully\n"); ;
+                }
+                catch (Sadna17BException e)
+                {
+                    return Response.GetErrorResponse(e);
+                }
             }
 
             info_logger.Log("Store", "the user is not authorized to enter the store (he is not the founder)");
@@ -95,6 +101,9 @@ namespace Sadna_17_B.ServiceLayer.Services
             return new Response(result, message);
         }
 
+
+
+        // ---------------- stores Management -------------------------------------------------------------------------------------------
         public Response reduce_products(int storeID, Dictionary<int, int> quantities)
         {
             bool result = _storeController.ReduceProductQuantities(storeID, quantities);
@@ -102,12 +111,21 @@ namespace Sadna_17_B.ServiceLayer.Services
 
             info_logger.Log("Store", message);
             return new Response(result, message);
-
-
-
-
         }
 
+        public Response add_products_to_store(int storeID, int productID, int amount)
+        {
+            bool result = _storeController.AddProductsToStore(storeID, productID, amount);
+
+            return new Response(result, result ? "Products reduced successfully.\n" : "Failed to reduce products.\n");
+        }
+
+        public Response edit_product_to_store(int storeID, int productID)
+        {
+            bool result = _storeController.EditProductProperties(storeID, productID);
+
+            return new Response(result, result ? "Products reduced successfully.\n" : "Failed to reduce products.\n");
+        }
 
         // ---------------- search stores options -------------------------------------------------------------------------------------------
 
@@ -135,7 +153,7 @@ namespace Sadna_17_B.ServiceLayer.Services
         // ---------------- search products options -------------------------------------------------------------------------------------------
 
 
-        public Response prodcuts_by_category(string category)
+        public Response products_by_category(string category)
         {
             Dictionary<Product, int> output = _storeController.SearchProductsByCategory(category);
             string message = (!output.IsNullOrEmpty()) ? "products found successfully\n" : "failed to find products\n";
@@ -222,7 +240,19 @@ namespace Sadna_17_B.ServiceLayer.Services
 
             return new Response(message, true);
 
+        {
+            Dictionary<Product, int> output = _storeController.searchProductByKeyWord(keyWord);
+            string message = (!output.IsNullOrEmpty()) ? "products found successfully\n" : "failed to find products\n";
+            info_logger.Log("Store", message);
+
+            return new Response(message, (!output.IsNullOrEmpty()), output);
         }
+
+
+        // ---------------- search stores -------------------------------------------------------------------------------------------
+
+
+
 
     }
 }

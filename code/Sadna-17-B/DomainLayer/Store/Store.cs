@@ -51,20 +51,57 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         // ---------------- adjust inventory ----------------------------------------------------------------------------------------
 
-        public void AddProduct(Product product, int amount)
+        public bool AddProduct(int product_id, int amount)
         {
-            _inventory.AddProduct(product, amount);
+
+            return _inventory.AddProduct(product_id, amount);
         }
 
-        public void RemoveProduct(string productName)
+        public bool RemoveProduct(string productName)
         {
             List<Product> products_to_remove = _inventory.searchProductByName(productName);
-
+            bool result = true;
             if (products_to_remove.IsNullOrEmpty())
-                return;
+                return false;
 
             foreach (Product product in products_to_remove)
-                _inventory.RemoveProduct(product);
+                result = result && _inventory.RemoveProduct(product);
+            
+            return result;
+        }
+
+        public bool EditProductProperties(int productId)
+        {
+            Product productEdit = _inventory.searchProductById(productId);
+            if (productEdit == null)
+                return false;
+
+            Console.WriteLine("Edit Product Name: ( -1 to continue ...)");
+            string new_name = Console.ReadLine();
+            if (!new_name.Equals("-1"))
+                _inventory.EditProductName(productId, new_name);
+
+            Console.WriteLine("Edit Product Price: ( -1 to continue ...)");
+            int new_price = Convert.ToInt32(Console.ReadLine());
+            if(new_price > 0)
+                _inventory.EditProductPrice(productId, new_price);
+
+            Console.WriteLine("Edit Product Category: ( -1 to continue ...)");
+            string new_Category = Console.ReadLine();
+            if (!new_Category.Equals("-1"))
+                _inventory.EditProductCategory(productId, new_Category);
+
+            Console.WriteLine("Edit Product Amount: ( -1 to continue ...)");
+            int new_amount = Convert.ToInt32(Console.ReadLine());
+            if (new_amount > 0)
+                _inventory.EditProductAmount(productId, new_amount);
+
+            Console.WriteLine("Edit Product Description: ( -1 to continue ...)");
+            string new_Description = Console.ReadLine();
+            if (!new_Description.Equals("-1"))
+                _inventory.EditProductDescription(productId, new_Description);
+
+            return true;
         }
 
         public bool ReduceProductQuantities(int p_id, int amount)

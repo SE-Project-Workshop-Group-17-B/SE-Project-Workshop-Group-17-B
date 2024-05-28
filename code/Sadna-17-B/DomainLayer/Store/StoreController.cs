@@ -98,7 +98,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             Store store = GetStoreById(storeID);
 
             if (store == null)
-                return;
+                throw new Sadna17BException("The store with storeID " + storeID + " is already closed.");
 
             _ClosedStores.Add(store);
             _stores.Remove(store);
@@ -113,6 +113,27 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
             _ClosedStores.Remove(store);
             _stores.Add(store);
+        }
+
+        public bool EditProductProperties(int storeID, int productId)
+        {
+            Store store = GetStoreById(storeID);
+
+            if (store == null)
+                return false;
+
+            return store.EditProductProperties(productId);
+        }
+
+        public bool AddProductsToStore(int storeID, int productId, int amount)
+        {
+            Store store = GetStoreById(storeID);
+
+            if (store == null)
+                return false;
+
+            store._inventory.AddProduct(productId, amount);
+            return true;
         }
 
         public bool isOrderValid(int storeId, Dictionary<int, int> quantities)
