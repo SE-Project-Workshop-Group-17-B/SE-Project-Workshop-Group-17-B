@@ -185,6 +185,42 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return result.Any() ? result : null;
         }
 
+        public bool edit_store_policy(string edit_type, Discount discount)
+        {
+
+            switch (edit_type)
+            {
+                case ("add discount"):
+
+                    AddDiscount(discount);
+                    return true;
+
+                case ("remove discount"):
+
+                    RemoveDiscount(discount);
+                    return true;
+            }
+
+            return false;
+        }
+
+        public bool add_policy(string policy_doc) // currently just name needed
+        {
+            string[] components = policy_doc.Split(',');
+            _discount_policy = new DiscountPolicy(components[0]);
+
+            return true; 
+        }
+
+        public bool remove_policy(int policy_id)
+        {
+            if (policy_id  ==  _discount_policy.get_id())
+                _discount_policy = null;
+
+            return true;
+        }
+
+
         /*
          * 
          * public void example_test()
