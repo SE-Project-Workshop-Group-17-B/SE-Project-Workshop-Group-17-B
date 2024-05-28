@@ -239,6 +239,38 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         }
 
         [TestMethod]
+        public void TestProductsByCategory()
+        {
+            SetUp();
+            Response ignore = userService.CreateSubscriber(username1, password1);
+            ignore = userService.CreateSubscriber(username2, password2);
+            Response res = userService.Login(username1, password1);
+            userDTO = res.Data as UserDTO;
+            storeService.create_store(userDTO.AccessToken, name, email, phonenumber, storeDescr, addr, inv);
+            Response storeRes = storeService.store_by_name(name);
+            int storeId = (storeRes.Data as Store)._id; // Note: may change if the response returns StoreDTO
+            //Response productRes = storeService.add_products_to_store_faster(userDTO.AccessToken, storeId, productName, productPrice, productCategory, productDescription, productAmount);
+            //int productId = (int)productRes.Data;//need to add option to get product id in storeService
+            //productRes = storeService.add_products_to_store_faster(userDTO.AccessToken, storeId, "banana", 5, "fruits", "very good banana", 10);
+            //int productId2 = (int)productRes.Data;
+            //Dictionary<Product, int> products = (Dictionary<Product, int>)storeService.products_by_category(productCategory).Data;
+            //bool firstFound = false;
+            //bool secondFound = false;
+            //foreach (var item in products)
+            //{
+            //    if (item.Key.Id == productId)
+            //    {
+            //        firstFound = true;
+            //    }
+            //    else if (item.Key.Id == productId2)
+            //    {
+            //        secondFound = true;
+            //    } 
+            //}
+            //Assert.IsTrue(firstFound && secondFound);
+        }
+
+        [TestMethod]
         public void TestCreateStoreFounder()
         {
             SetUp();
