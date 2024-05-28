@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.IdentityModel.Tokens;
+using Sadna_17_B.Utils;
 using Sadna_17_B.DomainLayer.StoreDom;
 
 
@@ -35,10 +36,12 @@ namespace Sadna_17_B.ServiceLayer.Services
 
         // ---------------- adjust stores -------------------------------------------------------------------------------------------
 
-        public void CreateStore(string token, string name, string email, string phoneNumber, string storeDescription, string address, Inventory inventory)
+        public Response CreateStore(string token, string name, string email, string phoneNumber, string storeDescription, string address, Inventory inventory)
         {
             if (!_userService.IsSubscriberBool(token))
-                return;
+            {
+                return new Response(false);
+            }
 
             var storeBuilder = _storeController.GetStoreBuilder()
                                 .SetName(name)
@@ -51,32 +54,35 @@ namespace Sadna_17_B.ServiceLayer.Services
             _storeController.AddStore(store);
 
             _userService.CreateStoreFounder(token, store._id);
+            return new Response(true, "\nNew Store Created.\nStoreID: " + store._id +"\nStore name: "+store._name);
+
         }
 
-        public bool CloseStore(string token, int storeID)
+        public Response CloseStore(string token, int storeID)
         {
             if (_userService.IsFounderBool(token, storeID))
             {
                 _storeController.CloseStore(storeID);
-                return true;
+                return new Response(true, "Store closed successfully\n");
             }
-            
-            return false;
+
+            return new Response(false, "Failed to close store, user not authorized.\n");
         }
 
-        public bool isValidOrder(int storeId, Dictionary<int, int> quantities)
+        public Response isValidOrder(int storeId, Dictionary<int, int> quantities)
         {
-            return _storeController.isOrderValid(storeId, quantities);
+            bool result = _storeController.isOrderValid(storeId, quantities);
+            return new Response(result, result ? "Order is valid.\n" : "Order not valid.\n");
         }
 
-        public void ReduceProductsQuantities(int storeID, Dictionary<int, int> quantities)
+        public Response ReduceProductsQuantities(int storeID, Dictionary<int, int> quantities)
         {
-            Dictionary<int, int> toRetrieve = _storeController.ReduceProductQuantities(storeID, quantities);
+            bool result = _storeController.ReduceProductQuantities(storeID, quantities);
 
-            if (!toRetrieve.IsNullOrEmpty())
-            {
-                _storeController.AddProductQuantities(storeID, quantities);
-            }
+
+            return new Response(result, result ? "Products reduced successfully.\n" : "Failed to reduce products.\n");
+
+          
 
             
         }
@@ -85,16 +91,19 @@ namespace Sadna_17_B.ServiceLayer.Services
         // ---------------- Variables -------------------------------------------------------------------------------------------
 
 
-        public List<Store> GetAllStores()
+        public Response GetAllStores()
         {
-            return _storeController.GetAllStores();
+            List<Store> AllStores =  _storeController.GetAllStores();
+            return new Response(AllStores.IsNullOrEmpty() ? "Failed to find stores\n" : "Stores Found Successfully\n", !AllStores.IsNullOrEmpty(), AllStores);
+
         }
 
-        public Store GetStoreByName(string name)
+        public Response GetStoreByName(string name)
         {
-            return _storeController.GetStoreByName(name);
+            Store store = _storeController.GetStoreByName(name);
+            return new Response(store != null ? "Store Found Successfully\n": "Failed to find store\n", store != null, store);
         }
 
-        
+
     }
 }

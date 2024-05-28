@@ -137,40 +137,42 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return true;
         }
 
-        public Dictionary<int, int> ReduceProductQuantities(int storeID, Dictionary<int, int> quantities)
+        public bool ReduceProductQuantities(int storeID, Dictionary<int, int> quantities)
         {
+            // in Case of Exception, Atomic action will restore previously 
+            // reduced products.
+
             Dictionary<int, int> to_retrieve = new Dictionary<int, int>();
 
             Store store = GetStoreById(storeID);
 
             if (!isOrderValid(storeID, quantities))
-                return to_retrieve;
+                return false;
 
             foreach (var item in quantities)
             {
                 int p_id = item.Key;
                 int p_amount = item.Value;
-
-                if (store.ReduceProductQuantities(p_id, p_amount))
-                    to_retrieve.Add(p_id, p_amount);
+                try
+                {
+                    if (store.ReduceProductQuantities(p_id, p_amount))
+                        to_retrieve.Add(p_id, p_amount);
+                }
+                catch (Exception e)
+                {
+                    // In case of failure to complete the function reduced products will be retored.
+                    foreach (var item2 in to_retrieve)
+                    {
+                        int p_id2 = item2.Key;
+                        int p_amount2 = item2.Value;
+                        store.AddProductQuantities(p_id2, p_amount2);
+                    }
+                    Console.WriteLine(e.Message);
+                    return false;
+                }
             }
 
-            return to_retrieve;
-        }
-
-
-        public void AddProductQuantities(int storeID, Dictionary<int, int> quantities)
-        {
-            Store store = GetStoreById(storeID);
-
-            foreach (var item in quantities)
-            {
-                int p_id = item.Key;
-                int p_amount = item.Value;
-
-                store.AddProductQuantities(p_id, p_amount);
-            }
-
+            return true;
         }
 
         public Dictionary<int, int> CalculateProductsPrices(int storeID, Dictionary<int, int> quantities)
