@@ -61,6 +61,7 @@ namespace Sadna_17_B.ServiceLayer.Services
             _storeController.AddStore(store);
             info_logger.Log("Store", "new store was added : \n\n" + store.getInfo());
 
+          
             _userService.CreateStoreFounder(token, store._id);
             info_logger.Log("User", "user is now founder of the '" + store._name + "' store");
 
@@ -153,27 +154,81 @@ namespace Sadna_17_B.ServiceLayer.Services
 
         // ---------------- stores Management -------------------------------------------------------------------------------------------
 
-        public Response reduce_products(int storeID, Dictionary<int, int> quantities)
+        public Response reduce_products(string token, int storeID, Dictionary<int, int> quantities)
         {
-            bool result = _storeController.ReduceProductQuantities(storeID, quantities);
-            string message = result ? "Products reduced successfully.\n" : "Failed to reduce products.\n";
 
-            info_logger.Log("Store", message);
-            return new Response(result, message);
+            if (_userService.IsOwnerBool(token, storeID))
+            {
+                bool result = false;
+                string message = "something wrong";
+
+                try
+                {
+                    result = _storeController.ReduceProductQuantities(storeID, quantities);
+                    string message = result ? "Products reduced successfully.\n" : "Failed to reduce products.\n";
+
+                    info_logger.Log("Store", message);
+                    return new Response(result, message);
+                }
+                catch (Sadna17BException e)
+                {
+                    error_logger.Log( message);
+                    return new Response(result, message);
+                }
+            }
+
+            
+            
         }
 
-        public Response add_products_to_store(int storeID, int productID, int amount)
+        public Response add_products_to_store(string token, int storeID, int productID, int amount)
         {
-            bool result = _storeController.AddProductsToStore(storeID, productID, amount);
+            if (_userService.IsOwnerBool(token, storeID))
+            {
+                bool result = false;
+                string message = "something wrong";
 
-            return new Response(result, result ? "Products reduced successfully.\n" : "Failed to reduce products.\n");
+                try
+                {
+                    result = _storeController.AddProductsToStore(storeID, productID, amount);
+                    string message = result ? "Products reduced successfully.\n" : "Failed to reduce products.\n";
+
+                    info_logger.Log("Store", message);
+                    return new Response(result, message);
+                }
+                catch (Sadna17BException e)
+                {
+                    error_logger.Log(message);
+                    return new Response(result, message);
+                }
+            }
+     
         }
 
         public Response edit_product_in_store(int storeID, int productID)
         {
-            bool result = _storeController.EditProductProperties(storeID, productID);
+            bool result = false;
+            string message = "something wrong";
 
-            return new Response(result, result ? "Products reduced successfully.\n" : "Failed to reduce products.\n");
+            if (_userService.IsOwnerBool(token, storeID))
+            { 
+
+                try
+                {
+                    result = _storeController.EditProductProperties(storeID, productID);
+                    string message = result ? "Products edited successfully.\n" : "Failed to edit products.\n";
+
+                    info_logger.Log("Store", message);
+                    return new Response(result, message);
+                }
+                catch (Sadna17BException e)
+                {
+                    error_logger.Log(message);
+                    return new Response(result, message);
+                }
+            }
+
+            return new Response(result, message);
         }
 
 
