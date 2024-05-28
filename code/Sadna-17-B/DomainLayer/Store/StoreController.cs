@@ -1,9 +1,11 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using Sadna_17_B.DomainLayer.User;
+using Sadna_17_B.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.Web.UI.WebControls;
 using System.Xml.Linq;
 
 namespace Sadna_17_B.DomainLayer.StoreDom
@@ -96,7 +98,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             Store store = GetStoreById(storeID);
 
             if (store == null)
-                return;
+                throw new Sadna17BException("The store with storeID " + storeID + " is already closed.");
 
             _ClosedStores.Add(store);
             _stores.Remove(store);
@@ -111,6 +113,27 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
             _ClosedStores.Remove(store);
             _stores.Add(store);
+        }
+
+        public bool EditProductProperties(int storeID, int productId)
+        {
+            Store store = GetStoreById(storeID);
+
+            if (store == null)
+                return false;
+
+            return store.EditProductProperties(productId);
+        }
+
+        public bool AddProductsToStore(int storeID, int productId, int amount)
+        {
+            Store store = GetStoreById(storeID);
+
+            if (store == null)
+                return false;
+
+            store._inventory.AddProduct(productId, amount);
+            return true;
         }
 
         public bool isOrderValid(int storeId, Dictionary<int, int> quantities)
@@ -186,10 +209,115 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return store.CalculateProductsPrices(quantities);
         }
 
+        public bool AddStoreReview(int storeID, string review)
+        {
+            Store store = GetStoreById(storeID);
+            store.AddReview(review);
+            return true;    
+        }
+
+        public bool AddProductReview(int storeID, int productID, string review)
+        {
+            Store store = GetStoreById(storeID);
+            Product product = store.searchProductByID(productID);
+            product.AddReview(review);
+            return true;
+        }
+
+        public bool EditProductReview(int storeID, int productID, string old_review, string new_review)
+        {
+            Store store = GetStoreById(storeID);
+            Product product = store.searchProductByID(productID);
+            product.EditReview(old_review, new_review);
+            return true;
+        }
+
+        public bool AddStoreRating(int storeID, int rating)
+        {
+            Store store = GetStoreById(storeID);
+            store.AddRating(rating);
+            return true;
+        }
+
+        public bool AddProductRating(int storeID, int productID, int rating)
+        {
+            Store store = GetStoreById(storeID);
+            Product product = store.searchProductByID(productID);
+            product.AddRating(rating);
+            return true;
+        }
+
+        public bool edit_policy(int store_id, string edit_type, string policy_doc)
+        {
+            foreach (Store store in _stores)
+            {
+                if (store_id == store._id)
+                {
+                    string[] components = policy_doc.Split(',');
+
+                    DateTime start = DateTime.Parse(components[0]);
+                    DateTime end = DateTime.Parse(components[1]);
+                    IDiscount_Strategy strategy = null;
+                    
+                    switch (components[2])
+                    {
+                        case "membership":
+
+                            strategy = new Discount_Member();
+                            break;
+
+                        case "percentage":
+
+                            strategy = new Discount_Percentage(Double.Parse(components[3]));
+                            break;
+
+                        case "flat":
+
+                            strategy = new Discount_Flat(Double.Parse(components[3]));
+                            break;
+                    }
+
+                    Discount discount = new VisibleDiscount(start, end, strategy);
+
+                    store.edit_store_policy(edit_type,discount);
+                    return true;
+                }
+                    
+            }
+
+            return false;
+        }
+        
+        public bool add_policy(int store_id, string policy_doc)
+        {
+            foreach (Store store in _stores)
+            {
+                if (store._id == store_id)
+                {
+                    store.add_policy(policy_doc);
+                    return true;
+                }
+            }
+
+            return false; 
+        }
+
+        public bool remove_policy(int store_id, int policy_id)
+        {
+            foreach (Store store in _stores)
+            {
+                if (store._id == store_id)
+                {
+                    store.remove_policy(policy_id);
+                    return true;
+                }
+            }
+
+            return false; ;
+        }
 
 
-        // ---------------- get / search -------------------------------------------------------------------------------------------
-
+        // ---------------- get / search / filter -------------------------------------------------------------------------------------------
 
         public List<Store> GetAllStores()
         {
@@ -245,7 +373,6 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return result.Any() ? result : null;
         }
 
-
         public Dictionary<Product, int> searchProductByKeyWord(string keyWord)
         {
             Dictionary<Product, int> result = new Dictionary<Product, int>();
@@ -259,6 +386,85 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                         result.Add(product, store._id);
             }
 
+            return result.Any() ? result : null;
+        }
+
+        public Dictionary<Product, int> FilterProductByPrice(Dictionary<Product, int> searchResult, int low, int high)
+        {
+            Dictionary<Product, int> result = new Dictionary<Product, int>();
+
+            foreach (Store store in _stores)
+            {
+                List<Product> producs_of_current_store = new List<Product>();
+
+                foreach (var pair in searchResult)
+                {
+                    if (pair.Value == store._id)
+                        producs_of_current_store.Add(pair.Key);
+                }
+
+                List<Product> filtered = store.FilterSearchByPrice(producs_of_current_store, low, high);
+
+                foreach (Product product in filtered)
+                {
+                    result.Add(product, searchResult[product]); // Add the product along with its quantity
+                }
+            }
+
+            return result.Any() ? result : null;
+        }
+
+        public Dictionary<Product, int> FilterProductByRating(Dictionary<Product, int> searchResult, int low)
+        {
+            Dictionary<Product, int> result = new Dictionary<Product, int>();
+
+            foreach (Store store in _stores)
+            {
+                List<Product> producs_of_current_store = new List<Product>();
+
+                foreach (var pair in searchResult)
+                {
+                    if (pair.Value == store._id)
+                        producs_of_current_store.Add(pair.Key);
+                }
+
+                List<Product> filtered = store.FilterSearchByProductRating(producs_of_current_store, low);
+
+                foreach (Product product in filtered)
+                {
+                    result.Add(product, searchResult[product]); // Add the product along with its quantity
+                }
+            }
+
+            return result.Any() ? result : null;
+        }
+
+        public Dictionary<Product, int> FilterStoreByRating(Dictionary<Product, int> searchResult, int low)
+        {
+            Dictionary<Product, int> result = new Dictionary<Product, int>();
+
+            foreach (var pair in searchResult)
+            {
+                int store_rating = GetStoreById(pair.Value)._rating;
+                if (low < store_rating)
+                    result.Add(pair.Key,pair.Value);
+            }
+
+            return result.Any() ? result : null;
+        }
+
+        public Dictionary<Product, int> FilterAllProductsInStoreByPrice(int storeID, int low, int high)
+        {
+            Store store = GetStoreById(storeID);
+            List<Product> output = store.FilterAllProductsByPrice(low, high);
+            
+            Dictionary<Product, int> result = new Dictionary<Product, int>();
+            
+            foreach (Product product in output)
+            {
+                result.Add(product, storeID);
+            }
+            
             return result.Any() ? result : null;
         }
 

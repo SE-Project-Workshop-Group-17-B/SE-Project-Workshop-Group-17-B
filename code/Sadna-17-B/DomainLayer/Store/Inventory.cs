@@ -17,27 +17,38 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         // ---------------- Adjust product -------------------------------------------------------------------------------------------
 
-        public void AddProduct(Product product, int amount)
+        public bool AddProduct(int product_id, int addition)
         {
+            Product product = searchProductById(product_id);
+            int oldAmount = _allProducts[product];
             lock (product)
             {
                 product.locked = true;
 
                 if (_allProducts.ContainsKey(product))
                 {
-                    _allProducts[product] += amount;
+                    _allProducts[product] += addition;
                 }
                 else
                 {
-                    _allProducts[product] = amount;
+                    _allProducts[product] = addition;
                 }
 
                 product.locked = false;
+                return (_allProducts[product] == oldAmount + addition);
 
             }
+
         }
 
-        public void RemoveProduct(Product product)
+        public bool AddProductReview(int product_id, string review)
+        {
+            Product product = searchProductById(product_id);
+            product.AddReview(review);
+            return true;
+        }
+
+        public bool RemoveProduct(Product product)
         {
             lock (product)
             {
@@ -47,9 +58,12 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                 {
                     _allProducts.Remove(product);
                 }
+
                 product.locked = false;
 
             }
+
+            return !_allProducts.ContainsKey(product);
         }
 
         public void ReduceProductAmount(Product product, int amount)
@@ -89,13 +103,57 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             _allProducts[product] += p_amount;
         }
 
-        public void EditProductName(Product product, string newName)
+        public bool EditProductAmount(int p_id, int amount)
         {
+            Product product = searchProductById(p_id);
+
+            if (!_allProducts.ContainsKey(product))
+                return false;
+
+            _allProducts[product] = amount;
+            return true;
+        }
+
+        public void EditProductPrice(int p_id, int price)
+        {
+            Product product = searchProductById(p_id);
+
+            if (!_allProducts.ContainsKey(product))
+                throw new Exception("no such product");
+
+            product.Price = price;
+        }
+
+        public void EditProductName(int product_id, string newName)
+        {
+            Product product = searchProductById(product_id);
+
             if (_allProducts.ContainsKey(product))
             {
                 product.Name = newName;
             }
         }
+
+        public void EditProductDescription(int product_id, string new_description)
+        {
+            Product product = searchProductById(product_id);
+
+            if (_allProducts.ContainsKey(product))
+            {
+                product.Description = new_description;
+            }
+        }
+
+        public void EditProductCategory(int product_id, string new_Category)
+        {
+            Product product = searchProductById(product_id);
+
+            if (_allProducts.ContainsKey(product))
+            {
+                product.Category = new_Category;
+            }
+        }
+        
 
         public double total_price(int id, int amount)
         {

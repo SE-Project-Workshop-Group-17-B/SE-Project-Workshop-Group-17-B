@@ -17,6 +17,9 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
 
         private static int idCounter = 1;
+        private static int ratingCounter = 0;
+        private static int ratingOverAllScore = 0;
+
 
         public int _id { get; private set; }
         public string _name { get; set; }
@@ -26,11 +29,14 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         public string _address { get; set; }
         public Inventory _inventory { get; set; }
         public DiscountPolicy _discount_policy { get; set; }
+        public int _rating { get;  set; }
+        public List<string> _reviews { get; set; }
 
 
 
 
-        // ---------------- Constructor -------------------------------------------------------------------------------------------
+
+        // ---------------- Constructor & store management -------------------------------------------------------------------------------------------
 
 
         public Store(string name, string email, string phone_number,
@@ -45,26 +51,80 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             _address = address;
             _inventory = inventory;
             _discount_policy = discount_policy;
+
+            _reviews = new List<string>();
         }
 
+        public bool AddRating(int rating)
+        {
+            if (rating < 0 || rating > 10)
+                return false;
+            ratingCounter++;
+            ratingOverAllScore += rating;
+            _rating = ratingOverAllScore / ratingCounter;
 
+            return true;
+        }
+
+        public bool AddReview(string review)
+        {
+            _reviews.Add(review);
+            return true;
+        }
 
         // ---------------- adjust inventory ----------------------------------------------------------------------------------------
 
-        public void AddProduct(Product product, int amount)
+        public bool AddProduct(int product_id, int amount)
         {
-            _inventory.AddProduct(product, amount);
+
+            return _inventory.AddProduct(product_id, amount);
         }
 
-        public void RemoveProduct(string productName)
+        public bool RemoveProduct(string productName)
         {
             List<Product> products_to_remove = _inventory.searchProductByName(productName);
-
+            bool result = true;
             if (products_to_remove.IsNullOrEmpty())
-                return;
+                return false;
 
             foreach (Product product in products_to_remove)
-                _inventory.RemoveProduct(product);
+                result = result && _inventory.RemoveProduct(product);
+            
+            return result;
+        }
+
+        public bool EditProductProperties(int productId)
+        {
+            Product productEdit = _inventory.searchProductById(productId);
+            if (productEdit == null)
+                return false;
+
+            Console.WriteLine("Edit Product Name: ( -1 to continue ...)");
+            string new_name = Console.ReadLine();
+            if (!new_name.Equals("-1"))
+                _inventory.EditProductName(productId, new_name);
+
+            Console.WriteLine("Edit Product Price: ( -1 to continue ...)");
+            int new_price = Convert.ToInt32(Console.ReadLine());
+            if(new_price > 0)
+                _inventory.EditProductPrice(productId, new_price);
+
+            Console.WriteLine("Edit Product Category: ( -1 to continue ...)");
+            string new_Category = Console.ReadLine();
+            if (!new_Category.Equals("-1"))
+                _inventory.EditProductCategory(productId, new_Category);
+
+            Console.WriteLine("Edit Product Amount: ( -1 to continue ...)");
+            int new_amount = Convert.ToInt32(Console.ReadLine());
+            if (new_amount > 0)
+                _inventory.EditProductAmount(productId, new_amount);
+
+            Console.WriteLine("Edit Product Description: ( -1 to continue ...)");
+            string new_Description = Console.ReadLine();
+            if (!new_Description.Equals("-1"))
+                _inventory.EditProductDescription(productId, new_Description);
+
+            return true;
         }
 
         public bool ReduceProductQuantities(int p_id, int amount)
@@ -78,6 +138,8 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             _inventory.ReduceProductAmount(product_to_reduce, amount);
             return true;
         }
+
+        
 
 
         // ---------------- discount related ----------------------------------------------------------------------------------------
@@ -111,11 +173,11 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return prices;
         }
 
-
         public void AddProductQuantities(int id, int amount)
         { 
             _inventory.AddProductAmount(id, amount);
         }
+
 
 
         // ---------------- search / get ----------------------------------------------------------------------------------------
@@ -184,6 +246,85 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
             return result.Any() ? result : null;
         }
+
+        public List<Product> FilterSearchByPrice(List<Product> searchResult, int low, int high)
+        {
+            if(searchResult.IsNullOrEmpty())
+                { return null; }
+
+            List<Product> filtered = new List<Product>();
+
+            foreach(Product product in searchResult)
+            {
+                if(product.Price <= high && product.Price >= low)
+                    filtered.Add(product);
+            }
+            return filtered;
+        }
+
+        public List<Product> FilterSearchByProductRating(List<Product> searchResult, int low)
+        {
+            if (searchResult.IsNullOrEmpty())
+            { return null; }
+
+            List<Product> filtered = new List<Product>();
+
+            foreach (Product product in searchResult)
+            {
+                if (product.CustomerRate >= low)
+                    filtered.Add(product);
+            }
+
+            return filtered;
+        }
+
+        public List<Product> FilterAllProductsByPrice(int low, int high)
+        {
+            List<Product> filtered = new List<Product>();
+
+            foreach (Product product in _inventory.GetAllProducts())
+            {
+                if (product.Price <= high && product.Price >= low)
+                    filtered.Add(product);
+            }
+            return filtered;
+        }
+
+        public bool edit_store_policy(string edit_type, Discount discount)
+        {
+
+            switch (edit_type)
+            {
+                case ("add discount"):
+
+                    AddDiscount(discount);
+                    return true;
+
+                case ("remove discount"):
+
+                    RemoveDiscount(discount);
+                    return true;
+            }
+
+            return false;
+        }
+
+        public bool add_policy(string policy_doc) // currently just name needed
+        {
+            string[] components = policy_doc.Split(',');
+            _discount_policy = new DiscountPolicy(components[0]);
+
+            return true; 
+        }
+
+        public bool remove_policy(int policy_id)
+        {
+            if (policy_id  ==  _discount_policy.get_id())
+                _discount_policy = null;
+
+            return true;
+        }
+
 
         /*
          * 

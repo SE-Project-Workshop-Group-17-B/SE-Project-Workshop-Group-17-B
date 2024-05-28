@@ -196,7 +196,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
             _storeController.AddStore(store);
 
             // Act
-            //_storeController.CloseStore(storeID);
+            _storeController.CloseStore(store._id);
             var result = _storeController.GetStoreByName("Test Store");
 
             // Assert
