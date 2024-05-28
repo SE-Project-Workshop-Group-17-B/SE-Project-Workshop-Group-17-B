@@ -25,7 +25,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
             _storeController = new StoreController();
             _inventory = new Inventory();
             _discountPolicy = new DiscountPolicy("Test Policy");
-            _product = new Product("Test Product", 100, "Category", 5, "Good product");
+            _product = new Product("Test Product", 100, "Category", "Good product");
 
         }
 
@@ -77,7 +77,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         [TestMethod]
         public void TestCalculateDiscount_Member()
         {
-            Product product3 = new Product("Test Product", 100, "Category", 5, "Good product");
+            Product product3 = new Product("Test Product", 100, "Category", "Good product");
 
             // Arrange
             var discount = new VisibleDiscount(DateTime.Now, DateTime.Now.AddDays(10), new Discount_Member());
