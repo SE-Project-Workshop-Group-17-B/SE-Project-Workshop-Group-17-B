@@ -265,7 +265,7 @@ namespace Sadna_17_B.ServiceLayer.Services
                 message = _storeController.remove_policy(store_id, policy_id) ? "removed policy successfully" : "did not remove policy";
                 info_logger.Log("Store", message);
             }
-            catch (Exception e) 
+            catch (Exception e)
             {
                 error_logger.Log(message);
 
@@ -273,13 +273,6 @@ namespace Sadna_17_B.ServiceLayer.Services
             }
 
             return new Response(message, true);
-
-        {
-            Dictionary<Product, int> output = _storeController.searchProductByKeyWord(keyWord);
-            string message = (!output.IsNullOrEmpty()) ? "products found successfully\n" : "failed to find products\n";
-            info_logger.Log("Store", message);
-
-            return new Response(message, (!output.IsNullOrEmpty()), output);
         }
 
         public Response filter_search_by_price(Dictionary<Product, int> searchResult, int low, int high)
