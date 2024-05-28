@@ -29,7 +29,7 @@ public class Logger
         }
     }
 
-    public void Log(string message)
+    public virtual void Log(string message)
     {
         string logMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss}\t\t {message}";
 

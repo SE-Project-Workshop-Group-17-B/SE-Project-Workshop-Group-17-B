@@ -85,20 +85,32 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         public void AddDiscount(Discount discount)
         {
-            _discount_policy.AddDiscount(discount);
+            _discount_policy.add_discount(discount);
         }
 
         public void RemoveDiscount(Discount discount)
         {
-            _discount_policy.AddDiscount(discount);
+            _discount_policy.remove_discount(discount);
         }
 
-        public Dictionary<int,int> CalculateProductsPrices(Dictionary<int, int> quantities)
+        public Dictionary<int,Tuple<int, double>> CalculateProductsPrices(Dictionary<int, int> quantities)
         {
-            // todo
+            Dictionary<int,Tuple<int,double>> prices = new Dictionary<int, Tuple<int,double>>();
 
-            return null;
+            foreach (var item in quantities)
+            {
+                int p_id = item.Key ;
+                int p_amount = item.Value ;
+
+                double total_price = _inventory.total_price(p_id,p_amount);
+                double discount_price = _discount_policy.calculate_discount(p_id, total_price);
+
+                prices.Add(p_id, new Tuple<int,double>(p_amount,discount_price));
+            }
+
+            return prices;
         }
+
 
         public void AddProductQuantities(int id, int amount)
         { 
@@ -173,14 +185,16 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return result.Any() ? result : null;
         }
 
-        public void example_test()
+        /*
+         * 
+         * public void example_test()
         {
            
-            Product p1 = new Product("cucumber", 9, "vegetables", 3, "fuck this product", "HI");
+            Product p1 = new Product("cucumber", 9, "vegetables", 3, "perfect product", "HI");
             Product p2 = new Product("chocolate", 100, "candy", 8, "nice one", "BYE");
             Product p3 = new Product("iphone", 3500, "apple", 10, "blat", "nahuy");
 
-            DiscountPolicy dp = new DiscountPolicy();
+            DiscountPolicy dp = new DiscountPolicy("new_policy");
             Inventory inv = new Inventory();
 
             inv.AddProduct(p1, 13);
@@ -190,7 +204,8 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             Store s1 = new Store("BBL DRIZZY", "notlikeus@pedofile.com", "051213141516", "tryna strike a chord but it's probably a MINORRRRRRRRRRRRRRRRRRRRR\nRRRRRRRRRRRRRRRRRRRRRR\nRRRRRRRRRRRRRRRRRRR", "pedofile st.", inv, dp);
 
             Console.WriteLine(s1.getInfo());
-        }
+        } 
+         */
 
     }
 }

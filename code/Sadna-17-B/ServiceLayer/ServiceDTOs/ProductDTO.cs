@@ -9,10 +9,10 @@ namespace Sadna_17_B.ServiceLayer.ServiceDTOs
     public class ProductDTO
     {
         public int Id { get; }
-        
+
         // Note: Can extend this ProductDTO to hold all product information
         //public string Name { get; }
-        //public float Price { get; }
+        //public double Price { get; }
         //public string Category { get; }
         //public int CustomerRate { get; }
         //public string CustomerReview { get; } // up to 75 char
