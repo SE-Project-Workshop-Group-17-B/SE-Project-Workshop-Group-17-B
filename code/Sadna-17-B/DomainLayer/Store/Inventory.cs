@@ -19,21 +19,36 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         public void AddProduct(Product product, int amount)
         {
-            if (_allProducts.ContainsKey(product))
+            lock (product)
             {
-                _allProducts[product] += amount;
-            }
-            else
-            {
-                _allProducts[product] = amount;
+                product.locked = true;
+
+                if (_allProducts.ContainsKey(product))
+                {
+                    _allProducts[product] += amount;
+                }
+                else
+                {
+                    _allProducts[product] = amount;
+                }
+
+                product.locked = false;
+
             }
         }
 
         public void RemoveProduct(Product product)
         {
-            if (_allProducts.ContainsKey(product))
+            lock (product)
             {
-                _allProducts.Remove(product);
+                product.locked = true;
+
+                if (_allProducts.ContainsKey(product))
+                {
+                    _allProducts.Remove(product);
+                }
+                product.locked = false;
+
             }
         }
 

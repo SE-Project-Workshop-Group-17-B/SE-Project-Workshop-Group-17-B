@@ -13,7 +13,7 @@ namespace Sadna_17_B.ServiceLayer.Services
 
 
         private readonly StoreController _storeController;
-        private readonly UserService userService;
+        private readonly UserService _userService;
         private readonly Logger _logger;
 
 
@@ -27,7 +27,7 @@ namespace Sadna_17_B.ServiceLayer.Services
 
         public StoreService(UserService us, StoreController storeController)
         {
-            userService = us;
+            _userService = us;
             _storeController = storeController;
             _logger = InfoLogger.Instance;
         }
@@ -35,8 +35,11 @@ namespace Sadna_17_B.ServiceLayer.Services
 
         // ---------------- adjust stores -------------------------------------------------------------------------------------------
 
-        public void CreateStore(string name, string email, string phoneNumber, string storeDescription, string address, Inventory inventory)
+        public void CreateStore(string token, string name, string email, string phoneNumber, string storeDescription, string address, Inventory inventory)
         {
+            if (!_userService.IsSubscriberBool(token))
+                return;
+
             var storeBuilder = _storeController.GetStoreBuilder()
                                 .SetName(name)
                                 .SetEmail(email)
@@ -46,17 +49,18 @@ namespace Sadna_17_B.ServiceLayer.Services
                                 .SetInventory(inventory);
             var store = storeBuilder.Build();
             _storeController.AddStore(store);
-             
+
+            _userService.CreateStoreFounder(token, store._id);
         }
 
-        public bool RemoveStore(string storeName)
+        public bool CloseStore(string token, int storeID)
         {
-            var store = _storeController.GetStoreByName(storeName);
-            if (store != null)
+            if (_userService.IsOwnerBool(token, storeID))
             {
-                _storeController.CloseStore(store);
+                _storeController.CloseStore(storeID);
                 return true;
             }
+            
             return false;
         }
 
