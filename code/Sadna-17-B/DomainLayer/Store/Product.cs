@@ -13,13 +13,15 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
 
         private static int idCounter = 1;
+        private static int ratingCounter = 0;
+        private static int ratingOverAllScore = 0;
 
         public int Id { get; private set; }
         public string Name { get; set; }
         public double Price { get; set; }
         public string Category { get; set; }
-        public int CustomerRate { get; set; }
-        public string CustomerReview { get; set; } // up to 75 char
+        public double CustomerRate { get; set; }
+        public List<string> CustomerReviews { get; set; } // up to 75 char
         public string Description { get; set; } // up to 100 char
         public bool locked { get; set; }
 
@@ -27,14 +29,15 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         // ---------------- Constructor -------------------------------------------------------------------------------------------
 
 
-        public Product(string name, float price, string category, int customerRate, string customerReview, string description = "")
+        public Product(string name, float price, string category, string description = "")
         {
             Id = idCounter++;
             Name = name.ToLower().Trim();
+
+            CustomerRate = 0;
             Price = price;
             Category = category;
-            CustomerRate = customerRate;
-            CustomerReview = customerReview.Length <= 75 ? customerReview : customerReview.Substring(0, 75);
+            CustomerReviews = new List<string>();
             Description = description.Length <= 100 ? description : description.Substring(0, 100);
             locked = false;
         }
@@ -52,11 +55,51 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return s;
         }
 
+        public bool AddReview(string review)
+        {
+            CustomerReviews.Add(review);
+            return true;
+        }
+        public bool RemoveReview(string review)
+        {
+            if (!CustomerReviews.Contains(review))
+                return false;
+
+            CustomerReviews.Remove(review);
+            return true;
+        }
+
+        public bool EditReview(string oldreview,string new_review)
+        {
+            bool found = false;
+
+            foreach(string current_review in CustomerReviews)
+            {
+                if (current_review == oldreview)
+                {
+                    oldreview = new_review;
+                    found = true;
+                    break;
+                } 
+            }
+
+            return found;
+        }
+
         public static int amount()
         {
             return idCounter;
         }
 
-
+        public bool AddRating(int rating)
+        {
+            if(rating < 0 || rating > 10)
+                return false;
+            ratingCounter++;
+            ratingOverAllScore += rating;
+            CustomerRate = ratingOverAllScore / ratingCounter;
+            
+            return true;
+        }
     }
 }

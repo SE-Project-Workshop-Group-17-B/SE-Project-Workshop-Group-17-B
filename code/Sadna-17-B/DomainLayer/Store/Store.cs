@@ -17,6 +17,9 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
 
         private static int idCounter = 1;
+        private static int ratingCounter = 0;
+        private static int ratingOverAllScore = 0;
+
 
         public int _id { get; private set; }
         public string _name { get; set; }
@@ -26,11 +29,14 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         public string _address { get; set; }
         public Inventory _inventory { get; set; }
         public DiscountPolicy _discount_policy { get; set; }
+        public int _rating { get;  set; }
+        public List<string> _reviews { get; set; }
 
 
 
 
-        // ---------------- Constructor -------------------------------------------------------------------------------------------
+
+        // ---------------- Constructor & store management -------------------------------------------------------------------------------------------
 
 
         public Store(string name, string email, string phone_number,
@@ -45,9 +51,26 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             _address = address;
             _inventory = inventory;
             _discount_policy = discount_policy;
+
+            _reviews = new List<string>();
         }
 
+        public bool AddRating(int rating)
+        {
+            if (rating < 0 || rating > 10)
+                return false;
+            ratingCounter++;
+            ratingOverAllScore += rating;
+            _rating = ratingOverAllScore / ratingCounter;
 
+            return true;
+        }
+
+        public bool AddReview(string review)
+        {
+            _reviews.Add(review);
+            return true;
+        }
 
         // ---------------- adjust inventory ----------------------------------------------------------------------------------------
 
@@ -116,6 +139,8 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return true;
         }
 
+        
+
 
         // ---------------- discount related ----------------------------------------------------------------------------------------
 
@@ -148,11 +173,11 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return prices;
         }
 
-
         public void AddProductQuantities(int id, int amount)
         { 
             _inventory.AddProductAmount(id, amount);
         }
+
 
 
         // ---------------- search / get ----------------------------------------------------------------------------------------
@@ -220,6 +245,49 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             List<Product> result = _inventory.SearchProductByKeyWord(keyWord);
 
             return result.Any() ? result : null;
+        }
+
+        public List<Product> FilterSearchByPrice(List<Product> searchResult, int low, int high)
+        {
+            if(searchResult.IsNullOrEmpty())
+                { return null; }
+
+            List<Product> filtered = new List<Product>();
+
+            foreach(Product product in searchResult)
+            {
+                if(product.Price <= high && product.Price >= low)
+                    filtered.Add(product);
+            }
+            return filtered;
+        }
+
+        public List<Product> FilterSearchByProductRating(List<Product> searchResult, int low)
+        {
+            if (searchResult.IsNullOrEmpty())
+            { return null; }
+
+            List<Product> filtered = new List<Product>();
+
+            foreach (Product product in searchResult)
+            {
+                if (product.CustomerRate >= low)
+                    filtered.Add(product);
+            }
+
+            return filtered;
+        }
+
+        public List<Product> FilterAllProductsByPrice(int low, int high)
+        {
+            List<Product> filtered = new List<Product>();
+
+            foreach (Product product in _inventory.GetAllProducts())
+            {
+                if (product.Price <= high && product.Price >= low)
+                    filtered.Add(product);
+            }
+            return filtered;
         }
 
         public bool edit_store_policy(string edit_type, Discount discount)
