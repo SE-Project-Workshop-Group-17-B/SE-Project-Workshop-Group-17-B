@@ -94,21 +94,42 @@ namespace Sadna_17_B.ServiceLayer.Services
             return new Response(result, message );
         }
 
+
+
+        // ---------------- stores Management -------------------------------------------------------------------------------------------
         public Response reduce_products(int storeID, Dictionary<int, int> quantities)
         {
             bool result = _storeController.ReduceProductQuantities(storeID, quantities);
             string message = result ? "Products reduced successfully.\n" : "Failed to reduce products.\n";
 
+<<<<<<< 82-add-log-calls
             info_logger.Log("Store", message);
             return new Response(result,message);
+=======
+            return new Response(result, result ? "Products reduced successfully.\n" : "Failed to reduce products.\n");
+        }
+>>>>>>> main
 
+        public Response add_products_to_store(int storeID, int productID, int amount)
+        {
+            bool result = _storeController.AddProductsToStore(storeID, productID, amount);
 
-
-
+            return new Response(result, result ? "Products reduced successfully.\n" : "Failed to reduce products.\n");
         }
 
+        public Response edit_product_to_store(int storeID, int productID)
+        {
+            bool result = _storeController.EditProductProperties(storeID, productID);
+
+            return new Response(result, result ? "Products reduced successfully.\n" : "Failed to reduce products.\n");
+        }
+
+<<<<<<< 82-add-log-calls
 
         // ---------------- search stores options -------------------------------------------------------------------------------------------
+=======
+        // ---------------- Variables -------------------------------------------------------------------------------------------
+>>>>>>> main
 
 
         public Response all_stores()
@@ -130,11 +151,15 @@ namespace Sadna_17_B.ServiceLayer.Services
             return new Response(message, store != null, store);
         }
 
+<<<<<<< 82-add-log-calls
 
         // ---------------- search products options -------------------------------------------------------------------------------------------
 
 
         public Response prodcuts_by_category(string category)
+=======
+        public Response search_by_category(string category)
+>>>>>>> main
         {
             Dictionary<Product, int> output = _storeController.SearchProductsByCategory(category);
             string message = (! output.IsNullOrEmpty()) ? "products found successfully\n" : "failed to find products\n";

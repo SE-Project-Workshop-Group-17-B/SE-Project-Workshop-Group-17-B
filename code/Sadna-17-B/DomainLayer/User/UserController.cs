@@ -215,26 +215,54 @@ namespace Sadna_17_B.DomainLayer.User
 
         public bool IsOwner(string token, int storeID)
         {
-            Subscriber subscriber = GetSubscriberByToken(token); // Throws an exception if the given token doesn't correspond to a subscriber.
-            return subscriber.IsOwnerOf(storeID);
+            try
+            {
+                Subscriber subscriber = GetSubscriberByToken(token); // Throws an exception if the given token doesn't correspond to a subscriber.
+                return subscriber.IsOwnerOf(storeID);
+            }
+            catch (Sadna17BException)
+            {
+                return false;
+            }
         }
 
         public bool IsFounder(string token, int storeID)
         {
-            Subscriber subscriber = GetSubscriberByToken(token); // Throws an exception if the given token doesn't correspond to a subscriber.
-            return subscriber.IsFounderOf(storeID);
+            try
+            {
+                Subscriber subscriber = GetSubscriberByToken(token); // Throws an exception if the given token doesn't correspond to a subscriber.
+                return subscriber.IsFounderOf(storeID);
+            }
+            catch (Sadna17BException)
+            {
+                return false;
+            }
         }
 
         public bool IsManager(string token, int storeID)
         {
-            Subscriber subscriber = GetSubscriberByToken(token); // Throws an exception if the given token doesn't correspond to a subscriber.
-            return subscriber.IsManagerOf(storeID);
+            try
+            {
+                Subscriber subscriber = GetSubscriberByToken(token); // Throws an exception if the given token doesn't correspond to a subscriber.
+                return subscriber.IsManagerOf(storeID);
+            }
+            catch (Sadna17BException)
+            {
+                return false;
+            }
         }
 
         public bool HasManagerAuthorization(string token, int storeID, Manager.ManagerAuthorization auth)
         {
-            Subscriber subscriber = GetSubscriberByToken(token); // Throws an exception if the given token doesn't correspond to a subscriber.
-            return subscriber.HasManagerAuthorization(storeID, auth);
+            try
+            {
+                Subscriber subscriber = GetSubscriberByToken(token); // Throws an exception if the given token doesn't correspond to a subscriber.
+                return subscriber.HasManagerAuthorization(storeID, auth);
+            }
+            catch (Sadna17BException)
+            {
+                return false;
+            }
         }
 
         public void UpdateManagerAuthorizations(string token, int storeID, string managerUsername, HashSet<Manager.ManagerAuthorization> authorizations)

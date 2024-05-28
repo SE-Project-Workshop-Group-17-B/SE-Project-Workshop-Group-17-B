@@ -113,6 +113,27 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             _stores.Add(store);
         }
 
+        public bool EditProductProperties(int storeID, int productId)
+        {
+            Store store = GetStoreById(storeID);
+
+            if (store == null)
+                return false;
+
+            return store.EditProductProperties(productId);
+        }
+
+        public bool AddProductsToStore(int storeID, int productId, int amount)
+        {
+            Store store = GetStoreById(storeID);
+
+            if (store == null)
+                return false;
+
+            store._inventory.AddProduct(productId, amount);
+            return true;
+        }
+
         public bool isOrderValid(int storeId, Dictionary<int, int> quantities)
         {
 
