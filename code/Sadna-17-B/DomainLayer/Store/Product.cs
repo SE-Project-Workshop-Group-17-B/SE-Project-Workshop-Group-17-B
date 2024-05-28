@@ -29,7 +29,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         // ---------------- Constructor -------------------------------------------------------------------------------------------
 
 
-        public Product(string name, float price, string category, string description = "")
+        public Product(string name, double price, string category, string description = "")
         {
             Id = idCounter++;
             Name = name.ToLower().Trim();

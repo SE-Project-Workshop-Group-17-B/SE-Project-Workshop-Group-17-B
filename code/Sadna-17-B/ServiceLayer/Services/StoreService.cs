@@ -6,6 +6,7 @@ using Sadna_17_B.DomainLayer.StoreDom;
 using System.Web.UI.WebControls;
 using System.Diagnostics.Metrics;
 using System.Web.Services.Description;
+using System.Xml.Linq;
 
 
 namespace Sadna_17_B.ServiceLayer.Services
@@ -179,6 +180,37 @@ namespace Sadna_17_B.ServiceLayer.Services
             return new Response(result, message);
         }
 
+        public Response add_product_to_store_faster(int storeID, string name, double price, string category, 
+                                                    string description, int amount)
+        {
+            int productId = _storeController.AddProductsToStore(storeID, name, price, category, description, amount);
+
+            return new Response(true, productId);
+
+        }
+        public Response add_product_to_store(int storeID)
+        {            
+            Console.WriteLine("please enter product name:\n");
+            string name = Console.ReadLine();
+            
+            Console.WriteLine("please enter product price:\n");
+            double price = Convert.ToDouble(Console.ReadLine());
+            
+            Console.WriteLine("please enter product category:\n");
+            string category = Console.ReadLine();
+
+            Console.WriteLine("please enter product description (optional):\n");
+            string description = Console.ReadLine();
+
+            Console.WriteLine("please enter product amount:\n");
+            int amount = Convert.ToInt32(Console.ReadLine());
+
+
+            int productId = _storeController.AddProductsToStore(storeID, name, price, category, description, amount);
+
+            return new Response(true, productId);
+       }
+       
         public Response add_products_to_store(string token, int storeID, int productID, int amount)
         {
             bool result = false;

@@ -17,28 +17,16 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         // ---------------- Adjust product -------------------------------------------------------------------------------------------
 
-        public bool AddProduct(int product_id, int addition)
+        public int AddProduct( string name, double price, string category,string description, int amount)
         {
-            Product product = searchProductById(product_id);
-            int oldAmount = _allProducts[product];
-            lock (product)
-            {
-                product.locked = true;
-
-                if (_allProducts.ContainsKey(product))
-                {
-                    _allProducts[product] += addition;
-                }
-                else
-                {
-                    _allProducts[product] = addition;
-                }
-
-                product.locked = false;
-                return (_allProducts[product] == oldAmount + addition);
-
-            }
-
+            Product product = new Product(name, price, category,description);
+            
+            if (_allProducts.ContainsKey(product))
+                _allProducts[product] += amount; 
+            else
+                _allProducts[product] = amount;
+            
+            return product.Id;
         }
 
         public bool AddProductReview(int product_id, string review)

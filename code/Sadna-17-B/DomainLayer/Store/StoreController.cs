@@ -125,15 +125,16 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return store.EditProductProperties(productId);
         }
 
-        public bool AddProductsToStore(int storeID, int productId, int amount)
+        public int AddProductsToStore(int storeID, string name, double price, string category,
+            string description, int amount)
         {
             Store store = GetStoreById(storeID);
 
             if (store == null)
-                return false;
+                return -1;
 
-            store._inventory.AddProduct(productId, amount);
-            return true;
+            
+            return store.AddProduct(name, price, category, description, amount);
         }
 
         public bool isOrderValid(int storeId, Dictionary<int, int> quantities)
