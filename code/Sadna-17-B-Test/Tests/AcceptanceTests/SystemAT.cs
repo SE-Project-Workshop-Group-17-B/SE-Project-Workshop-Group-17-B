@@ -226,6 +226,19 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         }
 
         [TestMethod]
+        public void TestGetStoreByName()
+        {
+            SetUp();
+            Response ignore = userService.CreateSubscriber(username1, password1);
+            ignore = userService.CreateSubscriber(username2, password2);
+            Response res = userService.Login(username1, password1);
+            userDTO = res.Data as UserDTO;
+            storeService.create_store(userDTO.AccessToken, name, email, phonenumber, storeDescr, addr, inv);
+            Response storeRes = storeService.store_by_name(name);
+            Assert.AreEqual((storeRes.Data as Store)._name, name);
+        }
+
+        [TestMethod]
         public void TestCreateStoreFounder()
         {
             SetUp();
