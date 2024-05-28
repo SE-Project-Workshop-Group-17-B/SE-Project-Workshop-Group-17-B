@@ -33,7 +33,9 @@ namespace Sadna_17_B.ServiceLayer.Services
                 string accessToken = userController.Login(username, password);
                 UserDTO returnValue = new UserDTO(username, accessToken);
                 return new Response(true, returnValue);
-            } catch (Sadna17BException e) {
+            }
+            catch (Sadna17BException e)
+            {
                 return Response.GetErrorResponse(e);
             }
         }
@@ -51,7 +53,8 @@ namespace Sadna_17_B.ServiceLayer.Services
                 string accessToken = userController.CreateGuest();
                 UserDTO returnValue = new UserDTO(accessToken);
                 return new Response(true, returnValue);
-            } catch (Sadna17BException e)
+            }
+            catch (Sadna17BException e)
             {
                 return Response.GetErrorResponse(e);
             }
@@ -69,7 +72,8 @@ namespace Sadna_17_B.ServiceLayer.Services
                 infoLogger.Log($"User signed up with username:{username}");
                 userController.CreateSubscriber(username, password);
                 return new Response(true);
-            } catch (Sadna17BException e)
+            }
+            catch (Sadna17BException e)
             {
                 return Response.GetErrorResponse(e);
             }
@@ -84,7 +88,7 @@ namespace Sadna_17_B.ServiceLayer.Services
         {
             try
             {
-                infoLogger.Log($"Admin was created");
+                infoLogger.Log($"Creating Admin");
                 userController.CreateAdmin(username, password);
                 return new Response(true);
             }
@@ -105,7 +109,8 @@ namespace Sadna_17_B.ServiceLayer.Services
             {
                 userController.Logout(token);
                 return GuestEntry();
-            } catch (Sadna17BException e)
+            }
+            catch (Sadna17BException e)
             {
                 return Response.GetErrorResponse(e);
             }
@@ -122,7 +127,8 @@ namespace Sadna_17_B.ServiceLayer.Services
             {
                 userController.GuestExit(token);
                 return new Response(true);
-            } catch (Sadna17BException e)
+            }
+            catch (Sadna17BException e)
             {
                 return Response.GetErrorResponse(e);
             }
@@ -141,7 +147,7 @@ namespace Sadna_17_B.ServiceLayer.Services
         /// Returns true iff the given token corresponds to an admin in the system,
         /// can be used as an authorization check between services without the need for parsing a Response object, hence the 'internal' access modifier.
         /// </summary>
-        internal bool IsAdminBool(string token) 
+        internal bool IsAdminBool(string token)
         {
             return userController.IsAdmin(token);
         }
@@ -278,7 +284,7 @@ namespace Sadna_17_B.ServiceLayer.Services
         /// Throws an exception if the token doesn't correspond to an actual subscriber or if the subscriber is already a store owner/founder/manager.
         /// Can be used as an update call between services without the need for parsing a Response object, hence the 'internal' access modifier.
         /// </summary>
-        public void CreateStoreFounder(string token, int storeID) // StoreService should check the needed conditions and permissions (valid subscriber, newly generated storeID) before executing the operation in its module and calling this update call, so won't need to catch an exception.
+        internal void CreateStoreFounder(string token, int storeID) // StoreService should check the needed conditions and permissions (valid subscriber, newly generated storeID) before executing the operation in its module and calling this update call, so won't need to catch an exception.
         {
             userController.CreateStoreFounder(token, storeID); // Throws an exception if the token doesn't correspond to an actual subscriber or if the subscriber is already a store owner/founder/manager.
         }
@@ -289,7 +295,8 @@ namespace Sadna_17_B.ServiceLayer.Services
             {
                 userController.OfferOwnerAppointment(token, storeID, newOwnerUsername);
                 return new Response(true);
-            } catch (Sadna17BException e)
+            }
+            catch (Sadna17BException e)
             {
                 return Response.GetErrorResponse(e);
             }
@@ -359,7 +366,8 @@ namespace Sadna_17_B.ServiceLayer.Services
             {
                 userController.RevokeOwnership(token, storeID, ownerUsername); // Not fully implemented yet in this version
                 return new Response(true);
-            } catch (Sadna17BException e)
+            }
+            catch (Sadna17BException e)
             {
                 return Response.GetErrorResponse(e);
             }
@@ -372,7 +380,8 @@ namespace Sadna_17_B.ServiceLayer.Services
                 // Note: should probably check with StoreService if the given productID exists in the given store.
                 userController.AddToCart(token, storeID, productID, quantity);
                 return new Response(true);
-            } catch (Sadna17BException e)
+            }
+            catch (Sadna17BException e)
             {
                 return Response.GetErrorResponse(e);
             }
@@ -431,7 +440,8 @@ namespace Sadna_17_B.ServiceLayer.Services
                     result.Add(new OrderDTO(order));
                 }
                 return new Response(true, result);
-            } catch (Sadna17BException e)
+            }
+            catch (Sadna17BException e)
             {
                 return Response.GetErrorResponse(e);
             }
@@ -453,7 +463,8 @@ namespace Sadna_17_B.ServiceLayer.Services
                     result.Add(new OrderDTO(order));
                 }
                 return new Response(true, result);
-            } catch (Sadna17BException e)
+            }
+            catch (Sadna17BException e)
             {
                 return Response.GetErrorResponse(e);
             }

@@ -43,7 +43,9 @@ namespace Sadna_17_B.DomainLayer.User
         public string Login(string username, string password)
         {
             Subscriber subscriber = GetSubscriberByUsername(username); // Throws an exception if the username was invalid
-            if (!subscriber.CheckPassword(password)) {
+            if (!subscriber.CheckPassword(password))
+            {
+                infoLogger.Log($"Login failed - wrong password for user: {username}");
                 throw new Sadna17BException("Invalid password given.");
             }
             string accessToken = authenticator.GenerateToken(username); // Note: the user gets a new access token if logs in again.
@@ -52,10 +54,14 @@ namespace Sadna_17_B.DomainLayer.User
 
         public void CreateSubscriber(string username, string password)
         {
-            try {
+            try
+            {
                 GetSubscriberByUsername(username);
+                infoLogger.Log($"Register failed - username: {username} already exists");
                 throw new Sadna17BException("Given username already exists in the system.");
-            } catch (Sadna17BException) {
+            }
+            catch (Sadna17BException)
+            {
                 Subscriber subscriber = new Subscriber(username, password);
                 subscribers[username] = subscriber;
             }
@@ -66,6 +72,7 @@ namespace Sadna_17_B.DomainLayer.User
             try
             {
                 GetSubscriberByUsername(username);
+                infoLogger.Log($"Creating Admin failed - username: {username} already exists");
                 throw new Sadna17BException("Given username already exists in the system.");
             }
             catch (Sadna17BException)
@@ -95,7 +102,7 @@ namespace Sadna_17_B.DomainLayer.User
         {
             string username = authenticator.GetNameFromToken(token); // Throws an exception if the given access token doesn't exist (user isn't logged in).
             authenticator.InvalidateToken(token); // Invalides the token if it isn't invalidated (isn't logged out already), otherwise (somehow) throws an exception.
-            InfoLogger.Instance.Log($"Subscriber logged out - username: {username}");
+            InfoLogger.Instance.Log($"Subscriber logged out - username: {GetSubscriberByToken(token).Username}");
         }
 
         public void GuestExit(string token)
@@ -103,7 +110,7 @@ namespace Sadna_17_B.DomainLayer.User
             int guestID = authenticator.GetGuestIDFromToken(token); // Throws an exception if the given access token doesn't exist (no such guest).
             authenticator.InvalidateToken(token);
             RemoveGuest(guestID); // Removes and forgets the guest from the system's data structure after its exit
-            InfoLogger.Instance.Log($"Guest logged out. GuestID: {guestID}");
+            InfoLogger.Instance.Log($"Guest logged out. username {GetGuestByToken(token)}");
         }
 
         private Subscriber GetSubscriberByToken(string token)
@@ -160,7 +167,8 @@ namespace Sadna_17_B.DomainLayer.User
 
         private User GetUserByUserID(string userID)
         {
-            try {
+            try
+            {
                 return GetSubscriberByUsername(userID);
             }
             catch (Sadna17BException e)
@@ -173,7 +181,8 @@ namespace Sadna_17_B.DomainLayer.User
                     {
                         return GetGuestByID(guestID);
                     }
-                } catch (Sadna17BException ignore) { }
+                }
+                catch (Sadna17BException ignore) { }
             }
             throw new Sadna17BException("Invalid userID, given userID doesn't correspond to any user in the system.");
         }
@@ -184,7 +193,9 @@ namespace Sadna_17_B.DomainLayer.User
             {
                 Subscriber subscriber = GetSubscriberByToken(token); // Throws an exception if the given token doesn't correspond to a subscriber.
                 return (admins.ContainsKey(subscriber.Username));
-            } catch (Sadna17BException) {
+            }
+            catch (Sadna17BException)
+            {
                 return false;
             }
         }
@@ -195,7 +206,9 @@ namespace Sadna_17_B.DomainLayer.User
             {
                 Subscriber subscriber = GetSubscriberByToken(token); // Throws an exception if the given token doesn't correspond to a subscriber.
                 return true;
-            } catch (Sadna17BException) {
+            }
+            catch (Sadna17BException)
+            {
                 return false;
             }
         }
@@ -215,54 +228,26 @@ namespace Sadna_17_B.DomainLayer.User
 
         public bool IsOwner(string token, int storeID)
         {
-            try
-            {
-                Subscriber subscriber = GetSubscriberByToken(token); // Throws an exception if the given token doesn't correspond to a subscriber.
-                return subscriber.IsOwnerOf(storeID);
-            }
-            catch (Sadna17BException)
-            {
-                return false;
-            }
+            Subscriber subscriber = GetSubscriberByToken(token); // Throws an exception if the given token doesn't correspond to a subscriber.
+            return subscriber.IsOwnerOf(storeID);
         }
 
         public bool IsFounder(string token, int storeID)
         {
-            try
-            {
-                Subscriber subscriber = GetSubscriberByToken(token); // Throws an exception if the given token doesn't correspond to a subscriber.
-                return subscriber.IsFounderOf(storeID);
-            }
-            catch (Sadna17BException)
-            {
-                return false;
-            }
+            Subscriber subscriber = GetSubscriberByToken(token); // Throws an exception if the given token doesn't correspond to a subscriber.
+            return subscriber.IsFounderOf(storeID);
         }
 
         public bool IsManager(string token, int storeID)
         {
-            try
-            {
-                Subscriber subscriber = GetSubscriberByToken(token); // Throws an exception if the given token doesn't correspond to a subscriber.
-                return subscriber.IsManagerOf(storeID);
-            }
-            catch (Sadna17BException)
-            {
-                return false;
-            }
+            Subscriber subscriber = GetSubscriberByToken(token); // Throws an exception if the given token doesn't correspond to a subscriber.
+            return subscriber.IsManagerOf(storeID);
         }
 
         public bool HasManagerAuthorization(string token, int storeID, Manager.ManagerAuthorization auth)
         {
-            try
-            {
-                Subscriber subscriber = GetSubscriberByToken(token); // Throws an exception if the given token doesn't correspond to a subscriber.
-                return subscriber.HasManagerAuthorization(storeID, auth);
-            }
-            catch (Sadna17BException)
-            {
-                return false;
-            }
+            Subscriber subscriber = GetSubscriberByToken(token); // Throws an exception if the given token doesn't correspond to a subscriber.
+            return subscriber.HasManagerAuthorization(storeID, auth);
         }
 
         public void UpdateManagerAuthorizations(string token, int storeID, string managerUsername, HashSet<Manager.ManagerAuthorization> authorizations)
@@ -273,6 +258,7 @@ namespace Sadna_17_B.DomainLayer.User
             Subscriber manager = GetSubscriberByUsername(managerUsername); // Throws an exception if the given managerUsername doesn't correspond to an actual subscriber
             if (!manager.IsManagerOf(storeID)) // Note: it should also be checked in the next call but the check here assures the condition without implementation assumptions
             {
+                infoLogger.Log($"Updating manager authorizations failed - The given manager username {managerUsername} doesn't correspond to a manager of the store with the given storeID {storeID}.");
                 throw new Sadna17BException("The given manager username doesn't correspond to a manager of the store with the given storeID.");
             }
             owner.UpdateManagerAuthorizations(managerUsername, authorizations); // Throws an exception if the given managerUsername doesn't correspond to a manager that has been appointed by the requesting owner
@@ -298,7 +284,7 @@ namespace Sadna_17_B.DomainLayer.User
             {
                 throw new Sadna17BException("The user with the given username is already an owner of the store with the given storeID.");
             }
-            else if(newOwner.IsManagerOf(storeID))
+            else if (newOwner.IsManagerOf(storeID))
             {
                 throw new Sadna17BException("The user with the given username is already a manager of the store with the given storeID.");
             }
@@ -482,7 +468,7 @@ namespace Sadna_17_B.DomainLayer.User
             User user = GetUserByToken(token);
             return GetOrderHistoryByUser(user);
         }
-        
+
         private List<Order.Order> GetOrderHistoryByUser(User user)
         {
             if (user is Guest)
@@ -519,21 +505,23 @@ namespace Sadna_17_B.DomainLayer.User
             infoLogger.Log($"Getting store order history as Admin - Admin: {subscriber.Username} Store: {storeID}");
             if (!(subscriber is Admin) && !subscriber.IsOwnerOf(storeID))
             {
+                infoLogger.Log($"Getting store order history failed - Subscriber {subscriber.Username} is not Admin/Store owner of store: {storeID}")
                 throw new Sadna17BException("Invalid operation, only admins and store owners can retrieve order history of stores.");
             }
             // Should probably check the StoreID exists in the system, currently returns an empty sub-orders list
             return orderSystem.GetStoreOrderHistory(storeID);
         }
 
-        public Tuple<HashSet<string>,Dictionary<string,HashSet<Manager.ManagerAuthorization>>> GetStoreRoles(string token, int storeID)
+        public Tuple<HashSet<string>, Dictionary<string, HashSet<Manager.ManagerAuthorization>>> GetStoreRoles(string token, int storeID)
         {
             Subscriber requestingSubscriber = GetSubscriberByToken(token);
             infoLogger.Log($"Getting store roles - Subscriber: {requestingSubscriber.Username} Store: {storeID}");
             if (!requestingSubscriber.IsOwnerOf(storeID))
             {
+                infoLogger.Log($"Getting store roles failed - Subscriber: {requestingSubscriber.Username} is not Store owner of store: {storeID}");
                 throw new Sadna17BException("Invalid operation, only store owners can retrieve store roles of a store.");
             }
-            
+
             HashSet<string> owners = new HashSet<string>();
             Dictionary<string, HashSet<Manager.ManagerAuthorization>> managers = new Dictionary<string, HashSet<Manager.ManagerAuthorization>>();
             foreach (var subscriber in subscribers)

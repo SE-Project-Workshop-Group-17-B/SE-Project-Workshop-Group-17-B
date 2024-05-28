@@ -54,26 +54,29 @@ namespace Sadna_17_B.DomainLayer.Order
             foreach (var quantitiesOfStore in quantities)
             {
                 int storeID = quantitiesOfStore.Key;
-                if (!storeController.isOrderValid(storeID,quantitiesOfStore.Value))
-                {
-                    throw new Sadna17BException("Could not proceed with order, invalid shopping basket for storeID " + storeID + ".");
-                }
+                // TODO: Fix Store API to match this
+                //if (!storeController.CanProcessOrder(storeID,quantitiesOfStore.Value))
+                //{
+                //    infoLogger.Log($"ORDER SYSTEM | Could not proceed with order, invalid shopping basket for storeID {storeID}.");
+                //    throw new Sadna17BException("Could not proceed with order, invalid shopping basket for storeID " + storeID + ".");
+                //}
             }
 
             // Calculate Product Final Prices with StoreController: containing all product prices after discounts
-            Dictionary<int, Dictionary<int, Tuple<int, double>>> products = new Dictionary<int, Dictionary<int, Tuple<int, double>>>();
+            Dictionary<int, Dictionary<int, Tuple<int, float>>> products = new Dictionary<int, Dictionary<int, Tuple<int, float>>>();
             foreach (var quantitiesOfStore in quantities)
             {
                 int storeID = quantitiesOfStore.Key;
                 // TODO: Fix Store API to match this
-                Dictionary<int, Tuple<int, double>> storeProductsPrices = storeController.CalculateProductsPrices(storeID, quantitiesOfStore.Value);
-                products[storeID] = storeProductsPrices;
+                //Dictionary<string, Tuple<int, float>> storeProductsPrices = storeController.CalculateProductPrices(storeID, quantities);
+                //products[storeID] = storeProductsPrices;
             }
             Order order = new Order(orderCount, userID, isGuest, products, destinationAddress, creditCardInfo);
             // Check validity of total price
-            double orderPrice = order.TotalPrice();
+            float orderPrice = order.TotalPrice();
             if (orderPrice <= 0)
             {
+                errorLogger.Log($"ORDER SYSTEM | Order with invalid price - {orderPrice}");
                 throw new Sadna17BException("Invalid order price: " + orderPrice);
             }
             List<int> manufacturerProductNumbers = order.GetManufacturerProductNumbers();
@@ -81,11 +84,13 @@ namespace Sadna_17_B.DomainLayer.Order
             // Check availability of PaymentSystem external service:
             if (paymentSystem.IsValidPayment(creditCardInfo, order.TotalPrice()))
             {
+                infoLogger.Log($"ORDER SYSTEM | Payment system failure: invalid credit card information given.");
                 throw new Sadna17BException("Payment system failure: invalid credit card information given.");
             }
             // Check availability of SupplySystem external service:
             if (supplySystem.IsValidDelivery(destinationAddress, manufacturerProductNumbers))
             {
+                infoLogger.Log("ORDER SYSTEM | Supply system failure: invalid destination address or product numbers given.")
                 throw new Sadna17BException("Supply system failure: invalid destination address or product numbers given.");
             }
 
@@ -93,11 +98,8 @@ namespace Sadna_17_B.DomainLayer.Order
             foreach (var quantitiesOfStore in quantities)
             {
                 int storeID = quantitiesOfStore.Key;
-                bool succeeded = storeController.ReduceProductQuantities(storeID, quantitiesOfStore.Value);
-                if (!succeeded)
-                {
-                    throw new Sadna17BException("System failure: could not complete the order, invalid shopping basket for storeID " + storeID + ".");
-                }
+                // TODO: Fix Store API to match this
+                //storeController.ProcessOrder(storeID, quantitiesOfStore.Value);
             }
 
             // Execute Order by PaymentSystem external service:
@@ -120,6 +122,7 @@ namespace Sadna_17_B.DomainLayer.Order
                 }
                 catch (Exception e)
                 {
+                    errorLogger.Log("Invalid Guest ID given when inserting order to history: " + order.UserID);
                     throw new Sadna17BException("Invalid Guest ID given when inserting order to history: " + order.UserID, e);
                 }
             }
