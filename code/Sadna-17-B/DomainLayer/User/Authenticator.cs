@@ -15,7 +15,7 @@ namespace Sadna_17_B.DomainLayer.User
         private const string SecretKey = "this_is_a_very_secret_key_for_jwt_token"; // This should be stored securely
         private readonly SymmetricSecurityKey _signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(SecretKey));
         private List<string> invalidatedTokens = new List<string>();
-
+        private Logger errorLogger = ErrorLogger.Instance;
         public string GenerateToken(string username)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -39,10 +39,12 @@ namespace Sadna_17_B.DomainLayer.User
             ClaimsPrincipal principal = ValidateToken(token);
             if (principal == null)
             {
+                errorLogger.Log("Invalid access token was given.");
                 throw new Sadna17BException("Invalid access token was given.");
             }
             else if (invalidatedTokens.Contains(token))
             {
+                errorLogger.Log("Given access token is no longer valid.");
                 throw new Sadna17BException("Given access token is no longer valid.");
             }
             return principal.FindFirst(ClaimTypes.Name).Value;
@@ -55,6 +57,7 @@ namespace Sadna_17_B.DomainLayer.User
             bool validGuestID = int.TryParse(guestIDstring, out guestID);
             if (!validGuestID)
             {
+                errorLogger.Log("Invalid GuestID was saved in the system.");
                 throw new Sadna17BException("Invalid GuestID was saved in the system.");
             }
             return guestID;
@@ -93,8 +96,10 @@ namespace Sadna_17_B.DomainLayer.User
             if (!invalidatedTokens.Contains(token))
             {
                 invalidatedTokens.Add(token);
-            } else
+            }
+            else
             {
+                errorLogger.Log("Given token is already logged out of the system.");
                 throw new Sadna17BException("Given token is already logged out of the system.");
             }
         }

@@ -54,7 +54,7 @@ namespace Sadna_17_B.DomainLayer.Order
             foreach (var quantitiesOfStore in quantities)
             {
                 int storeID = quantitiesOfStore.Key;
-                if (!storeController.isOrderValid(storeID,quantitiesOfStore.Value))
+                if (!storeController.isOrderValid(storeID, quantitiesOfStore.Value))
                 {
                     throw new Sadna17BException("Could not proceed with order, invalid shopping basket for storeID " + storeID + ".");
                 }
@@ -65,7 +65,6 @@ namespace Sadna_17_B.DomainLayer.Order
             foreach (var quantitiesOfStore in quantities)
             {
                 int storeID = quantitiesOfStore.Key;
-                // TODO: Fix Store API to match this
                 Dictionary<int, Tuple<int, double>> storeProductsPrices = storeController.CalculateProductsPrices(storeID, quantitiesOfStore.Value);
                 products[storeID] = storeProductsPrices;
             }
@@ -74,6 +73,7 @@ namespace Sadna_17_B.DomainLayer.Order
             double orderPrice = order.TotalPrice();
             if (orderPrice <= 0)
             {
+                errorLogger.Log($"ORDER SYSTEM | Order with invalid price - {orderPrice}");
                 throw new Sadna17BException("Invalid order price: " + orderPrice);
             }
             List<int> manufacturerProductNumbers = order.GetManufacturerProductNumbers();
@@ -81,11 +81,13 @@ namespace Sadna_17_B.DomainLayer.Order
             // Check availability of PaymentSystem external service:
             if (paymentSystem.IsValidPayment(creditCardInfo, order.TotalPrice()))
             {
+                infoLogger.Log($"ORDER SYSTEM | Payment system failure: invalid credit card information given.");
                 throw new Sadna17BException("Payment system failure: invalid credit card information given.");
             }
             // Check availability of SupplySystem external service:
             if (supplySystem.IsValidDelivery(destinationAddress, manufacturerProductNumbers))
             {
+                infoLogger.Log("ORDER SYSTEM | Supply system failure: invalid destination address or product numbers given.");
                 throw new Sadna17BException("Supply system failure: invalid destination address or product numbers given.");
             }
 
@@ -120,6 +122,7 @@ namespace Sadna_17_B.DomainLayer.Order
                 }
                 catch (Exception e)
                 {
+                    errorLogger.Log("Invalid Guest ID given when inserting order to history: " + order.UserID);
                     throw new Sadna17BException("Invalid Guest ID given when inserting order to history: " + order.UserID, e);
                 }
             }
