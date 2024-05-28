@@ -55,7 +55,7 @@ namespace Sadna_17_B.ServiceLayer.Services
 
         public bool CloseStore(string token, int storeID)
         {
-            if (_userService.IsOwnerBool(token, storeID))
+            if (_userService.IsFounderBool(token, storeID))
             {
                 _storeController.CloseStore(storeID);
                 return true;
