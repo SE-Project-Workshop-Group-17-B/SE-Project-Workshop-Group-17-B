@@ -16,7 +16,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         public int Id { get; private set; }
         public string Name { get; set; }
-        public float Price { get; set; }
+        public double Price { get; set; }
         public string Category { get; set; }
         public int CustomerRate { get; set; }
         public string CustomerReview { get; set; } // up to 75 char

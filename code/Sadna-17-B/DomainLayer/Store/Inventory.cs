@@ -82,6 +82,10 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             }
         }
 
+        public double total_price(int id, int amount)
+        {
+            return searchProductById(id).Price * amount;
+        }
 
         // ---------------- Search by -------------------------------------------------------------------------------------------
 

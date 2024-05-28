@@ -155,7 +155,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         }
 
-        public Dictionary<int, int> CalculateProductsPrices(int storeID, Dictionary<int, int> quantities)
+        public Dictionary<int, Tuple<int,double>> CalculateProductsPrices(int storeID, Dictionary<int, int> quantities)
         {
             Store store = GetStoreById(storeID);
 
