@@ -29,9 +29,9 @@ namespace Sadna_17_B.ServiceLayer.Services
 
         // ---------------- store management options -------------------------------------------------------------------------------------------
 
-        Response reduce_products(int storeID, Dictionary<int, int> quantities);
-        Response add_product_to_store(int storeID);
-        Response edit_product_in_store(int storeID, int productID);
+        Response reduce_products(string token, int storeID, Dictionary<int, int> quantities);
+        Response add_products_to_store(string token, int storeID, int productID, int amount);
+        Response edit_product_in_store(string token, int storeID, int productID);
 
         // ---------------- search store options -------------------------------------------------------------------------------------------
 

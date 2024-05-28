@@ -55,7 +55,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
             double membership_discount = membership_daily_discount + membership_yearly_discount;
 
-            return price * Math.Min(membership_discount, membership_discount_maximum);
+            return price * (1 - Math.Min(membership_discount, membership_discount_maximum));
         }
 
         public double get_days()

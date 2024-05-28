@@ -62,6 +62,7 @@ namespace Sadna_17_B.ServiceLayer.Services
             _storeController.AddStore(store);
             info_logger.Log("Store", "new store was added : \n\n" + store.getInfo());
 
+          
             _userService.CreateStoreFounder(token, store._id);
             info_logger.Log("User", "user is now founder of the '" + store._name + "' store");
 
@@ -154,12 +155,28 @@ namespace Sadna_17_B.ServiceLayer.Services
 
         // ---------------- stores Management -------------------------------------------------------------------------------------------
 
-        public Response reduce_products(int storeID, Dictionary<int, int> quantities)
+        public Response reduce_products(string token, int storeID, Dictionary<int, int> quantities)
         {
-            bool result = _storeController.ReduceProductQuantities(storeID, quantities);
-            string message = result ? "Products reduced successfully.\n" : "Failed to reduce products.\n";
+            bool result = false;
+            string message = "something wrong";
 
-            info_logger.Log("Store", message);
+            if (_userService.IsOwnerBool(token, storeID) || _userService.HasManagerAuthorizationBool(token, storeID, DomainLayer.User.Manager.ManagerAuthorization.UpdateSupply))
+            {
+
+                try
+                {
+                    result = _storeController.ReduceProductQuantities(storeID, quantities);
+                    message = result ? "Products reduced successfully.\n" : "Failed to reduce products.\n";
+
+                    info_logger.Log("Store", message);
+                    return new Response(result, message);
+                }
+                catch (Sadna17BException e)
+                {
+                    error_logger.Log( message);
+                    return Response.GetErrorResponse(e);
+                }
+            }
             return new Response(result, message);
         }
 
@@ -171,7 +188,7 @@ namespace Sadna_17_B.ServiceLayer.Services
             return new Response(true, productId);
 
         }
-            public Response add_product_to_store(int storeID)
+        public Response add_product_to_store(int storeID)
         {            
             Console.WriteLine("please enter product name:\n");
             string name = Console.ReadLine();
@@ -192,13 +209,56 @@ namespace Sadna_17_B.ServiceLayer.Services
             int productId = _storeController.AddProductsToStore(storeID, name, price, category, description, amount);
 
             return new Response(true, productId);
+       }
+       
+        public Response add_products_to_store(string token, int storeID, int productID, int amount)
+        {
+            bool result = false;
+            string message = "something wrong";
+            if (_userService.IsOwnerBool(token, storeID) || _userService.HasManagerAuthorizationBool(token, storeID, DomainLayer.User.Manager.ManagerAuthorization.UpdateSupply))
+            {
+
+                try
+                {
+                    result = _storeController.AddProductsToStore(storeID, productID, amount);
+                    message = result ? "Products reduced successfully.\n" : "Failed to reduce products.\n";
+
+                    info_logger.Log("Store", message);
+                    return new Response(result, message);
+                }
+                catch (Sadna17BException e)
+                {
+                    error_logger.Log(message);
+                    return Response.GetErrorResponse(e);
+                }
+            }
+            return new Response(result, message);
         }
 
-        public Response edit_product_in_store(int storeID, int productID)
+        public Response edit_product_in_store(string token, int storeID, int productID)
         {
-            bool result = _storeController.EditProductProperties(storeID, productID);
+            bool result = false;
+            string message = "something wrong";
 
-            return new Response(result, result ? "Products reduced successfully.\n" : "Failed to reduce products.\n");
+            if (_userService.IsOwnerBool(token, storeID) || _userService.HasManagerAuthorizationBool(token, storeID, DomainLayer.User.Manager.ManagerAuthorization.UpdateSupply))
+            { 
+
+                try
+                {
+                    result = _storeController.EditProductProperties(storeID, productID);
+                    message = result ? "Products edited successfully.\n" : "Failed to edit products.\n";
+
+                    info_logger.Log("Store", message);
+                    return new Response(result, message);
+                }
+                catch (Sadna17BException e)
+                {
+                    error_logger.Log(message);
+                    return Response.GetErrorResponse(e);
+                }
+            }
+
+            return new Response(result, message);
         }
 
 
