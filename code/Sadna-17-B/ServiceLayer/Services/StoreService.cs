@@ -75,18 +75,29 @@ namespace Sadna_17_B.ServiceLayer.Services
             return new Response(result, result ? "Order is valid.\n" : "Order not valid.\n");
         }
 
+
+
+        // ---------------- stores Management -------------------------------------------------------------------------------------------
         public Response reduce_products(int storeID, Dictionary<int, int> quantities)
         {
             bool result = _storeController.ReduceProductQuantities(storeID, quantities);
 
-
             return new Response(result, result ? "Products reduced successfully.\n" : "Failed to reduce products.\n");
-
-
-
-
         }
 
+        public Response add_products_to_store(int storeID, int productID, int amount)
+        {
+            bool result = _storeController.AddProductsToStore(storeID, productID, amount);
+
+            return new Response(result, result ? "Products reduced successfully.\n" : "Failed to reduce products.\n");
+        }
+
+        public Response edit_product_to_store(int storeID, int productID)
+        {
+            bool result = _storeController.EditProductProperties(storeID, productID);
+
+            return new Response(result, result ? "Products reduced successfully.\n" : "Failed to reduce products.\n");
+        }
 
         // ---------------- Variables -------------------------------------------------------------------------------------------
 
@@ -103,9 +114,6 @@ namespace Sadna_17_B.ServiceLayer.Services
             Store store = _storeController.GetStoreByName(name);
             return new Response(store != null ? "Store Found Successfully\n" : "Failed to find store\n", store != null, store);
         }
-
-
-
 
         public Response search_by_category(string category)
         {
