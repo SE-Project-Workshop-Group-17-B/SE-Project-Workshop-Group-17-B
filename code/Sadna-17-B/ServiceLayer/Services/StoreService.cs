@@ -211,20 +211,20 @@ namespace Sadna_17_B.ServiceLayer.Services
             return new Response(true, productId);
        }
        
-        public Response add_products_to_store(string token, int storeID, int productID, int amount)
+        public Response add_products_to_store(string token, int storeID, string name, double price, string category, string description, int amount)
         {
-            bool result = false;
+            int result = -1;
             string message = "something wrong";
             if (_userService.IsOwnerBool(token, storeID) || _userService.HasManagerAuthorizationBool(token, storeID, DomainLayer.User.Manager.ManagerAuthorization.UpdateSupply))
             {
 
                 try
                 {
-                    result = _storeController.AddProductsToStore(storeID, productID, amount);
-                    message = result ? "Products reduced successfully.\n" : "Failed to reduce products.\n";
+                    result = _storeController.AddProductsToStore(storeID, name, price, category, description, amount);
+                    message = result != -1 ? "Products reduced successfully.\n" : "Failed to reduce products.\n";
 
                     info_logger.Log("Store", message);
-                    return new Response(result, message);
+                    return new Response(result != -1, result);
                 }
                 catch (Sadna17BException e)
                 {
@@ -232,7 +232,7 @@ namespace Sadna_17_B.ServiceLayer.Services
                     return Response.GetErrorResponse(e);
                 }
             }
-            return new Response(result, message);
+            return new Response(result != -1, result);
         }
 
         public Response edit_product_in_store(string token, int storeID, int productID)

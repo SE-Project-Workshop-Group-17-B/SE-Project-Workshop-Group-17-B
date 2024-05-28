@@ -247,25 +247,25 @@ namespace Sadna_17_B_Test.Tests.UnitTests
                                     .SetName("Test Store")
                                     .SetInventory(_inventory);
             var store = storeBuilder.Build();
+            int initialAmount = 100;
 
-            _product = new Product("Test Product", 100, "Category", "Good product");
-            _product.AddRating(5);
-            _storeController.AddProductsToStore(store._id, _product.Id, 100);
-        
-            int initialAmount = _inventory.GetProductAmount(_product);
+            _storeController.AddStore(store);
+
+            var productId = _storeController.AddProductsToStore(store._id, "Test Product", 100, "Category", "Good product", initialAmount);
+            
             Dictionary<int, int> order = new Dictionary<int, int>();
-            order[_product.Id] = 5;
+            order[productId] = 5;
         
-            Task task1 = Task.Run(() => _storeController.ReduceProductQuantities(1, order));
-            Task task2 = Task.Run(() => _storeController.ReduceProductQuantities(1, order));
-            Task task3 = Task.Run(() => _storeController.ReduceProductQuantities(1, order));
-            Task task4 = Task.Run(() => _storeController.ReduceProductQuantities(1, order));
-            Task task5 = Task.Run(() => _storeController.ReduceProductQuantities(1, order));
-            Task task6 = Task.Run(() => _storeController.ReduceProductQuantities(1, order));
+            Task task1 = Task.Run(() => _storeController.ReduceProductQuantities(store._id, order));
+            Task task2 = Task.Run(() => _storeController.ReduceProductQuantities(store._id, order));
+            Task task3 = Task.Run(() => _storeController.ReduceProductQuantities(store._id, order));
+            Task task4 = Task.Run(() => _storeController.ReduceProductQuantities(store._id, order));
+            Task task5 = Task.Run(() => _storeController.ReduceProductQuantities(store._id, order));
+            Task task6 = Task.Run(() => _storeController.ReduceProductQuantities(store._id, order));
         
             Task.WaitAll(task1, task2, task3, task4, task5, task6);
-        
-            int finalAmount = _inventory.GetProductAmount(_product);
+
+            int finalAmount = store.GetProductAmount("Test Product");
         
             Assert.AreEqual(initialAmount - 30, finalAmount);
         }
