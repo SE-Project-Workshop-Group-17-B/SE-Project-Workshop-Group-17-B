@@ -25,7 +25,8 @@ namespace Sadna_17_B_Test.Tests.UnitTests
             _storeController = new StoreController();
             _inventory = new Inventory();
             _discountPolicy = new DiscountPolicy("Test Policy");
-            _product = new Product("Test Product", 100, "Category", 5, "Good product");
+            _product = new Product("Test Product", 100, "Category", "Good product");
+            _product.AddRating(5);
 
         }
 
@@ -77,7 +78,8 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         [TestMethod]
         public void TestCalculateDiscount_Member()
         {
-            Product product3 = new Product("Test Product", 100, "Category", 5, "Good product");
+            Product product3 = new Product("Test Product", 100, "Category", "Good product");
+            _product.AddRating(5);
 
             // Arrange
             var discount = new VisibleDiscount(DateTime.Now, DateTime.Now.AddDays(10), new Discount_Member());
@@ -200,8 +202,8 @@ namespace Sadna_17_B_Test.Tests.UnitTests
             var result = _storeController.GetStoreByName("Test Store");
 
             // Assert
-            Assert.AreNotEqual(result._name, "Test Store");
-            //Assert.IsNull(result);
+            //Assert.AreNotEqual(result._name, "Test Store");
+            Assert.IsNull(result);
         }
 
         [TestMethod]
@@ -235,6 +237,37 @@ namespace Sadna_17_B_Test.Tests.UnitTests
             Assert.AreEqual(2, result.Count);
             CollectionAssert.Contains(result, _storeController.GetStoreByName("Test Store 1"));
             CollectionAssert.Contains(result, _storeController.GetStoreByName("Test Store 2"));
+        }
+
+        [TestMethod]
+        public void TestReduceProductAmount_Synchronization()
+        {
+            // Arrange
+            var storeBuilder = _storeController.GetStoreBuilder()
+                                    .SetName("Test Store")
+                                    .SetInventory(_inventory);
+            var store = storeBuilder.Build();
+
+            _product = new Product("Test Product", 100, "Category", "Good product");
+            _product.AddRating(5);
+            _storeController.AddProductsToStore(store._id, _product.Id, 100);
+        
+            int initialAmount = _inventory.GetProductAmount(_product);
+            Dictionary<int, int> order = new Dictionary<int, int>();
+            order[_product.Id] = 5;
+        
+            Task task1 = Task.Run(() => _storeController.ReduceProductQuantities(1, order));
+            Task task2 = Task.Run(() => _storeController.ReduceProductQuantities(1, order));
+            Task task3 = Task.Run(() => _storeController.ReduceProductQuantities(1, order));
+            Task task4 = Task.Run(() => _storeController.ReduceProductQuantities(1, order));
+            Task task5 = Task.Run(() => _storeController.ReduceProductQuantities(1, order));
+            Task task6 = Task.Run(() => _storeController.ReduceProductQuantities(1, order));
+        
+            Task.WaitAll(task1, task2, task3, task4, task5, task6);
+        
+            int finalAmount = _inventory.GetProductAmount(_product);
+        
+            Assert.AreEqual(initialAmount - 30, finalAmount);
         }
     }
 }
