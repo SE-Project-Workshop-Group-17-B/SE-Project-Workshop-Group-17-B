@@ -7,7 +7,7 @@ using System.IO;
 // -------------- Logger base class -----------------------------------------------------------------------------------------------------------
 
 
-public class Logger
+public abstract class Logger
 {
     private readonly string logFilePath;
     private readonly object lockObject = new object();
@@ -35,6 +35,8 @@ public class Logger
 
         File.AppendAllText(logFilePath, logMessage + Environment.NewLine);
     }
+
+    public abstract void Log(string type, string message);
 }
 
 
@@ -84,7 +86,7 @@ public class ErrorLogger : Logger
         Log("ERROR", message);
     }
 
-    public void Log(string type, string message)
+    public override void Log(string type, string message)
     {
         string informative_message = $"| {type,15} | " + message;
 
@@ -141,12 +143,12 @@ public class InfoLogger : Logger
     // -------------- Log into text file ---------------------------------------
 
 
-    public void Log(string message)
+    public virtual void Log(string message)
     {
         Log("INFO", message);
     }
 
-    private void Log(string type, string message)
+    public override void Log(string type, string message)
     {
         string informativeMessage = $"| {type,15} | {message}";
         base.Log(informativeMessage);
