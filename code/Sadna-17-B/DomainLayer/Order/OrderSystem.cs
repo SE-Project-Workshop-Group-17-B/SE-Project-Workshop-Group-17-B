@@ -79,13 +79,13 @@ namespace Sadna_17_B.DomainLayer.Order
             List<int> manufacturerProductNumbers = order.GetManufacturerProductNumbers();
 
             // Check availability of PaymentSystem external service:
-            if (paymentSystem.IsValidPayment(creditCardInfo, order.TotalPrice()))
+            if (!paymentSystem.IsValidPayment(creditCardInfo, order.TotalPrice()))
             {
                 infoLogger.Log($"ORDER SYSTEM | Payment system failure: invalid credit card information given.");
                 throw new Sadna17BException("Payment system failure: invalid credit card information given.");
             }
             // Check availability of SupplySystem external service:
-            if (supplySystem.IsValidDelivery(destinationAddress, manufacturerProductNumbers))
+            if (!supplySystem.IsValidDelivery(destinationAddress, manufacturerProductNumbers))
             {
                 infoLogger.Log("ORDER SYSTEM | Supply system failure: invalid destination address or product numbers given.");
                 throw new Sadna17BException("Supply system failure: invalid destination address or product numbers given.");
@@ -118,7 +118,12 @@ namespace Sadna_17_B.DomainLayer.Order
             {
                 try
                 {
-                    guestOrders[int.Parse(order.UserID)].Add(order); // Should be valid integer when it is a guest order
+                    int guestId = int.Parse(order.UserID);
+                    if (!guestOrders.ContainsKey(guestId))
+                    {
+                        guestOrders[guestId] = new List<Order>();
+                    }
+                    guestOrders[guestId].Add(order); // Should be valid integer when it is a guest order
                 }
                 catch (Exception e)
                 {
@@ -128,10 +133,18 @@ namespace Sadna_17_B.DomainLayer.Order
             }
             else // Insert to subscribers order history
             {
+                if (!subscriberOrders.ContainsKey(order.UserID))
+                {
+                    subscriberOrders[order.UserID] = new List<Order>();
+                }
                 subscriberOrders[order.UserID].Add(order);
             }
             foreach (SubOrder subOrder in order.GetSubOrders())
             { // insert to store sub-orders history
+                if (!storeOrders.ContainsKey(subOrder.StoreID))
+                {
+                    storeOrders[subOrder.StoreID] = new List<SubOrder>();
+                }
                 storeOrders[subOrder.StoreID].Add(subOrder);
             }
         }

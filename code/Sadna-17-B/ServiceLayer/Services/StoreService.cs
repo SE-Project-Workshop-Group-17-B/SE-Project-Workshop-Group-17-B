@@ -56,7 +56,8 @@ namespace Sadna_17_B.ServiceLayer.Services
                                 .SetPhoneNumber(phoneNumber)
                                 .SetStoreDescription(storeDescription)
                                 .SetAddress(address)
-                                .SetInventory(inventory);
+                                .SetInventory(inventory)
+                                .SetDiscountPolicy(new DiscountPolicy("DefaultDiscountPolicy"));
             var store = storeBuilder.Build();
 
             _storeController.AddStore(store);
@@ -67,7 +68,7 @@ namespace Sadna_17_B.ServiceLayer.Services
             info_logger.Log("User", "user is now founder of the '" + store._name + "' store");
 
 
-            return new Response(true, "\nNew Store Created.\nStoreID: " + store._id + "\nStore name: " + store._name);
+            return new Response("\nNew Store Created.\nStoreID: " + store._id + "\nStore name: " + store._name, true, store._id);
 
         }
 

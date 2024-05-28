@@ -158,7 +158,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         public DiscountPolicy(string policy)
         {
-            policy += 1;
+            policy_id += 1;
 
             this.policyName = policy;
             this.discount_to_products = new Dictionary<Discount, HashSet<int>>();

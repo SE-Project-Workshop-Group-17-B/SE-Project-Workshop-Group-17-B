@@ -255,14 +255,14 @@ namespace Sadna_17_B_Test.Tests.UnitTests
             
             Dictionary<int, int> order = new Dictionary<int, int>();
             order[productId] = 5;
-        
+
             Task task1 = Task.Run(() => _storeController.ReduceProductQuantities(store._id, order));
             Task task2 = Task.Run(() => _storeController.ReduceProductQuantities(store._id, order));
             Task task3 = Task.Run(() => _storeController.ReduceProductQuantities(store._id, order));
             Task task4 = Task.Run(() => _storeController.ReduceProductQuantities(store._id, order));
             Task task5 = Task.Run(() => _storeController.ReduceProductQuantities(store._id, order));
             Task task6 = Task.Run(() => _storeController.ReduceProductQuantities(store._id, order));
-        
+
             Task.WaitAll(task1, task2, task3, task4, task5, task6);
 
             int finalAmount = store.GetProductAmount("Test Product");

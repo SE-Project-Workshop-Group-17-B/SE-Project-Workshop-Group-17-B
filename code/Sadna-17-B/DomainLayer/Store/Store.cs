@@ -142,7 +142,6 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                 return false;
             try { _inventory.ReduceProductAmount(product_to_reduce, amount); }
             catch (Exception e) { return false; }
-            _inventory.ReduceProductAmount(product_to_reduce, amount);
             return true;
         }
 
