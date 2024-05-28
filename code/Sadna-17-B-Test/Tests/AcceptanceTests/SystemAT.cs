@@ -7,6 +7,8 @@ using Sadna_17_B.Utils;
 using Sadna_17_B.DomainLayer.StoreDom;
 using Sadna_17_B.DomainLayer.User;
 using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
+using System.Diagnostics;
 
 namespace Sadna_17_B_Test.Tests.AcceptanceTests
 {
@@ -32,7 +34,11 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
 
         //for product related tests
         string productName = "apple";
-
+        int productPrice = 10;
+        string productCategory = "fruits";
+        string productDescription = "very good apple";
+        int productAmount = 5;
+        //category, description, amount
 
         [TestInitialize]
         public void SetUp()
@@ -166,7 +172,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         }
 
         [TestMethod]
-        public void TestAddProductsToStore()
+        public void TestCreateProductsToStore()
         {
             SetUp();
             Response ignore = userService.CreateSubscriber(username1, password1);
@@ -176,10 +182,12 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
             storeService.create_store(userDTO.AccessToken, name, email, phonenumber, storeDescr, addr, inv);
             Response storeRes = storeService.store_by_name(name);
             int storeId = (storeRes.Data as Store)._id; // Note: may change if the response returns StoreDTO
-            //storeService.add_products_to_store(userDTO.AccessToken, storeId, )
-
+            //Response productRes = storeService.add_products_to_store(userDTO.AccessToken, storeId, productName, productPrice, productCategory, productDescription, productAmount);
+            //int productId = (int)productRes.Data;
+            //TODO: Response quantityRes = storeService.getProductQuantity(userDTO.AccessToken, storeId, productId);
+            //Assert.IsTrue(((int)quantityRes.Data) == 5);
         }
-
+        [TestMethod]
         public void TestReduceProducts()
         {
             SetUp();
@@ -190,15 +198,13 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
             storeService.create_store(userDTO.AccessToken, name, email, phonenumber, storeDescr, addr, inv);
             Response storeRes = storeService.store_by_name(name);
             int storeId = (storeRes.Data as Store)._id; // Note: may change if the response returns StoreDTO
-            //TODO: Add product to store
-            int productId = 0;//need to add option to get product id in storeservice
-            //TODO: add 5 products of productId to store
-            Dictionary<int, int> quantities = new Dictionary<int, int>();
-            quantities.Add(productId, 3);
+            //Response productRes = storeService.add_products_to_store(userDTO.AccessToken, storeId, productName, productPrice, productCategory, productDescription, productAmount);
+            //int productId = (int)productRes.Data;//need to add option to get product id in storeService
+            //Dictionary<int, int> quantities = new Dictionary<int, int>();
+            //quantities.Add(productId, 3);
             //storeService.reduce_products(userDTO.AccessToken, storeId, quantities);
-            Response productsRes = storeService.products_by_name(productName);
-            Dictionary<int, int> result = (Dictionary<int, int>)productsRes.Data;
-            Assert.IsTrue(result[productId] == 2);
+            //TODO: Response quantityRes = storeService.getProductQuantity(userDTO.AccessToken, storeId, productId);
+            //Assert.IsTrue(((int)quantityRes.Data) == 2);
         }
 
         [TestMethod]
