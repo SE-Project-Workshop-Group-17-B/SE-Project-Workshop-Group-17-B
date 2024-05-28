@@ -7,6 +7,8 @@ using Sadna_17_B.Utils;
 using Sadna_17_B.DomainLayer.StoreDom;
 using Sadna_17_B.DomainLayer.User;
 using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
+using System.Diagnostics;
 
 namespace Sadna_17_B_Test.Tests.AcceptanceTests
 {
@@ -29,6 +31,14 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         string addr = "Beer sheve BGU st.3";
         Inventory inv = new Inventory();
         int storeId = 1;
+
+        //for product related tests
+        string productName = "apple";
+        int productPrice = 10;
+        string productCategory = "fruits";
+        string productDescription = "very good apple";
+        int productAmount = 5;
+        //category, description, amount
 
         [TestInitialize]
         public void SetUp()
@@ -119,7 +129,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
             res = storeService.store_by_name(name);
             Assert.IsTrue(res.Success);
             Assert.IsTrue(res2.Success);
-            Assert.IsFalse(storeService.store_by_name(email).Success);
+            Assert.IsFalse(storeService.store_by_name(email).Success);  
         }
 
         [TestMethod]
@@ -160,6 +170,20 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
 
             Assert.IsFalse(res3.Success);
         }
+
+        [TestMethod]
+        public void TestGetStoreByName()
+        {
+            SetUp();
+            Response ignore = userService.CreateSubscriber(username1, password1);
+            ignore = userService.CreateSubscriber(username2, password2);
+            Response res = userService.Login(username1, password1);
+            userDTO = res.Data as UserDTO;
+            storeService.create_store(userDTO.AccessToken, name, email, phonenumber, storeDescr, addr, inv);
+            Response storeRes = storeService.store_by_name(name);
+            Assert.AreEqual((storeRes.Data as Store)._name, name);
+        }
+
 
         [TestMethod]
         public void TestCreateStoreFounder()
