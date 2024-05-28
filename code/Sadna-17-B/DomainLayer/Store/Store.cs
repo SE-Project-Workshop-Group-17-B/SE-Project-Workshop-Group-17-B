@@ -82,10 +82,9 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         // ---------------- adjust inventory ----------------------------------------------------------------------------------------
 
-        public bool AddProduct(int product_id, int amount)
+        public int AddProduct(string name, double price, string category, string description, int amount)
         {
-
-            return _inventory.AddProduct(product_id, amount);
+            return _inventory.AddProduct(name, price, category, description, amount);
         }
 
         public bool RemoveProduct(string productName)
