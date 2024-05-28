@@ -102,13 +102,9 @@ namespace Sadna_17_B.ServiceLayer.Services
             bool result = _storeController.ReduceProductQuantities(storeID, quantities);
             string message = result ? "Products reduced successfully.\n" : "Failed to reduce products.\n";
 
-<<<<<<< 82-add-log-calls
             info_logger.Log("Store", message);
             return new Response(result,message);
-=======
-            return new Response(result, result ? "Products reduced successfully.\n" : "Failed to reduce products.\n");
         }
->>>>>>> main
 
         public Response add_products_to_store(int storeID, int productID, int amount)
         {
@@ -124,12 +120,7 @@ namespace Sadna_17_B.ServiceLayer.Services
             return new Response(result, result ? "Products reduced successfully.\n" : "Failed to reduce products.\n");
         }
 
-<<<<<<< 82-add-log-calls
-
         // ---------------- search stores options -------------------------------------------------------------------------------------------
-=======
-        // ---------------- Variables -------------------------------------------------------------------------------------------
->>>>>>> main
 
 
         public Response all_stores()
@@ -151,15 +142,11 @@ namespace Sadna_17_B.ServiceLayer.Services
             return new Response(message, store != null, store);
         }
 
-<<<<<<< 82-add-log-calls
 
         // ---------------- search products options -------------------------------------------------------------------------------------------
 
 
-        public Response prodcuts_by_category(string category)
-=======
-        public Response search_by_category(string category)
->>>>>>> main
+        public Response products_by_category(string category)
         {
             Dictionary<Product, int> output = _storeController.SearchProductsByCategory(category);
             string message = (! output.IsNullOrEmpty()) ? "products found successfully\n" : "failed to find products\n";
