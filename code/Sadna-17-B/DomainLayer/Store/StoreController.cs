@@ -1,9 +1,11 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using Sadna_17_B.DomainLayer.User;
+using Sadna_17_B.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.Web.UI.WebControls;
 using System.Xml.Linq;
 
 namespace Sadna_17_B.DomainLayer.StoreDom
@@ -96,7 +98,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             Store store = GetStoreById(storeID);
 
             if (store == null)
-                return;
+                throw new Sadna17BException("The store with storeID " + storeID + " is already closed.");
 
             _ClosedStores.Add(store);
             _stores.Remove(store);
@@ -243,6 +245,75 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             Product product = store.searchProductByID(productID);
             product.AddRating(rating);
             return true;
+        }
+
+        public bool edit_policy(int store_id, string edit_type, string policy_doc)
+        {
+            foreach (Store store in _stores)
+            {
+                if (store_id == store._id)
+                {
+                    string[] components = policy_doc.Split(',');
+
+                    DateTime start = DateTime.Parse(components[0]);
+                    DateTime end = DateTime.Parse(components[1]);
+                    IDiscount_Strategy strategy = null;
+                    
+                    switch (components[2])
+                    {
+                        case "membership":
+
+                            strategy = new Discount_Member();
+                            break;
+
+                        case "percentage":
+
+                            strategy = new Discount_Percentage(Double.Parse(components[3]));
+                            break;
+
+                        case "flat":
+
+                            strategy = new Discount_Flat(Double.Parse(components[3]));
+                            break;
+                    }
+
+                    Discount discount = new VisibleDiscount(start, end, strategy);
+
+                    store.edit_store_policy(edit_type,discount);
+                    return true;
+                }
+                    
+            }
+
+            return false;
+        }
+        
+        public bool add_policy(int store_id, string policy_doc)
+        {
+            foreach (Store store in _stores)
+            {
+                if (store._id == store_id)
+                {
+                    store.add_policy(policy_doc);
+                    return true;
+                }
+            }
+
+            return false; 
+        }
+
+        public bool remove_policy(int store_id, int policy_id)
+        {
+            foreach (Store store in _stores)
+            {
+                if (store._id == store_id)
+                {
+                    store.remove_policy(policy_id);
+                    return true;
+                }
+            }
+
+            return false; ;
         }
 
 

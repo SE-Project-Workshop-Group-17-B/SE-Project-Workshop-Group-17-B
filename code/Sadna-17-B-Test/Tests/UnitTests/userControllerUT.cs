@@ -20,6 +20,10 @@ namespace Sadna_17_B_Test.Tests.UnitTests
 
         string username1 = "test1";
         string password1 = "password1";
+        string username2 = "test2";
+        string password2 = "password2";
+        int storeId = 0;
+        int productId = 1;
 
         [TestInitialize]
         public void SetUp()
@@ -27,8 +31,6 @@ namespace Sadna_17_B_Test.Tests.UnitTests
             _storeController = new StoreController();
             _orderSystem = new OrderSystem(_storeController);
             _userController = new UserController(_orderSystem);
-
-            
         }
 
         [TestMethod]
@@ -81,15 +83,162 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         }
 
         [TestMethod]
-        public void TestAdminExit()
+        public void TestSubsriberLogout()
         {
             SetUp();
 
             _userController.CreateAdmin(username1, password1);
 
             string token = _userController.Login(username1, password1);
+            _userController.Logout(token);
 
-            Assert.IsFalse(_userController.IsGuest(token));
+            Assert.IsFalse(_userController.IsSubscriber(token));
+        }
+
+        [TestMethod]
+        public void TestFounder()
+        {
+            SetUp();
+
+            //creating and logging in users
+            _userController.CreateSubscriber(username1, password1);
+            string token1 = _userController.Login(username1, password1);            
+
+            _userController.CreateSubscriber(username2, password2);
+            string token2 = _userController.Login(username2, password2);
+
+            _userController.CreateStoreFounder(token1, storeId);
+
+            Assert.IsTrue(_userController.IsFounder(token1, storeId));
+            Assert.IsFalse(_userController.IsFounder(token2, storeId));
+        }
+
+        [TestMethod]
+        public void TestOwnershipOfferAccept()
+        {
+            SetUp();
+
+            _userController.CreateSubscriber(username1, password1);
+            string token1 = _userController.Login(username1, password1);
+
+            _userController.CreateSubscriber(username2, password2);
+            string token2 = _userController.Login(username2, password2);
+
+            _userController.CreateStoreFounder(token1, storeId);
+            _userController.OfferOwnerAppointment(token1, storeId, username2);
+
+            _userController.RespondToOwnerAppointmentOffer(token2, storeId, true);
+            Assert.IsTrue(_userController.IsOwner(token2, storeId));
+        }
+
+        [TestMethod]
+        public void TestOwnershipOfferDecline()
+        {
+            SetUp();
+
+            _userController.CreateSubscriber(username1, password1);
+            string token1 = _userController.Login(username1, password1);
+
+            _userController.CreateSubscriber(username2, password2);
+            string token2 = _userController.Login(username2, password2);
+
+            _userController.CreateStoreFounder(token1, storeId);
+            _userController.OfferOwnerAppointment(token1, storeId, username2);
+
+            _userController.RespondToOwnerAppointmentOffer(token2, storeId, false);
+            Assert.IsFalse(_userController.IsOwner(token2, storeId));
+        }
+
+        [TestMethod]
+        public void TestManagementOfferAccept()
+        {
+            SetUp();
+
+            _userController.CreateSubscriber(username1, password1);
+            string token1 = _userController.Login(username1, password1);
+
+            _userController.CreateSubscriber(username2, password2);
+            string token2 = _userController.Login(username2, password2);
+
+            _userController.CreateStoreFounder(token1, storeId);
+            _userController.OfferManagerAppointment(token1, storeId, username2);
+
+            _userController.RespondToManagerAppointmentOffer(token2, storeId, true);
+            Assert.IsTrue(_userController.IsManager(token2, storeId));
+        }
+
+        [TestMethod]
+        public void TestManagementOfferDecline()
+        {
+            SetUp();
+
+            _userController.CreateSubscriber(username1, password1);
+            string token1 = _userController.Login(username1, password1);
+
+            _userController.CreateSubscriber(username2, password2);
+            string token2 = _userController.Login(username2, password2);
+
+            _userController.CreateStoreFounder(token1, storeId);
+            _userController.OfferManagerAppointment(token1, storeId, username2);
+
+            _userController.RespondToManagerAppointmentOffer(token2, storeId, false);
+            Assert.IsFalse(_userController.IsManager(token2, storeId));
+        }
+
+        [TestMethod]
+        public void TestRevokeManager()
+        {
+            SetUp();
+
+            _userController.CreateSubscriber(username1, password1);
+            string token1 = _userController.Login(username1, password1);
+
+            _userController.CreateSubscriber(username2, password2);
+            string token2 = _userController.Login(username2, password2);
+
+            _userController.CreateStoreFounder(token1, storeId);
+            _userController.OfferManagerAppointment(token1, storeId, username2);
+
+            _userController.RespondToManagerAppointmentOffer(token2, storeId, true);
+
+            _userController.RevokeManagement(token1, storeId, username2);
+            Assert.IsFalse(_userController.IsManager(token2, storeId));
+        }
+
+        [TestMethod]
+        public void TestRevokeOwner()
+        {
+            SetUp();
+
+            _userController.CreateSubscriber(username1, password1);
+            string token1 = _userController.Login(username1, password1);
+
+            _userController.CreateSubscriber(username2, password2);
+            string token2 = _userController.Login(username2, password2);
+
+            _userController.CreateStoreFounder(token1, storeId);
+            _userController.OfferOwnerAppointment(token1, storeId, username2);
+
+            _userController.RespondToOwnerAppointmentOffer(token2, storeId, true);
+
+            _userController.RevokeOwnership(token1, storeId, username2);
+            Assert.IsFalse(_userController.IsOwner(token2, storeId));
+        }
+
+        [TestMethod]
+        public void TestAddToCart()
+        {
+            SetUp();
+
+            _userController.CreateSubscriber(username1, password1);
+            string token1 = _userController.Login(username1, password1);
+
+            _userController.AddToCart(token1, storeId, productId, 2);
+            ShoppingCart sc = _userController.GetShoppingCart(token1);
+            Assert.IsNotNull(sc.ShoppingBaskets);
+
+            Dictionary<int, int> busket = sc.ShoppingBaskets[storeId].ProductQuantities;
+            Assert.AreEqual(2, busket[productId]);
         }
     }
 }
