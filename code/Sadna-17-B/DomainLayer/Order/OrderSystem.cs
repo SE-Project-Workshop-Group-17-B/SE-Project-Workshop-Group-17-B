@@ -14,6 +14,8 @@ namespace Sadna_17_B.DomainLayer.Order
         private StoreController storeController;
         private IPaymentSystem paymentSystem = new PaymentSystemProxy();
         private ISupplySystem supplySystem = new SupplySystemProxy();
+        private Logger infoLogger = InfoLogger.Instance;
+        private Logger errorLogger = ErrorLogger.Instance;
 
         // All these data structures will move to DAL in version 3, it is currently held in memory. TODO: use a repository
         private Dictionary<int, Order> orderHistory = new Dictionary<int, Order>();                         // OrderId -> Order
@@ -43,30 +45,33 @@ namespace Sadna_17_B.DomainLayer.Order
 
         public void ProcessOrder(ShoppingCart shoppingCart, string userID, bool isGuest, string destinationAddress, string creditCardInfo)
         {
+            if (isGuest)
+                infoLogger.Log($"ORDER SYSTEM | processing Order for guest {userID}");
+            else
+                infoLogger.Log($"ORDER SYSTEM | processing Order for Subscriber {userID}");
             Dictionary<int, Dictionary<int, int>> quantities = GetShoppingCartQuantities(shoppingCart);
             // Check Order Validity with StoreController: satisfies the store policies and all product quantities exist in the inventory
             foreach (var quantitiesOfStore in quantities)
             {
                 int storeID = quantitiesOfStore.Key;
-                // TODO: Fix Store API to match this
-                //if (!storeController.CanProcessOrder(storeID,quantitiesOfStore.Value))
-                //{
-                //    throw new Sadna17BException("Could not proceed with order, invalid shopping basket for storeID " + storeID + ".");
-                //}
+                if (!storeController.isOrderValid(storeID,quantitiesOfStore.Value))
+                {
+                    throw new Sadna17BException("Could not proceed with order, invalid shopping basket for storeID " + storeID + ".");
+                }
             }
 
             // Calculate Product Final Prices with StoreController: containing all product prices after discounts
-            Dictionary<int, Dictionary<int, Tuple<int, float>>> products = new Dictionary<int, Dictionary<int, Tuple<int, float>>>();
+            Dictionary<int, Dictionary<int, Tuple<int, double>>> products = new Dictionary<int, Dictionary<int, Tuple<int, double>>>();
             foreach (var quantitiesOfStore in quantities)
             {
                 int storeID = quantitiesOfStore.Key;
                 // TODO: Fix Store API to match this
-                //Dictionary<string, Tuple<int, float>> storeProductsPrices = storeController.CalculateProductPrices(storeID, quantities);
-                //products[storeID] = storeProductsPrices;
+                Dictionary<int, Tuple<int, double>> storeProductsPrices = storeController.CalculateProductsPrices(storeID, quantitiesOfStore.Value);
+                products[storeID] = storeProductsPrices;
             }
             Order order = new Order(orderCount, userID, isGuest, products, destinationAddress, creditCardInfo);
             // Check validity of total price
-            float orderPrice = order.TotalPrice();
+            double orderPrice = order.TotalPrice();
             if (orderPrice <= 0)
             {
                 throw new Sadna17BException("Invalid order price: " + orderPrice);
@@ -88,8 +93,11 @@ namespace Sadna_17_B.DomainLayer.Order
             foreach (var quantitiesOfStore in quantities)
             {
                 int storeID = quantitiesOfStore.Key;
-                // TODO: Fix Store API to match this
-                //storeController.ProcessOrder(storeID, quantitiesOfStore.Value);
+                bool succeeded = storeController.ReduceProductQuantities(storeID, quantitiesOfStore.Value);
+                if (!succeeded)
+                {
+                    throw new Sadna17BException("System failure: could not complete the order, invalid shopping basket for storeID " + storeID + ".");
+                }
             }
 
             // Execute Order by PaymentSystem external service:
@@ -109,7 +117,9 @@ namespace Sadna_17_B.DomainLayer.Order
                 try
                 {
                     guestOrders[int.Parse(order.UserID)].Add(order); // Should be valid integer when it is a guest order
-                } catch (Exception e) {
+                }
+                catch (Exception e)
+                {
                     throw new Sadna17BException("Invalid Guest ID given when inserting order to history: " + order.UserID, e);
                 }
             }
@@ -117,7 +127,8 @@ namespace Sadna_17_B.DomainLayer.Order
             {
                 subscriberOrders[order.UserID].Add(order);
             }
-            foreach (SubOrder subOrder in order.GetSubOrders()) { // insert to store sub-orders history
+            foreach (SubOrder subOrder in order.GetSubOrders())
+            { // insert to store sub-orders history
                 storeOrders[subOrder.StoreID].Add(subOrder);
             }
         }
@@ -128,7 +139,8 @@ namespace Sadna_17_B.DomainLayer.Order
             {
                 return subscriberOrders[userID];
             }
-            else {
+            else
+            {
                 int guestID;
                 bool isNumeric = int.TryParse(userID, out guestID);
                 if (isNumeric && guestOrders.ContainsKey(guestID))

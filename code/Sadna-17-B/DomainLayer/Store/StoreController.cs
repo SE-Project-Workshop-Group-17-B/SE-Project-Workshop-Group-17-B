@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.Xml.Linq;
 
 namespace Sadna_17_B.DomainLayer.StoreDom
 {
@@ -14,7 +15,9 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
 
         private List<Store> _stores;
-        public StoreController() { _stores = new List<Store>(); }
+        private List<Store> _ClosedStores;
+
+        public StoreController() { _stores = new List<Store>(); _ClosedStores = new List<Store>(); }
 
 
         // ---------------- Store Builder -------------------------------------------------------------------------------------------
@@ -88,11 +91,27 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             _stores.Add(store);
         }
 
-        public void CloseStore(Store store)
+        public void CloseStore(int storeID)
         {
+            Store store = GetStoreById(storeID);
+
+            if (store == null)
+                return;
+
+            _ClosedStores.Add(store);
             _stores.Remove(store);
         }
 
+        public void ReOpenStore(int storeID)
+        {
+            Store store = GetStoreById(storeID);
+
+            if (store == null)
+                return;
+
+            _ClosedStores.Remove(store);
+            _stores.Add(store);
+        }
 
         public bool isOrderValid(int storeId, Dictionary<int, int> quantities)
         {
@@ -119,43 +138,45 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return true;
         }
 
-        public Dictionary<int, int> ReduceProductQuantities(int storeID, Dictionary<int, int> quantities)
+        public bool ReduceProductQuantities(int storeID, Dictionary<int, int> quantities)
         {
+            // in Case of Exception, Atomic action will restore previously 
+            // reduced products.
+
             Dictionary<int, int> to_retrieve = new Dictionary<int, int>();
 
             Store store = GetStoreById(storeID);
 
             if (!isOrderValid(storeID, quantities))
-                return to_retrieve;
+                return false;
 
             foreach (var item in quantities)
             {
                 int p_id = item.Key;
                 int p_amount = item.Value;
-
-                if (store.ReduceProductQuantities(p_id, p_amount))
-                    to_retrieve.Add(p_id, p_amount);
+                try
+                {
+                    if (store.ReduceProductQuantities(p_id, p_amount))
+                        to_retrieve.Add(p_id, p_amount);
+                }
+                catch (Exception e)
+                {
+                    // In case of failure to complete the function reduced products will be retored.
+                    foreach (var item2 in to_retrieve)
+                    {
+                        int p_id2 = item2.Key;
+                        int p_amount2 = item2.Value;
+                        store.AddProductQuantities(p_id2, p_amount2);
+                    }
+                    Console.WriteLine(e.Message);
+                    return false;
+                }
             }
 
-            return to_retrieve;
+            return true;
         }
 
-
-        public void AddProductQuantities(int storeID, Dictionary<int, int> quantities)
-        {
-            Store store = GetStoreById(storeID);
-
-            foreach (var item in quantities)
-            {
-                int p_id = item.Key;
-                int p_amount = item.Value;
-
-                store.AddProductQuantities(p_id, p_amount);
-            }
-
-        }
-
-        public Dictionary<int, int> CalculateProductsPrices(int storeID, Dictionary<int, int> quantities)
+        public Dictionary<int, Tuple<int,double>> CalculateProductsPrices(int storeID, Dictionary<int, int> quantities)
         {
             Store store = GetStoreById(storeID);
 
@@ -192,12 +213,20 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
 
 
-        public List<Product> searchProductByName(string productName)
+        public Dictionary<Product, int> searchProductByName(string productName)
         {
-            return _stores
-                    .Select(store => store.searchProductByName(productName))
-                    .Where(product => product != null)
-                    .ToList();
+            Dictionary<Product, int> result = new Dictionary<Product, int>();
+
+            foreach (Store store in _stores)
+            {
+                List<Product> products = store.searchProductByName(productName);
+
+                if (products != null)
+                    foreach (Product product in products)
+                        result.Add(product, store._id);
+            }
+
+            return result.Any() ? result : null;
         }
 
         public Dictionary<Product, int> SearchProductsByCategory(string category) // example: each of every store's product (in "fruits" category)
@@ -215,6 +244,24 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
             return result.Any() ? result : null;
         }
+
+
+        public Dictionary<Product, int> searchProductByKeyWord(string keyWord)
+        {
+            Dictionary<Product, int> result = new Dictionary<Product, int>();
+
+            foreach (Store store in _stores)
+            {
+                List<Product> products = store.SearchProductByKeyWord(keyWord);
+
+                if (products != null)
+                    foreach (Product product in products)
+                        result.Add(product, store._id);
+            }
+
+            return result.Any() ? result : null;
+        }
+
 
         public void clearAllStores()
         {
