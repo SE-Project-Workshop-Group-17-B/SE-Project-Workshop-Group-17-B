@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.Xml.Linq;
 
 namespace Sadna_17_B.DomainLayer.StoreDom
 {
@@ -212,12 +213,20 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
 
 
-        public List<Product> searchProductByName(string productName)
+        public Dictionary<Product, int> searchProductByName(string productName)
         {
-            return _stores
-                    .Select(store => store.searchProductByName(productName))
-                    .Where(product => product != null)
-                    .ToList();
+            Dictionary<Product, int> result = new Dictionary<Product, int>();
+
+            foreach (Store store in _stores)
+            {
+                List<Product> products = store.searchProductByName(productName);
+
+                if (products != null)
+                    foreach (Product product in products)
+                        result.Add(product, store._id);
+            }
+
+            return result.Any() ? result : null;
         }
 
         public Dictionary<Product, int> SearchProductsByCategory(string category) // example: each of every store's product (in "fruits" category)
@@ -235,6 +244,24 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
             return result.Any() ? result : null;
         }
+
+
+        public Dictionary<Product, int> searchProductByKeyWord(string keyWord)
+        {
+            Dictionary<Product, int> result = new Dictionary<Product, int>();
+
+            foreach (Store store in _stores)
+            {
+                List<Product> products = store.SearchProductByKeyWord(keyWord);
+
+                if (products != null)
+                    foreach (Product product in products)
+                        result.Add(product, store._id);
+            }
+
+            return result.Any() ? result : null;
+        }
+
 
         public void clearAllStores()
         {

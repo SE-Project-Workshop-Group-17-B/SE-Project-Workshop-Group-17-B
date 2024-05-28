@@ -105,16 +105,13 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         // ---------------- Search by -------------------------------------------------------------------------------------------
 
 
-        public Product searchProductByName(string name)
+        public List<Product> searchProductByName(string name)
         {
-            foreach (var product in _allProducts.Keys)
-            {
-                if (product.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
-                {
-                    return product;
-                }
-            }
-            return null;
+            var result = _allProducts.Keys
+                .Where(product => product.Name.Equals(name))
+                .ToList();
+
+            return result.Any() ? result : null; // if empty return null
         }
 
         public Product searchProductById(int id)
@@ -138,7 +135,48 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return result.Any() ? result : null; // if empty return null
         }
 
+        public List<Product> SearchProductByKeyWord(string keyWords)
+        {
+            // Split the keywords by comma and trim any extra spaces
+            string[] keywordsArray = keyWords.Split(',').Select(k => k.Trim()).ToArray();
 
+            // Dictionary to keep track of products and their matching keyword count
+            var productKeywordCount =   _allProducts.Keys
+                                                    .Select(product => new
+                                                    {
+                                                        Product = product,
+                                                        MatchCount = keywordsArray.Count(keyword => product.Description.Contains(keyword))
+                                                    })
+                                                    .Where(x => x.MatchCount > 0)
+                                                    .OrderByDescending(x => x.MatchCount)
+                                                    .Select(x => x.Product)
+                                                    .ToList();
+
+            // Return the sorted list or null if no products matched
+            return productKeywordCount.Any() ? productKeywordCount : null;
+        }
+
+        // do not delete - example function
+        public static void PrintIndices()
+        {
+            List<string> numbers = new List<string> { "hi hihi hi, him , hi", "hi ", ", him , hi", "hi hihi hi", " " };
+
+            var indices = numbers
+                .Select((s, index) => new
+                {
+                    Index = index,
+                    MatchCount = numbers.Count(keyword => s != keyword && s.Contains(keyword))
+                })
+                .Where(x => x.MatchCount > 0)
+                .OrderByDescending(x => x.MatchCount)
+                .Select(x => x.Index)
+                .ToList();
+
+            Console.WriteLine(string.Join(", ", numbers));
+            Console.WriteLine(string.Join(", ", indices));
+
+            Console.ReadLine();
+        }
 
         // ---------------- Getters -------------------------------------------------------------------------------------------
 
