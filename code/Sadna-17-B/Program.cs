@@ -15,21 +15,7 @@ namespace Sadna_17_B
             ServiceFactory serviceFactory = new ServiceFactory();
             IUserService userService = serviceFactory.UserService;
             IStoreService storeService = serviceFactory.StoreService;
-
-            Console.WriteLine("Welcome to the server of Group 17B's Workshop Project\nit's lovely to see you");
-
-            ErrorLogger error = new ErrorLogger();
-            InfoLogger info = new InfoLogger();
-
-            error.Log("hi");
-            info.Log("hi");
-            string username = "yossi";
-            info.Log($"LOGIN| username:{username} and a password");
-            HashSet<string> roles = new HashSet<string>();
-            roles.Add("yos");
-            roles.Add("yos2");
-            info.Log(roles.ToString());
-            Console.ReadKey();
+            Console.WriteLine("Welcome to the server of Group 17B's Workshop Project");
         }
     }
 }
