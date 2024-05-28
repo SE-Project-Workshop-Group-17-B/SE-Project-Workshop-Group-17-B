@@ -132,9 +132,11 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
             Response res = userService.Login(username1, password1);
             userDTO = res.Data as UserDTO;
             storeService.create_store(userDTO.AccessToken, name, email, phonenumber, storeDescr, addr, inv);
+            Response storeRes = storeService.store_by_name(name);
+            int newStoreID = (storeRes.Data as Store)._id;
 
-            Response res2 = storeService.close_store(userDTO.AccessToken, storeId);
-            Response res3 = storeService.close_store(userDTO.AccessToken, storeId + 1);
+            Response res2 = storeService.close_store(userDTO.AccessToken, newStoreID);
+            Response res3 = storeService.close_store(userDTO.AccessToken, newStoreID + 1);
 
             Assert.IsTrue(res2.Success);
             Assert.IsFalse(res3.Success);
@@ -150,9 +152,11 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
             Response res = userService.Login(username1, password1);
             userDTO = res.Data as UserDTO;
             storeService.create_store(userDTO.AccessToken, name, email, phonenumber, storeDescr, addr, inv);
+            Response storeRes = storeService.store_by_name(name);
+            int newStoreID = (storeRes.Data as Store)._id; // Note: may change if the response returns StoreDTO
 
-            Response res2 = storeService.close_store(userDTO.AccessToken, storeId);
-            Response res3 = storeService.close_store(userDTO.AccessToken, storeId);
+            Response res2 = storeService.close_store(userDTO.AccessToken, newStoreID);
+            Response res3 = storeService.close_store(userDTO.AccessToken, newStoreID);
 
             Assert.IsFalse(res3.Success);
         }

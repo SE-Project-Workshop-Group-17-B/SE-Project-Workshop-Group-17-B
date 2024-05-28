@@ -1,5 +1,6 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using Sadna_17_B.DomainLayer.User;
+using Sadna_17_B.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -96,7 +97,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             Store store = GetStoreById(storeID);
 
             if (store == null)
-                return;
+                throw new Sadna17BException("The store with storeID " + storeID + " is already closed.");
 
             _ClosedStores.Add(store);
             _stores.Remove(store);

@@ -73,10 +73,16 @@ namespace Sadna_17_B.ServiceLayer.Services
         {
             if (_userService.IsFounderBool(token, storeID))
             {
-                _storeController.CloseStore(storeID);
-                info_logger.Log("Store", "the store '" + _storeController.GetStoreById(storeID) + "' closed by user");
-
-                return new Response(true, "Store closed successfully\n"); ;
+                try
+                {
+                    _storeController.CloseStore(storeID);
+                    info_logger.Log("Store", "the store '" + _storeController.GetStoreById(storeID) + "' closed by user");
+                    return new Response(true, "Store closed successfully\n"); ;
+                }
+                catch (Sadna17BException e)
+                {
+                    return Response.GetErrorResponse(e);
+                }
             }
 
             info_logger.Log("Store", "the user is not authorized to enter the store (he is not the founder)");
