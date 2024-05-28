@@ -14,7 +14,9 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
 
         private List<Store> _stores;
-        public StoreController() { _stores = new List<Store>(); }
+        private List<Store> _ClosedStores;
+
+        public StoreController() { _stores = new List<Store>(); _ClosedStores = new List<Store>(); }
 
 
         // ---------------- Store Builder -------------------------------------------------------------------------------------------
@@ -88,11 +90,27 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             _stores.Add(store);
         }
 
-        public void CloseStore(Store store)
+        public void CloseStore(int storeID)
         {
+            Store store = GetStoreById(storeID);
+
+            if (store == null)
+                return;
+
+            _ClosedStores.Add(store);
             _stores.Remove(store);
         }
 
+        public void ReOpenStore(int storeID)
+        {
+            Store store = GetStoreById(storeID);
+
+            if (store == null)
+                return;
+
+            _ClosedStores.Remove(store);
+            _stores.Add(store);
+        }
 
         public bool isOrderValid(int storeId, Dictionary<int, int> quantities)
         {

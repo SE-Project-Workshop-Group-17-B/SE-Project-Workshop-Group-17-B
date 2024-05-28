@@ -13,7 +13,7 @@ namespace Sadna_17_B.ServiceLayer.Services
 
 
         private readonly StoreController _storeController;
-        private readonly UserService userService;
+        private readonly UserService _userService;
         private readonly Logger _logger;
 
 
@@ -35,8 +35,11 @@ namespace Sadna_17_B.ServiceLayer.Services
 
         // ---------------- adjust stores -------------------------------------------------------------------------------------------
 
-        public void CreateStore(string name, string email, string phoneNumber, string storeDescription, string address, Inventory inventory)
+        public void CreateStore(string token, string name, string email, string phoneNumber, string storeDescription, string address, Inventory inventory)
         {
+            if (!_userService.IsSubscriberBool())
+                return false;
+
             var storeBuilder = _storeController.GetStoreBuilder()
                                 .SetName(name)
                                 .SetEmail(email)
@@ -49,14 +52,14 @@ namespace Sadna_17_B.ServiceLayer.Services
              
         }
 
-        public bool RemoveStore(string storeName)
+        public bool CloseStore(string token, int storeID)
         {
-            var store = _storeController.GetStoreByName(storeName);
-            if (store != null)
+            if (_userService.IsOwnerBool(token, storeID))
             {
-                _storeController.CloseStore(store);
+                _storeController.CloseStore(storeID);
                 return true;
             }
+            
             return false;
         }
 
