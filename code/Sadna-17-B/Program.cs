@@ -16,6 +16,8 @@ namespace Sadna_17_B
             IUserService userService = serviceFactory.UserService;
             IStoreService storeService = serviceFactory.StoreService;
             Console.WriteLine("Welcome to the server of Group 17B's Workshop Project");
+
+            Console.ReadKey();
         }
     }
 }

@@ -15,7 +15,7 @@ namespace Sadna_17_B.DomainLayer.Order
         public string UserID { get; } // Can be either GuestID or Username, according to the order type
         public bool IsGuestOrder { get; }
         public DateTime Timestamp { get; }
-        public Dictionary<int, Tuple<int, float>> Products { get; } // ProductID -> (quantity,unitPrice)
+        public Dictionary<int, Tuple<int, double>> Products { get; } // ProductID -> (quantity,unitPrice)
         public string DestinationAddress { get; }
         public string CreditCardInfo { get; }
 

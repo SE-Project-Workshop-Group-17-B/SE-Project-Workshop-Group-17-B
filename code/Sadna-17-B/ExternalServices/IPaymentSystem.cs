@@ -8,7 +8,7 @@ namespace Sadna_17_B.ExternalServices
 {
     internal interface IPaymentSystem
     {
-        bool IsValidPayment(string creditCardInfo, float amount);
-        bool ExecutePayment(string creditCardInfo, float amount);
+        bool IsValidPayment(string creditCardInfo, double amount);
+        bool ExecutePayment(string creditCardInfo, double amount);
     }
 }

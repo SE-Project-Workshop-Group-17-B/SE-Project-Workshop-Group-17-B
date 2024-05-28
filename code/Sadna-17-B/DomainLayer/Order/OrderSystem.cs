@@ -54,25 +54,24 @@ namespace Sadna_17_B.DomainLayer.Order
             foreach (var quantitiesOfStore in quantities)
             {
                 int storeID = quantitiesOfStore.Key;
-                // TODO: Fix Store API to match this
-                //if (!storeController.CanProcessOrder(storeID,quantitiesOfStore.Value))
-                //{
-                //    throw new Sadna17BException("Could not proceed with order, invalid shopping basket for storeID " + storeID + ".");
-                //}
+                if (!storeController.isOrderValid(storeID,quantitiesOfStore.Value))
+                {
+                    throw new Sadna17BException("Could not proceed with order, invalid shopping basket for storeID " + storeID + ".");
+                }
             }
 
             // Calculate Product Final Prices with StoreController: containing all product prices after discounts
-            Dictionary<int, Dictionary<int, Tuple<int, float>>> products = new Dictionary<int, Dictionary<int, Tuple<int, float>>>();
+            Dictionary<int, Dictionary<int, Tuple<int, double>>> products = new Dictionary<int, Dictionary<int, Tuple<int, double>>>();
             foreach (var quantitiesOfStore in quantities)
             {
                 int storeID = quantitiesOfStore.Key;
                 // TODO: Fix Store API to match this
-                //Dictionary<string, Tuple<int, float>> storeProductsPrices = storeController.CalculateProductPrices(storeID, quantities);
-                //products[storeID] = storeProductsPrices;
+                Dictionary<int, Tuple<int, double>> storeProductsPrices = storeController.CalculateProductsPrices(storeID, quantitiesOfStore.Value);
+                products[storeID] = storeProductsPrices;
             }
             Order order = new Order(orderCount, userID, isGuest, products, destinationAddress, creditCardInfo);
             // Check validity of total price
-            float orderPrice = order.TotalPrice();
+            double orderPrice = order.TotalPrice();
             if (orderPrice <= 0)
             {
                 throw new Sadna17BException("Invalid order price: " + orderPrice);
@@ -94,8 +93,11 @@ namespace Sadna_17_B.DomainLayer.Order
             foreach (var quantitiesOfStore in quantities)
             {
                 int storeID = quantitiesOfStore.Key;
-                // TODO: Fix Store API to match this
-                //storeController.ProcessOrder(storeID, quantitiesOfStore.Value);
+                bool succeeded = storeController.ReduceProductQuantities(storeID, quantitiesOfStore.Value);
+                if (!succeeded)
+                {
+                    throw new Sadna17BException("System failure: could not complete the order, invalid shopping basket for storeID " + storeID + ".");
+                }
             }
 
             // Execute Order by PaymentSystem external service:

@@ -95,7 +95,7 @@ namespace Sadna_17_B.DomainLayer.User
         {
             string username = authenticator.GetNameFromToken(token); // Throws an exception if the given access token doesn't exist (user isn't logged in).
             authenticator.InvalidateToken(token); // Invalides the token if it isn't invalidated (isn't logged out already), otherwise (somehow) throws an exception.
-            InfoLogger.Instance.Log($"Subscriber logged out - username: {GetSubscriberByToken(token).Username}");
+            InfoLogger.Instance.Log($"Subscriber logged out - username: {username}");
         }
 
         public void GuestExit(string token)
@@ -103,7 +103,7 @@ namespace Sadna_17_B.DomainLayer.User
             int guestID = authenticator.GetGuestIDFromToken(token); // Throws an exception if the given access token doesn't exist (no such guest).
             authenticator.InvalidateToken(token);
             RemoveGuest(guestID); // Removes and forgets the guest from the system's data structure after its exit
-            InfoLogger.Instance.Log($"Guest logged out. username {GetGuestByToken(token)}");
+            InfoLogger.Instance.Log($"Guest logged out. GuestID: {guestID}");
         }
 
         private Subscriber GetSubscriberByToken(string token)
