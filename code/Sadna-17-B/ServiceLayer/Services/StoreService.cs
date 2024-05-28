@@ -5,6 +5,7 @@ using Sadna_17_B.Utils;
 using Sadna_17_B.DomainLayer.StoreDom;
 using System.Web.UI.WebControls;
 using System.Diagnostics.Metrics;
+using System.Web.Services.Description;
 
 
 namespace Sadna_17_B.ServiceLayer.Services
@@ -97,7 +98,7 @@ namespace Sadna_17_B.ServiceLayer.Services
 
             info_logger.Log("Store", message);
 
-            return new Response(result, message );
+            return new Response(result, message);
         }
 
 
@@ -109,7 +110,7 @@ namespace Sadna_17_B.ServiceLayer.Services
             string message = result ? "Products reduced successfully.\n" : "Failed to reduce products.\n";
 
             info_logger.Log("Store", message);
-            return new Response(result,message);
+            return new Response(result, message);
         }
 
         public Response add_products_to_store(int storeID, int productID, int amount)
@@ -155,7 +156,7 @@ namespace Sadna_17_B.ServiceLayer.Services
         public Response products_by_category(string category)
         {
             Dictionary<Product, int> output = _storeController.SearchProductsByCategory(category);
-            string message = (! output.IsNullOrEmpty()) ? "products found successfully\n" : "failed to find products\n";
+            string message = (!output.IsNullOrEmpty()) ? "products found successfully\n" : "failed to find products\n";
             info_logger.Log("Store", message);
 
             return new Response(message, (!output.IsNullOrEmpty()), output);
@@ -171,6 +172,74 @@ namespace Sadna_17_B.ServiceLayer.Services
         }
 
         public Response products_by_keyWord(string keyWord)
+        {
+            Dictionary<Product, int> output = _storeController.searchProductByKeyWord(keyWord);
+            string message = (!output.IsNullOrEmpty()) ? "products found successfully\n" : "failed to find products\n";
+            info_logger.Log("Store", message);
+
+            return new Response(message, (!output.IsNullOrEmpty()), output);
+        }
+
+
+        // ---------------- adjust policy options -------------------------------------------------------------------------------------------
+
+
+        public Response edit_policy(int store_id, string edit_type, string policy_doc)
+        {
+            string message = "";
+
+            try
+            {
+                message = _storeController.edit_policy(store_id, edit_type, policy_doc) ? "edited policy successfully" : "did not edit policy";
+                info_logger.Log("Store", message);
+            }
+            catch (Exception e)
+            {
+                error_logger.Log(message);
+
+                return new Response(message, false, e);
+            }
+
+            return new Response(message, true);
+        }
+
+        public Response add_policy(int store_id, string policy_doc)
+        {
+            string message = "";
+
+            try
+            {
+                message = _storeController.add_policy(store_id, policy_doc) ? "added policy successfully" : "did not add policy";
+                info_logger.Log("Store", message);
+            }
+            catch (Exception e)
+            {
+                error_logger.Log(message);
+
+                return new Response(message, false, e);
+            }
+
+            return new Response(message, true);
+        }
+
+        public Response remove_policy(int store_id, int policy_id)
+        {
+            string message = "";
+
+            try
+            {
+                message = _storeController.remove_policy(store_id, policy_id) ? "removed policy successfully" : "did not remove policy";
+                info_logger.Log("Store", message);
+            }
+            catch (Exception e) 
+            {
+                error_logger.Log(message);
+
+                return new Response(message, false, e);
+            }
+
+            return new Response(message, true);
+
         {
             Dictionary<Product, int> output = _storeController.searchProductByKeyWord(keyWord);
             string message = (!output.IsNullOrEmpty()) ? "products found successfully\n" : "failed to find products\n";

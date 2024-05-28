@@ -90,6 +90,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             this.strategy = strategy;
 
         }
+        
         public double days_in_total()
         {
             return (EndDate - StartDate).TotalDays;
@@ -145,7 +146,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         // ----------- variables -----------------------------------------------------------
 
-
+        public static int policy_id;
         public string policyName { get; set; }
 
         public Dictionary<Discount, HashSet<int>> discount_to_products;
@@ -157,6 +158,8 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         public DiscountPolicy(string policy)
         {
+            policy += 1;
+
             this.policyName = policy;
             this.discount_to_products = new Dictionary<Discount, HashSet<int>>();
         }
@@ -219,6 +222,10 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return price;
         }
 
+        public int get_id()
+        {
+            return policy_id;
+        }
     }
 
 
