@@ -284,7 +284,7 @@ namespace Sadna_17_B.ServiceLayer.Services
         /// Throws an exception if the token doesn't correspond to an actual subscriber or if the subscriber is already a store owner/founder/manager.
         /// Can be used as an update call between services without the need for parsing a Response object, hence the 'internal' access modifier.
         /// </summary>
-        internal void CreateStoreFounder(string token, int storeID) // StoreService should check the needed conditions and permissions (valid subscriber, newly generated storeID) before executing the operation in its module and calling this update call, so won't need to catch an exception.
+        public void CreateStoreFounder(string token, int storeID) // StoreService should check the needed conditions and permissions (valid subscriber, newly generated storeID) before executing the operation in its module and calling this update call, so won't need to catch an exception.
         {
             userController.CreateStoreFounder(token, storeID); // Throws an exception if the token doesn't correspond to an actual subscriber or if the subscriber is already a store owner/founder/manager.
         }
