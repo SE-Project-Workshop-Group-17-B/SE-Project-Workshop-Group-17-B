@@ -30,6 +30,10 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         Inventory inv = new Inventory();
         int storeId = 1;
 
+        //for product related tests
+        string productName = "apple";
+
+
         [TestInitialize]
         public void SetUp()
         {
@@ -186,11 +190,15 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
             storeService.create_store(userDTO.AccessToken, name, email, phonenumber, storeDescr, addr, inv);
             Response storeRes = storeService.store_by_name(name);
             int storeId = (storeRes.Data as Store)._id; // Note: may change if the response returns StoreDTO
-            //storeService.add_products_to_store(userDTO.AccessToken, storeId, )
-            int productId = 
+            //TODO: Add product to store
+            int productId = 0;//need to add option to get product id in storeservice
+            //TODO: add 5 products of productId to store
             Dictionary<int, int> quantities = new Dictionary<int, int>();
-            quantities[]
-            storeService.reduce_products(userDTO.AccessToken, storeId)
+            quantities.Add(productId, 3);
+            //storeService.reduce_products(userDTO.AccessToken, storeId, quantities);
+            Response productsRes = storeService.products_by_name(productName);
+            Dictionary<int, int> result = (Dictionary<int, int>)productsRes.Data;
+            Assert.IsTrue(result[productId] == 2);
         }
 
         [TestMethod]

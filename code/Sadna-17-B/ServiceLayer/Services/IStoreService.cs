@@ -45,7 +45,7 @@ namespace Sadna_17_B.ServiceLayer.Services
         Response products_by_keyWord(string keyWord);
         Response filter_search_by_price(Dictionary<Product, int> searchResult, int low, int high);
         Response filter_search_by_product_rating(Dictionary<Product, int> searchResult, int low);
-        Response Filter_all_products_in_store_by_price(int storeId, int low, int high);
+        Response filter_all_products_in_store_by_price(int storeId, int low, int high);
         Response filter_search_by_store_rating(Dictionary<Product, int> searchResult, int low);
 
 
