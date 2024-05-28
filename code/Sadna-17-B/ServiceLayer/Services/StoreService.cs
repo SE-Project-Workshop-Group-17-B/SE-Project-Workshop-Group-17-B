@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using Microsoft.IdentityModel.Tokens;
 using Sadna_17_B.Utils;
 using Sadna_17_B.DomainLayer.StoreDom;
+using System.Web.UI.WebControls;
+using System.Diagnostics.Metrics;
 
 
 namespace Sadna_17_B.ServiceLayer.Services
@@ -15,7 +17,8 @@ namespace Sadna_17_B.ServiceLayer.Services
 
         private readonly StoreController _storeController;
         private readonly UserService _userService;
-        private readonly Logger _logger;
+        private readonly ErrorLogger error_logger;
+        private readonly InfoLogger info_logger;
 
 
         // ---------------- Constructors -------------------------------------------------------------------------------------------
@@ -30,16 +33,19 @@ namespace Sadna_17_B.ServiceLayer.Services
         {
             _userService = us;
             _storeController = storeController;
-            _logger = InfoLogger.Instance;
+            error_logger = ErrorLogger.Instance;
+            info_logger = InfoLogger.Instance;
         }
 
 
-        // ---------------- adjust stores -------------------------------------------------------------------------------------------
+        // ---------------- adjust stores options -------------------------------------------------------------------------------------------
+
 
         public Response create_store(string token, string name, string email, string phoneNumber, string storeDescription, string address, Inventory inventory)
         {
             if (!_userService.IsSubscriberBool(token))
             {
+                error_logger.Log("Authentication", " user should be subscriber");
                 return new Response(false);
             }
 
@@ -51,9 +57,14 @@ namespace Sadna_17_B.ServiceLayer.Services
                                 .SetAddress(address)
                                 .SetInventory(inventory);
             var store = storeBuilder.Build();
+
             _storeController.AddStore(store);
+            info_logger.Log("Store", "new store was added : \n\n" + store.getInfo());
 
             _userService.CreateStoreFounder(token, store._id);
+            info_logger.Log("User", "user is now founder of the '" + store._name + "' store");
+
+
             return new Response(true, "\nNew Store Created.\nStoreID: " + store._id + "\nStore name: " + store._name);
 
         }
@@ -63,24 +74,33 @@ namespace Sadna_17_B.ServiceLayer.Services
             if (_userService.IsFounderBool(token, storeID))
             {
                 _storeController.CloseStore(storeID);
-                return new Response(true, "Store closed successfully\n");
+                info_logger.Log("Store", "the store '" + _storeController.GetStoreById(storeID) + "' closed by user");
+
+                return new Response(true, "Store closed successfully\n"); ;
             }
 
-            return new Response(false, "Failed to close store, user not authorized.\n");
+            info_logger.Log("Store", "the user is not authorized to enter the store (he is not the founder)");
+
+            return new Response(false, "the user is not authorized to enter the store(he is not the founder)\n");
         }
 
         public Response valid_order(int storeId, Dictionary<int, int> quantities)
         {
             bool result = _storeController.isOrderValid(storeId, quantities);
-            return new Response(result, result ? "Order is valid.\n" : "Order not valid.\n");
+            string message = result ? "order is valid.\n" : "order not valid, at least one of the quantities in products higher than in the inventory.\n";
+
+            info_logger.Log("Store", message);
+
+            return new Response(result, message );
         }
 
         public Response reduce_products(int storeID, Dictionary<int, int> quantities)
         {
             bool result = _storeController.ReduceProductQuantities(storeID, quantities);
+            string message = result ? "Products reduced successfully.\n" : "Failed to reduce products.\n";
 
-
-            return new Response(result, result ? "Products reduced successfully.\n" : "Failed to reduce products.\n");
+            info_logger.Log("Store", message);
+            return new Response(result,message);
 
 
 
@@ -88,48 +108,64 @@ namespace Sadna_17_B.ServiceLayer.Services
         }
 
 
-        // ---------------- Variables -------------------------------------------------------------------------------------------
+        // ---------------- search stores options -------------------------------------------------------------------------------------------
 
 
         public Response all_stores()
         {
             List<Store> AllStores = _storeController.GetAllStores();
-            return new Response(AllStores.IsNullOrEmpty() ? "Failed to find stores\n" : "Stores Found Successfully\n", !AllStores.IsNullOrEmpty(), AllStores);
+            string message = AllStores.IsNullOrEmpty() ? "failed to find stores\n" : "stores found successfully\n";
+            info_logger.Log("Store", message);
+
+            return new Response(message, !AllStores.IsNullOrEmpty(), AllStores);
 
         }
 
         public Response store_by_name(string name)
         {
             Store store = _storeController.GetStoreByName(name);
-            return new Response(store != null ? "Store Found Successfully\n" : "Failed to find store\n", store != null, store);
+            string message = store != null ? "store found successfully\n" : "failed to find store\n";
+            info_logger.Log("Store", message);
+
+            return new Response(message, store != null, store);
         }
 
 
+        // ---------------- search products options -------------------------------------------------------------------------------------------
 
 
-        public Response search_by_category(string category)
+        public Response prodcuts_by_category(string category)
         {
             Dictionary<Product, int> output = _storeController.SearchProductsByCategory(category);
+            string message = (! output.IsNullOrEmpty()) ? "products found successfully\n" : "failed to find products\n";
+            info_logger.Log("Store", message);
 
-            return new Response("", (!output.IsNullOrEmpty()), output);
+            return new Response(message, (!output.IsNullOrEmpty()), output);
         }
 
-        public Response search_by_name(string name)
+        public Response products_by_name(string name)
         {
             Dictionary<Product, int> output = _storeController.searchProductByName(name);
+            string message = (!output.IsNullOrEmpty()) ? "products found successfully\n" : "failed to find products\n";
+            info_logger.Log("Store", message);
 
-            return new Response("", (!output.IsNullOrEmpty()), output);
+            return new Response(message, (!output.IsNullOrEmpty()), output);
         }
 
-
-        // currently does not work
-        public Response search_by_keyWord(string keyWord)
+        public Response products_by_keyWord(string keyWord)
         {
-
             Dictionary<Product, int> output = _storeController.searchProductByKeyWord(keyWord);
+            string message = (!output.IsNullOrEmpty()) ? "products found successfully\n" : "failed to find products\n";
+            info_logger.Log("Store", message);
 
-            return new Response("", (!output.IsNullOrEmpty()), output);
+            return new Response(message, (!output.IsNullOrEmpty()), output);
         }
+
+
+        // ---------------- search stores -------------------------------------------------------------------------------------------
+
+
+
 
     }
 }
