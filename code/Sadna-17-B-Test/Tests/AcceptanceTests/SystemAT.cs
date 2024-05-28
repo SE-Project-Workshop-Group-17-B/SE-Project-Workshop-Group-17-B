@@ -119,7 +119,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
             res = storeService.store_by_name(name);
             Assert.IsTrue(res.Success);
             Assert.IsTrue(res2.Success);
-            Assert.IsFalse(storeService.store_by_name(email).Success);
+            Assert.IsFalse(storeService.store_by_name(email).Success);  
         }
 
         [TestMethod]
@@ -159,6 +159,38 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
             Response res3 = storeService.close_store(userDTO.AccessToken, newStoreID);
 
             Assert.IsFalse(res3.Success);
+        }
+
+        [TestMethod]
+        public void TestAddProductsToStore()
+        {
+            SetUp();
+            Response ignore = userService.CreateSubscriber(username1, password1);
+            ignore = userService.CreateSubscriber(username2, password2);
+            Response res = userService.Login(username1, password1);
+            userDTO = res.Data as UserDTO;
+            storeService.create_store(userDTO.AccessToken, name, email, phonenumber, storeDescr, addr, inv);
+            Response storeRes = storeService.store_by_name(name);
+            int storeId = (storeRes.Data as Store)._id; // Note: may change if the response returns StoreDTO
+            //storeService.add_products_to_store(userDTO.AccessToken, storeId, )
+
+        }
+
+        public void TestReduceProducts()
+        {
+            SetUp();
+            Response ignore = userService.CreateSubscriber(username1, password1);
+            ignore = userService.CreateSubscriber(username2, password2);
+            Response res = userService.Login(username1, password1);
+            userDTO = res.Data as UserDTO;
+            storeService.create_store(userDTO.AccessToken, name, email, phonenumber, storeDescr, addr, inv);
+            Response storeRes = storeService.store_by_name(name);
+            int storeId = (storeRes.Data as Store)._id; // Note: may change if the response returns StoreDTO
+            //storeService.add_products_to_store(userDTO.AccessToken, storeId, )
+            int productId = 
+            Dictionary<int, int> quantities = new Dictionary<int, int>();
+            quantities[]
+            storeService.reduce_products(userDTO.AccessToken, storeId)
         }
 
         [TestMethod]
