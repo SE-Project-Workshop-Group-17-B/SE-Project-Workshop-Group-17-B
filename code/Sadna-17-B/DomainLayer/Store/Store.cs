@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using Sadna_17_B.DomainLayer.Store;
+using Microsoft.IdentityModel.Tokens;
 
 
 namespace Sadna_17_B.DomainLayer.StoreDom
@@ -57,10 +58,13 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         public void RemoveProduct(string productName)
         {
-            Product product_to_remove = _inventory.searchProductByName(productName);
-            if (product_to_remove == null)
+            List<Product> products_to_remove = _inventory.searchProductByName(productName);
+
+            if (products_to_remove.IsNullOrEmpty())
                 return;
-            _inventory.RemoveProduct(product_to_remove);
+
+            foreach (Product product in products_to_remove)
+                _inventory.RemoveProduct(product);
         }
 
         public bool ReduceProductQuantities(int p_id, int amount)
@@ -145,7 +149,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return _inventory.searchProductById(productId);
         }
 
-        public Product searchProductByName(string productName)
+        public List<Product> searchProductByName(string productName)
         {
 
             if (string.IsNullOrEmpty(productName))
@@ -162,8 +166,13 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return result.Any() ? result : null;
         }
 
+        public List<Product> SearchProductByKeyWord(string keyWord)
+        {
+            List<Product> result = _inventory.SearchProductByKeyWord(keyWord);
 
-        
+            return result.Any() ? result : null;
+        }
+
         public void example_test()
         {
            

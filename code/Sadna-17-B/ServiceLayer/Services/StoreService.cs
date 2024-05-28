@@ -36,7 +36,7 @@ namespace Sadna_17_B.ServiceLayer.Services
 
         // ---------------- adjust stores -------------------------------------------------------------------------------------------
 
-        public Response CreateStore(string token, string name, string email, string phoneNumber, string storeDescription, string address, Inventory inventory)
+        public Response create_store(string token, string name, string email, string phoneNumber, string storeDescription, string address, Inventory inventory)
         {
             if (!_userService.IsSubscriberBool(token))
             {
@@ -54,11 +54,11 @@ namespace Sadna_17_B.ServiceLayer.Services
             _storeController.AddStore(store);
 
             _userService.CreateStoreFounder(token, store._id);
-            return new Response(true, "\nNew Store Created.\nStoreID: " + store._id +"\nStore name: "+store._name);
+            return new Response(true, "\nNew Store Created.\nStoreID: " + store._id + "\nStore name: " + store._name);
 
         }
 
-        public Response CloseStore(string token, int storeID)
+        public Response close_store(string token, int storeID)
         {
             if (_userService.IsFounderBool(token, storeID))
             {
@@ -69,41 +69,67 @@ namespace Sadna_17_B.ServiceLayer.Services
             return new Response(false, "Failed to close store, user not authorized.\n");
         }
 
-        public Response isValidOrder(int storeId, Dictionary<int, int> quantities)
+        public Response valid_order(int storeId, Dictionary<int, int> quantities)
         {
             bool result = _storeController.isOrderValid(storeId, quantities);
             return new Response(result, result ? "Order is valid.\n" : "Order not valid.\n");
         }
 
-        public Response ReduceProductsQuantities(int storeID, Dictionary<int, int> quantities)
+        public Response reduce_products(int storeID, Dictionary<int, int> quantities)
         {
             bool result = _storeController.ReduceProductQuantities(storeID, quantities);
 
 
             return new Response(result, result ? "Products reduced successfully.\n" : "Failed to reduce products.\n");
 
-          
 
-            
+
+
         }
 
 
         // ---------------- Variables -------------------------------------------------------------------------------------------
 
 
-        public Response GetAllStores()
+        public Response all_stores()
         {
-            List<Store> AllStores =  _storeController.GetAllStores();
+            List<Store> AllStores = _storeController.GetAllStores();
             return new Response(AllStores.IsNullOrEmpty() ? "Failed to find stores\n" : "Stores Found Successfully\n", !AllStores.IsNullOrEmpty(), AllStores);
 
         }
 
-        public Response GetStoreByName(string name)
+        public Response store_by_name(string name)
         {
             Store store = _storeController.GetStoreByName(name);
-            return new Response(store != null ? "Store Found Successfully\n": "Failed to find store\n", store != null, store);
+            return new Response(store != null ? "Store Found Successfully\n" : "Failed to find store\n", store != null, store);
         }
 
+
+
+
+        public Response search_by_category(string category)
+        {
+            Dictionary<Product, int> output = _storeController.SearchProductsByCategory(category);
+
+            return new Response("", (!output.IsNullOrEmpty()), output);
+        }
+
+        public Response search_by_name(string name)
+        {
+            Dictionary<Product, int> output = _storeController.searchProductByName(name);
+
+            return new Response("", (!output.IsNullOrEmpty()), output);
+        }
+
+
+        // currently does not work
+        public Response search_by_keyWord(string keyWord)
+        {
+
+            Dictionary<Product, int> output = _storeController.searchProductByKeyWord(keyWord);
+
+            return new Response("", (!output.IsNullOrEmpty()), output);
+        }
 
     }
 }
