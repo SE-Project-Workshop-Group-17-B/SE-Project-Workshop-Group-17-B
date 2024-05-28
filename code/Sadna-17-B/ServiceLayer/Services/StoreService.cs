@@ -14,6 +14,7 @@ namespace Sadna_17_B.ServiceLayer.Services
 
         private readonly StoreController _storeController;
         private readonly UserService userService;
+        private readonly Logger _logger;
 
 
         // ---------------- Constructors -------------------------------------------------------------------------------------------
@@ -28,6 +29,7 @@ namespace Sadna_17_B.ServiceLayer.Services
         {
             userService = us;
             _storeController = storeController;
+            _logger = InfoLogger.Instance;
         }
 
 
