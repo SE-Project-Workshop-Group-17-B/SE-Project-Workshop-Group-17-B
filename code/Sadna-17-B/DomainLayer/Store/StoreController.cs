@@ -231,11 +231,18 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             product.EditReview(old_review, new_review);
             return true;
         }
-
+        
         public bool AddStoreRating(int storeID, int rating)
         {
             Store store = GetStoreById(storeID);
             store.AddRating(rating);
+            return true;
+        }
+
+        public bool SendComplaint(int storeID, string complaint)
+        {
+            Store store = GetStoreById(storeID);
+            store.SendComplaint(complaint);
             return true;
         }
 

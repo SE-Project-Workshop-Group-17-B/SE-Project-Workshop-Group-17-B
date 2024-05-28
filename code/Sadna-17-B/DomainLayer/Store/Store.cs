@@ -32,6 +32,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         public int _rating { get;  set; }
         public List<string> _reviews { get; set; }
 
+        public List<string> _complaints { get; set; }
 
 
 
@@ -39,8 +40,8 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         // ---------------- Constructor & store management -------------------------------------------------------------------------------------------
 
 
-        public Store(string name, string email, string phone_number,
-                                  string store_description, string address, Inventory inventory, DiscountPolicy discount_policy)
+        public Store(string name, string email, string phone_number, string store_description, string address, 
+                     Inventory inventory, DiscountPolicy discount_policy)
         {
             // stores can be created via controller only
             _id = idCounter++;
@@ -53,6 +54,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             _discount_policy = discount_policy;
 
             _reviews = new List<string>();
+            _complaints = new List<string>();
         }
 
         public bool AddRating(int rating)
@@ -69,6 +71,12 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         public bool AddReview(string review)
         {
             _reviews.Add(review);
+            return true;
+        }
+
+        public bool SendComplaint(string complaint)
+        {
+            _complaints.Add(complaint);
             return true;
         }
 

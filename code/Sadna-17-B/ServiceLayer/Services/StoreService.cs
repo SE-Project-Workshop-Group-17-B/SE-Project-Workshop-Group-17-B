@@ -41,7 +41,6 @@ namespace Sadna_17_B.ServiceLayer.Services
 
         // ---------------- adjust stores options -------------------------------------------------------------------------------------------
 
-
         public Response create_store(string token, string name, string email, string phoneNumber, string storeDescription, string address, Inventory inventory)
         {
             if (!_userService.IsSubscriberBool(token))
@@ -101,6 +100,10 @@ namespace Sadna_17_B.ServiceLayer.Services
             return new Response(result, message);
         }
 
+
+        // ---------------- review options -------------------------------------------------------------------------------------------
+
+
         public Response AddStoreReview(int storeID, string review)
         { 
             bool result = _storeController.AddStoreReview(storeID, review);
@@ -121,7 +124,11 @@ namespace Sadna_17_B.ServiceLayer.Services
 
             return new Response(result, result ? "Review Added.\n" : "Review not added.\n");
         }
-        
+
+
+        // ---------------- rating options -------------------------------------------------------------------------------------------
+
+
         public Response AddStoreRating(int storeID, int rating)
         {
             bool result = _storeController.AddStoreRating(storeID, rating);
@@ -136,8 +143,16 @@ namespace Sadna_17_B.ServiceLayer.Services
             return new Response(result, result ? "Rating Added.\n" : "Rating not added.\n");
         }
 
+        public Response SendComplaintToStore(int storeID, string complaint)
+        {
+            bool result = _storeController.SendComplaint(storeID, complaint);
+
+            return new Response(result, result ? "Review Sent.\n" : "complaint not sent.\n");
+        }
+
 
         // ---------------- stores Management -------------------------------------------------------------------------------------------
+
         public Response reduce_products(int storeID, Dictionary<int, int> quantities)
         {
             bool result = _storeController.ReduceProductQuantities(storeID, quantities);
@@ -161,8 +176,8 @@ namespace Sadna_17_B.ServiceLayer.Services
             return new Response(result, result ? "Products reduced successfully.\n" : "Failed to reduce products.\n");
         }
 
-        // ---------------- search stores options -------------------------------------------------------------------------------------------
 
+        // ---------------- search stores options -------------------------------------------------------------------------------------------
 
         public Response all_stores()
         {
@@ -184,7 +199,7 @@ namespace Sadna_17_B.ServiceLayer.Services
         }
 
 
-        // ---------------- search products options -------------------------------------------------------------------------------------------
+        // ---------------- search / filter products options -------------------------------------------------------------------------------------------
 
 
         public Response products_by_category(string category)
@@ -213,6 +228,35 @@ namespace Sadna_17_B.ServiceLayer.Services
 
             return new Response(message, (!output.IsNullOrEmpty()), output);
         }
+
+        public Response filter_search_by_price(Dictionary<Product, int> searchResult, int low, int high)
+        {
+            Dictionary<Product, int> output = _storeController.FilterProductByPrice(searchResult, low, high);
+
+            return new Response("", (!output.IsNullOrEmpty()), output);
+        }
+
+        public Response filter_search_by_product_rating(Dictionary<Product, int> searchResult, int low)
+        {
+            Dictionary<Product, int> output = _storeController.FilterProductByRating(searchResult, low);
+
+            return new Response("", (!output.IsNullOrEmpty()), output);
+        }
+
+        public Response filter_all_products_in_store_by_price(int storeId, int low, int high)
+        {
+            Dictionary<Product, int> output = _storeController.FilterAllProductsInStoreByPrice(storeId, low, high);
+
+            return new Response("", (!output.IsNullOrEmpty()), output);
+        }
+
+        public Response filter_search_by_store_rating(Dictionary<Product, int> searchResult, int low)
+        {
+            Dictionary<Product, int> output = _storeController.FilterStoreByRating(searchResult, low);
+
+            return new Response("", (!output.IsNullOrEmpty()), output);
+        }
+
 
 
         // ---------------- adjust policy options -------------------------------------------------------------------------------------------
@@ -275,36 +319,9 @@ namespace Sadna_17_B.ServiceLayer.Services
             return new Response(message, true);
         }
 
-        public Response filter_search_by_price(Dictionary<Product, int> searchResult, int low, int high)
-        {
-            Dictionary<Product, int> output = _storeController.FilterProductByPrice(searchResult, low, high);
-
-            return new Response("", (!output.IsNullOrEmpty()), output);
-        }
-
-        public Response filter_search_by_product_rating(Dictionary<Product, int> searchResult, int low)
-        {
-            Dictionary<Product, int> output = _storeController.FilterProductByRating(searchResult, low);
-
-            return new Response("", (!output.IsNullOrEmpty()), output);
-        }
-
-        public Response Filter_all_products_in_store_by_price(int storeId, int low, int high)
-        {
-            Dictionary<Product, int> output = _storeController.FilterAllProductsInStoreByPrice(storeId, low ,high);
-
-            return new Response("", (!output.IsNullOrEmpty()), output);
-        }
-
-        public Response filter_search_by_store_rating(Dictionary<Product, int> searchResult, int low)
-        {
-            Dictionary<Product, int> output = _storeController.FilterStoreByRating(searchResult, low);
-
-            return new Response("", (!output.IsNullOrEmpty()), output);
-        }
+        
         
 
-        // ---------------- search stores -------------------------------------------------------------------------------------------
 
 
 
