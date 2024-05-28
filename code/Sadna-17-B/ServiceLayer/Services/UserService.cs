@@ -13,9 +13,11 @@ namespace Sadna_17_B.ServiceLayer.Services
     public class UserService : IUserService
     {
         private readonly UserController userController;
+        private readonly Logger infoLogger;
         public UserService(UserController userController)
         {
             this.userController = userController;
+            infoLogger = InfoLogger.Instance;
         }
 
         /// <summary>
@@ -27,6 +29,7 @@ namespace Sadna_17_B.ServiceLayer.Services
         {
             try
             {
+                infoLogger.Log($"LOGIN| username:{username} and a password");
                 string accessToken = userController.Login(username, password);
                 UserDTO returnValue = new UserDTO(username, accessToken);
                 return new Response(true, returnValue);
@@ -46,6 +49,7 @@ namespace Sadna_17_B.ServiceLayer.Services
         {
             try
             {
+                infoLogger.Log("Guest entered");
                 string accessToken = userController.CreateGuest();
                 UserDTO returnValue = new UserDTO(accessToken);
                 return new Response(true, returnValue);
@@ -65,6 +69,7 @@ namespace Sadna_17_B.ServiceLayer.Services
         {
             try
             {
+                infoLogger.Log($"User signed up with username:{username}");
                 userController.CreateSubscriber(username, password);
                 return new Response(true);
             }
@@ -83,6 +88,7 @@ namespace Sadna_17_B.ServiceLayer.Services
         {
             try
             {
+                infoLogger.Log($"Creating Admin");
                 userController.CreateAdmin(username, password);
                 return new Response(true);
             }
@@ -278,7 +284,7 @@ namespace Sadna_17_B.ServiceLayer.Services
         /// Throws an exception if the token doesn't correspond to an actual subscriber or if the subscriber is already a store owner/founder/manager.
         /// Can be used as an update call between services without the need for parsing a Response object, hence the 'internal' access modifier.
         /// </summary>
-        public void CreateStoreFounder(string token, int storeID) // StoreService should check the needed conditions and permissions (valid subscriber, newly generated storeID) before executing the operation in its module and calling this update call, so won't need to catch an exception.
+        internal void CreateStoreFounder(string token, int storeID) // StoreService should check the needed conditions and permissions (valid subscriber, newly generated storeID) before executing the operation in its module and calling this update call, so won't need to catch an exception.
         {
             userController.CreateStoreFounder(token, storeID); // Throws an exception if the token doesn't correspond to an actual subscriber or if the subscriber is already a store owner/founder/manager.
         }
@@ -339,6 +345,7 @@ namespace Sadna_17_B.ServiceLayer.Services
         {
             try
             {
+
                 userController.RespondToManagerAppointmentOffer(token, storeID, offerResponse);
                 return new Response(true);
             }
@@ -509,4 +516,3 @@ namespace Sadna_17_B.ServiceLayer.Services
         //
         //}
     }
-}
