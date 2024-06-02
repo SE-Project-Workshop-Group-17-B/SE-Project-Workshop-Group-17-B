@@ -116,7 +116,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         public void TestCreateStore()
         {
             // Act
-            var storeBuilder = _storeController.GetStoreBuilder()
+            var storeBuilder = _storeController.store_builder()
                                 .SetName("Test Store")
                                 .SetEmail("testemail@example.com")
                                 .SetPhoneNumber("1234567890")
@@ -124,7 +124,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
                                 .SetAddress("Test Address")
                                 .SetInventory(_inventory);
             var store = storeBuilder.Build();
-            _storeController.AddStore(store);
+            _storeController.open_store(store);
 
             // Assert
             Assert.IsNotNull(store);
@@ -140,7 +140,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         public void TestGetStoreByName()
         {
             // Arrange
-            var storeBuilder1 = _storeController.GetStoreBuilder()
+            var storeBuilder1 = _storeController.store_builder()
                                 .SetName("Test Store 1")
                                 .SetEmail("email1@example.com")
                                 .SetPhoneNumber("1111111111")
@@ -148,9 +148,9 @@ namespace Sadna_17_B_Test.Tests.UnitTests
                                 .SetAddress("Address 1")
                                 .SetInventory(_inventory);
             var store1 = storeBuilder1.Build();
-            _storeController.AddStore(store1);
+            _storeController.open_store(store1);
 
-            var storeBuilder2 = _storeController.GetStoreBuilder()
+            var storeBuilder2 = _storeController.store_builder()
                                 .SetName("Test Store 2")
                                 .SetEmail("email2@example.com")
                                 .SetPhoneNumber("2222222222")
@@ -158,10 +158,10 @@ namespace Sadna_17_B_Test.Tests.UnitTests
                                 .SetAddress("Address 2")
                                 .SetInventory(_inventory);
             var store2 = storeBuilder2.Build();
-            _storeController.AddStore(store2);
+            _storeController.open_store(store2);
 
             // Act
-            var result = _storeController.GetStoreByName("Test Store 2");
+            var result = _storeController.store_by_name("Test Store 2");
 
             // Assert
             Assert.IsNotNull(result);
@@ -176,7 +176,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         public void TestGetStoreByName_NotFound()
         {
             // Act
-            var result = _storeController.GetStoreByName("Nonexistent Store");
+            var result = _storeController.store_by_name("Nonexistent Store");
 
             // Assert
             Assert.IsNull(result);
@@ -185,9 +185,9 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         [TestMethod]
         public void TestRemoveStore()
         {
-            _storeController.clearAllStores();
+            _storeController.clear_stores();
             // Arrange
-            var storeBuilder = _storeController.GetStoreBuilder()
+            var storeBuilder = _storeController.store_builder()
                                 .SetName("Test Store")
                                 .SetEmail("testemail@example.com")
                                 .SetPhoneNumber("1234567890")
@@ -195,11 +195,11 @@ namespace Sadna_17_B_Test.Tests.UnitTests
                                 .SetAddress("Test Address")
                                 .SetInventory(_inventory);
             var store = storeBuilder.Build();
-            _storeController.AddStore(store);
+            _storeController.open_store(store);
 
             // Act
-            _storeController.CloseStore(store.ID);
-            var result = _storeController.GetStoreByName("Test Store");
+            _storeController.close_store(store.ID);
+            var result = _storeController.store_by_name("Test Store");
 
             // Assert
             //Assert.AreNotEqual(result._name, "Test Store");
@@ -210,7 +210,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         public void TestGetAllStores()
         {
             // Arrange
-            var storeBuilder1 = _storeController.GetStoreBuilder()
+            var storeBuilder1 = _storeController.store_builder()
                                 .SetName("Test Store 1")
                                 .SetEmail("email1@example.com")
                                 .SetPhoneNumber("1111111111")
@@ -218,9 +218,9 @@ namespace Sadna_17_B_Test.Tests.UnitTests
                                 .SetAddress("Address 1")
                                 .SetInventory(_inventory);
             var store1 = storeBuilder1.Build();
-            _storeController.AddStore(store1);
+            _storeController.open_store(store1);
 
-            var storeBuilder2 = _storeController.GetStoreBuilder()
+            var storeBuilder2 = _storeController.store_builder()
                                 .SetName("Test Store 2")
                                 .SetEmail("email2@example.com")
                                 .SetPhoneNumber("2222222222")
@@ -228,40 +228,40 @@ namespace Sadna_17_B_Test.Tests.UnitTests
                                 .SetAddress("Address 2")
                                 .SetInventory(_inventory);
             var store2 = storeBuilder2.Build();
-            _storeController.AddStore(store2);
+            _storeController.open_store(store2);
 
             // Act
-            var result = _storeController.GetAllStores();
+            var result = _storeController.all_stores();
 
             // Assert
             Assert.AreEqual(2, result.Count);
-            CollectionAssert.Contains(result, _storeController.GetStoreByName("Test Store 1"));
-            CollectionAssert.Contains(result, _storeController.GetStoreByName("Test Store 2"));
+            CollectionAssert.Contains(result, _storeController.store_by_name("Test Store 1"));
+            CollectionAssert.Contains(result, _storeController.store_by_name("Test Store 2"));
         }
 
         [TestMethod]
         public void TestReduceProductAmount_Synchronization()
         {
             // Arrange
-            var storeBuilder = _storeController.GetStoreBuilder()
+            var storeBuilder = _storeController.store_builder()
                                     .SetName("Test Store")
                                     .SetInventory(_inventory);
             var store = storeBuilder.Build();
             int initialAmount = 100;
 
-            _storeController.AddStore(store);
+            _storeController.open_store(store);
 
-            var productId = _storeController.AddProductsToStore(store.ID, "Test Product", 100, "Category", "Good product", initialAmount);
+            var productId = _storeController.add_store_product(store.ID, "Test Product", 100, "Category", "Good product", initialAmount);
             
             Dictionary<int, int> order = new Dictionary<int, int>();
             order[productId] = 5;
 
-            Task task1 = Task.Run(() => _storeController.ReduceProductQuantities(store.ID, order));
-            Task task2 = Task.Run(() => _storeController.ReduceProductQuantities(store.ID, order));
-            Task task3 = Task.Run(() => _storeController.ReduceProductQuantities(store.ID, order));
-            Task task4 = Task.Run(() => _storeController.ReduceProductQuantities(store.ID, order));
-            Task task5 = Task.Run(() => _storeController.ReduceProductQuantities(store.ID, order));
-            Task task6 = Task.Run(() => _storeController.ReduceProductQuantities(store.ID, order));
+            Task task1 = Task.Run(() => _storeController.decrease_products_amount(store.ID, order));
+            Task task2 = Task.Run(() => _storeController.decrease_products_amount(store.ID, order));
+            Task task3 = Task.Run(() => _storeController.decrease_products_amount(store.ID, order));
+            Task task4 = Task.Run(() => _storeController.decrease_products_amount(store.ID, order));
+            Task task5 = Task.Run(() => _storeController.decrease_products_amount(store.ID, order));
+            Task task6 = Task.Run(() => _storeController.decrease_products_amount(store.ID, order));
 
             Task.WaitAll(task1, task2, task3, task4, task5, task6);
 
