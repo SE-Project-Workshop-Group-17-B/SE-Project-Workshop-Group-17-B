@@ -26,7 +26,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
             _inventory = new Inventory();
             _discountPolicy = new DiscountPolicy("Test Policy");
             _product = new Product("Test Product", 100, "Category", "Good product");
-            _product.AddRating(5);
+            _product.add_rating(5);
 
         }
 
@@ -51,10 +51,10 @@ namespace Sadna_17_B_Test.Tests.UnitTests
             // Arrange
             var discount = new VisibleDiscount(DateTime.Now, DateTime.Now.AddDays(10), new Discount_Percentage(10));
             _discountPolicy.add_discount(discount);
-            _discountPolicy.add_product(discount, _product.Id);
+            _discountPolicy.add_product(discount, _product.ID);
 
             // Act
-            var discountedPrice = _discountPolicy.calculate_discount(_product.Id, _product.Price);
+            var discountedPrice = _discountPolicy.calculate_discount(_product.ID, _product.price);
 
             // Assert
             Assert.AreEqual(90, discountedPrice, 0.01);
@@ -66,10 +66,10 @@ namespace Sadna_17_B_Test.Tests.UnitTests
             // Arrange
             var discount = new HiddenDiscount(DateTime.Now, DateTime.Now.AddDays(10), new Discount_Flat(20));
             _discountPolicy.add_discount(discount);
-            _discountPolicy.add_product(discount, _product.Id);
+            _discountPolicy.add_product(discount, _product.ID);
 
             // Act
-            var discountedPrice = _discountPolicy.calculate_discount(_product.Id, _product.Price);
+            var discountedPrice = _discountPolicy.calculate_discount(_product.ID, _product.price);
 
             // Assert
             Assert.AreEqual(80, discountedPrice, 0.01);
@@ -79,15 +79,15 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         public void TestCalculateDiscount_Member()
         {
             Product product3 = new Product("Test Product", 100, "Category", "Good product");
-            _product.AddRating(5);
+            _product.add_rating(5);
 
             // Arrange
             var discount = new VisibleDiscount(DateTime.Now, DateTime.Now.AddDays(10), new Discount_Member());
             _discountPolicy.add_discount(discount);
-            _discountPolicy.add_product(discount, product3.Id);
+            _discountPolicy.add_product(discount, product3.ID);
 
             // Act
-            var discountedPrice = _discountPolicy.calculate_discount(product3.Id, product3.Price);
+            var discountedPrice = _discountPolicy.calculate_discount(product3.ID, product3.price);
 
             // Assert
             Assert.AreEqual(70, discountedPrice, 0.01); // Assuming the membership discount applied correctly
@@ -101,11 +101,11 @@ namespace Sadna_17_B_Test.Tests.UnitTests
             var discount2 = new HiddenDiscount(DateTime.Now, DateTime.Now.AddDays(10), new Discount_Flat(5));
             _discountPolicy.add_discount(discount1);
             _discountPolicy.add_discount(discount2);
-            _discountPolicy.add_product(discount1, _product.Id);
-            _discountPolicy.add_product(discount2, _product.Id);
+            _discountPolicy.add_product(discount1, _product.ID);
+            _discountPolicy.add_product(discount2, _product.ID);
 
             // Act
-            var discountedPrice = _discountPolicy.calculate_discount(_product.Id, _product.Price);
+            var discountedPrice = _discountPolicy.calculate_discount(_product.ID, _product.price);
 
             // Assert
             Assert.AreEqual(85, discountedPrice, 0.01); // 10% discount applied first, then 5 flat discount

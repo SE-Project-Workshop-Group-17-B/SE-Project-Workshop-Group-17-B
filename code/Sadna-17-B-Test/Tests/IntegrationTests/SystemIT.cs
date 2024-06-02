@@ -62,7 +62,7 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
 
             storeService.add_products_to_store(temp.AccessToken, storeId, productName, price, category, "Description", 10);
             List<Product> products = ((Store)storeService.store_by_name(storeName).Data).filter_name(productName);
-            productId = products[0].Id;
+            productId = products[0].ID;
         }
 
         [TestMethod]

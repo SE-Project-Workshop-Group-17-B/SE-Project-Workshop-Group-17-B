@@ -221,7 +221,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         {
             Store store = GetStoreById(storeID);
             Product product = store.filter_id(productID);
-            product.AddReview(review);
+            product.add_review(review);
             return true;
         }
 
@@ -229,7 +229,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         {
             Store store = GetStoreById(storeID);
             Product product = store.filter_id(productID);
-            product.EditReview(old_review, new_review);
+            product.edit_review(old_review, new_review);
             return true;
         }
         
@@ -251,7 +251,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         {
             Store store = GetStoreById(storeID);
             Product product = store.filter_id(productID);
-            product.AddRating(rating);
+            product.add_rating(rating);
             return true;
         }
 

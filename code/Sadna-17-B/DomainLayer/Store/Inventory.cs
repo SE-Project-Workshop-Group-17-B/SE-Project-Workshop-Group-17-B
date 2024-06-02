@@ -29,13 +29,13 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             else
                 product_to_amount[product] = amount;
             
-            return product.Id;
+            return product.ID;
         }
 
         public bool add_product_review(int product_id, string review)
         {
             Product product = product_by_id(product_id);
-            product.AddReview(review);
+            product.add_review(review);
             return true;
         }
 
@@ -71,16 +71,16 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                     if (product_to_amount.ContainsKey(product) && amount <= product_to_amount[product])
                     {
                         product_to_amount[product] -= amount;
-                        Console.WriteLine("Reduced " + amount + " items from " + product.Name + "\n" +
+                        Console.WriteLine("Reduced " + amount + " items from " + product.name + "\n" +
                             "Current amount is:\t" + product_to_amount[product]);
                     }
                     else if (!product_to_amount.ContainsKey(product))
                     {
-                        Console.WriteLine("Could not find " + product.Name + " in the inventory");
+                        Console.WriteLine("Could not find " + product.name + " in the inventory");
                     }
                     else
                     {
-                        Console.WriteLine("Current " + product.Name + "'s amount is " + product_to_amount[product] +
+                        Console.WriteLine("Current " + product.name + "'s amount is " + product_to_amount[product] +
                             ", you cannot reduce " + amount);
                     }
                     product.locked = false;
@@ -124,17 +124,17 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                         if (p_amount <= product_to_amount[product])
                         {
                             product_to_amount[product] += p_amount;
-                            Console.WriteLine("Reduced " + p_amount + " items from " + product.Name + "\n" + "Current amount is:\t" + product_to_amount[product]);
+                            Console.WriteLine("Reduced " + p_amount + " items from " + product.name + "\n" + "Current amount is:\t" + product_to_amount[product]);
                         }
 
                         // invalid amount to reduce
                         else
-                            Console.WriteLine("Current " + product.Name + "'s amount is " + product_to_amount[product] +  ", you cannot reduce " + p_amount);    
+                            Console.WriteLine("Current " + product.name + "'s amount is " + product_to_amount[product] +  ", you cannot reduce " + p_amount);    
                     }
 
                     // product not exist
                     else
-                        Console.WriteLine("Could not find " + product.Name + " in the inventory");
+                        Console.WriteLine("Could not find " + product.name + " in the inventory");
                     
                     
                     product.locked = false;
@@ -159,7 +159,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             if (!product_to_amount.ContainsKey(product))
                 throw new Exception("no such product");
 
-            product.Price = price;
+            product.price = price;
         }
 
         public void edit_product_name(int product_id, string newName)
@@ -168,7 +168,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
             if (product_to_amount.ContainsKey(product))
             {
-                product.Name = newName;
+                product.name = newName;
             }
         }
 
@@ -178,7 +178,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
             if (product_to_amount.ContainsKey(product))
             {
-                product.Description = new_description;
+                product.description = new_description;
             }
         }
 
@@ -188,7 +188,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
             if (product_to_amount.ContainsKey(product))
             {
-                product.Category = new_Category;
+                product.category = new_Category;
             }
         }
         
@@ -201,7 +201,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         {
             foreach (var product in product_to_amount.Keys)
             {
-                if (product.Id == id)
+                if (product.ID == id)
                 {
                     return product;
                 }
@@ -212,7 +212,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         public List<Product> products_by_name(string name)
         {
             var result = product_to_amount.Keys
-                .Where(product => product.Name.Equals(name))
+                .Where(product => product.name.Equals(name))
                 .ToList();
 
             return result.Any() ? result : null; // if empty return null
@@ -221,7 +221,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         public List<Product> products_by_category(string category)
         {
             var result = product_to_amount.Keys
-                .Where(product => product.Category.Equals(category))
+                .Where(product => product.category.Equals(category))
                 .ToList();
 
             return result.Any() ? result : null; // if empty return null
@@ -237,7 +237,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                                                     .Select(product => new
                                                     {
                                                         Product = product,
-                                                        MatchCount = keywordsArray.Count(keyword => product.Description.Contains(keyword))
+                                                        MatchCount = keywordsArray.Count(keyword => product.description.Contains(keyword))
                                                     })
                                                     .Where(x => x.MatchCount > 0)
                                                     .OrderByDescending(x => x.MatchCount)
@@ -259,7 +259,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         {
             foreach (var product in product_to_amount.Keys)
 
-                if (product.Id == p_id)
+                if (product.ID == p_id)
                     return product_to_amount[product];
                 
             return 0; // Or throw an exception if product not found, based on your requirements
@@ -269,7 +269,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         {
             foreach (var product in product_to_amount.Keys)
 
-                if (product.Name.Equals(p_name, StringComparison.OrdinalIgnoreCase))
+                if (product.name.Equals(p_name, StringComparison.OrdinalIgnoreCase))
                     return product_to_amount[product];
                 
             return 0; // Or throw an exception if product not found, based on your requirements

@@ -202,7 +202,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             if (product == null) 
                 return 0;
 
-            return product.Price * amount;
+            return product.price * amount;
             
         }
 
@@ -332,7 +332,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
             foreach(Product product in searchResult)
             {
-                if(product.Price <= high && product.Price >= low)
+                if(product.price <= high && product.price >= low)
                     filtered.Add(product);
             }
             return filtered;
@@ -347,7 +347,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
             foreach (Product product in searchResult)
             {
-                if (product.CustomerRate >= low)
+                if (product.rating >= low)
                     filtered.Add(product);
             }
 
@@ -360,7 +360,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
             foreach (Product product in inventory.all_products())
             {
-                if (product.Price <= high && product.Price >= low)
+                if (product.price <= high && product.price >= low)
                     filtered.Add(product);
             }
             return filtered;
