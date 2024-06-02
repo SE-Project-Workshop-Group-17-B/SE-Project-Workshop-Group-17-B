@@ -54,7 +54,7 @@ namespace Sadna_17_B.DomainLayer.Order
             foreach (var quantitiesOfStore in quantities)
             {
                 int storeID = quantitiesOfStore.Key;
-                if (!storeController.isOrderValid(storeID, quantitiesOfStore.Value))
+                if (!storeController.valid_order(storeID, quantitiesOfStore.Value))
                 {
                     throw new Sadna17BException("Could not proceed with order, invalid shopping basket for storeID " + storeID + ".");
                 }
@@ -65,7 +65,7 @@ namespace Sadna_17_B.DomainLayer.Order
             foreach (var quantitiesOfStore in quantities)
             {
                 int storeID = quantitiesOfStore.Key;
-                Dictionary<int, Tuple<int, double>> storeProductsPrices = storeController.CalculateProductsPrices(storeID, quantitiesOfStore.Value);
+                Dictionary<int, Tuple<int, double>> storeProductsPrices = storeController.calculate_products_prices(storeID, quantitiesOfStore.Value);
                 products[storeID] = storeProductsPrices;
             }
             Order order = new Order(orderCount, userID, isGuest, products, destinationAddress, creditCardInfo);
@@ -95,7 +95,7 @@ namespace Sadna_17_B.DomainLayer.Order
             foreach (var quantitiesOfStore in quantities)
             {
                 int storeID = quantitiesOfStore.Key;
-                bool succeeded = storeController.ReduceProductQuantities(storeID, quantitiesOfStore.Value);
+                bool succeeded = storeController.decrease_products_amount(storeID, quantitiesOfStore.Value);
                 if (!succeeded)
                 {
                     throw new Sadna17BException("System failure: could not complete the order, invalid shopping basket for storeID " + storeID + ".");

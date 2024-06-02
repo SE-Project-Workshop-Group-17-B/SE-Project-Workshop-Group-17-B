@@ -1,17 +1,20 @@
-﻿using System;
+﻿using Sadna_17_B.DomainLayer.Utils;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
-namespace Sadna_17_B.DomainLayer.Store
+namespace Sadna_17_B.DomainLayer.StoreDom
 {
 
 
     // ---------------- Policy ----------------------------------------------------------------------------------------
 
 
-    public class PurchasePolicy
+    public class PurchasePolicy : informative_class
     {
 
         // ---------------- variables ----------------------------------------------------
@@ -39,6 +42,27 @@ namespace Sadna_17_B.DomainLayer.Store
         {
             AllowedPurchaseTypes.Remove(type);
         }
+
+
+
+        public string info_to_print()
+        {
+            string s = string.Empty;
+
+            // version 2 ....
+
+            return s;
+        }
+
+        public string info_to_UI()
+        {
+            string s = string.Empty;
+
+            // version 2 ....
+
+            return s;
+        }
+
     }
 
 

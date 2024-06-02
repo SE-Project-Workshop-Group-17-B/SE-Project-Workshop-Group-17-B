@@ -25,7 +25,7 @@ namespace Sadna_17_B.ServiceLayer.ServiceDTOs
 
         public ProductDTO(Product product)
         {
-            Id = product.Id;
+            Id = product.ID;
             //Name = product.Name;
             //Price = product.Price;
             //Category = product.Category;

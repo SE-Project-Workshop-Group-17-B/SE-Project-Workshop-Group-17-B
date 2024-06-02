@@ -50,7 +50,7 @@ namespace Sadna_17_B.ServiceLayer.Services
                 return new Response(false);
             }
 
-            var storeBuilder = _storeController.GetStoreBuilder()
+            var storeBuilder = _storeController.store_builder()
                                 .SetName(name)
                                 .SetEmail(email)
                                 .SetPhoneNumber(phoneNumber)
@@ -60,15 +60,15 @@ namespace Sadna_17_B.ServiceLayer.Services
                                 .SetDiscountPolicy(new DiscountPolicy("DefaultDiscountPolicy"));
             var store = storeBuilder.Build();
 
-            _storeController.AddStore(store);
+            _storeController.open_store(store);
             info_logger.Log("Store", "new store was added : \n\n" + store.getInfo());
 
           
-            _userService.CreateStoreFounder(token, store._id);
-            info_logger.Log("User", "user is now founder of the '" + store._name + "' store");
+            _userService.CreateStoreFounder(token, store.ID);
+            info_logger.Log("User", "user is now founder of the '" + store.name + "' store");
 
 
-            return new Response("\nNew Store Created.\nStoreID: " + store._id + "\nStore name: " + store._name, true, store._id);
+            return new Response("\nNew Store Created.\nStoreID: " + store.ID + "\nStore name: " + store.name, true, store.ID);
 
         }
 
@@ -78,8 +78,8 @@ namespace Sadna_17_B.ServiceLayer.Services
             {
                 try
                 {
-                    _storeController.CloseStore(storeID);
-                    info_logger.Log("Store", "the store '" + _storeController.GetStoreById(storeID) + "' closed by user");
+                    _storeController.close_store(storeID);
+                    info_logger.Log("Store", "the store '" + _storeController.store_by_id(storeID) + "' closed by user");
                     return new Response(true, "Store closed successfully\n"); ;
                 }
                 catch (Sadna17BException e)
@@ -95,7 +95,7 @@ namespace Sadna_17_B.ServiceLayer.Services
 
         public Response valid_order(int storeId, Dictionary<int, int> quantities)
         {
-            bool result = _storeController.isOrderValid(storeId, quantities);
+            bool result = _storeController.valid_order(storeId, quantities);
             string message = result ? "order is valid.\n" : "order not valid, at least one of the quantities in products higher than in the inventory.\n";
 
             info_logger.Log("Store", message);
@@ -109,21 +109,21 @@ namespace Sadna_17_B.ServiceLayer.Services
 
         public Response AddStoreReview(int storeID, string review)
         { 
-            bool result = _storeController.AddStoreReview(storeID, review);
+            bool result = _storeController.add_store_review(storeID, review);
             
             return new Response(result, result ? "Review Added.\n" : "Review not added.\n");
         }
 
         public Response AddProductReview(int storeID,int productID, string review)
         {
-            bool result = _storeController.AddProductReview(storeID, productID, review);
+            bool result = _storeController.add_product_review(storeID, productID, review);
 
             return new Response(result, result ? "Review Added.\n" : "Review not added.\n");
         }
 
         public Response EditProductReview(int storeID, int productID, string old_review, string new_review)
         {
-            bool result = _storeController.EditProductReview(storeID, productID, old_review, new_review);
+            bool result = _storeController.edit_product_review(storeID, productID, old_review, new_review);
 
             return new Response(result, result ? "Review Added.\n" : "Review not added.\n");
         }
@@ -134,21 +134,21 @@ namespace Sadna_17_B.ServiceLayer.Services
 
         public Response AddStoreRating(int storeID, int rating)
         {
-            bool result = _storeController.AddStoreRating(storeID, rating);
+            bool result = _storeController.add_store_rating(storeID, rating);
 
             return new Response(result, result ? "Rating Added.\n" : "Rating not added.\n");
         }
 
         public Response AddProductRating(int storeID, int productID, int rating)
         {
-            bool result = _storeController.AddProductRating(storeID, productID, rating);
+            bool result = _storeController.add_product_rating(storeID, productID, rating);
 
             return new Response(result, result ? "Rating Added.\n" : "Rating not added.\n");
         }
 
         public Response SendComplaintToStore(int storeID, string complaint)
         {
-            bool result = _storeController.SendComplaint(storeID, complaint);
+            bool result = _storeController.add_store_complaints(storeID, complaint);
 
             return new Response(result, result ? "Review Sent.\n" : "complaint not sent.\n");
         }
@@ -166,7 +166,7 @@ namespace Sadna_17_B.ServiceLayer.Services
 
                 try
                 {
-                    result = _storeController.ReduceProductQuantities(storeID, quantities);
+                    result = _storeController.decrease_products_amount(storeID, quantities);
                     message = result ? "Products reduced successfully.\n" : "Failed to reduce products.\n";
 
                     info_logger.Log("Store", message);
@@ -184,7 +184,7 @@ namespace Sadna_17_B.ServiceLayer.Services
         public Response add_product_to_store_faster(int storeID, string name, double price, string category, 
                                                     string description, int amount)
         {
-            int productId = _storeController.AddProductsToStore(storeID, name, price, category, description, amount);
+            int productId = _storeController.add_store_product(storeID, name, price, category, description, amount);
 
             return new Response(true, productId);
 
@@ -207,7 +207,7 @@ namespace Sadna_17_B.ServiceLayer.Services
             int amount = Convert.ToInt32(Console.ReadLine());
 
 
-            int productId = _storeController.AddProductsToStore(storeID, name, price, category, description, amount);
+            int productId = _storeController.add_store_product(storeID, name, price, category, description, amount);
 
             return new Response(true, productId);
        }
@@ -221,7 +221,7 @@ namespace Sadna_17_B.ServiceLayer.Services
 
                 try
                 {
-                    result = _storeController.AddProductsToStore(storeID, name, price, category, description, amount);
+                    result = _storeController.add_store_product(storeID, name, price, category, description, amount);
                     message = result != -1 ? "Products reduced successfully.\n" : "Failed to reduce products.\n";
 
                     info_logger.Log("Store", message);
@@ -246,7 +246,7 @@ namespace Sadna_17_B.ServiceLayer.Services
 
                 try
                 {
-                    result = _storeController.EditProductProperties(storeID, productID);
+                    result = _storeController.edit_store_product(storeID, productID);
                     message = result ? "Products edited successfully.\n" : "Failed to edit products.\n";
 
                     info_logger.Log("Store", message);
@@ -267,7 +267,7 @@ namespace Sadna_17_B.ServiceLayer.Services
 
         public Response all_stores()
         {
-            List<Store> AllStores = _storeController.GetAllStores();
+            List<Store> AllStores = _storeController.all_stores();
             string message = AllStores.IsNullOrEmpty() ? "failed to find stores\n" : "stores found successfully\n";
             info_logger.Log("Store", message);
 
@@ -277,7 +277,7 @@ namespace Sadna_17_B.ServiceLayer.Services
 
         public Response store_by_name(string name)
         {
-            Store store = _storeController.GetStoreByName(name);
+            Store store = _storeController.store_by_name(name);
             string message = store != null ? "store found successfully\n" : "failed to find store\n";
             info_logger.Log("Store", message);
 
@@ -290,7 +290,7 @@ namespace Sadna_17_B.ServiceLayer.Services
 
         public Response products_by_category(string category)
         {
-            Dictionary<Product, int> output = _storeController.SearchProductsByCategory(category);
+            Dictionary<Product, int> output = _storeController.filter_products_by_category(category);
             string message = (!output.IsNullOrEmpty()) ? "products found successfully\n" : "failed to find products\n";
             info_logger.Log("Store", message);
 
@@ -299,7 +299,7 @@ namespace Sadna_17_B.ServiceLayer.Services
 
         public Response products_by_name(string name)
         {
-            Dictionary<Product, int> output = _storeController.searchProductByName(name);
+            Dictionary<Product, int> output = _storeController.filter_products_by_name(name);
             string message = (!output.IsNullOrEmpty()) ? "products found successfully\n" : "failed to find products\n";
             info_logger.Log("Store", message);
 
@@ -308,7 +308,7 @@ namespace Sadna_17_B.ServiceLayer.Services
 
         public Response products_by_keyWord(string keyWord)
         {
-            Dictionary<Product, int> output = _storeController.searchProductByKeyWord(keyWord);
+            Dictionary<Product, int> output = _storeController.filter_products_by_keyword(keyWord);
             string message = (!output.IsNullOrEmpty()) ? "products found successfully\n" : "failed to find products\n";
             info_logger.Log("Store", message);
 
@@ -317,28 +317,28 @@ namespace Sadna_17_B.ServiceLayer.Services
 
         public Response filter_search_by_price(Dictionary<Product, int> searchResult, int low, int high)
         {
-            Dictionary<Product, int> output = _storeController.FilterProductByPrice(searchResult, low, high);
+            Dictionary<Product, int> output = _storeController.filter_products_by_price(searchResult, low, high);
 
             return new Response("", (!output.IsNullOrEmpty()), output);
         }
 
         public Response filter_search_by_product_rating(Dictionary<Product, int> searchResult, int low)
         {
-            Dictionary<Product, int> output = _storeController.FilterProductByRating(searchResult, low);
+            Dictionary<Product, int> output = _storeController.filter_products_by_rating(searchResult, low);
 
             return new Response("", (!output.IsNullOrEmpty()), output);
         }
 
         public Response filter_all_products_in_store_by_price(int storeId, int low, int high)
         {
-            Dictionary<Product, int> output = _storeController.FilterAllProductsInStoreByPrice(storeId, low, high);
+            Dictionary<Product, int> output = _storeController.filter_store(storeId, low, high);
 
             return new Response("", (!output.IsNullOrEmpty()), output);
         }
 
         public Response filter_search_by_store_rating(Dictionary<Product, int> searchResult, int low)
         {
-            Dictionary<Product, int> output = _storeController.FilterStoreByRating(searchResult, low);
+            Dictionary<Product, int> output = _storeController.filter_store_products_by_rating(searchResult, low);
 
             return new Response("", (!output.IsNullOrEmpty()), output);
         }
@@ -354,7 +354,7 @@ namespace Sadna_17_B.ServiceLayer.Services
 
             try
             {
-                message = _storeController.edit_policy(store_id, edit_type, policy_doc) ? "edited policy successfully" : "did not edit policy";
+                message = _storeController.edit_discount_policy(store_id, edit_type, policy_doc) ? "edited policy successfully" : "did not edit policy";
                 info_logger.Log("Store", message);
             }
             catch (Exception e)
@@ -373,7 +373,7 @@ namespace Sadna_17_B.ServiceLayer.Services
 
             try
             {
-                message = _storeController.add_policy(store_id, policy_doc) ? "added policy successfully" : "did not add policy";
+                message = _storeController.add_discount_policy(store_id, policy_doc) ? "added policy successfully" : "did not add policy";
                 info_logger.Log("Store", message);
             }
             catch (Exception e)
@@ -392,7 +392,7 @@ namespace Sadna_17_B.ServiceLayer.Services
 
             try
             {
-                message = _storeController.remove_policy(store_id, policy_id) ? "removed policy successfully" : "did not remove policy";
+                message = _storeController.remove_discount_policy(store_id, policy_id) ? "removed policy successfully" : "did not remove policy";
                 info_logger.Log("Store", message);
             }
             catch (Exception e)

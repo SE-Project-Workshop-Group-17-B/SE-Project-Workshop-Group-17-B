@@ -1,11 +1,12 @@
-﻿using System;
+﻿using Sadna_17_B.DomainLayer.Utils;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
 namespace Sadna_17_B.DomainLayer.StoreDom
 {
-    public class Product
+    public class Product : informative_class
     {
 
 
@@ -16,64 +17,68 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         private static int ratingCounter = 0;
         private static int ratingOverAllScore = 0;
 
-        public int Id { get; private set; }
-        public string Name { get; set; }
-        public double Price { get; set; }
-        public string Category { get; set; }
-        public double CustomerRate { get; set; }
-        public List<string> CustomerReviews { get; set; } // up to 75 char
-        public string Description { get; set; } // up to 100 char
+        public int ID { get; private set; }
+        public string name { get; set; }
+        public double price { get; set; }
+        public string category { get; set; }
+        public double rating { get; set; }
+        public List<string> reviews { get; set; } // up to 75 char
+        public string description { get; set; } // up to 100 char
+
+
         public bool locked { get; set; }
 
 
         // ---------------- Constructor -------------------------------------------------------------------------------------------
 
-
         public Product(string name, double price, string category, string description = "")
         {
-            Id = idCounter++;
-            Name = name.ToLower().Trim();
+            ID = idCounter++;
+            this.name = name.ToLower().Trim();
 
-            CustomerRate = 0;
-            Price = price;
-            Category = category;
-            CustomerReviews = new List<string>();
-            Description = description.Length <= 100 ? description : description.Substring(0, 100);
+            rating = 0;
+            this.price = price;
+            this.category = category;
+            reviews = new List<string>();
+            this.description = description.Length <= 100 ? description : description.Substring(0, 100);
             locked = false;
         }
 
-        public string getInfo()
+
+
+        // ---------------- adjust product -------------------------------------------------------------------------------------------
+
+        public bool add_rating(int rating)
         {
-            string s = string.Empty;
+            if (rating < 0 || rating > 10)
+                return false;
+            ratingCounter++;
+            ratingOverAllScore += rating;
+            this.rating = ratingOverAllScore / ratingCounter;
 
-            s += $"{Id,4} | ";
-            s += $"name:     {Name,-10}\t | ";
-            s += $"price:    {Price,-6}\t | ";
-            s += $"category: {Category,-10}\t | ";
-            s += $"Ratings:  {CustomerRate,-4}";
-
-            return s;
-        }
-
-        public bool AddReview(string review)
-        {
-            CustomerReviews.Add(review);
             return true;
         }
-        public bool RemoveReview(string review)
+
+        public bool add_review(string review)
         {
-            if (!CustomerReviews.Contains(review))
+            reviews.Add(review);
+            return true;
+        }
+        
+        public bool remove_review(string review)
+        {
+            if (!reviews.Contains(review))
                 return false;
 
-            CustomerReviews.Remove(review);
+            reviews.Remove(review);
             return true;
         }
 
-        public bool EditReview(string oldreview,string new_review)
+        public bool edit_review(string oldreview,string new_review)
         {
             bool found = false;
 
-            foreach(string current_review in CustomerReviews)
+            foreach(string current_review in reviews)
             {
                 if (current_review == oldreview)
                 {
@@ -86,20 +91,32 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return found;
         }
 
-        public static int amount()
+
+
+        // ---------------- info -------------------------------------------------------------------------------------------
+
+
+        public string info_to_print()
         {
-            return idCounter;
+            string s = string.Empty;
+
+            s += $"{ID,4} | ";
+            s += $"name:     {name,-10}\t | ";
+            s += $"price:    {price,-6}\t | ";
+            s += $"category: {category,-10}\t | ";
+            s += $"Ratings:  {rating,-4}";
+
+            return s;
         }
 
-        public bool AddRating(int rating)
+        public string info_to_UI()
         {
-            if(rating < 0 || rating > 10)
-                return false;
-            ratingCounter++;
-            ratingOverAllScore += rating;
-            CustomerRate = ratingOverAllScore / ratingCounter;
-            
-            return true;
+            string s = string.Empty;
+
+            // version 2 ....
+
+            return s;
         }
+
     }
 }

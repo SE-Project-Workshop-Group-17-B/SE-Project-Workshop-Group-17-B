@@ -58,11 +58,11 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
             //inv.AddProduct(p, quantity);
             Response storeRes = storeService.create_store(temp.AccessToken, storeName, email, phoneNum, descr, addr, inv);
             //int storeId = (int)storeRes.Data;
-            storeId = ((Store)storeService.store_by_name(storeName).Data)._id;
+            storeId = ((Store)storeService.store_by_name(storeName).Data).ID;
 
             storeService.add_products_to_store(temp.AccessToken, storeId, productName, price, category, "Description", 10);
-            List<Product> products = ((Store)storeService.store_by_name(storeName).Data).searchProductByName(productName);
-            productId = products[0].Id;
+            List<Product> products = ((Store)storeService.store_by_name(storeName).Data).filter_name(productName);
+            productId = products[0].ID;
         }
 
         [TestMethod]
@@ -78,7 +78,7 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
             //Assert.IsTrue(test.Success);
 
             Response completeRes = userService.CompletePurchase(token, destAddr, creditCardInfo);
-            int amount = ((Store)storeService.store_by_name(storeName).Data).GetProductAmount(productName);
+            int amount = ((Store)storeService.store_by_name(storeName).Data).amount_by_name(productName);
             Assert.IsTrue(completeRes.Success);
             Assert.AreEqual(amount, quantity - amount2Buy);
         }
