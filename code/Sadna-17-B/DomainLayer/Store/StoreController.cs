@@ -153,7 +153,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             {
                 Product product = store.searchProductByID(item.Key);
                 int requiredAmount = item.Value;
-                int availableAmount = store._inventory.GetProductAmount(product);
+                int availableAmount = store._inventory.amount_by_product(product);
 
                 if (availableAmount < requiredAmount)
                     return false;

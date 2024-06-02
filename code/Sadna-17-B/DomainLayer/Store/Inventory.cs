@@ -12,158 +12,194 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         // ---------------- Variables -------------------------------------------------------------------------------------------
 
-        private Dictionary<Product, int> _allProducts = new Dictionary<Product, int>();
+
+        private Dictionary<Product, int> product_to_amount = new Dictionary<Product, int>();
 
 
 
         // ---------------- Adjust product -------------------------------------------------------------------------------------------
 
-        public int AddProduct( string name, double price, string category,string description, int amount)
+
+        public int add_product( string name, double price, string category,string description, int amount)
         {
             Product product = new Product(name, price, category,description);
             
-            if (_allProducts.ContainsKey(product))
-                _allProducts[product] += amount; 
+            if (product_to_amount.ContainsKey(product))
+                product_to_amount[product] += amount; 
             else
-                _allProducts[product] = amount;
+                product_to_amount[product] = amount;
             
             return product.Id;
         }
 
-        public bool AddProductReview(int product_id, string review)
+        public bool add_product_review(int product_id, string review)
         {
-            Product product = searchProductById(product_id);
+            Product product = product_by_id(product_id);
             product.AddReview(review);
             return true;
         }
 
-        public bool RemoveProduct(Product product)
+        public bool remove_product(Product product)
         {
             lock (product)
             {
                 product.locked = true;
 
-                if (_allProducts.ContainsKey(product))
+                if (product_to_amount.ContainsKey(product))
                 {
-                    _allProducts.Remove(product);
+                    product_to_amount.Remove(product);
                 }
 
                 product.locked = false;
 
             }
 
-            return !_allProducts.ContainsKey(product);
+            return !product_to_amount.ContainsKey(product);
         }
 
-        public void ReduceProductAmount(Product product, int amount)
+        // -------------------------------------------------------------------------
+
+        // --------   (refactor) from   >>>   ------
+
+        public void reduce_product_amount(Product product, int amount)
         {
-            try {
+            try
+            {
                 lock (product)
                 {
                     product.locked = true;
-                    if (_allProducts.ContainsKey(product) && amount <= _allProducts[product])
+                    if (product_to_amount.ContainsKey(product) && amount <= product_to_amount[product])
                     {
-                        _allProducts[product] -= amount;
+                        product_to_amount[product] -= amount;
                         Console.WriteLine("Reduced " + amount + " items from " + product.Name + "\n" +
-                            "Current amount is:\t" + _allProducts[product]);
+                            "Current amount is:\t" + product_to_amount[product]);
                     }
-                    else if (!_allProducts.ContainsKey(product))
+                    else if (!product_to_amount.ContainsKey(product))
                     {
                         Console.WriteLine("Could not find " + product.Name + " in the inventory");
                     }
                     else
                     {
-                        Console.WriteLine("Current " + product.Name + "'s amount is " + _allProducts[product] +
+                        Console.WriteLine("Current " + product.Name + "'s amount is " + product_to_amount[product] +
                             ", you cannot reduce " + amount);
                     }
                     product.locked = false;
                 }
-            } catch(Exception ex) { Console.WriteLine("Failed to access a product, error message below:\n"+
-                ex.ToString()); }
-         }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Failed to access a product, error message below:\n" +
+                ex.ToString());
+            }
+        }
 
-        public void AddProductAmount(int p_id, int p_amount)
+        public void add_product_amount(int p_id, int p_amount)
         {
-            Product product = searchProductById(p_id);
+            Product product = product_by_id(p_id);
 
-            if (! _allProducts.ContainsKey(product))
+            if (!product_to_amount.ContainsKey(product))
                 throw new Exception("no such product");
 
-            _allProducts[product] += p_amount;
+            product_to_amount[product] += p_amount;
+        }
+        
+        
+        // --------   (refactor) into   >>>   ------
+
+        public void edit_product_amount(int p_id, int p_amount)
+        {
+
+            Product product = product_by_id(p_id);
+
+            try
+            {
+                lock (product)
+                {
+                    product.locked = true;
+
+                    // product exists
+                    if (product_to_amount.ContainsKey(product))
+                    {
+                        // valid amount to reduce
+                        if (p_amount <= product_to_amount[product])
+                        {
+                            product_to_amount[product] -= p_amount;
+                            Console.WriteLine("Reduced " + p_amount + " items from " + product.Name + "\n" + "Current amount is:\t" + product_to_amount[product]);
+                        }
+
+                        // invalid amount to reduce
+                        else
+                            Console.WriteLine("Current " + product.Name + "'s amount is " + product_to_amount[product] +  ", you cannot reduce " + p_amount);    
+                    }
+
+                    // product not exist
+                    else
+                        Console.WriteLine("Could not find " + product.Name + " in the inventory");
+                    
+                    
+                    product.locked = false;
+                }
+            }
+
+            // failure
+            catch (Exception ex)
+            {
+                Console.WriteLine("Failed to access a product, error message below:\n" + ex.ToString());
+            }
         }
 
-        public bool EditProductAmount(int p_id, int amount)
+
+        // -------------------------------------------------------------------------
+
+
+        public void edit_product_price(int p_id, int price)
         {
-            Product product = searchProductById(p_id);
+            Product product = product_by_id(p_id);
 
-            if (!_allProducts.ContainsKey(product))
-                return false;
-
-            _allProducts[product] = amount;
-            return true;
-        }
-
-        public void EditProductPrice(int p_id, int price)
-        {
-            Product product = searchProductById(p_id);
-
-            if (!_allProducts.ContainsKey(product))
+            if (!product_to_amount.ContainsKey(product))
                 throw new Exception("no such product");
 
             product.Price = price;
         }
 
-        public void EditProductName(int product_id, string newName)
+        public void edit_product_name(int product_id, string newName)
         {
-            Product product = searchProductById(product_id);
+            Product product = product_by_id(product_id);
 
-            if (_allProducts.ContainsKey(product))
+            if (product_to_amount.ContainsKey(product))
             {
                 product.Name = newName;
             }
         }
 
-        public void EditProductDescription(int product_id, string new_description)
+        public void edit_product_description(int product_id, string new_description)
         {
-            Product product = searchProductById(product_id);
+            Product product = product_by_id(product_id);
 
-            if (_allProducts.ContainsKey(product))
+            if (product_to_amount.ContainsKey(product))
             {
                 product.Description = new_description;
             }
         }
 
-        public void EditProductCategory(int product_id, string new_Category)
+        public void edit_product_category(int product_id, string new_Category)
         {
-            Product product = searchProductById(product_id);
+            Product product = product_by_id(product_id);
 
-            if (_allProducts.ContainsKey(product))
+            if (product_to_amount.ContainsKey(product))
             {
                 product.Category = new_Category;
             }
         }
         
 
-        public double total_price(int id, int amount)
-        {
-            return searchProductById(id).Price * amount;
-        }
 
         // ---------------- Search by -------------------------------------------------------------------------------------------
 
 
-        public List<Product> searchProductByName(string name)
+        public Product product_by_id(int id)
         {
-            var result = _allProducts.Keys
-                .Where(product => product.Name.Equals(name))
-                .ToList();
-
-            return result.Any() ? result : null; // if empty return null
-        }
-
-        public Product searchProductById(int id)
-        {
-            foreach (var product in _allProducts.Keys)
+            foreach (var product in product_to_amount.Keys)
             {
                 if (product.Id == id)
                 {
@@ -173,22 +209,31 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return null;
         }
 
-        public List<Product> SearchProductsByCategory(string category)
+        public List<Product> products_by_name(string name)
         {
-            var result = _allProducts.Keys
+            var result = product_to_amount.Keys
+                .Where(product => product.Name.Equals(name))
+                .ToList();
+
+            return result.Any() ? result : null; // if empty return null
+        }
+
+        public List<Product> products_by_category(string category)
+        {
+            var result = product_to_amount.Keys
                 .Where(product => product.Category.Equals(category))
                 .ToList();
 
             return result.Any() ? result : null; // if empty return null
         }
 
-        public List<Product> SearchProductByKeyWord(string keyWords)
+        public List<Product> products_by_keyword(string keyWords)
         {
             // Split the keywords by comma and trim any extra spaces
             string[] keywordsArray = keyWords.Split(',').Select(k => k.Trim()).ToArray();
 
             // Dictionary to keep track of products and their matching keyword count
-            var productKeywordCount =   _allProducts.Keys
+            var productKeywordCount =   product_to_amount.Keys
                                                     .Select(product => new
                                                     {
                                                         Product = product,
@@ -203,66 +248,50 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return productKeywordCount.Any() ? productKeywordCount : null;
         }
 
-        
-        public static void PrintIndices() // do not delete - example function
+        public List<Product> all_products()
         {
-            List<string> numbers = new List<string> { "hi hihi hi, him , hi", "hi ", ", him , hi", "hi hihi hi", " " };
-
-            var indices = numbers
-                .Select((s, index) => new
-                {
-                    Index = index,
-                    MatchCount = numbers.Count(keyword => s != keyword && s.Contains(keyword))
-                })
-                .Where(x => x.MatchCount > 0)
-                .OrderByDescending(x => x.MatchCount)
-                .Select(x => x.Index)
-                .ToList();
-
-            Console.WriteLine(string.Join(", ", numbers));
-            Console.WriteLine(string.Join(", ", indices));
-
-            Console.ReadLine();
+            return product_to_amount.Keys.ToList();
         }
 
-        
-        // ---------------- Getters -------------------------------------------------------------------------------------------
+     
 
-
-        public int GetProductAmount(string productName)
+        public int amount_by_id(int p_id)
         {
-            foreach (var product in _allProducts.Keys)
-            {
-                if (product.Name.Equals(productName, StringComparison.OrdinalIgnoreCase))
-                {
-                    return _allProducts[product];
-                }
-            }
+            foreach (var product in product_to_amount.Keys)
+
+                if (product.Id == p_id)
+                    return product_to_amount[product];
+                
             return 0; // Or throw an exception if product not found, based on your requirements
         }
 
-        public int GetProductAmount(Product lookup_product)
+        public int amount_by_name(string p_name)
         {
-            return _allProducts.ContainsKey(lookup_product) ? _allProducts[lookup_product] : 0;
+            foreach (var product in product_to_amount.Keys)
+
+                if (product.Name.Equals(p_name, StringComparison.OrdinalIgnoreCase))
+                    return product_to_amount[product];
+                
+            return 0; // Or throw an exception if product not found, based on your requirements
         }
 
-        public List<Product> GetAllProducts()
+        public int amount_by_product(Product lookup_product)
         {
-            return _allProducts.Keys.ToList();
+            return product_to_amount.ContainsKey(lookup_product) ? product_to_amount[lookup_product] : 0;
         }
 
-        public Dictionary<Product, int> GetAllProductDetails()
-        {
-            return new Dictionary<Product, int>(_allProducts);
-        }
+
+
+        // ---------------- info -------------------------------------------------------------------------------------------
+
 
         public string info_to_print()
         {
             string s = string.Empty;
 
-            foreach (Product product in _allProducts.Keys)
+            foreach (Product product in product_to_amount.Keys)
             {
-                s += product.getInfo() + "\n";
+                s += product.info_to_print() + "\n";
             }
 
             return s;

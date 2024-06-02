@@ -86,63 +86,63 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         public int AddProduct(string name, double price, string category, string description, int amount)
         {
-            return _inventory.AddProduct(name, price, category, description, amount);
+            return _inventory.add_product(name, price, category, description, amount);
         }
 
         public bool RemoveProduct(string productName)
         {
-            List<Product> products_to_remove = _inventory.searchProductByName(productName);
+            List<Product> products_to_remove = _inventory.products_by_name(productName);
             bool result = true;
             if (products_to_remove.IsNullOrEmpty())
                 return false;
 
             foreach (Product product in products_to_remove)
-                result = result && _inventory.RemoveProduct(product);
+                result = result && _inventory.remove_product(product);
             
             return result;
         }
 
         public bool EditProductProperties(int productId)
         {
-            Product productEdit = _inventory.searchProductById(productId);
+            Product productEdit = _inventory.product_by_id(productId);
             if (productEdit == null)
                 return false;
 
             Console.WriteLine("Edit Product Name: ( -1 to continue ...)");
             string new_name = Console.ReadLine();
             if (!new_name.Equals("-1"))
-                _inventory.EditProductName(productId, new_name);
+                _inventory.edit_product_name(productId, new_name);
 
             Console.WriteLine("Edit Product Price: ( -1 to continue ...)");
             int new_price = Convert.ToInt32(Console.ReadLine());
             if(new_price > 0)
-                _inventory.EditProductPrice(productId, new_price);
+                _inventory.edit_product_price(productId, new_price);
 
             Console.WriteLine("Edit Product Category: ( -1 to continue ...)");
             string new_Category = Console.ReadLine();
             if (!new_Category.Equals("-1"))
-                _inventory.EditProductCategory(productId, new_Category);
+                _inventory.edit_product_category(productId, new_Category);
 
             Console.WriteLine("Edit Product Amount: ( -1 to continue ...)");
             int new_amount = Convert.ToInt32(Console.ReadLine());
             if (new_amount > 0)
-                _inventory.EditProductAmount(productId, new_amount);
+                _inventory.edit_product_amount(productId, new_amount);
 
             Console.WriteLine("Edit Product Description: ( -1 to continue ...)");
             string new_Description = Console.ReadLine();
             if (!new_Description.Equals("-1"))
-                _inventory.EditProductDescription(productId, new_Description);
+                _inventory.edit_product_description(productId, new_Description);
 
             return true;
         }
 
         public bool ReduceProductQuantities(int p_id, int amount)
         {
-            Product product_to_reduce = _inventory.searchProductById(p_id);
+            Product product_to_reduce = _inventory.product_by_id(p_id);
 
             if (product_to_reduce == null)
                 return false;
-            try { _inventory.ReduceProductAmount(product_to_reduce, amount); }
+            try { _inventory.reduce_product_amount(product_to_reduce, amount); }
             catch (Exception e) { return false; }
             return true;
         }
@@ -183,7 +183,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         public void AddProductQuantities(int id, int amount)
         { 
-            _inventory.AddProductAmount(id, amount);
+            _inventory.add_product_amount(id, amount);
         }
 
 
@@ -199,7 +199,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         public int GetProductAmount(string productName)
         {
-            return _inventory.GetProductAmount(productName);
+            return _inventory.amount_by_name(productName);
         }
 
         public Product searchProductByID(int productId)
@@ -210,7 +210,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                 throw new ArgumentNullException("id not valid");
             }
 
-            return _inventory.searchProductById(productId);
+            return _inventory.product_by_id(productId);
         }
 
         public List<Product> searchProductByName(string productName)
@@ -220,19 +220,19 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             {
                 throw new ArgumentNullException("cannot search null as name");
             }
-            return _inventory.searchProductByName(productName);
+            return _inventory.products_by_name(productName);
         }
 
         public List<Product> SearchProductsByCategory(string category)
         {
-            List<Product> result = _inventory.SearchProductsByCategory(category);
+            List<Product> result = _inventory.products_by_category(category);
 
             return result.Any() ? result : null;
         }
 
         public List<Product> SearchProductByKeyWord(string keyWord)
         {
-            List<Product> result = _inventory.SearchProductByKeyWord(keyWord);
+            List<Product> result = _inventory.products_by_keyword(keyWord);
 
             return result.Any() ? result : null;
         }
@@ -272,7 +272,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         {
             List<Product> filtered = new List<Product>();
 
-            foreach (Product product in _inventory.GetAllProducts())
+            foreach (Product product in _inventory.all_products())
             {
                 if (product.Price <= high && product.Price >= low)
                     filtered.Add(product);
