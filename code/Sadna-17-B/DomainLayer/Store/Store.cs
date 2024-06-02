@@ -4,13 +4,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using Sadna_17_B.DomainLayer.Store;
 using Microsoft.IdentityModel.Tokens;
+using Sadna_17_B.DomainLayer.Utils;
+using System.Diagnostics;
+using System.Xml.Linq;
 
 
 namespace Sadna_17_B.DomainLayer.StoreDom
 {
-    public class Store
+    public class Store : informative_class
     {
 
         // ---------------- Variables -------------------------------------------------------------------------------------------
@@ -193,25 +195,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return idCounter;
         }
         
-        public string getInfo()
-        {
-            string s = string.Empty;
 
-            s += "----------------------------------------------------------------------------------------------------------------------\n\n";
-
-            s += "Store   : " + _name + "\n";
-            s += "Email   : " + _email + "\n";
-            s += "Phone   : " + _phone_number + "\n";
-            s += "address : " + _address + "\n\n";
-
-            s += " ------ DESCRIPTION ------ \n\n" + _store_description + "\n\n";
-
-            s += " ------ INVENTORY ------ \n\n" + _inventory.getInfo() + "\n\n";
-
-            s += "----------------------------------------------------------------------------------------------------------------------\n\n";
-
-            return s;
-        }
 
         public int GetProductAmount(string productName)
         {
@@ -331,6 +315,35 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return true;
         }
 
+
+        public string info_to_print()
+        {
+            string s = string.Empty;
+
+            s += "----------------------------------------------------------------------------------------------------------------------\n\n";
+
+            s += "Store   : " + _name + "\n";
+            s += "Email   : " + _email + "\n";
+            s += "Phone   : " + _phone_number + "\n";
+            s += "address : " + _address + "\n\n";
+
+            s += " ------ DESCRIPTION ------ \n\n" + _store_description + "\n\n";
+
+            s += " ------ INVENTORY ------ \n\n" + _inventory.info_to_print() + "\n\n";
+
+            s += "----------------------------------------------------------------------------------------------------------------------\n\n";
+
+            return s;
+        }
+
+        public string info_to_UI()
+        {
+            string s = string.Empty;
+
+            // version 2 ....
+
+            return s;
+        }
 
         /*
          * 

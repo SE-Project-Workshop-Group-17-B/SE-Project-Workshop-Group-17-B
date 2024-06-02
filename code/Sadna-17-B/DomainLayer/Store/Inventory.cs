@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Sadna_17_B.DomainLayer.Utils;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -6,7 +7,7 @@ using System.Xml.Linq;
 
 namespace Sadna_17_B.DomainLayer.StoreDom
 {
-    public class Inventory
+    public class Inventory : informative_class
     {
 
         // ---------------- Variables -------------------------------------------------------------------------------------------
@@ -202,8 +203,8 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return productKeywordCount.Any() ? productKeywordCount : null;
         }
 
-        // do not delete - example function
-        public static void PrintIndices()
+        
+        public static void PrintIndices() // do not delete - example function
         {
             List<string> numbers = new List<string> { "hi hihi hi, him , hi", "hi ", ", him , hi", "hi hihi hi", " " };
 
@@ -224,6 +225,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             Console.ReadLine();
         }
 
+        
         // ---------------- Getters -------------------------------------------------------------------------------------------
 
 
@@ -254,7 +256,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return new Dictionary<Product, int>(_allProducts);
         }
 
-        public string getInfo()
+        public string info_to_print()
         {
             string s = string.Empty;
 
@@ -265,5 +267,15 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
             return s;
         }
+
+        public string info_to_UI()
+        {
+            string s = string.Empty;
+
+            // version 2 ....
+
+            return s;
+        }
+
     }
 }

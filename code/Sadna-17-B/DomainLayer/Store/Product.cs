@@ -1,11 +1,12 @@
-﻿using System;
+﻿using Sadna_17_B.DomainLayer.Utils;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
 namespace Sadna_17_B.DomainLayer.StoreDom
 {
-    public class Product
+    public class Product : informative_class
     {
 
 
@@ -42,24 +43,17 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             locked = false;
         }
 
-        public string getInfo()
-        {
-            string s = string.Empty;
 
-            s += $"{Id,4} | ";
-            s += $"name:     {Name,-10}\t | ";
-            s += $"price:    {Price,-6}\t | ";
-            s += $"category: {Category,-10}\t | ";
-            s += $"Ratings:  {CustomerRate,-4}";
+        // ---------------- Constructor -------------------------------------------------------------------------------------------
 
-            return s;
-        }
+
 
         public bool AddReview(string review)
         {
             CustomerReviews.Add(review);
             return true;
         }
+        
         public bool RemoveReview(string review)
         {
             if (!CustomerReviews.Contains(review))
@@ -101,5 +95,30 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             
             return true;
         }
+
+
+       
+        public string info_to_print()
+        {
+            string s = string.Empty;
+
+            s += $"{Id,4} | ";
+            s += $"name:     {Name,-10}\t | ";
+            s += $"price:    {Price,-6}\t | ";
+            s += $"category: {Category,-10}\t | ";
+            s += $"Ratings:  {CustomerRate,-4}";
+
+            return s;
+        }
+
+        public string info_to_UI()
+        {
+            string s = string.Empty;
+
+            // version 2 ....
+
+            return s;
+        }
+
     }
 }
