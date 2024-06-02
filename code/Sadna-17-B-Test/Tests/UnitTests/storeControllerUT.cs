@@ -128,12 +128,12 @@ namespace Sadna_17_B_Test.Tests.UnitTests
 
             // Assert
             Assert.IsNotNull(store);
-            Assert.AreEqual("Test Store", store._name);
-            Assert.AreEqual("testemail@example.com", store._email);
-            Assert.AreEqual("1234567890", store._phone_number);
-            Assert.AreEqual("Test Store Description", store._store_description);
-            Assert.AreEqual("Test Address", store._address);
-            Assert.AreEqual(_inventory, store._inventory);
+            Assert.AreEqual("Test Store", store.name);
+            Assert.AreEqual("testemail@example.com", store.email);
+            Assert.AreEqual("1234567890", store.phone_number);
+            Assert.AreEqual("Test Store Description", store.description);
+            Assert.AreEqual("Test Address", store.address);
+            Assert.AreEqual(_inventory, store.inventory);
         }
 
         [TestMethod]
@@ -165,11 +165,11 @@ namespace Sadna_17_B_Test.Tests.UnitTests
 
             // Assert
             Assert.IsNotNull(result);
-            Assert.AreEqual("Test Store 2", result._name);
-            Assert.AreEqual("email2@example.com", result._email);
-            Assert.AreEqual("2222222222", result._phone_number);
-            Assert.AreEqual("Description 2", result._store_description);
-            Assert.AreEqual("Address 2", result._address);
+            Assert.AreEqual("Test Store 2", result.name);
+            Assert.AreEqual("email2@example.com", result.email);
+            Assert.AreEqual("2222222222", result.phone_number);
+            Assert.AreEqual("Description 2", result.description);
+            Assert.AreEqual("Address 2", result.address);
         }
 
         [TestMethod]
@@ -198,7 +198,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
             _storeController.AddStore(store);
 
             // Act
-            _storeController.CloseStore(store._id);
+            _storeController.CloseStore(store.ID);
             var result = _storeController.GetStoreByName("Test Store");
 
             // Assert
@@ -251,21 +251,21 @@ namespace Sadna_17_B_Test.Tests.UnitTests
 
             _storeController.AddStore(store);
 
-            var productId = _storeController.AddProductsToStore(store._id, "Test Product", 100, "Category", "Good product", initialAmount);
+            var productId = _storeController.AddProductsToStore(store.ID, "Test Product", 100, "Category", "Good product", initialAmount);
             
             Dictionary<int, int> order = new Dictionary<int, int>();
             order[productId] = 5;
 
-            Task task1 = Task.Run(() => _storeController.ReduceProductQuantities(store._id, order));
-            Task task2 = Task.Run(() => _storeController.ReduceProductQuantities(store._id, order));
-            Task task3 = Task.Run(() => _storeController.ReduceProductQuantities(store._id, order));
-            Task task4 = Task.Run(() => _storeController.ReduceProductQuantities(store._id, order));
-            Task task5 = Task.Run(() => _storeController.ReduceProductQuantities(store._id, order));
-            Task task6 = Task.Run(() => _storeController.ReduceProductQuantities(store._id, order));
+            Task task1 = Task.Run(() => _storeController.ReduceProductQuantities(store.ID, order));
+            Task task2 = Task.Run(() => _storeController.ReduceProductQuantities(store.ID, order));
+            Task task3 = Task.Run(() => _storeController.ReduceProductQuantities(store.ID, order));
+            Task task4 = Task.Run(() => _storeController.ReduceProductQuantities(store.ID, order));
+            Task task5 = Task.Run(() => _storeController.ReduceProductQuantities(store.ID, order));
+            Task task6 = Task.Run(() => _storeController.ReduceProductQuantities(store.ID, order));
 
             Task.WaitAll(task1, task2, task3, task4, task5, task6);
 
-            int finalAmount = store.GetProductAmount("Test Product");
+            int finalAmount = store.amount_by_name("Test Product");
         
             Assert.AreEqual(initialAmount - 30, finalAmount);
         }

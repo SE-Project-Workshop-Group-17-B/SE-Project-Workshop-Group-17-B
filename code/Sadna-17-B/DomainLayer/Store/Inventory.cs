@@ -57,11 +57,11 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return !product_to_amount.ContainsKey(product);
         }
 
-        // -------------------------------------------------------------------------
 
-        // --------   (refactor) from   >>>   ------
 
-        public void reduce_product_amount(Product product, int amount)
+        // ---- ??? ----   (refactor) from   >>>   ------
+
+        public void decrease_product_amount(Product product, int amount)
         {
             try
             {
@@ -93,7 +93,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             }
         }
 
-        public void add_product_amount(int p_id, int p_amount)
+        public void increase_product_amount(int p_id, int p_amount)
         {
             Product product = product_by_id(p_id);
 
@@ -104,7 +104,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         }
         
         
-        // --------   (refactor) into   >>>   ------
+        // ---- ??? ----   (refactor) into   >>>   ------
 
         public void edit_product_amount(int p_id, int p_amount)
         {
@@ -123,7 +123,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                         // valid amount to reduce
                         if (p_amount <= product_to_amount[product])
                         {
-                            product_to_amount[product] -= p_amount;
+                            product_to_amount[product] += p_amount;
                             Console.WriteLine("Reduced " + p_amount + " items from " + product.Name + "\n" + "Current amount is:\t" + product_to_amount[product]);
                         }
 
@@ -149,7 +149,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         }
 
 
-        // -------------------------------------------------------------------------
+        // ---- ??? -------------------------------------
 
 
         public void edit_product_price(int p_id, int price)

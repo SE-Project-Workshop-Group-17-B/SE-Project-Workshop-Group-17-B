@@ -64,11 +64,11 @@ namespace Sadna_17_B.ServiceLayer.Services
             info_logger.Log("Store", "new store was added : \n\n" + store.getInfo());
 
           
-            _userService.CreateStoreFounder(token, store._id);
-            info_logger.Log("User", "user is now founder of the '" + store._name + "' store");
+            _userService.CreateStoreFounder(token, store.ID);
+            info_logger.Log("User", "user is now founder of the '" + store.name + "' store");
 
 
-            return new Response("\nNew Store Created.\nStoreID: " + store._id + "\nStore name: " + store._name, true, store._id);
+            return new Response("\nNew Store Created.\nStoreID: " + store.ID + "\nStore name: " + store.name, true, store.ID);
 
         }
 

@@ -143,7 +143,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
             userDTO = res.Data as UserDTO;
             storeService.create_store(userDTO.AccessToken, name, email, phonenumber, storeDescr, addr, inv);
             Response storeRes = storeService.store_by_name(name);
-            int newStoreID = (storeRes.Data as Store)._id;
+            int newStoreID = (storeRes.Data as Store).ID;
 
             Response res2 = storeService.close_store(userDTO.AccessToken, newStoreID);
             Response res3 = storeService.close_store(userDTO.AccessToken, newStoreID + 1);
@@ -163,7 +163,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
             userDTO = res.Data as UserDTO;
             storeService.create_store(userDTO.AccessToken, name, email, phonenumber, storeDescr, addr, inv);
             Response storeRes = storeService.store_by_name(name);
-            int newStoreID = (storeRes.Data as Store)._id; // Note: may change if the response returns StoreDTO
+            int newStoreID = (storeRes.Data as Store).ID; // Note: may change if the response returns StoreDTO
 
             Response res2 = storeService.close_store(userDTO.AccessToken, newStoreID);
             Response res3 = storeService.close_store(userDTO.AccessToken, newStoreID);
@@ -181,7 +181,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
             userDTO = res.Data as UserDTO;
             storeService.create_store(userDTO.AccessToken, name, email, phonenumber, storeDescr, addr, inv);
             Response storeRes = storeService.store_by_name(name);
-            Assert.AreEqual((storeRes.Data as Store)._name, name);
+            Assert.AreEqual((storeRes.Data as Store).name, name);
         }
 
 
