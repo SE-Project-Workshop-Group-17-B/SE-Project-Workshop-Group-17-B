@@ -61,8 +61,10 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         // ---- ??? ----   (refactor) from   >>>   ------
 
-        public void decrease_product_amount(Product product, int amount)
+        public string decrease_product_amount(int product_id, int amount)
         {
+            string purchase_result = "";
+            Product product = product_by_id(product_id);
             try
             {
                 lock (product)
@@ -71,17 +73,17 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                     if (product_to_amount.ContainsKey(product) && amount <= product_to_amount[product])
                     {
                         product_to_amount[product] -= amount;
-                        Console.WriteLine("Reduced " + amount + " items from " + product.name + "\n" +
-                            "Current amount is:\t" + product_to_amount[product]);
+                        purchase_result = "Reduced " + amount + " items from " + product.name + "\n" +
+                            "Current amount is:\t" + product_to_amount[product];
                     }
                     else if (!product_to_amount.ContainsKey(product))
                     {
-                        Console.WriteLine("Could not find " + product.name + " in the inventory");
+                        purchase_result = "Could not find " + product.name + " in the inventory";
                     }
                     else
                     {
-                        Console.WriteLine("Current " + product.name + "'s amount is " + product_to_amount[product] +
-                            ", you cannot reduce " + amount);
+                        purchase_result = "Current " + product.name + "'s amount is " + product_to_amount[product] +
+                            ", you cannot reduce " + amount;
                     }
                     product.locked = false;
                 }
@@ -91,16 +93,18 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                 Console.WriteLine("Failed to access a product, error message below:\n" +
                 ex.ToString());
             }
+            return purchase_result;
         }
 
-        public void increase_product_amount(int p_id, int p_amount)
+        public string increase_product_amount(int p_id, int p_amount) // called in case of failure
         {
             Product product = product_by_id(p_id);
 
             if (!product_to_amount.ContainsKey(product))
-                throw new Exception("no such product");
+                return "no such product";
 
             product_to_amount[product] += p_amount;
+            return "product: " + product.name + " increased by: " + p_amount + " \tCurrent amount restored to:" + product_to_amount[product];
         }
         
         
