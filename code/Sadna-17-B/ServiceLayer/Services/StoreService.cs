@@ -158,27 +158,25 @@ namespace Sadna_17_B.ServiceLayer.Services
 
         public Response reduce_products(string token, int storeID, Dictionary<int, int> quantities)
         {
-            bool result = false;
-            string message = "something wrong";
+            string result;
 
             if (_userService.IsOwnerBool(token, storeID) || _userService.HasManagerAuthorizationBool(token, storeID, DomainLayer.User.Manager.ManagerAuthorization.UpdateSupply))
             {
-
                 try
                 {
                     result = _storeController.decrease_products_amount(storeID, quantities);
-                    message = result ? "Products reduced successfully.\n" : "Failed to reduce products.\n";
 
-                    info_logger.Log("Store", message);
-                    return new Response(result, message);
+                    info_logger.Log("Store", result);
+                    return new Response(true, result);
                 }
                 catch (Sadna17BException e)
                 {
-                    error_logger.Log( message);
+                    error_logger.Log("something wrong");
                     return Response.GetErrorResponse(e);
                 }
             }
-            return new Response(result, message);
+            else
+                return new Response(true, "Action Unauthorized");
         }
 
         public Response add_product_to_store_faster(int storeID, string name, double price, string category, 
@@ -209,7 +207,8 @@ namespace Sadna_17_B.ServiceLayer.Services
 
             int productId = _storeController.add_store_product(storeID, name, price, category, description, amount);
 
-            return new Response(true, productId);
+            string rsult = "Added " + amount + "" + name + "'s to Store " + storeID + "Successfully.\n";
+            return new Response(true, rsult);
        }
        
         public Response add_products_to_store(string token, int storeID, string name, double price, string category, string description, int amount)

@@ -168,25 +168,30 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return true;
         }
 
-        public bool decrease_products_amount(int storeID, Dictionary<int, int> quantities)
+        public string decrease_products_amount(int storeID, Dictionary<int, int> quantities)
         {
             // in Case of Exception, Atomic action will restore previously 
             // reduced products.
+            string purchase_result = "";
+            int i = 1;
+            string restore_message = ""; // in case of failure
 
             Dictionary<int, int> to_retrieve = new Dictionary<int, int>();
 
             Store store = store_by_id(storeID);
 
             if (!valid_order(storeID, quantities))
-                return false;
+                return "Order is invalid."; // todo: add which purchase policy was not fulfilled.
 
             foreach (var item in quantities)
             {
                 int p_id = item.Key;
                 int p_amount = item.Value;
+
                 try
                 {
-                    if (store.decrease_product_amount(p_id, p_amount))
+                    purchase_result += "Line "+ i++ +":\t" + store.decrease_product_amount(p_id, p_amount) + "\n";
+                    if(Last_addition_failed(purchase_result));
                         to_retrieve.Add(p_id, p_amount);
                 }
                 catch (Exception e)
@@ -196,14 +201,14 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                     {
                         int p_id2 = item2.Key;
                         int p_amount2 = item2.Value;
-                        store.increase_product_amount(p_id2, p_amount2);
+                        restore_message += store.increase_product_amount(p_id2, p_amount2);
                     }
                     Console.WriteLine(e.Message);
-                    return false;
+                    return restore_message;
                 }
             }
 
-            return true;
+            return purchase_result;
         }
 
         public Dictionary<int, Tuple<int,double>> calculate_products_prices(int storeID, Dictionary<int, int> quantities)
@@ -216,7 +221,10 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return store.calculate_product_prices(quantities);
         }
 
-
+        public bool Last_addition_failed(string line_in_purchase_result)
+        {
+            return line_in_purchase_result.EndsWith("something wrong");
+        }
 
         // ---------------- store customer management ---------------------------------------------------------------------------------
 

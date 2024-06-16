@@ -101,20 +101,16 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         // ---- ??? ----   (refactor) from   >>>   ------
 
-        public void increase_product_amount(int id, int amount)
+        public string increase_product_amount(int id, int amount)
         {
-            inventory.increase_product_amount(id, amount);
+            return inventory.increase_product_amount(id, amount);
         }
 
-        public bool decrease_product_amount(int p_id, int amount)
+        public string decrease_product_amount(int p_id, int amount)
         {
-            Product product_to_reduce = inventory.product_by_id(p_id);
-
-            if (product_to_reduce == null)
-                return false;
-            try { inventory.decrease_product_amount(product_to_reduce, amount); }
-            catch (Exception e) { return false; }
-            return true;
+            string purchase_result = "something wrong";
+            purchase_result = inventory.decrease_product_amount(p_id, amount); 
+            return purchase_result;
         }
 
 
