@@ -18,22 +18,28 @@ public abstract class Logger
         this.logFilePath = Path.Combine(Directory.GetCurrentDirectory(), "Log", file_name);
 
 
-        if (!Directory.Exists(logFolderPath))
+        try
         {
-            Directory.CreateDirectory(logFolderPath);
-        }
+            if (!Directory.Exists(logFolderPath))
+            {
+                Directory.CreateDirectory(logFolderPath);
+            }
 
-        if (!File.Exists(logFilePath))
-        {
-            File.Create(logFilePath).Dispose();
-        }
+            if (!File.Exists(logFilePath))
+            {
+                File.Create(logFilePath).Dispose();
+            }
+        } catch (Exception ignore) { }
     }
 
     public virtual void Log(string message)
     {
         string logMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss}\t\t {message}";
 
-        File.AppendAllText(logFilePath, logMessage + Environment.NewLine);
+        try
+        {
+            File.AppendAllText(logFilePath, logMessage + Environment.NewLine);
+        } catch (Exception ignore) { }
     }
 
     public abstract void Log(string type, string message);

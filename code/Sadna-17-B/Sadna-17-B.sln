@@ -5,7 +5,12 @@ VisualStudioVersion = 17.1.32407.343
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sadna-17-B", "Sadna-17-B.csproj", "{BE6F03A6-FC98-4179-BCDA-AA9EF7FE97BA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sadna-17-B-Test", "..\Sadna-17-B-Test\Sadna-17-B-Test.csproj", "{84A48D23-DBC2-4811-974F-CCC5C33C8D91}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sadna-17-B-Test", "..\Sadna-17-B-Test\Sadna-17-B-Test.csproj", "{84A48D23-DBC2-4811-974F-CCC5C33C8D91}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sadna-17-B-Frontend", "..\Sadna-17-B-Frontend\Sadna-17-B-Frontend.csproj", "{559C5D4F-5BDA-4CF0-8195-F4185895FE79}"
+	ProjectSection(ProjectDependencies) = postProject
+		{BE6F03A6-FC98-4179-BCDA-AA9EF7FE97BA} = {BE6F03A6-FC98-4179-BCDA-AA9EF7FE97BA}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +26,10 @@ Global
 		{84A48D23-DBC2-4811-974F-CCC5C33C8D91}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{84A48D23-DBC2-4811-974F-CCC5C33C8D91}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{84A48D23-DBC2-4811-974F-CCC5C33C8D91}.Release|Any CPU.Build.0 = Release|Any CPU
+		{559C5D4F-5BDA-4CF0-8195-F4185895FE79}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{559C5D4F-5BDA-4CF0-8195-F4185895FE79}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{559C5D4F-5BDA-4CF0-8195-F4185895FE79}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{559C5D4F-5BDA-4CF0-8195-F4185895FE79}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
