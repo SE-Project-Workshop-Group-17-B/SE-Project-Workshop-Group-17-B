@@ -80,7 +80,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                     throw new InvalidOperationException("Store must have a name");
                 }
 
-                return new Store(name, email, phone_number, description, address, _inventory, _discount_policy);
+                return new Store(name, email, phone_number, description, address, _inventory);
             }
         
         
@@ -316,7 +316,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                     {
                         case "membership":
 
-                            strategy = new Discount_Member();
+                            strategy = new Discount_Membership(start);
                             break;
 
                         case "percentage":

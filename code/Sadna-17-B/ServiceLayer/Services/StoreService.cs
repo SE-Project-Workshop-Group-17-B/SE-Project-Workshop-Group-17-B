@@ -61,7 +61,7 @@ namespace Sadna_17_B.ServiceLayer.Services
             var store = storeBuilder.Build();
 
             _storeController.open_store(store);
-            info_logger.Log("Store", "new store was added : \n\n" + store.getInfo());
+            info_logger.Log("Store", "new store was added : \n\n" + store.info_to_print());
 
           
             _userService.CreateStoreFounder(token, store.ID);
@@ -331,7 +331,7 @@ namespace Sadna_17_B.ServiceLayer.Services
 
         public Response filter_all_products_in_store_by_price(int storeId, int low, int high)
         {
-            Dictionary<Product, int> output = _storeController.filter_store(storeId, low, high);
+            Dictionary<Product, int> output = _storeController.filter_store_products_by_price(storeId, low, high);
 
             return new Response("", (!output.IsNullOrEmpty()), output);
         }

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Sadna_17_B.DomainLayer.Order;
-using Sadna_17_B.DomainLayer.Store;
 using Sadna_17_B.DomainLayer.StoreDom;
 using Sadna_17_B.DomainLayer.User;
 using Sadna_17_B.DomainLayer.Order;

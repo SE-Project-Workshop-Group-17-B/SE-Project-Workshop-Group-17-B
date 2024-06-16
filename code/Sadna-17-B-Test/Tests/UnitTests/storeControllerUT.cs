@@ -82,7 +82,8 @@ namespace Sadna_17_B_Test.Tests.UnitTests
             _product.add_rating(5);
 
             // Arrange
-            var discount = new VisibleDiscount(DateTime.Now, DateTime.Now.AddDays(10), new Discount_Member());
+            DateTime start = DateTime.Now;
+            var discount = new VisibleDiscount(start, start.AddDays(10), new Discount_Membership(start));
             _discountPolicy.add_discount(discount);
             _discountPolicy.add_product(discount, product3.ID);
 

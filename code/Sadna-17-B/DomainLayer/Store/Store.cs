@@ -291,7 +291,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         public Product filter_id(int productId)
         {
 
-            if (productId < 0 || productId > Product.amount())
+            if (productId < 0 ) // || productId > Product.amount())
             {
                 throw new ArgumentNullException("id not valid");
             }
