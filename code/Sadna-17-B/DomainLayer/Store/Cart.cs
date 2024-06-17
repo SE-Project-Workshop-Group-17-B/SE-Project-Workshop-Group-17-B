@@ -13,11 +13,11 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         public Dictionary<string, HashSet<Product>> category_TO_product = new Dictionary<string, HashSet<Product>>();
 
-        public Dictionary<Product, Tuple<int, int>> product_TO_amount_Bprice = new Dictionary<Product, Tuple<int, int>>();
+        public Dictionary<Product, Tuple<int, double>> product_TO_amount_Bprice = new Dictionary<Product, Tuple<int, double>>();
 
 
 
-        public bool add_product(Product product, int amount, int bag_price)
+        public bool add_product(Product product, int amount, double bag_price)
         {
 
             // add to product list
