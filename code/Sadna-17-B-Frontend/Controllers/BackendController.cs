@@ -56,6 +56,16 @@ namespace Sadna_17_B_Frontend.Controllers
             return null;
         }
 
+        public string SignUp(string username, string password)
+        {
+            Response response = userService.CreateSubscriber(username, password);
+            if (!response.Success)
+            {
+                return response.Message;
+            }
+            return null;
+        }
+
         public string Logout()
         {
             Response response = userService.Logout(userDTO.AccessToken);
