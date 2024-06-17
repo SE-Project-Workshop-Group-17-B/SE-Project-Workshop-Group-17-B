@@ -58,13 +58,14 @@ namespace Sadna_17_B.DomainLayer.User
             {
                 GetSubscriberByUsername(username);
                 infoLogger.Log($"Register failed - username: {username} already exists");
-                throw new Sadna17BException("Given username already exists in the system.");
             }
             catch (Sadna17BException)
             {
                 Subscriber subscriber = new Subscriber(username, password);
                 subscribers[username] = subscriber;
+                return;
             }
+            throw new Sadna17BException("Given username already exists in the system.");
         }
 
         public void CreateAdmin(string username, string password)
@@ -73,13 +74,14 @@ namespace Sadna_17_B.DomainLayer.User
             {
                 GetSubscriberByUsername(username);
                 infoLogger.Log($"Creating Admin failed - username: {username} already exists");
-                throw new Sadna17BException("Given username already exists in the system.");
             }
             catch (Sadna17BException)
             {
                 Admin admin = new Admin(username, password);
                 admins[username] = admin;
+                return;
             }
+            throw new Sadna17BException("Given username already exists in the system.");
         }
 
         private Subscriber GetSubscriberByUsername(string username)
