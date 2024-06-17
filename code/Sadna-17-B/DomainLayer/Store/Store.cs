@@ -266,15 +266,13 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             {
                 int p_id = item.Key;
                 int p_amount = item.Value;
-                int p_bag_price = calculate_product_bag(p_id, p_amount);
+                double p_bag_price = calculate_product_bag(p_id, p_amount);
                 Product product = filter_id(p_id);
 
                 cart.add_product(product, p_amount, p_bag_price);
             }
 
-            Reciept reciept = discount_policy.calculate_discount(cart);
-
-            return reciept;
+            return discount_policy.calculate_discount(cart); ;
         }
 
 

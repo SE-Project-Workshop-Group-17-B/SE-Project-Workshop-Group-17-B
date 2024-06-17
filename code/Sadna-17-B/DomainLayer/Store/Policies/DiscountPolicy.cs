@@ -25,7 +25,9 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         public Dictionary<Discount, HashSet<int>> discount_to_products;
         public Dictionary<Discount, HashSet<int>> discount_to_categories;
-        public Dictionary<Discount_Membership, HashSet<int>> discount_to_member;
+        public Dictionary<Discount, HashSet<int>> discount_to_member;
+
+        public HashSet<DiscountRule> discount_rules;
 
 
         // ----------- constructor -----------------------------------------------------------
@@ -122,20 +124,15 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return false;
         }
 
-        public double calculate_discount(int pid, double price)
+        public Reciept calculate_discount(Cart cart)
         {
-            foreach (var item in discount_to_products)
-            {
-                Discount discount = item.Key;
-                HashSet<int> p_ids = item.Value;
+            List<Tuple<Discount, double>> applied_discounts = new List<Tuple<Discount, double>>();
 
-                // double discount possible
+            foreach (DiscountRule discount_rule in discount_rules)
+                applied_discounts.AddRange(discount_rule.apply_rule(cart));
+            
 
-                if (p_ids.Contains(pid))
-                    price = discount.calculate_discount(price);
-            }
-
-            return price;
+            return new Reciept(cart,applied_discounts);
         }
 
         public int get_id()
