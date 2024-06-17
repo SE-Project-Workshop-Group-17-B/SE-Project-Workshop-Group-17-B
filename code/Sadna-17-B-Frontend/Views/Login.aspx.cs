@@ -48,8 +48,7 @@ namespace Sadna_17_B_Frontend.Views
                 }
                 else
                 {
-                    //MessageBox("User logged in successfully, redirecting to home page");
-                    lblMessage.Text = "User logged in successfuly, redirecting to home page";
+                    //MessageBox("User logged in successfully, redirecting to home page"); // Cannot show the messagebox since the redirect happens before it shows up
                     Response.Redirect("~/Views/Homepage"); // Redirects back to the home page after a successful login.
                 }
             }
