@@ -96,14 +96,14 @@ namespace Sadna_17_B_Frontend.Controllers
             return true;
         }
 
-        public string CreateStore() // Add needed parameters
+        public Tuple<string,int> CreateStore(string name, string email, string phoneNumber, string storeDescription, string address)
         {
-            //Response response = storeService.create_store(..);
-            //if (!response.Success)
-            //{
-            //    return response.Message;
-            //}
-            return "";
+            Response response = storeService.create_store(userDTO.AccessToken, name, email, phoneNumber, storeDescription, address);
+            if (!response.Success)
+            {
+                return new Tuple<string,int>(response.Message,-1);
+            }
+            return new Tuple<string, int>(null, (int)(response.Data));
         }
     }
 }
