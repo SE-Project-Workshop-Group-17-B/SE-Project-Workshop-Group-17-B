@@ -11,7 +11,7 @@ namespace Sadna_17_B.ServiceLayer.Services
 
         // ---------------- adjust store options -------------------------------------------------------------------------------------------
 
-        Response create_store(string token, string name, string email, string phoneNumber, string storeDescription, string address, Inventory inventory);
+        Response create_store(string token, string name, string email, string phoneNumber, string storeDescription, string address);
         Response close_store(string token, int storeID);
         Response valid_order(int storeId, Dictionary<int, int> quantities);
 

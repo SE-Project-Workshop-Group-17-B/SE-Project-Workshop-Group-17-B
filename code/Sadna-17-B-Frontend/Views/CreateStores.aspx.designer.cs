@@ -11,17 +11,8 @@ namespace Sadna_17_B_Frontend.Views
 {
 
 
-    public partial class CreateStore
+    public partial class CreateStores
     {
-
-        /// <summary>
-        /// createStoreForm control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlForm createStoreForm;
 
         /// <summary>
         /// txtStoreName control.
@@ -33,6 +24,15 @@ namespace Sadna_17_B_Frontend.Views
         protected global::System.Web.UI.WebControls.TextBox txtStoreName;
 
         /// <summary>
+        /// litStoreNameMessage control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal litStoreNameMessage;
+
+        /// <summary>
         /// txtEmail control.
         /// </summary>
         /// <remarks>
@@ -40,6 +40,15 @@ namespace Sadna_17_B_Frontend.Views
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtEmail;
+
+        /// <summary>
+        /// litEmailMessage control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal litEmailMessage;
 
         /// <summary>
         /// txtPhoneNumber control.
@@ -51,6 +60,15 @@ namespace Sadna_17_B_Frontend.Views
         protected global::System.Web.UI.WebControls.TextBox txtPhoneNumber;
 
         /// <summary>
+        /// litPhoneNumberMessage control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal litPhoneNumberMessage;
+
+        /// <summary>
         /// txtStoreDescription control.
         /// </summary>
         /// <remarks>
@@ -58,6 +76,15 @@ namespace Sadna_17_B_Frontend.Views
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtStoreDescription;
+
+        /// <summary>
+        /// litStoreDescriptionMessage control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal litStoreDescriptionMessage;
 
         /// <summary>
         /// txtAddress control.
@@ -85,5 +112,14 @@ namespace Sadna_17_B_Frontend.Views
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblMessage;
+
+        /// <summary>
+        /// litAddressMessage control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal litAddressMessage;
     }
 }

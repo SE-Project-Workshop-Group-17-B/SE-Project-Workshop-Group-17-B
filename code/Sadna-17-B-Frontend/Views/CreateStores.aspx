@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Create Store" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="CreateStore.aspx.cs" Inherits="Sadna_17_B_Frontend.Views.CreateStore" %>
+﻿<%@ Page Title="CreateStore" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="CreateStores.aspx.cs" Inherits="Sadna_17_B_Frontend.Views.CreateStores" %>
 
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
     <style>
@@ -13,7 +13,7 @@
         }
         .create-store-container {
             width: 100%;
-            max-width: 600px;
+            max-width: 800px;
             margin: 50px auto;
             padding: 30px;
             border: 1px solid #ddd;
@@ -28,7 +28,7 @@
             color: #333;
         }
         .form-group {
-            margin-bottom: 1.5rem;
+            margin-bottom: 2rem; /* Increased bottom margin for more space */
         }
         .form-group label {
             display: block;
@@ -79,32 +79,41 @@
             background-color: #f8d7da;
             color: #721c24;
         }
+        .error-message {
+            display: inline-block;
+            margin-left: 10px;
+            color: red;
+            font-size: 0.8em;
+        }
     </style>
     <div class="create-store-container">
         <h2>Create Your Store</h2>
-        <form id="createStoreForm" runat="server">
-            <div class="form-group">
-                <label for="txtStoreName">Store Name:</label>
-                <asp:TextBox ID="txtStoreName" runat="server" CssClass="form-control" placeholder="Enter store name" />
-            </div>
-            <div class="form-group">
-                <label for="txtEmail">Email:</label>
-                <asp:TextBox ID="txtEmail" runat="server" TextMode="Email" CssClass="form-control" placeholder="Enter email" />
-            </div>
-            <div class="form-group">
-                <label for="txtPhoneNumber">Phone Number:</label>
-                <asp:TextBox ID="txtPhoneNumber" runat="server" TextMode="Phone" CssClass="form-control" placeholder="Enter phone number" />
-            </div>
-            <div class="form-group">
-                <label for="txtStoreDescription">Store Description:</label>
-                <asp:TextBox ID="txtStoreDescription" runat="server" TextMode="MultiLine" CssClass="form-control" placeholder="Enter store description" />
-            </div>
-            <div class="form-group">
-                <label for="txtAddress">Address:</label>
-                <asp:TextBox ID="txtAddress" runat="server" CssClass="form-control" placeholder="Enter address" />
-            </div>
-            <asp:Button ID="btnCreateStore" runat="server" Text="Create Store" OnClick="btnCreateStore_Click" CssClass="btn-primary" />
-            <asp:Label ID="lblMessage" runat="server" CssClass="alert" Visible="false"></asp:Label>
-        </form>
+        <div class="form-group">
+            <label>Store Name:</label>
+            <asp:TextBox ID="txtStoreName" runat="server" CssClass="form-control" placeholder="Enter store name" />
+            <asp:Literal ID="litStoreNameMessage" runat="server"></asp:Literal>
+        </div>
+        <div class="form-group">
+            <label>Email:</label>
+            <asp:TextBox ID="txtEmail" runat="server" TextMode="Email" CssClass="form-control" placeholder="Enter email" />
+            <asp:Literal ID="litEmailMessage" runat="server"></asp:Literal>
+        </div>
+        <div class="form-group">
+            <label>Phone Number:</label>
+            <asp:TextBox ID="txtPhoneNumber" runat="server" TextMode="Phone" CssClass="form-control" placeholder="Enter phone number" />
+            <asp:Literal ID="litPhoneNumberMessage" runat="server"></asp:Literal>
+        </div>
+        <div class="form-group">
+            <label>Store Description:</label>
+            <asp:TextBox ID="txtStoreDescription" runat="server" TextMode="MultiLine" CssClass="form-control" placeholder="Enter store description" />
+            <asp:Literal ID="litStoreDescriptionMessage" runat="server"></asp:Literal>
+        </div>
+        <div class="form-group">
+            <label>Address:</label>
+            <asp:TextBox ID="txtAddress" runat="server" CssClass="form-control" placeholder="Enter address" />
+            <asp:Literal ID="litAddressMessage" runat="server"></asp:Literal>
+        </div>
+        <asp:Button ID="btnCreateStore" runat="server" Text="Create Store" OnClick="btnCreateStore_Click" CssClass="btn-primary" />
+        <asp:Label ID="lblMessage" runat="server" CssClass="alert" Visible="false"></asp:Label>
     </div>
 </asp:Content>

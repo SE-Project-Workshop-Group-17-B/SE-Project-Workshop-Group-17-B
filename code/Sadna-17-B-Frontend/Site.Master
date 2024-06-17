@@ -60,7 +60,6 @@
                         <li><a id="LoginBtn" runat="server" href="~/Views/Login">Login</a></li>
                         <li><a id="SignUpBtn" runat="server" href="~/Views/SignUp">Sign Up</a></li>
                     </ul>
-                    <!-- <%=_loginLogoutButtons %> Another way to load HTML Tag dynamically -->
                 </div>
             </div>
         </div>
