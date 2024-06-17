@@ -58,9 +58,6 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         }
 
 
-
-        // ---- ??? ----   (refactor) from   >>>   ------
-
         public void decrease_product_amount(Product product, int amount)
         {
             try
@@ -103,9 +100,6 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             product_to_amount[product] += p_amount;
         }
         
-        
-        // ---- ??? ----   (refactor) into   >>>   ------
-
         public void edit_product_amount(int p_id, int p_amount)
         {
 
@@ -148,8 +142,6 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             }
         }
 
-
-        // ---- ??? -------------------------------------
 
 
         public void edit_product_price(int p_id, int price)

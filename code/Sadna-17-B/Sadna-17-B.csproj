@@ -175,6 +175,7 @@
     <Compile Include="DomainLayer\Order\Order.cs" />
     <Compile Include="DomainLayer\Order\OrderSystem.cs" />
     <Compile Include="DomainLayer\Order\SubOrder.cs" />
+    <Compile Include="DomainLayer\Store\Cart.cs" />
     <Compile Include="DomainLayer\Store\Policies\Discount.cs" />
     <Compile Include="DomainLayer\Store\Policies\DiscountPolicy.cs" />
     <Compile Include="DomainLayer\Store\Inventory.cs" />
@@ -182,6 +183,7 @@
     <Compile Include="DomainLayer\Store\Policies\DiscountStrategy.cs" />
     <Compile Include="DomainLayer\Store\Product.cs" />
     <Compile Include="DomainLayer\Store\Policies\PurchasePolicy.cs" />
+    <Compile Include="DomainLayer\Store\Reciept.cs" />
     <Compile Include="DomainLayer\Store\Store.cs" />
     <Compile Include="DomainLayer\Store\StoreController.cs" />
     <Compile Include="DomainLayer\User\Admin.cs" />
