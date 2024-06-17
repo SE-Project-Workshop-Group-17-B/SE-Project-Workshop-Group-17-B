@@ -11,16 +11,16 @@ using System.Web.Http;
 
 namespace Sadna_17_B_Frontend.Controllers
 {
-    public class HomeController : ApiController
+    public class BackendController : ApiController
     {
-        private static HomeController instance = null;
+        private static BackendController instance = null;
 
         private ServiceFactory serviceFactory;
         private IUserService userService;
         private IStoreService storeService;
         private UserDTO userDTO;
 
-        private HomeController()
+        private BackendController()
         {
             serviceFactory = new ServiceFactory();
             userService = serviceFactory.UserService;
@@ -29,11 +29,11 @@ namespace Sadna_17_B_Frontend.Controllers
             Entry();
         }
 
-        public static HomeController GetInstance()
+        public static BackendController GetInstance()
         {
             if (instance == null)
             {
-                instance = new HomeController();
+                instance = new BackendController();
             }
             return instance;
         }
@@ -49,11 +49,21 @@ namespace Sadna_17_B_Frontend.Controllers
             Response response = userService.Login(username, password);
             if (!response.Success)
             {
-                 return response.Message;
+                return response.Message;
             }
 
             userDTO = response.Data as UserDTO;
             return null;
+        }
+
+        public string CreateStore() // Add needed parameters
+        {
+            //Response response = storeService.create_store(..);
+            //if (!response.Success)
+            //{
+            //    return response.Message;
+            //}
+            return "";
         }
     }
 }

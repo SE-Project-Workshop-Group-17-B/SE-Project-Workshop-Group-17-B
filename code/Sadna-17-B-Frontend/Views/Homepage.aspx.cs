@@ -10,12 +10,12 @@ namespace Sadna_17_B_Frontend
 {
     public partial class _Default : Page
     {
-        private HomeController homeController = HomeController.GetInstance();
+        private BackendController backendController = BackendController.GetInstance();
 
         protected void Page_Load(object sender, EventArgs e)
         {
             // Testing login
-            //string message = homeController.Login("test", "pass");
+            //string message = backendController.Login("test", "pass");
             //if (message != null)
             //{
             //    MessageBox(message);
