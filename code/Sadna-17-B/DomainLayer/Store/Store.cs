@@ -210,16 +210,16 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         // ---------------- discount policy ----------------------------------------------------------------------------------------
 
 
-        public void add_discount(Discount discount)
+        public bool add_member()
         {
-            discount_policy.add_discount(discount);
+
         }
 
-        public void remove_discount(Discount discount)
+        public bool remove_member()
         {
-            discount_policy.remove_discount(discount);
         }
 
+        public bool add_product_
 
 
         public bool add_discount_policy(string policy_doc)

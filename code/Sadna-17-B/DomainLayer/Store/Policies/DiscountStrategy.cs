@@ -96,7 +96,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
     {
 
         public double membership_discount_maximum { get; }
-        public DateTime membership_start_date { get; }
+        public DateTime membership_start_date { get; set; }
 
 
 
@@ -124,6 +124,10 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return (DateTime.Now - membership_start_date).TotalDays;
         }
 
+        public void set_start_date(DateTime start)
+        {
+            this.membership_start_date = start;
+        }
 
         public string info_to_print()
         {

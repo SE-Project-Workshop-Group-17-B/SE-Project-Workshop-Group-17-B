@@ -24,7 +24,8 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         public string policy_name { get; set; }
 
         public Dictionary<Discount, HashSet<int>> discount_to_products;
-        public Dictionary<Discount_Membership, int> discount_to_member;
+        public Dictionary<Discount, HashSet<int>> discount_to_categories;
+        public Dictionary<Discount_Membership, HashSet<int>> discount_to_member;
 
 
         // ----------- constructor -----------------------------------------------------------
@@ -39,8 +40,49 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         }
 
 
-        // ----------- functions -----------------------------------------------------------
+        // ----------- products discount -----------------------------------------------------------
 
+
+        public bool add_product_to_discount(Discount discount, int pid)
+        {
+            return discount_to_products[discount].Add(pid);
+        }
+
+        public bool remove_product_from_discount(Discount discount, int pid)
+        {
+            return discount_to_products[discount].Remove(pid);
+        }
+
+
+
+        // ----------- categories discount -----------------------------------------------------------
+
+
+        public bool add_category_to_discount(Discount discount, int category)
+        {
+            return discount_to_categories[discount].Add(category);
+        }
+
+        public bool remove_category_from_discount(Discount discount, int category)
+        {
+            return discount_to_categories[discount].Remove(category);
+        }
+
+
+        // ----------- membership discount -----------------------------------------------------------
+
+        public bool add_membership(Discount_Membership discount, int pid)
+        {
+            return discount_to_member[discount].Add(pid);
+        }
+
+        public bool remove_membership(Discount_Membership discount, int pid)
+        {
+            return discount_to_member[discount].Remove(pid);
+        }
+
+
+        
 
         public bool add_discount(Discount discount)
         {
