@@ -98,9 +98,6 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return inventory.add_product(name, price, category, description, amount);
         }
 
-
-        // ---- ??? ----   (refactor) from   >>>   ------
-
         public void increase_product_amount(int id, int amount)
         {
             inventory.increase_product_amount(id, amount);
@@ -117,9 +114,6 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return true;
         }
 
-
-        // ---- ??? ----   (refactor) into   >>>   ------
-
         public bool edit_product_amount(int p_id, int amount)
         {
             Product product_to_reduce = inventory.product_by_id(p_id);
@@ -133,8 +127,6 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return true;
         }
 
-
-        // ---- ??? ----   ---------------------   ------
 
 
         public bool remove_product_by_name(string p_name)
@@ -210,18 +202,6 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         // ---------------- discount policy ----------------------------------------------------------------------------------------
 
 
-        public void add_discount(Discount discount)
-        {
-            discount_policy.add_discount(discount);
-        }
-
-        public void remove_discount(Discount discount)
-        {
-            discount_policy.remove_discount(discount);
-        }
-
-
-
         public bool add_discount_policy(string policy_doc)
         {
             string[] components = policy_doc.Split(',');
@@ -259,7 +239,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         
 
-        public Dictionary<int, Tuple<int, double>> calculate_product_prices(Dictionary<int, int> quantities)
+     /*   public Dictionary<int, Tuple<int, double>> calculate_product_prices(Dictionary<int, int> quantities)
         {
             Dictionary<int, Tuple<int, double>> prices = new Dictionary<int, Tuple<int, double>>();
 
@@ -275,6 +255,26 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             }
 
             return prices;
+        }*/
+
+        public Dictionary<int, Tuple<int, double>> calculate_product_prices(Dictionary<int, int> quantities)
+        {
+
+            Cart cart = new Cart();
+
+            foreach (var item in quantities)
+            {
+                int p_id = item.Key;
+                int p_amount = item.Value;
+                int p_bag_price = calculate_product_bag(p_id, p_amount);
+                Product product = filter_id(p_id);
+
+                cart.add_product(product, p_amount, p_bag_price);
+            }
+
+            Reciept reciept = discount_policy.calculate_discount(cart);
+
+            return reciept;
         }
 
 

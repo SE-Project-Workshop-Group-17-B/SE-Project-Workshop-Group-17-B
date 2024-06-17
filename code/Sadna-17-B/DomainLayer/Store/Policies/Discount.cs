@@ -73,50 +73,29 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
 
 
-    // ----------- Discout Types ------------------------------------------------------------------------------------------------------------------  
+    // ----------- Discount condition / non condition ---------------------------------------------------------------------------------------------  
 
 
-    public class VisibleDiscount : Discount
+    public class Discount_Simple : Discount
     {
 
-        public VisibleDiscount(DateTime StartDate, DateTime EndDate, IDiscount_Strategy strategy) : base(StartDate, EndDate, strategy) { }
+        public Discount_Simple(DateTime StartDate, DateTime EndDate, IDiscount_Strategy strategy) : base(StartDate, EndDate, strategy) { }
 
         public override double calculate_discount(double price)
         {
             return strategy.apply_discount(price);
 
             // version 2 implementation ...
-        }
-
-        public override string info_to_print()
-        {
-            string s = string.Empty;
-
-            // version 2 ....
-
-            return s;
-        }
-
-        public override string info_to_UI()
-        {
-            string s = string.Empty;
-
-            // version 2 ....
-
-            return s;
         }
 
     }
 
 
 
-    // ----------- Discout Types ------------------------------------------------------------------------------------------------------------------  
-
-
-    public class HiddenDiscount : Discount
+    public class Discount_Conditional : Discount
     {
 
-        public HiddenDiscount(DateTime StartDate, DateTime EndDate, IDiscount_Strategy strategy) : base(StartDate, EndDate, strategy) { }
+        public Discount_Conditional(DateTime StartDate, DateTime EndDate, IDiscount_Strategy strategy, ) : base(StartDate, EndDate, strategy) { }
 
         public override double calculate_discount(double price)
         {
@@ -125,23 +104,57 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             // version 2 implementation ...
         }
 
-        public override string info_to_print()
+    }
+
+
+    // ----------- Discout Types ------------------------------------------------------------------------------------------------------------------  
+
+
+    public class Products_Discount : VisibleDiscount
+    {
+
+        public Products_Discount(DateTime StartDate, DateTime EndDate, IDiscount_Strategy strategy) : base(StartDate, EndDate, strategy) { }
+
+        public override double calculate_discount(double price)
         {
-            string s = string.Empty;
+            return strategy.apply_discount(price);
 
-            // version 2 ....
-
-            return s;
+            // version 2 implementation ...
         }
 
-        public override string info_to_UI()
+
+
+    }
+
+
+    public class Categories_Discount : VisibleDiscount
+    {
+
+        public Categories_Discount(DateTime StartDate, DateTime EndDate, IDiscount_Strategy strategy) : base(StartDate, EndDate, strategy) { }
+
+        public override double calculate_discount(double price)
         {
-            string s = string.Empty;
+            return strategy.apply_discount(price);
 
-            // version 2 ....
-
-            return s;
+            // version 2 implementation ...
         }
+
+
+    }
+
+
+    public class Categories_Discount : VisibleDiscount
+    {
+
+        public Categories_Discount(DateTime StartDate, DateTime EndDate, IDiscount_Strategy strategy) : base(StartDate, EndDate, strategy) { }
+
+        public override double calculate_discount(double price)
+        {
+            return strategy.apply_discount(price);
+
+            // version 2 implementation ...
+        }
+
 
     }
 
