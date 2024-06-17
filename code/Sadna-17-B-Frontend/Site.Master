@@ -55,10 +55,7 @@
                         <li><a runat="server" href="~/Views/About">About</a></li>
                         <li><a runat="server" href="~/Views/Contact">Contact</a></li>
                     </ul>
-                    <ul class="nav navbar-nav" style="float: right">
-                        <li><a runat="server" href="~/Views/Login">Login</a></li>
-                        <li><a runat="server" href="~/Views/SignUp">Sign Up</a></li>
-                    </ul>
+                    <%=_loginLogoutButtons %>
                 </div>
             </div>
         </div>

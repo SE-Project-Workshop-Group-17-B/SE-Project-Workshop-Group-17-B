@@ -56,6 +56,24 @@ namespace Sadna_17_B_Frontend.Controllers
             return null;
         }
 
+        public string GetUsername()
+        {
+            if (userDTO == null)
+            {
+                return null;
+            }
+            return userDTO.Username;
+        }
+
+        public bool IsLoggedIn()
+        {
+            if (userDTO == null || userDTO.Username == null)
+            {
+                return false;
+            }
+            return true;
+        }
+
         public string CreateStore() // Add needed parameters
         {
             //Response response = storeService.create_store(..);
