@@ -42,7 +42,7 @@ namespace Sadna_17_B.ServiceLayer.Services
 
         // ---------------- adjust stores options -------------------------------------------------------------------------------------------
 
-        public Response create_store(string token, string name, string email, string phoneNumber, string storeDescription, string address)
+        public Response create_store(string token, string name, string email, string phoneNumber, string storeDescription, string address, Inventory inv)
         {
             if (!_userService.IsSubscriberBool(token))
             {
@@ -56,7 +56,8 @@ namespace Sadna_17_B.ServiceLayer.Services
                                 .SetPhoneNumber(phoneNumber)
                                 .SetStoreDescription(storeDescription)
                                 .SetAddress(address)
-                                .SetDiscountPolicy(new DiscountPolicy("DefaultDiscountPolicy"));
+                                .SetDiscountPolicy(new DiscountPolicy("DefaultDiscountPolicy"))
+                                .SetInventory(inv);
             var store = storeBuilder.Build();
 
             _storeController.open_store(store);
@@ -69,6 +70,11 @@ namespace Sadna_17_B.ServiceLayer.Services
 
             return new Response("\nNew Store Created.\nStoreID: " + store.ID + "\nStore name: " + store.name, true, store.ID);
 
+        }
+
+        public Response create_store(string token, string name, string email, string phoneNumber, string storeDescription, string address)
+        {
+            return create_store(token, name, email, phoneNumber, storeDescription, address, new Inventory());
         }
 
         public Response close_store(string token, int storeID)
