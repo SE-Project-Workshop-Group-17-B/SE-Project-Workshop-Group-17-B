@@ -20,7 +20,11 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         private List<Store> temporary_closed_stores;
         private List<Store> permanently_closed_stores;
 
-        public StoreController() { active_stores = new List<Store>(); temporary_closed_stores = new List<Store>(); }
+        public StoreController() {
+            active_stores = new List<Store>(); 
+            temporary_closed_stores = new List<Store>();
+            permanently_closed_stores = new List<Store>();
+        }
 
 
         // ---------------- Store Builder -------------------------------------------------------------------------------------------
@@ -360,6 +364,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         public Store store_by_id(int id)
         {
+            
             return active_stores.FirstOrDefault(store => store.ID == id);
         }
 
@@ -513,7 +518,24 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return result.Any() ? result : null;
         }
 
-
         
+        
+        
+        // ----------------  info printing  -------------------------------------------------------------------------------------------
+
+        public string get_store_info(int storeID)
+        {
+            return (store_by_id(storeID)).info_to_print();
+        }
+
+        public string get_store_inventory(int storeID)
+        {
+            return (store_by_id(storeID)).show_inventory();
+        }
+
+        public string get_store_name(int storeID)
+        {
+            return (store_by_id(storeID)).name;
+        }
     }
 }

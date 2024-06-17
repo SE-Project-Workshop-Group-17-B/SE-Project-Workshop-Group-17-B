@@ -404,10 +404,36 @@ namespace Sadna_17_B.ServiceLayer.Services
             return new Response(message, true);
         }
 
-        
-        
 
 
+        // ---------------- store info -------------------------------------------------------------------------------------------
+
+
+        public Response get_store_info(int storeID)
+        {
+            string store_info = _storeController.get_store_info(storeID);
+            
+            if(store_info == null)
+                return new Response("Failed to return Info about store ID: " + storeID, false);
+
+            return new Response(store_info, true);
+        }
+
+        public Response get_store_name(int storeID)
+        {
+            return new Response(_storeController.get_store_name(storeID), true);
+        }
+
+
+        public Response get_store_inventory(int storeID)
+        {
+            string store_info = _storeController.get_store_inventory(storeID);
+
+            if (store_info == null)
+                return new Response("Failed to return inventory for store ID: " + storeID, false);
+
+            return new Response(store_info, true);
+        }
 
 
     }
