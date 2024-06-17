@@ -15,6 +15,33 @@ namespace Sadna_17_B_Frontend
     {
 
         /// <summary>
+        /// LogoutBtn control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton LogoutBtn;
+
+        /// <summary>
+        /// LoginBtn control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlAnchor LoginBtn;
+
+        /// <summary>
+        /// SignUpBtn control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlAnchor SignUpBtn;
+
+        /// <summary>
         /// MainContent control.
         /// </summary>
         /// <remarks>

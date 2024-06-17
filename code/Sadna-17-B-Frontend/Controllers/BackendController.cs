@@ -56,6 +56,18 @@ namespace Sadna_17_B_Frontend.Controllers
             return null;
         }
 
+        public string Logout()
+        {
+            Response response = userService.Logout(userDTO.AccessToken);
+            if (!response.Success)
+            {
+                return response.Message;
+            }
+
+            userDTO = response.Data as UserDTO;
+            return null;
+        }
+
         public string GetUsername()
         {
             if (userDTO == null)

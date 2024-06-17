@@ -55,7 +55,12 @@
                         <li><a runat="server" href="~/Views/About">About</a></li>
                         <li><a runat="server" href="~/Views/Contact">Contact</a></li>
                     </ul>
-                    <%=_loginLogoutButtons %>
+                    <ul class="nav navbar-nav" style="float: right" visible="false">
+                        <li><asp:LinkButton id="LogoutBtn" runat="server" OnClick="Logout_Click">Log Out</asp:LinkButton></li>
+                        <li><a id="LoginBtn" runat="server" href="~/Views/Login">Login</a></li>
+                        <li><a id="SignUpBtn" runat="server" href="~/Views/SignUp">Sign Up</a></li>
+                    </ul>
+                    <!-- <%=_loginLogoutButtons %> Another way to load HTML Tag dynamically -->
                 </div>
             </div>
         </div>

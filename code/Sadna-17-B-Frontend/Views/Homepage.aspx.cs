@@ -15,7 +15,7 @@ namespace Sadna_17_B_Frontend
         protected void Page_Load(object sender, EventArgs e)
         {
             // Testing login
-            //string message = backendController.Login("test", "pass");
+            //string message = backendController.Login("admin", "password");
             //if (message != null)
             //{
             //    MessageBox(message);
