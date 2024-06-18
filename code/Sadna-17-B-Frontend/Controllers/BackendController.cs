@@ -195,5 +195,25 @@ namespace Sadna_17_B_Frontend.Controllers
                 return new Response("An error occurred while retrieving stores: " + ex.Message, false, null);
             }
         }
+
+        public List<int> GetMyOwnedStores()
+        {
+            Response response = userService.GetMyOwnedStores(userDTO.AccessToken);
+            if (response.Success)
+            {
+                return (response.Data as List<int>);
+            }
+            return new List<int>();
+        }
+
+        public List<int> GetMyManagedStores()
+        {
+            Response response = userService.GetMyManagedStores(userDTO.AccessToken);
+            if (response.Success)
+            {
+                return (response.Data as List<int>);
+            }
+            return new List<int>();
+        }
     }
 }

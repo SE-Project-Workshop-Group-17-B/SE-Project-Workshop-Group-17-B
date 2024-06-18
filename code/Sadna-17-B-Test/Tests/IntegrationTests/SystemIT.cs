@@ -66,7 +66,7 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
         [TestMethod]
         public void TestGoodPurchase()
         {
-            SetUp();
+            
 
             Response ignore = userService.CreateSubscriber(username2, password2);
             Response res = userService.Login(username2, password2);
@@ -83,7 +83,7 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
         [TestMethod]
         public void TestBuyingItemThatNotExist()
         {
-            SetUp();
+            
 
             Response ignore = userService.CreateSubscriber(username2, password2);
             Response res = userService.Login(username2, password2);
@@ -101,7 +101,7 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
         [TestMethod]
         public void TestBuyingTooMuchProducts()
         {
-            SetUp();
+            
 
             Response ignore = userService.CreateSubscriber(username2, password2);
             Response res = userService.Login(username2, password2);
@@ -118,7 +118,7 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
         [TestMethod]
         public void TestPaymentServiceError()
         {
-            SetUp();
+            
 
             Response ignore = userService.CreateSubscriber(username2, password2);
             Response res = userService.Login(username2, password2);
@@ -136,7 +136,7 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
         [TestMethod]
         public void TestSupplyMethodError()
         {
-            SetUp();
+            
 
             Response ignore = userService.CreateSubscriber(username2, password2);
             Response res = userService.Login(username2, password2);
@@ -154,7 +154,7 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
         [TestMethod]
         public void TestHistoryPurchaseSameWhenPurchaseFail()
         {
-            SetUp();
+            
 
             Response ignore = userService.CreateSubscriber(username2, password2);
             Response res = userService.Login(username2, password2);

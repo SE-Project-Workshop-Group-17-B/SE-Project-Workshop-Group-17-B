@@ -673,5 +673,27 @@ namespace Sadna_17_B.DomainLayer.User
             }
             throw new Sadna17BException("The store owner was not appointed by anyone else.");
         }
+
+        public List<int> GetMyOwnedStores(string token)
+        {
+            Subscriber subscriber = GetSubscriberByToken(token); // Throws an exception if the token doesn't correspond to an actual subscriber
+            List<int> result = new List<int>();
+            foreach (int storeID in subscriber.Ownerships.Keys)
+            {
+                result.Add(storeID);
+            }
+            return result;
+        }
+
+        public List<int> GetMyManagedStores(string token)
+        {
+            Subscriber subscriber = GetSubscriberByToken(token); // Throws an exception if the token doesn't correspond to an actual subscriber
+            List<int> result = new List<int>();
+            foreach (int storeID in subscriber.Managements.Keys)
+            {
+                result.Add(storeID);
+            }
+            return result;
+        }
     }
 }
