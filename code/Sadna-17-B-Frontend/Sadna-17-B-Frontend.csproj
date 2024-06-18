@@ -177,6 +177,7 @@
     <Content Include="Content\store-inverted.png" />
     <Content Include="Content\store.png" />
     <Content Include="Views\About.aspx" />
+    <Content Include="Views\all_product_page.aspx" />
     <Content Include="Views\Contact.aspx" />
     <Content Include="Content\bootstrap-theme.css" />
     <Content Include="Content\bootstrap-theme.min.css" />
@@ -249,6 +250,13 @@
     </Compile>
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Views\all_product_page.aspx.cs">
+      <DependentUpon>all_product_page.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Views\all_product_page.aspx.designer.cs">
+      <DependentUpon>all_product_page.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Views\Contact.aspx.cs">
       <DependentUpon>Contact.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

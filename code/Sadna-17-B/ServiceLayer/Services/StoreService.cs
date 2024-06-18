@@ -85,6 +85,7 @@ namespace Sadna_17_B.ServiceLayer.Services
                 {
                     _storeController.close_store(storeID);
                     info_logger.Log("Store", "the store '" + _storeController.store_by_id(storeID) + "' closed by user");
+                    _userService.NotifyStoreClosing(token, storeID); // Added in Version 2 to notify all other store owners & managers about the store closing (Requirement 4.9)
                     return new Response(true, "Store closed successfully\n"); ;
                 }
                 catch (Sadna17BException e)
