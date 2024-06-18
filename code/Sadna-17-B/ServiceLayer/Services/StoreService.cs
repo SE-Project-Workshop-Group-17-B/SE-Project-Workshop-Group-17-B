@@ -42,7 +42,7 @@ namespace Sadna_17_B.ServiceLayer.Services
 
         // ---------------- adjust stores options -------------------------------------------------------------------------------------------
 
-        public Response create_store(string token, string name, string email, string phoneNumber, string storeDescription, string address, Inventory inventory)
+        public Response create_store(string token, string name, string email, string phoneNumber, string storeDescription, string address, Inventory inv)
         {
             if (!_userService.IsSubscriberBool(token))
             {
@@ -56,8 +56,8 @@ namespace Sadna_17_B.ServiceLayer.Services
                                 .SetPhoneNumber(phoneNumber)
                                 .SetStoreDescription(storeDescription)
                                 .SetAddress(address)
-                                .SetInventory(inventory)
-                                .SetDiscountPolicy(new DiscountPolicy("DefaultDiscountPolicy"));
+                                .SetDiscountPolicy(new DiscountPolicy("DefaultDiscountPolicy"))
+                                .SetInventory(inv);
             var store = storeBuilder.Build();
 
             _storeController.open_store(store);
@@ -72,6 +72,11 @@ namespace Sadna_17_B.ServiceLayer.Services
 
         }
 
+        public Response create_store(string token, string name, string email, string phoneNumber, string storeDescription, string address)
+        {
+            return create_store(token, name, email, phoneNumber, storeDescription, address, new Inventory());
+        }
+
         public Response close_store(string token, int storeID)
         {
             if (_userService.IsFounderBool(token, storeID))
@@ -80,6 +85,7 @@ namespace Sadna_17_B.ServiceLayer.Services
                 {
                     _storeController.close_store(storeID);
                     info_logger.Log("Store", "the store '" + _storeController.store_by_id(storeID) + "' closed by user");
+                    _userService.NotifyStoreClosing(token, storeID); // Added in Version 2 to notify all other store owners & managers about the store closing (Requirement 4.9)
                     return new Response(true, "Store closed successfully\n"); ;
                 }
                 catch (Sadna17BException e)
@@ -101,6 +107,16 @@ namespace Sadna_17_B.ServiceLayer.Services
             info_logger.Log("Store", message);
 
             return new Response(result, message);
+        }
+
+        public Response all_products()
+        {
+            Dictionary <Product,int> result = _storeController.all_products();
+            string message = result.IsNullOrEmpty() ? "No products found.\n" : "Products found.\n";
+
+            info_logger.Log("Store", message);
+
+            return new Response(message, !result.IsNullOrEmpty(), result);
         }
 
 
@@ -158,27 +174,25 @@ namespace Sadna_17_B.ServiceLayer.Services
 
         public Response reduce_products(string token, int storeID, Dictionary<int, int> quantities)
         {
-            bool result = false;
-            string message = "something wrong";
+            string result;
 
             if (_userService.IsOwnerBool(token, storeID) || _userService.HasManagerAuthorizationBool(token, storeID, DomainLayer.User.Manager.ManagerAuthorization.UpdateSupply))
             {
-
                 try
                 {
                     result = _storeController.decrease_products_amount(storeID, quantities);
-                    message = result ? "Products reduced successfully.\n" : "Failed to reduce products.\n";
 
-                    info_logger.Log("Store", message);
-                    return new Response(result, message);
+                    info_logger.Log("Store", result);
+                    return new Response(true, result);
                 }
                 catch (Sadna17BException e)
                 {
-                    error_logger.Log( message);
+                    error_logger.Log("something wrong");
                     return Response.GetErrorResponse(e);
                 }
             }
-            return new Response(result, message);
+            else
+                return new Response(true, "Action Unauthorized");
         }
 
         public Response add_product_to_store_faster(int storeID, string name, double price, string category, 
@@ -209,7 +223,8 @@ namespace Sadna_17_B.ServiceLayer.Services
 
             int productId = _storeController.add_store_product(storeID, name, price, category, description, amount);
 
-            return new Response(true, productId);
+            string rsult = "Added " + amount + "" + name + "'s to Store " + storeID + "Successfully.\n";
+            return new Response(true, rsult);
        }
        
         public Response add_products_to_store(string token, int storeID, string name, double price, string category, string description, int amount)
@@ -297,14 +312,6 @@ namespace Sadna_17_B.ServiceLayer.Services
             return new Response(message, (!output.IsNullOrEmpty()), output);
         }
 
-        public Response products_by_name(string name)
-        {
-            Dictionary<Product, int> output = _storeController.filter_products_by_name(name);
-            string message = (!output.IsNullOrEmpty()) ? "products found successfully\n" : "failed to find products\n";
-            info_logger.Log("Store", message);
-
-            return new Response(message, (!output.IsNullOrEmpty()), output);
-        }
 
         public Response products_by_keyWord(string keyWord)
         {
@@ -315,12 +322,7 @@ namespace Sadna_17_B.ServiceLayer.Services
             return new Response(message, (!output.IsNullOrEmpty()), output);
         }
 
-        public Response filter_search_by_price(Dictionary<Product, int> searchResult, int low, int high)
-        {
-            Dictionary<Product, int> output = _storeController.filter_products_by_price(searchResult, low, high);
 
-            return new Response("", (!output.IsNullOrEmpty()), output);
-        }
 
         public Response filter_search_by_product_rating(Dictionary<Product, int> searchResult, int low)
         {
@@ -329,9 +331,16 @@ namespace Sadna_17_B.ServiceLayer.Services
             return new Response("", (!output.IsNullOrEmpty()), output);
         }
 
-        public Response filter_all_products_in_store_by_price(int storeId, int low, int high)
+
+        public Response filter_search_by_store_id(Dictionary<Product, int> searchResult, int storeId)
         {
-            Dictionary<Product, int> output = _storeController.filter_store_products_by_price(storeId, low, high);
+            Dictionary<Product, int> output = _storeController.filter_products_by_store_id(searchResult, storeId);
+
+            return new Response("", (!output.IsNullOrEmpty()), output);
+        }
+        public Response filter_search_by_price(Dictionary<Product, int> searchResult, int low, int high)
+        {
+            Dictionary<Product, int> output = _storeController.filter_products_by_price(searchResult, low, high);
 
             return new Response("", (!output.IsNullOrEmpty()), output);
         }
@@ -343,6 +352,16 @@ namespace Sadna_17_B.ServiceLayer.Services
             return new Response("", (!output.IsNullOrEmpty()), output);
         }
 
+
+/*
+        public Response products_by_name(string name)
+        {
+            Dictionary<Product, int> output = _storeController.filter_products_by_name(name);
+            string message = (!output.IsNullOrEmpty()) ? "products found successfully\n" : "failed to find products\n";
+            info_logger.Log("Store", message);
+
+            return new Response(message, (!output.IsNullOrEmpty()), output);
+        }*/
 
 
         // ---------------- adjust policy options -------------------------------------------------------------------------------------------
@@ -405,10 +424,36 @@ namespace Sadna_17_B.ServiceLayer.Services
             return new Response(message, true);
         }
 
-        
-        
 
 
+        // ---------------- store info -------------------------------------------------------------------------------------------
+
+
+        public Response get_store_info(int storeID)
+        {
+            string store_info = _storeController.get_store_info(storeID);
+            
+            if(store_info == null)
+                return new Response("Failed to return Info about store ID: " + storeID, false);
+
+            return new Response(store_info, true);
+        }
+
+        public Response get_store_name(int storeID)
+        {
+            return new Response(_storeController.get_store_name(storeID), true);
+        }
+
+
+        public Response get_store_inventory(int storeID)
+        {
+            string store_info = _storeController.get_store_inventory(storeID);
+
+            if (store_info == null)
+                return new Response("Failed to return inventory for store ID: " + storeID, false);
+
+            return new Response(store_info, true);
+        }
 
 
     }

@@ -11,7 +11,8 @@ namespace Sadna_17_B.ServiceLayer.Services
 
         // ---------------- adjust store options -------------------------------------------------------------------------------------------
 
-        Response create_store(string token, string name, string email, string phoneNumber, string storeDescription, string address, Inventory inventory);
+        Response create_store(string token, string name, string email, string phoneNumber, string storeDescription, string address);
+        Response create_store(string token, string name, string email, string phoneNumber, string storeDescription, string address, Inventory inv);
         Response close_store(string token, int storeID);
         Response valid_order(int storeId, Dictionary<int, int> quantities);
 
@@ -40,14 +41,18 @@ namespace Sadna_17_B.ServiceLayer.Services
 
 
         // ---------------- search / filter options -------------------------------------------------------------------------------------------
+        Response all_products();
 
         Response products_by_category(string category);
-        Response products_by_name(string name);
+       /* Response products_by_name(string name);*/
         Response products_by_keyWord(string keyWord);
+
+        Response filter_search_by_store_id(Dictionary<Product, int> searchResult, int storeId);
         Response filter_search_by_price(Dictionary<Product, int> searchResult, int low, int high);
         Response filter_search_by_product_rating(Dictionary<Product, int> searchResult, int low);
-        Response filter_all_products_in_store_by_price(int storeId, int low, int high);
         Response filter_search_by_store_rating(Dictionary<Product, int> searchResult, int low);
+       
+
 
 
         // ---------------- adjust policy options -------------------------------------------------------------------------------------------
@@ -55,5 +60,14 @@ namespace Sadna_17_B.ServiceLayer.Services
         Response edit_policy(int store_id, string edit_type, string policy_doc);
         Response add_policy(int store_id, string policy_doc);
         Response remove_policy(int store_id, int policy_id);
+
+
+
+        // ---------------- Stores info -------------------------------------------------------------------------------------------
+        
+        Response get_store_inventory(int storeID);
+        Response get_store_info(int storeID);
+        Response get_store_name(int storeID);
+
     }
 }

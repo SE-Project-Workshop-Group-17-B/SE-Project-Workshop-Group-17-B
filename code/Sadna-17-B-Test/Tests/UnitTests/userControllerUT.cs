@@ -7,6 +7,7 @@ using Sadna_17_B.DomainLayer.StoreDom;
 using Sadna_17_B.DomainLayer.User;
 using Sadna_17_B.DomainLayer.Order;
 using Microsoft.VisualBasic;
+using Sadna_17_B.Utils;
 
 namespace Sadna_17_B_Test.Tests.UnitTests
 {
@@ -238,6 +239,14 @@ namespace Sadna_17_B_Test.Tests.UnitTests
 
             Dictionary<int, int> busket = sc.ShoppingBaskets[storeId].ProductQuantities;
             Assert.AreEqual(2, busket[productId]);
+        }
+
+        [TestMethod]
+        public void TestRegisterSameUserTwice()
+        {
+            /*
+             * TODO
+             */
         }
     }
 }

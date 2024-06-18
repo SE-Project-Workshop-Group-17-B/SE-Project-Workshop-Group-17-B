@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Sadna_17_B_Frontend.Controllers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -9,9 +10,66 @@ namespace Sadna_17_B_Frontend
 {
     public partial class SiteMaster : MasterPage
     {
+        BackendController backendController = BackendController.GetInstance();
+
+        protected string _loginLogoutButtons;
         protected void Page_Load(object sender, EventArgs e)
         {
+            MyCartBtn.Visible = true;
+            if (backendController.IsLoggedIn())
+            {
+                MyStoresBtn.Visible = true;
+                LogoutBtn.Visible = true;
+                LblHello.Text = "Hello " + backendController.GetUsername() + "!";
+                LblHello.Visible = true;
+                LoginBtn.Visible = false;
+                SignUpBtn.Visible = false;
+                //_loginLogoutButtons =
+                //   "<ul class=\"nav navbar-nav\" style=\"float: right\">" +
+                //   "<li><a runat=\"server\" onclick=\"Logout_Click\">Log Out</a></li>" +
+                //   "</ul>";
+            }
+            else
+            {
+                MyStoresBtn.Visible = false;
+                LogoutBtn.Visible = false;
+                LblHello.Visible = false;
+                LoginBtn.Visible = true;
+                SignUpBtn.Visible = true;
+                //_loginLogoutButtons =
+                //    "<ul class=\"nav navbar-nav\" style=\"float: right\">" +
+                //    "<li><a runat=\"server\" href=\"Login\"> Login </a></li>" +
+                //    "<li><a runat=\"server\" href=\"SignUp\"> Sign Up </a></li>" +
+                //    "</ul>";
+            }
+        }
 
+        private void MessageBox(string message)
+        {
+            Response.Write(@"<script language='javascript'>alert('" + message + "')</script>");
+        }
+
+        protected void Logout_Click(object sender, EventArgs e)
+        {
+            string message = backendController.Logout();
+            if (message != null)
+            {
+                MessageBox(message);
+            }
+            else
+            {
+                Response.Redirect("Homepage"); // Redirects back to the home page after logging out
+            }
+        }
+
+        protected void MyCartBtn_Click(object sender, EventArgs e)
+        {
+            Response.Redirect("MyCart");
+        }
+
+        protected void MyStoresBtn_Click(object sender, EventArgs e)
+        {
+            Response.Redirect("MyStores");
         }
     }
 }

@@ -1,5 +1,9 @@
 ﻿using Sadna_17_B.DomainLayer;
+using Sadna_17_B.DomainLayer.StoreDom;
+using Sadna_17_B.ServiceLayer.ServiceDTOs;
 using Sadna_17_B.ServiceLayer.Services;
+using Sadna_17_B.Utils;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,8 +34,37 @@ namespace Sadna_17_B.ServiceLayer
         {
             // Create an admin
             UserService.CreateAdmin("admin", "password");
-            // Create a store, add products to the store, ...
+            Response res = UserService.Login("admin", "password");
+            // Create 5 stores
+            for (int i = 1; i <= 5; i++)
+            {
+                var storeName = $"Store{i}";
+                var email = $"store{i}@example.com";
+                var phoneNumber = $"123-456-78{i:D2}"; // Ensuring unique phone numbers
+                var description = $"This is Store{i}, offering a wide variety of products.";
+                var address = $"{i} Market Street, City{i}";
+
+                var inventory = new Inventory();
+
+                // Add 10 products to each store
+                for (int j = 1; j <= 10; j++)
+                {
+                    inventory.add_product($"Product{j}", 10.99 + j, $"Category{j % 3}", $"Description for Product{j}", j * 10);
+                }
+
+
+                // Add the store to the system
+                StoreService.create_store((res.Data as UserDTO).AccessToken, storeName, email, phoneNumber, description, address, inventory);
+
+            }
+
+            for (int j = 1; j < 2; j++)
+            {
+                StoreService.AddProductReview(1, j, "Very good");
+            }
+
         }
+
 
         /// <summary>
         /// Builds the service instances, injects all dependencies in the their constructors.

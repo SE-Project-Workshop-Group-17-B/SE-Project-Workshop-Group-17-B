@@ -224,5 +224,14 @@ namespace Sadna_17_B.DomainLayer.User
         {
             return IsManagerOf(storeID) && GetManagement(storeID).HasAuthorization(auth);
         }
+
+        public bool HasAppointedOwner(string ownerUsername, int storeID)
+        {
+            if (!IsOwnerOf(storeID))
+            {
+                return false;
+            }
+            return GetOwnership(storeID).HasAppointedOwner(ownerUsername);
+        }
     }
 }

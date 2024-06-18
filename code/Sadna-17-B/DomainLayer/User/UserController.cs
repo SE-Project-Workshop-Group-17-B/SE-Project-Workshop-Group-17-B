@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
+using static Sadna_17_B.DomainLayer.User.Notification;
 
 namespace Sadna_17_B.DomainLayer.User
 {
@@ -14,6 +15,7 @@ namespace Sadna_17_B.DomainLayer.User
         private Authenticator authenticator = new Authenticator();
         private OfferSystem offerSystem = new OfferSystem();
         private Logger infoLogger;
+        private NotificationSystem notificationSystem;
         // All these data structures will move to DAL in version 3, it is currently held in memory. TODO: use a repository
         private int guestCount = 0;
         private Dictionary<int, Guest> guests = new Dictionary<int, Guest>();
@@ -24,6 +26,7 @@ namespace Sadna_17_B.DomainLayer.User
         {
             this.orderSystem = orderSystem;
             infoLogger = InfoLogger.Instance;
+            this.notificationSystem = new NotificationSystem();
         }
 
         /// <summary>
@@ -58,13 +61,14 @@ namespace Sadna_17_B.DomainLayer.User
             {
                 GetSubscriberByUsername(username);
                 infoLogger.Log($"Register failed - username: {username} already exists");
-                throw new Sadna17BException("Given username already exists in the system.");
             }
             catch (Sadna17BException)
             {
                 Subscriber subscriber = new Subscriber(username, password);
                 subscribers[username] = subscriber;
+                return;
             }
+            throw new Sadna17BException("Given username already exists in the system.");
         }
 
         public void CreateAdmin(string username, string password)
@@ -73,13 +77,14 @@ namespace Sadna_17_B.DomainLayer.User
             {
                 GetSubscriberByUsername(username);
                 infoLogger.Log($"Creating Admin failed - username: {username} already exists");
-                throw new Sadna17BException("Given username already exists in the system.");
             }
             catch (Sadna17BException)
             {
                 Admin admin = new Admin(username, password);
                 admins[username] = admin;
+                return;
             }
+            throw new Sadna17BException("Given username already exists in the system.");
         }
 
         private Subscriber GetSubscriberByUsername(string username)
@@ -317,7 +322,7 @@ namespace Sadna_17_B.DomainLayer.User
                 throw new Sadna17BException("The user with the given username is already a manager of the store with the given storeID.");
             }
             offerSystem.AddOwnerAppointmentOffer(storeID, newOwnerUsername, requestingSubscriber.Username);
-            // TODO: notificationSystem.notify(newOwnerUsername, Notification.IncomingOffer)
+            notificationSystem.Notify(newOwnerUsername, "A new owner appointment offer of store " + storeID + " has been received from " + requestingSubscriber.Username); ;
         }
 
         public void OfferManagerAppointment(string token, int storeID, string newManagerUsername)
@@ -343,7 +348,7 @@ namespace Sadna_17_B.DomainLayer.User
                 throw new Sadna17BException("The requesting subscriber is not a store owner of the store with the given storeID, so cannot appoint new owners.");
             }
             offerSystem.AddManagerAppointmentOffer(storeID, newManagerUsername, requestingSubscriber.Username, authorizations);
-            // TODO: notificationSystem.notify(newOwnerUsername, Notification.IncomingOffer)
+            notificationSystem.Notify(newManagerUsername, "A new manager appointment offer of store " + storeID + " has been received from " + requestingSubscriber.Username); ;
         }
 
         public void RespondToOwnerAppointmentOffer(string token, int storeID, bool offerResponse)
@@ -358,13 +363,13 @@ namespace Sadna_17_B.DomainLayer.User
             {
                 AddOwnership(respondingSubscriber.Username, storeID);
                 requestingSubscriber.AppointOwner(storeID, respondingSubscriber.Username, respondingSubscriber.GetOwnership(storeID));
-                // TODO: notificationSystem.notify(appointerUsername, Notification.OfferResponse, offerResponse)
                 offerSystem.RemoveOwnerAppointmentOffer(storeID, respondingSubscriber.Username);
+                notificationSystem.Notify(appointerUsername, respondingSubscriber.Username + " has accepted your owner appointment offer in store " + storeID);
             }
             else
             {
-                // TODO: notificationSystem.notify(requestingSubscriber.Username, Notification.OfferResponse, offerResponse)
                 offerSystem.RemoveOwnerAppointmentOffer(storeID, respondingSubscriber.Username);
+                notificationSystem.Notify(requestingSubscriber.Username, respondingSubscriber.Username + " has rejected your owner appointment offer in store " + storeID);
             }
         }
 
@@ -381,13 +386,14 @@ namespace Sadna_17_B.DomainLayer.User
             {
                 AddManagement(respondingSubscriber.Username, storeID, authorizations);
                 requestingSubscriber.AppointManager(storeID, respondingSubscriber.Username, respondingSubscriber.GetManagement(storeID));
-                // TODO: notificationSystem.notify(appointerUsername, Notification.OfferResponse, offerResponse)
                 offerSystem.RemoveManagerAppointmentOffer(storeID, respondingSubscriber.Username);
+                notificationSystem.Notify(appointerUsername, respondingSubscriber.Username + " has accepted your manager appointment offer in store " + storeID);
+
             }
             else
             {
-                // TODO: notificationSystem.notify(appointerUsername, Notification.OfferResponse, offerResponse)
                 offerSystem.RemoveManagerAppointmentOffer(storeID, respondingSubscriber.Username);
+                notificationSystem.Notify(appointerUsername, respondingSubscriber.Username + " has rejected your manager appointment offer in store " + storeID);
             }
         }
 
@@ -570,6 +576,102 @@ namespace Sadna_17_B.DomainLayer.User
                 }
             }
             return new Tuple<HashSet<string>, Dictionary<string, HashSet<Manager.ManagerAuthorization>>>(owners, managers);
+        }
+
+        public List<Notification> GetMyNotifications(string token)
+        {
+            Subscriber user = GetSubscriberByToken(token);
+            return notificationSystem.GetNotifications(user.Username);
+        }
+
+        public List<Notification> ReadMyNewNotifications(string token)
+        {
+            Subscriber user = GetSubscriberByToken(token);
+            return notificationSystem.ReadNewNotifications(user.Username);
+        }
+
+        public void NotifyStoreClosing(string token, int storeID)
+        {
+            Subscriber user = GetSubscriberByToken(token); // Throws an exception if the given token doesn't correspond to an actual subscriber
+            Tuple<List<string>, List<string>> storeOwnersAndManagers = GetStoreOwnersAndManagers(storeID);
+            foreach (string username in storeOwnersAndManagers.Item1) // Owners
+            {
+                if (!username.Equals(user.Username))
+                {
+                    notificationSystem.Notify(user.Username, "The store " + storeID + " you own has been closed by " + user.Username);
+                }
+            }
+            foreach (string username in storeOwnersAndManagers.Item2) // Managers
+            {
+                if (!username.Equals(user.Username))
+                {
+                    notificationSystem.Notify(user.Username, "The store " + storeID + " you manage has been closed by " + user.Username);
+                }
+            }
+        }
+
+        private Tuple<List<string>,List<string>> GetStoreOwnersAndManagers(int storeID)
+        {
+            List<string> storeOwners = new List<string>();
+            List<string> storeManagers = new List<string>();
+            foreach (Subscriber subscriber in subscribers.Values)
+            {
+                if (subscriber.IsOwnerOf(storeID))
+                {
+                    storeOwners.Add(subscriber.Username);
+                }
+                else if (subscriber.IsManagerOf(storeID))
+                {
+                    storeManagers.Add(subscriber.Username);
+                }
+            }
+            foreach (Admin admin in admins.Values)
+            {
+                if (admin.IsOwnerOf(storeID))
+                {
+                    storeOwners.Add(admin.Username);
+                }
+                else if (admin.IsManagerOf(storeID))
+                {
+                    storeManagers.Add(admin.Username);
+                }
+            }
+            return new Tuple<List<string>,List<string>>(storeOwners, storeManagers);
+        }
+
+        public void AbandonOwnership(string token, int storeID)
+        {
+            Subscriber requestingSubscriber = GetSubscriberByToken(token);
+            if (!requestingSubscriber.IsOwnerOf(storeID))
+            {
+                throw new Sadna17BException("Cannot abandon ownership of a store, the subscriber isn't an owner of the store with the specified storeID.");
+            }
+            if (requestingSubscriber.IsFounderOf(storeID))
+            {
+                throw new Sadna17BException("Founder cannot abandon ownership of a store.");
+            }
+            Subscriber appointedOwner = FindAppointedOwner(requestingSubscriber.Username, storeID); // Should not throw an exception because of the previous owner and founder checks, there should be another owner that appointed him
+            appointedOwner.RemoveOwnerAppointment(storeID, requestingSubscriber.Username); // Should not throw an exception because of the previous call
+            RemoveOwnership(requestingSubscriber.Username, storeID); // Should not throw an exception because of the previous checks, should remove all next owners and managers appointed by the requester
+        }
+
+        private Subscriber FindAppointedOwner(string ownerUsername, int storeID)
+        {
+            foreach (Subscriber subscriber in subscribers.Values)
+            {
+                if (subscriber.HasAppointedOwner(ownerUsername, storeID))
+                {
+                    return subscriber;
+                }
+            }
+            foreach (Admin admin in admins.Values)
+            {
+                if (admin.HasAppointedOwner(ownerUsername, storeID))
+                {
+                    return admin;
+                }
+            }
+            throw new Sadna17BException("The store owner was not appointed by anyone else.");
         }
     }
 }
