@@ -21,7 +21,8 @@
         }
         .store-image {
             width: 100%;
-            max-width: 150px;
+            max-width: 120px;
+            height: auto;
             margin: 0 auto 15px;
         }
         .store-details {
@@ -38,10 +39,10 @@
                 <ItemTemplate>
                     <div class="col-md-3">
                         <div class="store-item" onclick="window.location='Store_Page.aspx?storeId=<%# Eval("ID") %>'">
-                            <img src="/Content/store-placeholder.png" alt="Store Image" class="store-image img-fluid mx-auto d-block" />
+                            <img src='<%# "/Content/" + Eval("ImageName") %>' alt="Store Image" class="store-image img-fluid mx-auto d-block" />
                             <div class="store-details">
-                                <h4><%# Eval("name") %></h4>
-                                <p><small><%# Eval("description") %></small></p>
+                                <h4><%# Eval("Name") %></h4>
+                                <p><small><%# Eval("Description") %></small></p>
                             </div>
                             <div class="store-footer">
                                 <a href="Store_Page.aspx?storeId=<%# Eval("ID") %>">See More &rsaquo;</a>

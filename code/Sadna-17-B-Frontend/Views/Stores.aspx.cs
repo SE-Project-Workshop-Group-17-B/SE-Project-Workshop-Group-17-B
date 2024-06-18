@@ -1,5 +1,8 @@
-﻿using Sadna_17_B_Frontend.Controllers;
+﻿using Microsoft.Ajax.Utilities;
+using Sadna_17_B.DomainLayer.StoreDom;
+using Sadna_17_B_Frontend.Controllers;
 using System;
+using System.Collections.Generic;
 using System.Web.UI.WebControls;
 
 namespace Sadna_17_B_Frontend.Views
@@ -21,7 +24,25 @@ namespace Sadna_17_B_Frontend.Views
             var response = backendController.GetStores(); // Assume this method gets the list of stores
             if (response.Success)
             {
-                rptStores.DataSource = response.Data;
+                // Add ImageName to each store dynamically
+                List<dynamic> storesWithImages = new List<dynamic>();
+                string[] images = { "store1.png", "store2.png", "store3.png", "store4.png" };
+                int imageIndex = 0;
+                var stores = response.Data as List<Store>;
+
+                foreach (var store in stores)
+                {
+                    storesWithImages.Add(new
+                    {
+                        ID = store.ID,
+                        Name = store.name,
+                        Description = store.description,
+                        ImageName = images[imageIndex % images.Length]
+                    });
+                    imageIndex++;
+                }
+
+                rptStores.DataSource = storesWithImages;
                 rptStores.DataBind();
             }
             else
