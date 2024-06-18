@@ -93,5 +93,10 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return new Dictionary<int, Tuple<int, double>>();
         }
 
+        public double TotalPrice()
+        {
+            return cart.price_all() - total_discount;
+        }
+
     }
 }

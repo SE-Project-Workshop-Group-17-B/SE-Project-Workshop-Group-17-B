@@ -39,6 +39,9 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
             this.policy_name = policy_name;
             this.discount_to_products = new Dictionary<Discount, HashSet<int>>();
+            this.discount_to_categories = new Dictionary<Discount, HashSet<int>>();
+            this.discount_to_member = new Dictionary<Discount, HashSet<int>>();
+            this.discount_rules = new HashSet<DiscountRule>();
         }
 
 
