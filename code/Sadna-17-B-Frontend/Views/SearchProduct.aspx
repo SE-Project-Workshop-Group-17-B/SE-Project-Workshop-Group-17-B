@@ -85,7 +85,7 @@
                     <asp:Literal ID="litStoreIDMessage" runat="server"></asp:Literal>
                 </div>
                 <div class="col-md-12">
-                    <button type="button" class="btn btn-primary" onclick="searchProducts()" runat="server">Search</button>
+                    <asp:Button ID="btnSearch" type="button" class="btn btn-primary" OnClick="btnSearch_Click" Text="Search" runat="server"></asp:Button>
                 </div>
             </div>
         </div>
