@@ -475,11 +475,11 @@ namespace Sadna_17_B_Test.Tests.UnitTests
                                     .SetName("Test Store")
                                     .SetInventory(_inventory);
             var store = storeBuilder.Build();
-            int initialAmount = 10;
+            int initialAmount = 30;
 
             _storeController.open_store(store);
 
-            var productId = _storeController.add_store_product(store.ID, "Test Product", 100, "Category", "Good product", initialAmount);
+            var productId = _storeController.add_store_product(store.ID, "Test Product 2", 100, "Category", "Good product", initialAmount);
 
             Dictionary<int, int> order = new Dictionary<int, int>();
             order[productId] = 5;
@@ -493,7 +493,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
 
             Task.WaitAll(task1, task2, task3, task4, task5, task6);
 
-            int finalAmount = store.amount_by_name("Test Product");
+            int finalAmount = store.amount_by_name("Test Product 2");
 
             Assert.AreEqual(0, finalAmount);
         }
@@ -508,20 +508,20 @@ namespace Sadna_17_B_Test.Tests.UnitTests
             var store = storeBuilder.Build();
             int initialAmount = 10;
             _storeController.open_store(store);
-            store.inventory.set_product_amount(_product.ID,initialAmount);
+            
 
-           
+            int pid = _storeController.add_store_product(store.ID, "Test Product 3", 100, "Category", "Good product", initialAmount);
 
-            Task task1 = Task.Run(() => _storeController.add_store_product(store.ID, "Test Product 3", 100, "Category", "Good product", initialAmount));
-            Task task2 = Task.Run(() => _storeController.add_store_product(store.ID, "Test Product 3", 100, "Category", "Good product", initialAmount));
-            Task task3 = Task.Run(() => _storeController.add_store_product(store.ID, "Test Product 3", 100, "Category", "Good product", initialAmount));
-            Task task4 = Task.Run(() => _storeController.add_store_product(store.ID, "Test Product 3", 100, "Category", "Good product", initialAmount));
-            Task task5 = Task.Run(() => _storeController.add_store_product(store.ID, "Test Product 3", 100, "Category", "Good product", initialAmount));
-            Task task6 = Task.Run(() => _storeController.add_store_product(store.ID, "Test Product 3", 100, "Category", "Good product", initialAmount));
+            Task task1 = Task.Run(() => _storeController.add_store_product(store.ID, pid, initialAmount));
+            Task task2 = Task.Run(() => _storeController.add_store_product(store.ID, pid, initialAmount));
+            Task task3 = Task.Run(() => _storeController.add_store_product(store.ID, pid, initialAmount));
+            Task task4 = Task.Run(() => _storeController.add_store_product(store.ID, pid, initialAmount));
+            Task task5 = Task.Run(() => _storeController.add_store_product(store.ID, pid, initialAmount));
 
-            Task.WaitAll(task1, task2, task3, task4, task5, task6);
 
-            int finalAmount = store.amount_by_name("Test Product");
+            Task.WaitAll(task1, task2, task3, task4, task5);
+
+            int finalAmount = store.amount_by_name("Test Product 3");
 
             Assert.AreEqual(initialAmount * 6, finalAmount);
         }

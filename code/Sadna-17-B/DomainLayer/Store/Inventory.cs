@@ -91,19 +91,22 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                 Console.WriteLine("Failed to access a product, error message below:\n" +
                 ex.ToString());
             }
+
             return purchase_result;
         }
 
         public string increase_product_amount(int p_id, int p_amount) // called in case of failure
         {
-            Product product = product_by_id(p_id);
-
-            if (!product_to_amount.ContainsKey(product))
+            
+            if (product_by_id(p_id) == null || !product_to_amount.ContainsKey(product_by_id(p_id)))
                 return "no such product";
-
-            product_to_amount[product] += p_amount;
-            return "product: " + product.name + " increased by: " + p_amount + " \tCurrent amount restored to:" + product_to_amount[product];
+            else
+            {
+                product_to_amount[product_by_id(p_id)] += p_amount;
+                return "product: " + product_by_id(p_id).name + " increased by: " + p_amount + " \tCurrent amount restored to:" + product_to_amount[product_by_id(p_id)];
+            }
         }
+            
         
         public void edit_product_amount(int p_id, int p_amount)
         {
@@ -181,6 +184,8 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         public void set_product_amount(int product_id, int amount)
         {
+            if (product_by_id(product_id) == null)
+                
             product_to_amount[product_by_id(product_id)] = amount; 
         }
 
