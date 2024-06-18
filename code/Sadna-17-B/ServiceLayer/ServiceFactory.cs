@@ -36,7 +36,7 @@ namespace Sadna_17_B.ServiceLayer
             UserService.CreateAdmin("admin", "password");
             Response res = UserService.Login("admin", "password");
             // Create 5 stores
-            for (int i = 1; i <= 5; i++)
+            for (int i = 1; i <= 1; i++)
             {
                 var storeName = $"Store{i}";
                 var email = $"store{i}@example.com";
@@ -55,7 +55,14 @@ namespace Sadna_17_B.ServiceLayer
 
                 // Add the store to the system
                 StoreService.create_store((res.Data as UserDTO).AccessToken, storeName, email, phoneNumber, description, address, inventory);
+
             }
+
+            for (int j = 1; j < 2; j++)
+            {
+                StoreService.AddProductReview(1, j, "Very good");
+            }
+
         }
 
 
