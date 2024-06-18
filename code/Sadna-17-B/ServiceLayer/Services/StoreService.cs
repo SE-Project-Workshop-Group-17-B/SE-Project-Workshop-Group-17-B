@@ -109,6 +109,16 @@ namespace Sadna_17_B.ServiceLayer.Services
             return new Response(result, message);
         }
 
+        public Response all_products()
+        {
+            Dictionary <Product,int> result = _storeController.all_products();
+            string message = result.IsNullOrEmpty() ? "No products found.\n" : "Products found.\n";
+
+            info_logger.Log("Store", message);
+
+            return new Response(message, !result.IsNullOrEmpty(), result);
+        }
+
 
         // ---------------- review options -------------------------------------------------------------------------------------------
 

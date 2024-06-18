@@ -27,7 +27,7 @@ namespace Sadna_17_B_Frontend.Views
         {
             BackendController backendController = BackendController.GetInstance();
             IStoreService storeService = backendController.storeService;
-            Response response = storeService.get_all_products();
+            Response response = storeService.all_products();
 
             if (response.Success)
             {

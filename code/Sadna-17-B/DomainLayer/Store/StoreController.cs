@@ -125,6 +125,16 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         // ---------------- store inventory -------------------------------------------------------------------------------------------
 
+        public Dictionary<Product, int> all_products()
+        {
+            Dictionary<Product, int> res = new Dictionary<Product, int>();
+            foreach(Store s in active_stores)
+            {
+                foreach (var v in s.all_products())
+                    res.Add(v.Key, v.Value);
+            }
+            return res;
+        }
 
         public bool edit_store_product(int storeID, int productId)
         {

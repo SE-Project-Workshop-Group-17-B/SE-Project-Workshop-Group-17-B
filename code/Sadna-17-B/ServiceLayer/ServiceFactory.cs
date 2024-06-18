@@ -36,7 +36,7 @@ namespace Sadna_17_B.ServiceLayer
             UserService.CreateAdmin("admin", "password");
             Response res = UserService.Login("admin", "password");
             // Create 5 stores
-            for (int i = 1; i <= 1; i++)
+            for (int i = 1; i <= 5; i++)
             {
                 var storeName = $"Store{i}";
                 var email = $"store{i}@example.com";

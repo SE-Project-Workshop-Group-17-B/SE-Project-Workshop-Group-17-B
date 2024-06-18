@@ -92,7 +92,14 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         // ---------------- inventory ----------------------------------------------------------------------------------------
 
-
+        public Dictionary<Product, int> all_products()
+        {
+            Dictionary<Product, int> res = new Dictionary<Product, int>();
+            foreach (Product p in inventory.all_products())
+                res.Add(p, ID);
+            
+            return res;
+        }
         public int add_product(string name, double price, string category, string description, int amount)
         {
             return inventory.add_product(name, price, category, description, amount);

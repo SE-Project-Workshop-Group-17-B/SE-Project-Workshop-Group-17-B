@@ -41,6 +41,7 @@ namespace Sadna_17_B.ServiceLayer.Services
 
 
         // ---------------- search / filter options -------------------------------------------------------------------------------------------
+        Response all_products();
 
         Response products_by_category(string category);
        /* Response products_by_name(string name);*/
