@@ -179,6 +179,11 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             }
         }
 
+        public void set_product_amount(int product_id, int amount)
+        {
+            product_to_amount[product_by_id(product_id)] = amount; 
+        }
+
         public void edit_product_category(int product_id, string new_Category)
         {
             Product product = product_by_id(product_id);
