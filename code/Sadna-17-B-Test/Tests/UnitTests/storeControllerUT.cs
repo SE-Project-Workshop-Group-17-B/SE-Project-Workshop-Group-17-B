@@ -471,8 +471,6 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         [TestMethod]
         public void TestRemoveMoreProductsThenAvailbleConcurrent()
         {
-            
-
             var storeBuilder = _storeController.store_builder()
                                     .SetName("Test Store")
                                     .SetInventory(_inventory);

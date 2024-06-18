@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Sadna_17_B.ExternalServices
 {
-    internal interface IPaymentSystem
+    public interface IPaymentSystem
     {
         bool IsValidPayment(string creditCardInfo, double amount);
         bool ExecutePayment(string creditCardInfo, double amount);
