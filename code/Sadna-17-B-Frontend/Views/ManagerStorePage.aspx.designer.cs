@@ -11,25 +11,25 @@ namespace Sadna_17_B_Frontend.Views
 {
 
 
-    public partial class MyStores
+    public partial class ManagerStorePage
     {
 
         /// <summary>
-        /// rptManagedStores control.
+        /// storeNameLiteral control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Repeater rptManagedStores;
+        protected global::System.Web.UI.WebControls.Literal storeNameLiteral;
 
         /// <summary>
-        /// rptOwnedStores control.
+        /// storeDescriptionLiteral control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Repeater rptOwnedStores;
+        protected global::System.Web.UI.WebControls.Literal storeDescriptionLiteral;
     }
 }
