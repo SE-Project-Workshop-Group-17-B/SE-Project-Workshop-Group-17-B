@@ -1,12 +1,16 @@
-﻿using System;
-using System.Web.UI;
-using Sadna_17_B_Frontend.Controllers;
-using Sadna_17_B.ServiceLayer.Services;
+﻿using Sadna_17_B.ServiceLayer.Services;
 using Sadna_17_B.Utils;
+using Sadna_17_B_Frontend.Controllers;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
 
 namespace Sadna_17_B_Frontend.Views
 {
-    public partial class StorePage : Page
+    public partial class StorePage : System.Web.UI.Page
     {
         protected void Page_Load(object sender, EventArgs e)
         {

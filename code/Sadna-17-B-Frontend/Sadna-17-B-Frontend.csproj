@@ -226,7 +226,7 @@
     <Content Include="Views\Login.aspx" />
     <Content Include="Views\SearchProduct.aspx" />
     <Content Include="Views\SignUp.aspx" />
-    <Content Include="Views\storePage.aspx" />
+    <Content Include="Views\Store_Page.aspx" />
     <Content Include="Views\Stores.aspx" />
     <Content Include="Web.config" />
     <Content Include="Bundle.config" />
@@ -311,12 +311,12 @@
     <Compile Include="Views\SignUp.aspx.designer.cs">
       <DependentUpon>SignUp.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Views\storePage.aspx.cs">
-      <DependentUpon>storePage.aspx</DependentUpon>
+    <Compile Include="Views\Store_Page.aspx.cs">
+      <DependentUpon>Store_Page.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Views\storePage.aspx.designer.cs">
-      <DependentUpon>storePage.aspx</DependentUpon>
+    <Compile Include="Views\Store_Page.aspx.designer.cs">
+      <DependentUpon>Store_Page.aspx</DependentUpon>
     </Compile>
     <Compile Include="Views\Stores.aspx.cs">
       <DependentUpon>Stores.aspx</DependentUpon>
