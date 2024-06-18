@@ -55,7 +55,7 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
 
             p = new Product(productName, price, category);
             inv = new Inventory();
-            ignore = storeService.create_store(temp.AccessToken, storeName, email, phoneNum, descr, addr, inv);
+            ignore = storeService.create_store(temp.AccessToken, storeName, email, phoneNum, descr, addr);
             storeId = ((Store)storeService.store_by_name(storeName).Data).ID;
 
             storeService.add_products_to_store(temp.AccessToken, storeId, productName, price, category, "Description", quantity);
