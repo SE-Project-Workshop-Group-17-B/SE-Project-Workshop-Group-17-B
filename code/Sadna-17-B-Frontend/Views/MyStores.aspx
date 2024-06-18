@@ -25,8 +25,15 @@
         .store-actions {
             margin-top: 10px;
         }
+        .create-store-btn {
+            margin-bottom: 20px;
+            text-align: center;
+        }
     </style>
     <div class="container my-4">
+        <div class="create-store-btn">
+            <asp:Button ID="btnCreateStore" runat="server" Text="Create New Store" CssClass="btn btn-primary" OnClick="btnCreateStore_Click" />
+        </div>
         <h2 class="mb-3">Managed Stores</h2>
         <asp:Repeater ID="rptManagedStores" runat="server">
             <ItemTemplate>

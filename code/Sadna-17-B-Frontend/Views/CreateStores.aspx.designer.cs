@@ -11,7 +11,7 @@ namespace Sadna_17_B_Frontend.Views
 {
 
 
-    public partial class CreateStores
+    public partial class CreateStore
     {
 
         /// <summary>
