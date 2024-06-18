@@ -30,6 +30,16 @@ namespace Sadna_17_B_Frontend.Controllers
             Entry();
         }
 
+        public ShoppingCartDTO GetShoppingCart()
+        {
+            Response response = userService.GetShoppingCart(userDTO.AccessToken);
+            if (response.Success)
+            {
+                return (response.Data as ShoppingCartDTO);
+            }
+            return null;
+        }
+
         public static BackendController GetInstance()
         {
             if (instance == null)
