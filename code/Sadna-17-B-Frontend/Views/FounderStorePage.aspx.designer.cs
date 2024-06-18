@@ -11,34 +11,25 @@ namespace Sadna_17_B_Frontend.Views
 {
 
 
-    public partial class MyCart
+    public partial class FounderStorePage
     {
 
         /// <summary>
-        /// rptCartItems control.
+        /// storeNameLiteral control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Repeater rptCartItems;
+        protected global::System.Web.UI.WebControls.Literal storeNameLiteral;
 
         /// <summary>
-        /// totalPrice control.
+        /// storeDescriptionLiteral control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label totalPrice;
-
-        /// <summary>
-        /// btnBuy control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnBuy;
+        protected global::System.Web.UI.WebControls.Literal storeDescriptionLiteral;
     }
 }

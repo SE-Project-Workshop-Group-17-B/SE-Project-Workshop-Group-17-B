@@ -158,6 +158,19 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return store.add_product(name, price, category, description, amount);
         }
 
+        public int add_store_product(int storeID, int pid, int amount)
+        {
+            Store store = store_by_id(storeID);
+
+            if (store == null)
+                return -1;
+
+
+            store.increase_product_amount(pid, amount);
+            return 0;
+        }
+
+
         public bool valid_order(int storeId, Dictionary<int, int> quantities)
         {
 
@@ -172,9 +185,10 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
             foreach (var item in quantities)
             {
-                Product product = store.filter_id(item.Key);
+                if (store.filter_id(item.Key) == null)
+                    return false;
                 int requiredAmount = item.Value;
-                int availableAmount = store.inventory.amount_by_product(product);
+                int availableAmount = store.inventory.amount_by_product(store.filter_id(item.Key));
 
                 if (availableAmount < requiredAmount)
                     return false;

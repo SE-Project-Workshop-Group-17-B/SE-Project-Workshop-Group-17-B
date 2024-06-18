@@ -30,6 +30,16 @@ namespace Sadna_17_B_Frontend.Controllers
             Entry();
         }
 
+        public ShoppingCartDTO GetShoppingCart()
+        {
+            Response response = userService.GetShoppingCart(userDTO.AccessToken);
+            if (response.Success)
+            {
+                return (response.Data as ShoppingCartDTO);
+            }
+            return null;
+        }
+
         public static BackendController GetInstance()
         {
             if (instance == null)
@@ -97,12 +107,12 @@ namespace Sadna_17_B_Frontend.Controllers
             return true;
         }
 
-        public Tuple<string,int> CreateStore(string name, string email, string phoneNumber, string storeDescription, string address)
+        public Tuple<string, int> CreateStore(string name, string email, string phoneNumber, string storeDescription, string address)
         {
             Response response = storeService.create_store(userDTO.AccessToken, name, email, phoneNumber, storeDescription, address);
             if (!response.Success)
             {
-                return new Tuple<string,int>(response.Message,-1);
+                return new Tuple<string, int>(response.Message, -1);
             }
             return new Tuple<string, int>(null, (int)(response.Data));
         }
@@ -197,24 +207,85 @@ namespace Sadna_17_B_Frontend.Controllers
             }
         }
 
-        public List<int> GetMyOwnedStores()
+        public List<Store> GetMyOwnedStores()
         {
             Response response = userService.GetMyOwnedStores(userDTO.AccessToken);
             if (response.Success)
             {
-                return (response.Data as List<int>);
+                List<int> storeIds = response.Data as List<int>;
+                return GetStoresDetails(storeIds);
             }
-            return new List<int>();
+            return new List<Store>();
         }
 
-        public List<int> GetMyManagedStores()
+        public List<Store> GetMyManagedStores()
         {
             Response response = userService.GetMyManagedStores(userDTO.AccessToken);
             if (response.Success)
             {
-                return (response.Data as List<int>);
+                List<int> storeIds = response.Data as List<int>;
+                return GetStoresDetails(storeIds);
             }
-            return new List<int>();
+            return new List<Store>();
+        }
+
+        private List<Store> GetStoresDetails(List<int> storeIds)
+        {
+            List<Store> storeDetailsList = new List<Store>();
+            foreach (int storeId in storeIds)
+            {
+                var storeDetails = GetStoreDetailsById(storeId);
+                if (storeDetails != null)
+                {
+                    storeDetailsList.Add(storeDetails);
+                }
+            }
+            return storeDetailsList;
+        }
+
+        public Store GetStoreDetailsById(int storeId)
+        {
+            Response response =  storeService.GetStoreById(storeId);
+            if (response.Success)
+            {
+                return response.Data as Store;
+            }
+            return null;
+        }
+
+        public bool IsFounder(int storeID)
+        {
+            Response response = userService.IsFounder(userDTO.AccessToken, storeID);
+            if (response.Success)
+            {
+                return (bool)response.Data;
+            }
+            return false;
+        }
+
+        public Receipt GetReceipt(int storeID, Dictionary<int, int> quantities)
+        {
+            Response response = storeService.calculate_products_prices(storeID, quantities);
+            if (response.Success)
+            {
+                return (response.Data as Receipt);
+            }
+            return null;
+        }
+
+        public double GetCartTotalPrice(int storeID, Dictionary<int, int> quantities)
+        {
+            Response response = storeService.calculate_products_prices(storeID, quantities);
+            if (response.Success)
+            {
+                return (response.Data as Receipt).TotalPrice();
+            }
+            return 0;
         }
     }
+
+
+  
+
+
 }
