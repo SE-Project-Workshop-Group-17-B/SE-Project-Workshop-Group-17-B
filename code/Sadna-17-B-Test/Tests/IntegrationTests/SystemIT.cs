@@ -94,9 +94,9 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
             Response res = userService.Login(username2, password2);
             userDTO = res.Data as UserDTO;
             string token = userDTO.AccessToken;
-            Response test = userService.AddToCart(token, storeId, productId+5, amount2Buy); //this productId does not exist
+            
 
-            ignore = userService.CompletePurchase(token, destAddr, creditCardInfo);
+            Response test = userService.CompletePurchase(token, destAddr, creditCardInfo);
             int amount = ((Store)storeService.store_by_name(storeName).Data).amount_by_name(productName);
 
             Assert.IsFalse(test.Success);
