@@ -8,6 +8,7 @@ using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using System.Xml.Linq;
 
 namespace Sadna_17_B_Frontend.Views
 {
@@ -123,6 +124,10 @@ namespace Sadna_17_B_Frontend.Views
                 DisplayMessage("Search completed successfully.", true);
                 BindSearchResults(response.Data);
             }
+
+            // Redirect with search parameters
+            string url = $"all_product_page.aspx?keyword={HttpUtility.UrlEncode(keyword)}&category={HttpUtility.UrlEncode(category)}&minPrice={minPrice}&maxPrice={maxPrice}&minRating={minRating}&minStoreRating={minStoreRating}&storeId={storeId}";
+            Response.Redirect(url);
         }
 
         private void BindSearchResults(object dataSource)

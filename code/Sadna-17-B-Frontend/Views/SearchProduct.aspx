@@ -107,8 +107,8 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         function searchProducts() {
-            // Placeholder for your JavaScript or AJAX call
-            console.log('Searching products...');
+            document.getElementById('form1').submit();
+            window.close();
         }
     </script>
 </asp:Content>

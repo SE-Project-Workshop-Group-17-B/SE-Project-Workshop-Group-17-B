@@ -25,13 +25,44 @@ namespace Sadna_17_B_Frontend.Views
 
         private void LoadProducts()
         {
+            string keyword = Request.QueryString["keyword"];
+            string category = Request.QueryString["category"];
+            string minPriceText = Request.QueryString["minPrice"];
+            string maxPriceText = Request.QueryString["maxPrice"];
+            string minRatingText = Request.QueryString["minRating"];
+            string minStoreRatingText = Request.QueryString["minStoreRating"];
+            string storeIdText = Request.QueryString["storeId"];
+
+            int storeId = -1, minRating = -1, minStoreRating = -1;
+            int minPrice = -1, maxPrice = -1;
+
+            int.TryParse(storeIdText, out storeId);
+            int.TryParse(minPriceText, out minPrice);
+            int.TryParse(maxPriceText, out maxPrice);
+            int.TryParse(minRatingText, out minRating);
+            int.TryParse(minStoreRatingText, out minStoreRating);
+
             BackendController backendController = BackendController.GetInstance();
             IStoreService storeService = backendController.storeService;
             Response response = storeService.all_products();
-
+            Dictionary<Product, int> products = new Dictionary<Product, int>();
             if (response.Success)
             {
                 products = (Dictionary<Product, int>)response.Data;
+
+                // Apply the filters using the SearchProducts method
+                Response searchResponse = backendController.SearchProducts(keyword, category, minPrice, maxPrice, minRating, minStoreRating, storeId);
+                if (searchResponse.Success)
+                {
+                    products = (Dictionary<Product, int>)searchResponse.Data;
+                }
+                else
+                {
+                    // Handle search error
+                    //lblMessage.Text = "Failed to load filtered products.";
+                    return;
+                }
+
                 var productList = products.Select(p => new
                 {
                     p.Key.ID,
@@ -53,6 +84,10 @@ namespace Sadna_17_B_Frontend.Views
                 //lblMessage.Text = "Failed to load products.";
             }
         }
+
+
+
+
 
         protected void search_items(object sender, EventArgs e)
         {

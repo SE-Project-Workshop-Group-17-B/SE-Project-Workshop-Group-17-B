@@ -146,8 +146,7 @@
     </form>
     <script>
         function searchItems() {
-            // Placeholder function for search items
-            alert('Search button clicked!');
+            window.open('SearchProduct.aspx', 'SearchProduct', 'width=1000,height=400');
         }
 
         function addToCart(productId) {

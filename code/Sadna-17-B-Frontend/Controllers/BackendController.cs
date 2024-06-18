@@ -106,6 +106,7 @@ namespace Sadna_17_B_Frontend.Controllers
             }
             return new Tuple<string, int>(null, (int)(response.Data));
         }
+
         public Response SearchProducts(string keyword, string category, int minPrice, int maxPrice, int minRating, int minStoreRating, int storeId)
         {
             try
