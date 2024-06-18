@@ -69,5 +69,8 @@ namespace Sadna_17_B.ServiceLayer.Services
         Response get_store_info(int storeID);
         Response get_store_name(int storeID);
 
+        // ---------------- calculate prices ---------------------
+        Response calculate_products_prices(int storeID, Dictionary<int,int> quantities);
+
     }
 }

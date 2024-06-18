@@ -455,6 +455,13 @@ namespace Sadna_17_B.ServiceLayer.Services
             return new Response(store_info, true);
         }
 
-
+        // ---------------- calculate prices ---------------------
+        Response calculate_products_prices(int storeID, Dictionary<int, int> quantities)
+        {
+            Receipt receipt = _storeController.calculate_products_prices(storeID, quantities);
+            if (receipt == null)
+                return new Response("Failed to return calculation of product prices.", false);
+            return new Response(true, receipt);
+        }
     }
 }

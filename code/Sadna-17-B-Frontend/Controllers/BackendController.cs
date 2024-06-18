@@ -216,5 +216,25 @@ namespace Sadna_17_B_Frontend.Controllers
             }
             return new List<int>();
         }
+
+        public Receipt GetReceipt(int storeID, Dictionary<int, int> quantities)
+        {
+            Response response = storeService.calculate_products_prices(storeID, quantities);
+            if (response.Success)
+            {
+                return (response.Data as Receipt));
+            }
+            return null;
+        }
+
+        public double GetCartTotalPrice(int storeID, Dictionary<int, int> quantities)
+        {
+            Response response = storeService.calculate_products_prices(storeID, quantities);
+            if (response.Success)
+            {
+                return (response.Data as Receipt).TotalPrice();
+            }
+            return 0;
+        }
     }
 }
