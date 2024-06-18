@@ -510,11 +510,68 @@ namespace Sadna_17_B.ServiceLayer.Services
             }
         }
 
-        // TODO: in next version, when implementing notification system, should be called by StoreService when the store closes (4.9)
-        //internal void NotifyStoreClosing(string token, int storeID)
-        //{
-        //
-        //}
+        /// <summary>
+        /// Attempts to return all notifications of the subscriber with the given access token. (Requirement 1.5 & 1.6)
+        /// Returns an error Response if the token doesn't correspond to a valid subscriber in the system.
+        /// Otherwise, returns a Response containing a List of all user notifications.
+        /// </summary>
+        public Response /*List<Notification>*/ GetMyNotifications(string token)
+        {
+            try
+            {
+                List<Notification> result = userController.GetMyNotifications(token);
+                return new Response(true, result);
+            } catch (Sadna17BException e)
+            {
+                return Response.GetErrorResponse(e);
+            }
+        }
+
+        /// <summary>
+        /// Attempts to mark as read and return all new notifications (unread notifications) of the subscriber with the given access token. (Requirement 1.5 & 1.6)
+        /// Returns an error Response if the token doesn't correspond to a valid subscriber in the system.
+        /// Otherwise, returns a Response containing a List of all the new user notifications (unread notifications), and marks them as read in the system.
+        /// </summary>
+        public Response /*List<Notification>*/ ReadMyNewNotifications(string token)
+        {
+            try
+            {
+                List<Notification> result = userController.ReadMyNewNotifications(token);
+                return new Response(true, result);
+            }
+            catch (Sadna17BException e)
+            {
+                return Response.GetErrorResponse(e);
+            }
+        }
+
+        // TODO: Check it is implemented correctly
+        // Added in version 2, when implementing notification system, should be called by StoreService when the store closes (4.9)
+        internal void NotifyStoreClosing(string token, int storeID)
+        {
+            try
+            {
+                userController.NotifyStoreClosing(token, storeID);
+            } catch (Sadna17BException) { } // ignore catch
+        }
+
+        /// <summary>
+        /// Attempts to abandon (voluntarily lose) the ownership of the user with the given username by the user corresponding to the given token, from the store with the given storeID. (Requirement 4.5)
+        /// Removing the ownership of this user should also remove all ownerships and managements that this user has appointed. (Requirement 4.4 - which is not required in this version)
+        /// Returns an error Response if the token doesn't correspond to an actual subscriber or if the subscriber isn't store owner or if the subscriber is the store founder (which cannot abandon his ownership).
+        /// </summary>
+        public Response AbandonOwnership(string token, int storeID)
+        {
+            try
+            {
+                userController.AbandonOwnership(token, storeID); // TODO: Check this works correctly in version 2
+                return new Response(true);
+            }
+            catch (Sadna17BException e)
+            {
+                return Response.GetErrorResponse(e);
+            }
+        }
     }
 
 }

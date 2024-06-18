@@ -138,5 +138,26 @@ namespace Sadna_17_B.ServiceLayer.Services
         /// Otherwise, returns a Response containing a Tuple containing the owners in the first entry (as a HashSet of usernames), and the managers in the second entry (as a Dictionary from usernames to HashSet of ManagerAuthorization).
         /// </summary>
         Response /*Tuple<owners,managers>*/ GetStoreRoles(string token, int storeID);
+
+        /// <summary>
+        /// Attempts to return all notifications of the subscriber with the given access token. (Requirement 1.5 & 1.6)
+        /// Returns an error Response if the token doesn't correspond to a valid subscriber in the system.
+        /// Otherwise, returns a Response containing a List of all user notifications.
+        /// </summary>
+        Response /*List<Notification>*/ GetMyNotifications(string token);
+
+        /// <summary>
+        /// Attempts to mark as read and return all new notifications (unread notifications) of the subscriber with the given access token. (Requirement 1.5 & 1.6)
+        /// Returns an error Response if the token doesn't correspond to a valid subscriber in the system.
+        /// Otherwise, returns a Response containing a List of all the new user notifications (unread notifications), and marks them as read in the system.
+        /// </summary>
+        Response /*List<Notification>*/ ReadMyNewNotifications(string token);
+
+        /// <summary>
+        /// Attempts to abandon (voluntarily lose) the ownership of the user with the given username by the user corresponding to the given token, from the store with the given storeID. (Requirement 4.5)
+        /// Removing the ownership of this user should also remove all ownerships and managements that this user has appointed. (Requirement 4.4 - which is not required in this version)
+        /// Returns an error Response if the token doesn't correspond to an actual subscriber or if the subscriber isn't store owner or if the subscriber is the store founder (which cannot abandon his ownership).
+        /// </summary>
+        Response AbandonOwnership(string token, int storeID);
     }
 }

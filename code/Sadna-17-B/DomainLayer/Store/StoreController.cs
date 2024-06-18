@@ -1,5 +1,6 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using Sadna_17_B.DomainLayer.User;
+using Sadna_17_B.DomainLayer.Utils;
 using Sadna_17_B.Utils;
 using System;
 using System.Collections.Generic;
@@ -125,6 +126,16 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         // ---------------- store inventory -------------------------------------------------------------------------------------------
 
+        public Dictionary<Product, int> all_products()
+        {
+            Dictionary<Product, int> res = new Dictionary<Product, int>();
+            foreach(Store s in active_stores)
+            {
+                foreach (var v in s.all_products())
+                    res.Add(v.Key, v.Value);
+            }
+            return res;
+        }
 
         public bool edit_store_product(int storeID, int productId)
         {
@@ -222,7 +233,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             if (store == null)
                 throw new Exception("Invalid Parameter : store not found");
 
-            return store.calculate_product_prices(quantities);
+            return store.calculate_product_prices(quantities).to_user(); // !!!!! user must change type to reciept !!!!!!  - delete to_user() afterwards
         }
 
         public bool Last_addition_failed(string line_in_purchase_result)
@@ -322,13 +333,13 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
                     DateTime start = DateTime.Parse(components[0]);
                     DateTime end = DateTime.Parse(components[1]);
-                    IDiscount_Strategy strategy = null;
+                    Discount_Strategy strategy = null;
 
                     switch (components[2])
                     {
                         case "membership":
 
-                            strategy = new Discount_Membership(start);
+                            strategy = new Discount_Membership();
                             break;
 
                         case "percentage":
@@ -342,7 +353,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                             break;
                     }
 
-                    Discount discount = new VisibleDiscount(start, end, strategy);
+                    Discount discount = new Discount_Simple(start, end, strategy, null);
 
                     store.edit_discount_policy(edit_type, discount);
                     return true;
@@ -432,6 +443,19 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                 if (products != null)
                     foreach (Product product in products)
                         result.Add(product, store.ID);
+            }
+
+            return result.Any() ? result : null;
+        }
+
+        public Dictionary <Product, int> filter_products_by_store_id(Dictionary<Product, int> searchReesult, int storeID)
+        {
+            Dictionary<Product, int> result = new Dictionary<Product, int>();
+
+            foreach (var pair in searchReesult)
+            {
+                if (pair.Value == storeID)
+                    result.Add(pair.Key, pair.Value);
             }
 
             return result.Any() ? result : null;

@@ -6,7 +6,7 @@ using System.Web;
 
 namespace Sadna_17_B.DomainLayer.StoreDom
 {
-    public class Product : informative_class
+    public class Product : I_informative_class
     {
 
 

@@ -7,7 +7,7 @@ using System.Xml.Linq;
 
 namespace Sadna_17_B.DomainLayer.StoreDom
 {
-    public class Inventory : informative_class
+    public class Inventory : I_informative_class
     {
 
         // ---------------- Variables -------------------------------------------------------------------------------------------
@@ -58,10 +58,8 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         }
 
 
-
-        // ---- ??? ----   (refactor) from   >>>   ------
-
         public string decrease_product_amount(int product_id, int amount)
+
         {
             string purchase_result = "";
             Product product = product_by_id(product_id);
@@ -107,9 +105,6 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return "product: " + product.name + " increased by: " + p_amount + " \tCurrent amount restored to:" + product_to_amount[product];
         }
         
-        
-        // ---- ??? ----   (refactor) into   >>>   ------
-
         public void edit_product_amount(int p_id, int p_amount)
         {
 
@@ -152,8 +147,6 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             }
         }
 
-
-        // ---- ??? -------------------------------------
 
 
         public void edit_product_price(int p_id, int price)

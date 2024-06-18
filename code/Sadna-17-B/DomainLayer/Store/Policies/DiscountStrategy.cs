@@ -12,136 +12,101 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 {
 
 
-    // ----------- Discount Strategy interface ------------------------------------------------------------------------------------------------------------------  
-
-
-    public interface IDiscount_Strategy
-    {
-        double apply_discount(double originalPrice);
-    }
-
-
     // ----------- Precentage Discount Type ------------------------------------------------------------------------------------------------------------------  
 
 
-    public class Discount_Percentage : IDiscount_Strategy, informative_class
+
+
+    public abstract class Discount_Strategy : I_strategy, I_informative_class
     {
 
-        public double precentage { get; set; }
+        public double factor { get; set; }
+        private string strategy_type { get; set; }
 
 
+        public Discount_Strategy(double factor, string type) { this.factor = factor; this.strategy_type = type; }
 
-        public Discount_Percentage(double percentage) { precentage = percentage; }
-
-        public double apply_discount(double originalPrice) { return originalPrice * (1 - precentage / 100); }
+        public abstract double apply_discount_strategy(double price);
 
         public string info_to_print()
         {
-            string s = string.Empty;
-
-            // version 2 ....
-
-            return s;
+            // TODO
+            return strategy_type;
         }
 
         public string info_to_UI()
         {
-            string s = string.Empty;
-
-            // version 2 ....
-
-            return s;
+            // TODO
+            return strategy_type;
         }
+    
+    }
+
+
+
+    public class Discount_Percentage : Discount_Strategy
+    {
+
+        
+        public Discount_Percentage(double percentage) : base(percentage, "percentage") { }
+
+        public override double apply_discount_strategy(double price) { return price * (factor / 100); }
+
+
     }
 
 
     // ----------- Flat Discount Type ------------------------------------------------------------------------------------------------------------------  
 
 
-    public class Discount_Flat : IDiscount_Strategy, informative_class
+    public class Discount_Flat : Discount_Strategy
     {
 
-        public double amount { get; set; }
+        public Discount_Flat(double amount) : base(amount,"flat") { }
 
+        public override double apply_discount_strategy(double price) { return factor; }
 
-
-        public Discount_Flat(double decreaseAmount) { amount = decreaseAmount; }
-
-        public double apply_discount(double price) { return price - amount; }
-
-        public string info_to_print()
-        {
-            string s = string.Empty;
-
-            // version 2 ....
-
-            return s;
-        }
-
-        public string info_to_UI()
-        {
-            string s = string.Empty;
-
-            // version 2 ....
-
-            return s;
-        }
+   
     }
 
 
     // ----------- Membership Discount Type ------------------------------------------------------------------------------------------------------------------  
 
 
-    public class Discount_Membership : IDiscount_Strategy, informative_class
+    public class Discount_Membership : Discount_Strategy
     {
 
-        public double membership_discount_maximum { get; }
-        public DateTime membership_start_date { get; }
+        private double membership_discount_maximum { get; }
+        private DateTime start_date { get; set; }
 
 
 
-        public Discount_Membership(DateTime start_date) 
-        { 
-            membership_discount_maximum = 0.3;
-            membership_start_date = start_date;
-        }
+        public Discount_Membership() : base(0,"membership") { membership_discount_maximum = 0.3; }
 
-        public double apply_discount(double price)
+        public override double apply_discount_strategy(double price)
         {
             double membership_days = get_days();
             double membership_years = membership_days / 365;
-
-            double membership_daily_discount = membership_days / (365 * 10 * 100);
-            double membership_yearly_discount = membership_years * 2;
+      
+            double membership_daily_discount = membership_days / (365 * 500 * 100);
+            double membership_yearly_discount = membership_years * 0.05;
 
             double membership_discount = membership_daily_discount + membership_yearly_discount;
-
-            return price * (1 - Math.Min(membership_discount, membership_discount_maximum));
+            
+            return price *  Math.Min(membership_discount, membership_discount_maximum);
         }
 
         public double get_days()
         {
-            return (DateTime.Now - membership_start_date).TotalDays;
+            return (DateTime.Now.Date - start_date.Date).TotalDays;
         }
 
-
-        public string info_to_print()
+        public void member_start_date(DateTime start)
         {
-            string s = string.Empty;
-
-            // version 2 ....
-
-            return s;
+            this.start_date = start;
         }
 
-        public string info_to_UI()
-        {
-            string s = string.Empty;
 
-            // version 2 ....
-
-            return s;
-        }
     }
 
 }

@@ -55,7 +55,14 @@ namespace Sadna_17_B.ServiceLayer
 
                 // Add the store to the system
                 StoreService.create_store((res.Data as UserDTO).AccessToken, storeName, email, phoneNumber, description, address, inventory);
+
             }
+
+            for (int j = 1; j < 2; j++)
+            {
+                StoreService.AddProductReview(1, j, "Very good");
+            }
+
         }
 
 

@@ -96,6 +96,15 @@ namespace Sadna_17_B_Frontend.Views
         protected global::System.Web.UI.WebControls.TextBox txtAddress;
 
         /// <summary>
+        /// litAddressMessage control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal litAddressMessage;
+
+        /// <summary>
         /// btnCreateStore control.
         /// </summary>
         /// <remarks>
@@ -112,14 +121,5 @@ namespace Sadna_17_B_Frontend.Views
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblMessage;
-
-        /// <summary>
-        /// litAddressMessage control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Literal litAddressMessage;
     }
 }
