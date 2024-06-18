@@ -216,7 +216,7 @@
     <Compile Include="ServiceLayer\Services\StoreService.cs" />
     <Compile Include="ServiceLayer\Services\UserService.cs" />
     <Compile Include="Utils\Cryptography.cs" />
-    <Compile Include="Utils\informative.cs" />
+    <Compile Include="Utils\Interfaces.cs" />
     <Compile Include="Utils\Logger.cs" />
     <Compile Include="Utils\Response.cs" />
     <Compile Include="Utils\Sadna17BException.cs" />

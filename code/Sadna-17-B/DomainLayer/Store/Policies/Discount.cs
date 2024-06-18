@@ -1,6 +1,7 @@
 using Sadna_17_B.DomainLayer.Utils;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.Remoting.Messaging;
 using System.Text;
@@ -13,22 +14,25 @@ namespace Sadna_17_B.DomainLayer.StoreDom
     // ----------- Base Discount Class ------------------------------------------------------------------------------------------------------------------  
 
 
-    public abstract class Discount : informative_class
+    public abstract class Discount : I_informative_class, I_discount
     {
 
         // ----------- variables --------------------------------------------------------------
+
+        protected Func<Cart, bool> condition_function { get; set; }
+        protected Func<Cart, double> relevant_price_function { get; set; }
 
 
         private static int discount_id;
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
-        public IDiscount_Strategy strategy { get; set; }
+        public Discount_Strategy strategy { get; set; }
 
 
         // ----------- Constructor ------------------------------------------------------------  
 
 
-        public Discount(DateTime StartDate, DateTime EndDate, IDiscount_Strategy strategy)
+        public Discount(DateTime StartDate, DateTime EndDate, Discount_Strategy strategy)
         {
             discount_id += 1;
 
@@ -61,11 +65,20 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         // ----------- Abstract Functionalities --------------------------------------------------------  
 
 
-        public abstract double calculate_discount(double price);
+        public abstract Mini_Reciept apply_discount(Cart cart);
+        
 
-        public abstract string info_to_print();
+        public virtual string info_to_print()
+        {
+            // TODO
+            return "discount";
+        }
 
-        public abstract string info_to_UI();
+        public virtual string info_to_UI() 
+        {
+            // TODO
+            return "discount";
+        }
         
 
 
@@ -79,84 +92,62 @@ namespace Sadna_17_B.DomainLayer.StoreDom
     public class Discount_Simple : Discount
     {
 
-        public Discount_Simple(DateTime StartDate, DateTime EndDate, IDiscount_Strategy strategy) : base(StartDate, EndDate, strategy) { }
+        private Func<Cart, double> relevant_price_function { get; set; }
 
-        public override double calculate_discount(double price)
+        public Discount_Simple(DateTime StartDate, DateTime EndDate, Discount_Strategy strategy,
+                                                                    Func<Cart, double> relevant_price_func) : base(StartDate, EndDate, strategy) 
         {
-            return strategy.apply_discount(price);
+            condition_function = (c) => (true);
+            relevant_price_function = relevant_price_func;
+        }
 
-            // version 2 implementation ...
+        public override Mini_Reciept apply_discount(Cart cart)
+        {
+            List<Tuple<Discount, double>> applied_discounts = new List<Tuple<Discount, double>>();
+
+            double relevant_price = relevant_price_function(cart);
+
+            if (relevant_price != 0)
+                applied_discounts.Add(Tuple.Create((Discount)this, strategy.apply_discount_strategy(relevant_price)));
+
+            return new Mini_Reciept(applied_discounts);
         }
 
     }
 
 
 
-    public class Discount_Conditional : Discount
+    public class Discount_Conditional : Discount 
     {
 
-        public Discount_Conditional(DateTime StartDate, DateTime EndDate, IDiscount_Strategy strategy, ) : base(StartDate, EndDate, strategy) { }
-
-        public override double calculate_discount(double price)
-        {
-            return strategy.apply_discount(price);
-
-            // version 2 implementation ...
+        
+        public Discount_Conditional(DateTime StartDate, DateTime EndDate, Discount_Strategy strategy,
+                                        Func<Cart,bool> condition_func, Func<Cart, double> relevant_price_func) : base(StartDate, EndDate, strategy) 
+        { 
+            condition_function = condition_func;
+            relevant_price_function = relevant_price_func;
         }
 
-    }
-
-
-    // ----------- Discout Types ------------------------------------------------------------------------------------------------------------------  
-
-
-    public class Products_Discount : VisibleDiscount
-    {
-
-        public Products_Discount(DateTime StartDate, DateTime EndDate, IDiscount_Strategy strategy) : base(StartDate, EndDate, strategy) { }
-
-        public override double calculate_discount(double price)
+        public override Mini_Reciept apply_discount(Cart cart)
         {
-            return strategy.apply_discount(price);
 
-            // version 2 implementation ...
-        }
+            List<Tuple<Discount, double>> applied_discounts = new List<Tuple<Discount, double>>();
 
+            bool cond_true = condition_function(cart);
+            double relevant_price = relevant_price_function(cart);
 
+            if (cond_true && relevant_price != 0)
+                applied_discounts.Add(Tuple.Create((Discount) this, strategy.apply_discount_strategy(relevant_price)));
 
-    }
-
-
-    public class Categories_Discount : VisibleDiscount
-    {
-
-        public Categories_Discount(DateTime StartDate, DateTime EndDate, IDiscount_Strategy strategy) : base(StartDate, EndDate, strategy) { }
-
-        public override double calculate_discount(double price)
-        {
-            return strategy.apply_discount(price);
-
-            // version 2 implementation ...
+            return new Mini_Reciept(applied_discounts);
         }
 
 
     }
 
 
-    public class Categories_Discount : VisibleDiscount
-    {
+   
 
-        public Categories_Discount(DateTime StartDate, DateTime EndDate, IDiscount_Strategy strategy) : base(StartDate, EndDate, strategy) { }
-
-        public override double calculate_discount(double price)
-        {
-            return strategy.apply_discount(price);
-
-            // version 2 implementation ...
-        }
-
-
-    }
 
 
 

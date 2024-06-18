@@ -73,12 +73,12 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         // ----------- membership discount -----------------------------------------------------------
 
-        public bool add_membership(Discount_Membership discount, int pid)
+        public bool add_membership(Discount discount, int pid)
         {
             return discount_to_member[discount].Add(pid);
         }
 
-        public bool remove_membership(Discount_Membership discount, int pid)
+        public bool remove_membership(Discount discount, int pid)
         {
             return discount_to_member[discount].Remove(pid);
         }
@@ -126,13 +126,14 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         public Reciept calculate_discount(Cart cart)
         {
-            List<Tuple<Discount, double>> applied_discounts = new List<Tuple<Discount, double>>();
+             Reciept reciept = new Reciept(cart);
 
             foreach (DiscountRule discount_rule in discount_rules)
-                applied_discounts.AddRange(discount_rule.apply_rule(cart));
-            
-
-            return new Reciept(cart,applied_discounts);
+            {
+                reciept.add_discounts(discount_rule.apply_discount(cart));
+            }
+                
+            return reciept;
         }
 
         public int get_id()

@@ -7,7 +7,7 @@ using System.Xml.Linq;
 
 namespace Sadna_17_B.DomainLayer.StoreDom
 {
-    public class Inventory : informative_class
+    public class Inventory : I_informative_class
     {
 
         // ---------------- Variables -------------------------------------------------------------------------------------------
