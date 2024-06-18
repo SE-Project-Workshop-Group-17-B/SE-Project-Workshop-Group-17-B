@@ -174,5 +174,26 @@ namespace Sadna_17_B_Frontend.Controllers
         }
 
 
+        public Response GetStores()
+        {
+            try
+            {
+                var response = storeService.all_stores();
+                if (!response.Success) return response;
+
+                var stores = response.Data as List<Store>;
+                if (stores == null || stores.Count == 0)
+                {
+                    return new Response("No stores found.", false, null);
+                }
+
+                return new Response("Stores found successfully.", true, stores);
+            }
+            catch (Exception ex)
+            {
+                // Log exception details here to diagnose issues.
+                return new Response("An error occurred while retrieving stores: " + ex.Message, false, null);
+            }
+        }
     }
 }
