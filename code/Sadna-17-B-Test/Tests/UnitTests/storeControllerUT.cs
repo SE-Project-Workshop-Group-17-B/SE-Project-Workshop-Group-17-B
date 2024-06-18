@@ -140,8 +140,8 @@ namespace Sadna_17_B_Test.Tests.UnitTests
                                                              _choose_relevant_by_product);
 
             // Act
-            Mini_Reciept simple_applied = simple_discount.apply_discount(_cart);
-            Mini_Reciept cond_applied = cond_discount.apply_discount(_cart);
+            Mini_Receipt simple_applied = simple_discount.apply_discount(_cart);
+            Mini_Receipt cond_applied = cond_discount.apply_discount(_cart);
 
             // Assert
             Assert.AreEqual(simple_applied.discounts.Count, 1, 0.01);
@@ -168,8 +168,8 @@ namespace Sadna_17_B_Test.Tests.UnitTests
                                                              _choose_relevant_by_category);
 
             // Act
-            Mini_Reciept simple_applied = simple_discount.apply_discount(_cart);
-            Mini_Reciept cond_applied = cond_discount.apply_discount(_cart);
+            Mini_Receipt simple_applied = simple_discount.apply_discount(_cart);
+            Mini_Receipt cond_applied = cond_discount.apply_discount(_cart);
 
             // Assert
             Assert.AreEqual(simple_applied.discounts.Count, 1, 0.01);
@@ -198,8 +198,8 @@ namespace Sadna_17_B_Test.Tests.UnitTests
 
             // Act
             _strategy_membership.member_start_date(DateTime.Now.AddDays(-100));
-            Mini_Reciept simple_applied = simple_discount.apply_discount(_cart);
-            Mini_Reciept cond_applied = cond_discount.apply_discount(_cart);
+            Mini_Receipt simple_applied = simple_discount.apply_discount(_cart);
+            Mini_Receipt cond_applied = cond_discount.apply_discount(_cart);
 
             // Assert
             Assert.AreEqual(simple_applied.discounts.Count, 1, 0.01);
@@ -228,8 +228,8 @@ namespace Sadna_17_B_Test.Tests.UnitTests
 
             // Act
             _strategy_membership.member_start_date(DateTime.Now.AddDays(-100));
-            Mini_Reciept simple_applied = simple_discount.apply_discount(_cart);
-            Mini_Reciept cond_applied = cond_discount.apply_discount(_cart);
+            Mini_Receipt simple_applied = simple_discount.apply_discount(_cart);
+            Mini_Receipt cond_applied = cond_discount.apply_discount(_cart);
 
             // Assert
             Assert.AreEqual(simple_applied.discounts.Count, 1, 0.01);

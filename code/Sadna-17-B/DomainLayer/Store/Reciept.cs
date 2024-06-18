@@ -11,64 +11,82 @@ using System.Xml.Linq;
 namespace Sadna_17_B.DomainLayer.StoreDom
 {
 
-    public class Mini_Reciept : I_informative_class
+    // -------------- Mini Receipt for rules calculations ------------------------------------------------------------------------------------
+
+    public class Mini_Receipt : I_informative_class
     {
+        // -------------- variables & constructor -----------------------------------------
+
         public List<Tuple<Discount, double>> discounts = new List<Tuple<Discount, double>>();
         public double total_discount = 0;
-        public string reciept_type;
+        public string receipt_type;
 
-        public Mini_Reciept()
+        public Mini_Receipt()
         {
-            this.reciept_type = "Mini Reciept";
+            this.receipt_type = "Mini Receipt";
         }
 
-        public Mini_Reciept(List<Tuple<Discount,double>> discounts)
+        public Mini_Receipt(List<Tuple<Discount,double>> discounts)
         {
             this.discounts = discounts;
-            this.reciept_type = "Mini Reciept";
+
+            foreach (var item in discounts)
+                total_discount += item.Item2;
+
+            this.receipt_type = "Mini Receipt";
         }
 
 
-        public void switch_discounts(Mini_Reciept mini)
+        // -------------- adjust discounts -------------------------------------------------
+
+        public void switch_discounts(Mini_Receipt mini)
         {
             discounts = mini.discounts;
+            total_discount = mini.total_discount;
         }
 
-        public void add_discounts(Mini_Reciept mini)
+        public void add_discounts(Mini_Receipt mini)
         {
             if (!mini.discounts.IsNullOrEmpty())
                 discounts = discounts.Concat(mini.discounts).ToList();
+
+            total_discount += mini.total_discount;
         }
 
+        
+
+        // -------------- informative ------------------------------------------------------
 
         public string info_to_UI()
         {
             // TODO
 
-            return reciept_type;
+            return receipt_type;
         }
 
         public string info_to_print()
         {
             // TODO
 
-            return reciept_type;
+            return receipt_type;
         }
 
 
     }
 
-    public class Reciept : Mini_Reciept
+    // -------------- Main Cart Receipt ------------------------------------------------------------------------------------
+
+    public class Receipt : Mini_Receipt
     {
         public Cart cart; 
 
-        public Reciept(Cart cart)
+        public Receipt(Cart cart)
         {
             this.cart = cart;
-            this.reciept_type = "Cart Reciept";
+            this.receipt_type = "Cart Receipt";
         }      
 
-        
+        // function not needed (only for compilation untill return value of calculate_discount will change to Receiept)
         public Dictionary<int, Tuple<int, double>> to_user()
         {
             return new Dictionary<int, Tuple<int, double>>();

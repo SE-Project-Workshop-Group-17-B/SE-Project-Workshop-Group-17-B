@@ -4,114 +4,171 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Remoting.Messaging;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Sadna_17_B.DomainLayer.StoreDom
 {
 
-    // ------------------- Discount Rule -----------------------------------------------------------------------------------------
+    // ------------------- Discount rule : composite discount -----------------------------------------------------------------------------------------
 
-    public abstract class DiscountRule 
+    public class DiscountRule : Discount
 
     {
         protected List<Discount> discounts = new List<Discount>();
 
-        
+        public Func<Mini_Receipt, Mini_Receipt, Mini_Receipt> rule_function { get; private set; }
+
+        public DiscountRule(Func<Mini_Receipt, Mini_Receipt, Mini_Receipt> rule) { rule_function = rule; }
+
+
+
+        public override Mini_Receipt apply_discount(Cart cart)
+        {
+            Mini_Receipt mini_receipt = new Mini_Receipt();
+
+            foreach (Discount discount in discounts)
+            {
+                mini_receipt.add_discounts(rule_function(mini_receipt, discount.apply_discount(cart)));
+            }
+
+            return mini_receipt;
+        }
+
+
         public bool add_discount(Discount discount) { discounts.Add(discount); return true; }
         public bool remove_discount(Discount discount) { return discounts.Remove(discount); }
 
-        public abstract Mini_Reciept apply_discount(Cart cart);
-
 
     }
 
+    
+    // ------------------- Rule lambdas : base rules between discount conditions -----------------------------------------------------------------------------------------
 
-    // ------------------- Logical Rule -----------------------------------------------------------------------------------------
-
-    public abstract class DiscountRule_Logic : DiscountRule
+    public abstract class Rule_Lambdas
     {
 
-        public Func<Mini_Reciept,Mini_Reciept,Mini_Reciept> rule_function { get; private set; }
 
-        public DiscountRule_Logic(Func<Mini_Reciept,Mini_Reciept,Mini_Reciept> rule)   { rule_function = rule; }
+        protected Func<Cart, Mini_Receipt, bool> and_deal_breaker { get; set; } // all must apply conditions on cart apply
+
+        protected Func<Cart, Mini_Receipt, bool> or_deal_breaker { get; set; }  // at least one condition applies on cart
+    
+        protected Func<double, double, bool> xor_deal_breaker { get; set; } // switch to the lower discount price
 
 
 
-        public override Mini_Reciept apply_discount(Cart cart)
+        public Rule_Lambdas()
         {
-            Mini_Reciept mini_reciept = new Mini_Reciept();
 
-            foreach (Discount discount in discounts)
-            { 
-                mini_reciept.add_discounts(rule_function(mini_reciept, discount.apply_discount(cart)));
-            }
-
-            return mini_reciept;
-        }
-
-    }
-
-
-
-    // ------------------- Numeric Rule -----------------------------------------------------------------------------------------
-
-
-
-    public abstract class DiscountRule_Numeric : DiscountRule
-    {
-
-        public Func<Mini_Reciept, Mini_Reciept, Mini_Reciept> rule_function { get; private set; }
-
-        public DiscountRule_Numeric(Func<Mini_Reciept, Mini_Reciept, Mini_Reciept> rule) { rule_function = rule; }
-
-
-        public override Mini_Reciept apply_discount(Cart cart)
-        {
-            Mini_Reciept mini_reciept = new Mini_Reciept();
-
-            foreach (Discount discount in discounts)
+            and_deal_breaker = (Cart cart, Mini_Receipt checked_receipt) =>  // all conditions must apply on cart
             {
-                mini_reciept.add_discounts(rule_function(mini_reciept, discount.apply_discount(cart)));
-            }
+                foreach (var item in checked_receipt.discounts)
+                {
+                    List<Func<Cart, bool>> conditions = item.Item1.condition_functions;
 
-            return mini_reciept;
-        }
+                    foreach (var condition in conditions)
+                        if ( ! condition(cart))
+                            return false;
+                }
+
+                return true;
+            };
+
+            or_deal_breaker = (Cart cart, Mini_Receipt checked_receipt) =>  // at least one condition applies on cart
+            {
+                foreach (var item in checked_receipt.discounts)
+                {
+                    List<Func<Cart, bool>> conditions = item.Item1.condition_functions;
+
+                    foreach (var condition in conditions)
+                        if (condition(cart))
+                            return true;
+                }
+
+                return false;
+            };
+
+            xor_deal_breaker = (double discount_price_1, double discount_price_2) => // switch to the lower discount price
+            {
+                return discount_price_2 > discount_price_1;
+            };
+
 
     }
 
 
-    public class Required_Rules
+    }
+
+
+    // ------------------- Rule_logic : and / or / xor -----------------------------------------------------------------------------------------
+
+    public class Rule_Logic : Rule_Lambdas
     {
-        public Func<List<Tuple<Discount, double>>, List<Tuple<Discount, double>>, List<Tuple<Discount, double>>> and()
+        public Func<Cart, Mini_Receipt, Mini_Receipt, Mini_Receipt> and() // add all discounts (all conditions satisfied)
         {
-            return (d1, d2) =>
-                                {
-                                    d1.AddRange(d2);
-                                    return d1;
-                                };    
+            return (Cart cart, Mini_Receipt solid_receipt, Mini_Receipt checked_receipt) =>
+
+            {
+                if (and_deal_breaker(cart, checked_receipt))
+                    solid_receipt.add_discounts(checked_receipt);
+
+                return solid_receipt;
+            };
+
         }
 
-        public Func<List<Tuple<Discount, double>>, List<Tuple<Discount, double>>, List<Tuple<Discount, double>>> lower()
+        public Func<Cart, Mini_Receipt, Mini_Receipt, Mini_Receipt> or() // add all discounts (at least one condition satisfied)
         {
-            return (d1, d2) =>
+            return (Cart cart, Mini_Receipt solid_receipt, Mini_Receipt checked_receipt) =>
+
             {
-                double discount1 = 0;
-                double discount2 = 0;
+                if (or_deal_breaker(cart, checked_receipt))
+                    solid_receipt.add_discounts(checked_receipt);
 
-                foreach (var t in d1)
-                    discount1 += t.Item2;
-
-                foreach (var t in d2)
-                    discount2 += t.Item2;
-
-                return discount1 > discount2 ? d2 : d1;
+                return solid_receipt;
             };
         }
 
+        public Func<Mini_Receipt, Mini_Receipt, Mini_Receipt> xor() // use specific Receipt
+        {
+            return (Mini_Receipt solid_receipt, Mini_Receipt checked_receipt) =>
+
+            {
+                if (xor_deal_breaker(solid_receipt.total_discount, checked_receipt.total_discount))
+                    solid_receipt.switch_discounts(checked_receipt);
+
+                return solid_receipt;
+            };
+        }
+
+    }
 
 
+    // ------------------- Rule_logic : maximum / addition -----------------------------------------------------------------------------------------
 
+
+    public class Rule_Numeric : Rule_Lambdas
+    {
+        public Func<Mini_Receipt, Mini_Receipt, Mini_Receipt> maximum() // prefer the maximal discount price
+        {
+            return (Mini_Receipt solid_receipt, Mini_Receipt checked_receipt) =>
+
+            {
+                return solid_receipt.total_discount > checked_receipt.total_discount ? solid_receipt : checked_receipt;
+            };
+
+        }
+
+        public Func<List<Func<Cart, bool>>, Mini_Receipt, Mini_Receipt, Mini_Receipt> addition() // add all discounts with no conditions
+        {
+            return (List<Func<Cart, bool>> conds, Mini_Receipt solid_receipt, Mini_Receipt checked_receipt) =>
+
+            {
+                solid_receipt.add_discounts(checked_receipt);
+                return solid_receipt;
+            };
+        }
 
     }
 

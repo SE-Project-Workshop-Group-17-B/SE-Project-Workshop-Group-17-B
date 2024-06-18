@@ -11,11 +11,39 @@ namespace Sadna_17_B.DomainLayer.StoreDom
     public class Cart 
     {
 
+        // -------------- cart dictionaries ------------------------------------------------------------------------------------
+
+
         public Dictionary<string, HashSet<Product>> category_TO_products = new Dictionary<string, HashSet<Product>>();
 
         public Dictionary<Product, Tuple<int, double>> product_TO_amount_Bprice = new Dictionary<Product, Tuple<int, double>>();
 
 
+
+        // -------------- cart actions ------------------------------------------------------------------------------------
+
+        
+        public Tuple<int, double> relevant_product(Product product)
+        {
+            if (!product_TO_amount_Bprice.ContainsKey(product))
+                return null;
+
+            return product_TO_amount_Bprice[product];
+        }
+
+        public Dictionary<Product, Tuple<int, double>> relevant_category(string category)
+        {
+            if (!category_TO_products.ContainsKey(category))
+                return null;
+
+            Dictionary<Product, Tuple<int, double>> relevant = new Dictionary<Product, Tuple<int, double>>();
+            foreach (Product product in category_TO_products[category])
+            {
+                relevant[product] = product_TO_amount_Bprice[product];
+            }
+
+            return relevant;
+        }
 
         public bool add_product(Product product, int amount, double bag_price)
         {
@@ -40,30 +68,6 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         }
 
-
-
-        public Tuple<int, double> relevant_product(Product product)
-        {
-            if (!product_TO_amount_Bprice.ContainsKey(product))
-                return null;
-
-            return product_TO_amount_Bprice[product];
-        }
-
-        public Dictionary<Product, Tuple<int, double>> relevant_category(string category)
-        {
-            if (!category_TO_products.ContainsKey(category))
-                return null;
-
-            Dictionary<Product, Tuple<int, double>> relevant = new Dictionary<Product, Tuple<int, double>>();
-            foreach (Product product in category_TO_products[category])
-            {
-                relevant[product] = product_TO_amount_Bprice[product];
-            }
-
-            return relevant;
-        }
-
         public double price_all()
         {
             double sum = 0;
@@ -73,6 +77,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             
             return sum;
         }
+    
     }
  }
 

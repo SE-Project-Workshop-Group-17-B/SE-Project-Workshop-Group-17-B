@@ -84,7 +84,8 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         }
 
 
-        
+        // ----------- other -----------------------------------------------------------
+
 
         public bool add_discount(Discount discount)
         {
@@ -124,16 +125,16 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return false;
         }
 
-        public Reciept calculate_discount(Cart cart)
+        public Receipt calculate_discount(Cart cart)
         {
-             Reciept reciept = new Reciept(cart);
+             Receipt Receipt = new Receipt(cart);
 
             foreach (DiscountRule discount_rule in discount_rules)
             {
-                reciept.add_discounts(discount_rule.apply_discount(cart));
+                Receipt.add_discounts(discount_rule.apply_discount(cart));
             }
                 
-            return reciept;
+            return Receipt;
         }
 
         public int get_id()
