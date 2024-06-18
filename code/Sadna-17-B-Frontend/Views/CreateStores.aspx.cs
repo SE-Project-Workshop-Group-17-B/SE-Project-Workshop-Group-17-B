@@ -98,47 +98,6 @@ namespace Sadna_17_B_Frontend.Views
             }
         }
 
-       /* protected void btnCreateStore_Click1(object sender, EventArgs e)
-        {
-            string message = string.Empty; // Initialize as empty string
-
-            if (string.IsNullOrWhiteSpace(txtStoreName.Text))
-            {
-                message += "Store name cannot be empty.<br/>";
-            }
-            if (string.IsNullOrWhiteSpace(txtEmail.Text))
-            {
-                message += "Email cannot be empty.<br/>";
-            }
-            if (string.IsNullOrWhiteSpace(txtPhoneNumber.Text))
-            {
-                message += "Phone number cannot be empty.<br/>";
-            }
-            if (string.IsNullOrWhiteSpace(txtStoreDescription.Text))
-            {
-                message += "Store description cannot be empty.<br/>";
-            }
-            if (string.IsNullOrWhiteSpace(txtAddress.Text))
-            {
-                message += "Address cannot be empty.<br/>";
-            }
-            if (!string.IsNullOrEmpty(message)) // Check if message is not empty
-            {
-                DisplayMessage(message, false);
-                return;
-            }
-
-            Tuple<string, int> response = backendController.CreateStore(txtStoreName.Text, txtEmail.Text, txtPhoneNumber.Text, txtStoreDescription.Text, txtAddress.Text);
-
-            if (response.Item1 == null)
-            {
-                DisplayMessage("Store created successfully. StoreID = " + response.Item2, true);
-                Response.Redirect("~/Views/StoreDetails.aspx?storeId=" + response.Item2); // Ensure the URL is correct
-            }
-            else
-            {
-                DisplayMessage(response.Item1, false);
-            }
-        }*/
+    
     }
 }

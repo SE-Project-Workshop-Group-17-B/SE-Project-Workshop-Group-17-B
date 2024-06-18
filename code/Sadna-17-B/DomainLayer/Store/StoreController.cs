@@ -437,6 +437,19 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return result.Any() ? result : null;
         }
 
+        public Dictionary <Product, int> filter_products_by_store_id(Dictionary<Product, int> searchReesult, int storeID)
+        {
+            Dictionary<Product, int> result = new Dictionary<Product, int>();
+
+            foreach (var pair in searchReesult)
+            {
+                if (pair.Value == storeID)
+                    result.Add(pair.Key, pair.Value);
+            }
+
+            return result.Any() ? result : null;
+        }
+
         public Dictionary<Product, int> filter_products_by_price(Dictionary<Product, int> searchResult, int low, int high)
         {
             Dictionary<Product, int> result = new Dictionary<Product, int>();
