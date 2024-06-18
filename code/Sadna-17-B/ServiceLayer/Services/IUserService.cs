@@ -159,5 +159,19 @@ namespace Sadna_17_B.ServiceLayer.Services
         /// Returns an error Response if the token doesn't correspond to an actual subscriber or if the subscriber isn't store owner or if the subscriber is the store founder (which cannot abandon his ownership).
         /// </summary>
         Response AbandonOwnership(string token, int storeID);
+
+        /// <summary>
+        /// Attempts to return a list of all store ids of the stores owned by the subscriber with the given access token.
+        /// Returns an error Response if the token doesn't correspond to an actual subscriber.
+        /// Otherwise returns a success Response containing the list of all store ids of the stores owned by the subscriber.
+        /// </summary>
+        Response /*<List<int>>*/ GetMyOwnedStores(string token);
+
+        /// <summary>
+        /// Attempts to return a list of all store ids of the stores managed by the subscriber with the given access token.
+        /// Returns an error Response if the token doesn't correspond to an actual subscriber.
+        /// Otherwise returns a success Response containing the list of all store ids of the stores managed by the subscriber.
+        /// </summary>
+        Response /*<List<int>>*/ GetMyManagedStores(string token);
     }
 }

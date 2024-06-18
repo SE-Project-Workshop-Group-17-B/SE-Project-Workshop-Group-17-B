@@ -53,8 +53,6 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         [TestMethod]
         public void TestLogin()
         {
-            SetUp();
-
             Response res = userService.Login(username1, password1);
             Assert.IsTrue(res.Success);
             userDTO = res.Data as UserDTO;
@@ -65,8 +63,6 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         [TestMethod]
         public void TestLogout()
         {
-            SetUp();
-
             Response res = userService.Login(username1, password1);
             userDTO = res.Data as UserDTO;
             Response res2 = userService.Logout(userDTO.AccessToken);
@@ -76,8 +72,6 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         [TestMethod]
         public void TestGuestEntry()
         {
-            SetUp();
-
             Response res1 = userService.GuestEntry();
             Assert.IsTrue(res1.Success);
             Assert.IsNotNull(res1.Data);
@@ -86,8 +80,6 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         [TestMethod]
         public void TestGuestLogout()
         {
-            SetUp();
-
             Response res1 = userService.GuestEntry();
             userDTO = res1.Data as UserDTO;
             Response res2 = userService.GuestExit(userDTO.AccessToken);
@@ -98,8 +90,6 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         [TestMethod]
         public void TestGuestLogoutFail()
         {
-            SetUp();
-
             Response res = userService.GuestExit("");
 
             Assert.IsFalse(res.Success);
@@ -108,7 +98,6 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         [TestMethod]
         public void TestCreateAdmin()
         {
-            SetUp();
             username1 = "username1";
             password1 = "password1";
             Response res = userService.CreateAdmin(username1, password1);
@@ -119,8 +108,6 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         [TestMethod]
         public void TestCreateStoreFounder()
         {
-            SetUp();
-
             Response ignore = userService.CreateSubscriber(username1, password1);
             Response ignore2 = userService.CreateSubscriber(username2, password2);
             Response res = userService.Login(username1, password1);
@@ -139,7 +126,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         [TestMethod]
         public void TestStoreOwnerAppoitmentAccept()
         {
-            SetUp();
+           
 
             Response ignore = userService.CreateSubscriber(username1, password1);
             Response ignore2 = userService.CreateSubscriber(username2, password2);
@@ -160,7 +147,6 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         [TestMethod]
         public void TestStoreOwnerAppoitmentDecline()
         {
-            SetUp();
 
             Response ignore = userService.CreateSubscriber(username1, password1);
             Response ignore2 = userService.CreateSubscriber(username2, password2);
@@ -181,7 +167,6 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         [TestMethod]
         public void TestStoreManagerAppoitmentAccept()
         {
-            SetUp();
 
             Response ignore = userService.CreateSubscriber(username1, password1);
             Response ignore2 = userService.CreateSubscriber(username2, password2);
@@ -205,7 +190,6 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         [TestMethod]
         public void TestStoreManagerAppoitmentDecline()
         {
-            SetUp();
 
             Response ignore = userService.CreateSubscriber(username1, password1);
             Response ignore2 = userService.CreateSubscriber(username2, password2);
@@ -226,7 +210,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         [TestMethod]
         public void TestStoreManagerAppoitmentWrongUser()
         {
-            SetUp();
+           
 
             Response ignore = userService.CreateSubscriber(username1, password1);
             Response res1 = userService.Login(username1, password1);
@@ -242,7 +226,6 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         [TestMethod]
         public void TestStoreOwnerAppoitmentWrongUser()
         {
-            SetUp();
 
             Response ignore = userService.CreateSubscriber(username1, password1);
             Response res1 = userService.Login(username1, password1);
@@ -258,7 +241,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         [TestMethod]
         public void TestUpdateStoreManagerAuthorization()
         {
-            SetUp();
+            
 
             Response ignore = userService.CreateSubscriber(username1, password1);
             Response ignore2 = userService.CreateSubscriber(username2, password2);
@@ -288,7 +271,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         [TestMethod]
         public void TestRevokeOwnership()
         {
-            SetUp();
+            
 
             Response ignore = userService.CreateSubscriber(username1, password1);
             Response ignore2 = userService.CreateSubscriber(username2, password2);
@@ -312,7 +295,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         [TestMethod]
         public void TestStoreRoles()
         {
-            SetUp();
+            
 
             Response ignore = userService.CreateSubscriber(username1, password1);
             ignore = userService.CreateSubscriber(username2, password2);
@@ -343,7 +326,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         [TestMethod]
         public void TestRegisterSameUserTwice()
         {
-            SetUp();
+            
 
             Response ignore = userService.CreateSubscriber(username1, password1);
             Response res = userService.CreateSubscriber(username1, password1);
@@ -353,7 +336,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         [TestMethod]
         public void TestSuccesfullAddToCart()
         {
-            SetUp();
+            
 
             Response ignore = userService.CreateSubscriber(username1, password1);
             ignore = userService.Login(username1, password1);
@@ -383,7 +366,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         [TestMethod]
         public void TestAddToCartWrongProduct()
         {
-            SetUp();
+            
 
             Response ignore = userService.CreateSubscriber(username1, password1);
             ignore = userService.Login(username1, password1);
@@ -405,7 +388,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         [TestMethod]
         public void TestAddToMuchProductsToCart()
         {
-            SetUp();
+            
             int quantity = 10;
 
             Response ignore = userService.CreateSubscriber(username1, password1);
@@ -431,7 +414,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         [TestMethod]
         public void TestGoodPurchaseHistory()
         {
-            SetUp();
+            
             int quantity = 10;
 
             Response ignore = userService.CreateSubscriber(username1, password1);
@@ -463,7 +446,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         [TestMethod]
         public void TestBadPurchaseHistory()
         {
-            SetUp();
+            
             int quantity = 10;
 
             Response ignore = userService.CreateSubscriber(username1, password1);
@@ -495,7 +478,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         [TestMethod]
         public void TestGettingDataOfStoreByAdmin()
         {
-            SetUp();
+            
             int quantity = 10;
 
             Response ignore = userService.CreateSubscriber(username1, password1);
@@ -527,7 +510,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         [TestMethod]
         public void TestGettingDataOfStoreByRandomUser()
         {
-            SetUp();
+            
             int quantity = 10;
 
             Response ignore = userService.CreateSubscriber(username1, password1);

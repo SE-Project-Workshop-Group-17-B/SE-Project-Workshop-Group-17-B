@@ -53,8 +53,6 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         [TestMethod]
         public void TestStoreOpening()
         {
-            SetUp();
-
             Response ignore = userService.CreateSubscriber(username1, password1);
             ignore = userService.CreateSubscriber(username2, password2);
             Response res = userService.Login(username1, password1);
@@ -70,8 +68,6 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         [TestMethod]
         public void TestStoreClose()
         {
-            SetUp();
-
             Response ignore = userService.CreateSubscriber(username1, password1);
             ignore = userService.CreateSubscriber(username2, password2);
             Response res = userService.Login(username1, password1);
@@ -90,8 +86,6 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         [TestMethod]
         public void TestClosedStoreClosing()
         {
-            SetUp();
-
             Response ignore = userService.CreateSubscriber(username1, password1);
             ignore = userService.CreateSubscriber(username2, password2);
             Response res = userService.Login(username1, password1);
@@ -111,7 +105,6 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         [TestMethod]
         public void TestGetStoreByName()
         {
-            SetUp();
             Response ignore = userService.CreateSubscriber(username1, password1);
             ignore = userService.CreateSubscriber(username2, password2);
             Response res = userService.Login(username1, password1);
@@ -126,8 +119,6 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         [TestMethod]
         public void TestCreateStoreFounder()
         {
-            SetUp();
-
             Response ignore = userService.CreateSubscriber(username1, password1);
             Response ignore2 = userService.CreateSubscriber(username2, password2);
             Response res = userService.Login(username1, password1);

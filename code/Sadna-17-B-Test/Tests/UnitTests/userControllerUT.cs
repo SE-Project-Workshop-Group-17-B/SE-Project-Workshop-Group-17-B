@@ -36,7 +36,6 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         [TestMethod]
         public void TestCreateGuest()
         {
-            SetUp();
 
             string token = _userController.CreateGuest();
             Assert.IsTrue(_userController.IsGuest(token));
@@ -45,7 +44,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         [TestMethod]
         public void TestCreateSubsriber()
         {
-            SetUp();
+            
 
             _userController.CreateSubscriber(username1, password1);
 
@@ -59,7 +58,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         [TestMethod]
         public void TestCreateAdmin()
         {
-            SetUp();
+            
 
             _userController.CreateAdmin(username1, password1);
 
@@ -73,7 +72,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         [TestMethod]
         public void TestGuestExit()
         {
-            SetUp();
+            
 
             string token = _userController.CreateGuest();
 
@@ -85,7 +84,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         [TestMethod]
         public void TestSubsriberLogout()
         {
-            SetUp();
+            
 
             _userController.CreateAdmin(username1, password1);
 
@@ -98,7 +97,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         [TestMethod]
         public void TestFounder()
         {
-            SetUp();
+            
 
             //creating and logging in users
             _userController.CreateSubscriber(username1, password1);
@@ -116,7 +115,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         [TestMethod]
         public void TestOwnershipOfferAccept()
         {
-            SetUp();
+            
 
             _userController.CreateSubscriber(username1, password1);
             string token1 = _userController.Login(username1, password1);
@@ -134,7 +133,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         [TestMethod]
         public void TestOwnershipOfferDecline()
         {
-            SetUp();
+            
 
             _userController.CreateSubscriber(username1, password1);
             string token1 = _userController.Login(username1, password1);
@@ -152,7 +151,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         [TestMethod]
         public void TestManagementOfferAccept()
         {
-            SetUp();
+            
 
             _userController.CreateSubscriber(username1, password1);
             string token1 = _userController.Login(username1, password1);
@@ -170,7 +169,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         [TestMethod]
         public void TestManagementOfferDecline()
         {
-            SetUp();
+            
 
             _userController.CreateSubscriber(username1, password1);
             string token1 = _userController.Login(username1, password1);
@@ -188,7 +187,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         [TestMethod]
         public void TestRevokeManager()
         {
-            SetUp();
+            
 
             _userController.CreateSubscriber(username1, password1);
             string token1 = _userController.Login(username1, password1);
@@ -208,7 +207,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         [TestMethod]
         public void TestRevokeOwner()
         {
-            SetUp();
+            
 
             _userController.CreateSubscriber(username1, password1);
             string token1 = _userController.Login(username1, password1);
@@ -228,7 +227,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         [TestMethod]
         public void TestAddToCart()
         {
-            SetUp();
+            
 
             _userController.CreateSubscriber(username1, password1);
             string token1 = _userController.Login(username1, password1);

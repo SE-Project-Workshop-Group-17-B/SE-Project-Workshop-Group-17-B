@@ -19,9 +19,9 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         // ---------------- Variables -------------------------------------------------------------------------------------------
 
 
-        private static int idCounter = 1;
-        private static int ratingCounter = 0;
-        private static int ratingOverAllScore = 0;
+        public static int idCounter = 1;
+        public static int ratingCounter = 0;
+        public static int ratingOverAllScore = 0;
 
 
         public int ID { get; private set; }

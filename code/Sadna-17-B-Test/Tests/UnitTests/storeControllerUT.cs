@@ -471,7 +471,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         [TestMethod]
         public void TestRemoveMoreProductsThenAvailbleConcurrent()
         {
-            SetUp();
+            
 
             var storeBuilder = _storeController.store_builder()
                                     .SetName("Test Store")
@@ -503,7 +503,6 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         [TestMethod]
         public void TestAddingProductsConcurrently()
         {
-            SetUp();
 
             var storeBuilder = _storeController.store_builder()
                                     .SetName("Test Store")

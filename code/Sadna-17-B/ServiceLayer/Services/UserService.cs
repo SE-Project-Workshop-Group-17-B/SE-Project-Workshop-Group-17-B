@@ -572,6 +572,42 @@ namespace Sadna_17_B.ServiceLayer.Services
                 return Response.GetErrorResponse(e);
             }
         }
+
+        
+        /// <summary>
+        /// Attempts to return a list of all store ids of the stores owned by the subscriber with the given access token.
+        /// Returns an error Response if the token doesn't correspond to an actual subscriber.
+        /// Otherwise returns a success Response containing the list of all store ids of the stores owned by the subscriber.
+        /// </summary>
+        public Response /*<List<int>>*/ GetMyOwnedStores(string token)
+        {
+            try
+            {
+                List<int> result = userController.GetMyOwnedStores(token);
+                return new Response(true, result);
+            } catch (Sadna17BException e)
+            {
+                return Response.GetErrorResponse(e);
+            }
+        }
+
+        /// <summary>
+        /// Attempts to return a list of all store ids of the stores managed by the subscriber with the given access token.
+        /// Returns an error Response if the token doesn't correspond to an actual subscriber.
+        /// Otherwise returns a success Response containing the list of all store ids of the stores managed by the subscriber.
+        /// </summary>
+        public Response /*<List<int>>*/ GetMyManagedStores(string token)
+        {
+            try
+            {
+                List<int> result = userController.GetMyManagedStores(token);
+                return new Response(true, result);
+            }
+            catch (Sadna17BException e)
+            {
+                return Response.GetErrorResponse(e);
+            }
+        }
     }
 
 }

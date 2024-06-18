@@ -32,6 +32,14 @@ namespace Sadna_17_B.ServiceLayer
 
         public void GenerateData()
         {
+            // Initialize static counter variables
+            Store.idCounter = 1;
+            Store.ratingCounter = 0;
+            Store.ratingOverAllScore = 0;
+            Product.idCounter = 1;
+            Product.ratingCounter = 0;
+            Product.ratingOverAllScore = 0;
+
             // Create an admin
             UserService.CreateAdmin("admin", "password");
             Response res = UserService.Login("admin", "password");
