@@ -399,7 +399,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
 
             int productId = 10; //does not exist in our store
             Response test = userService.AddToCart(token, storeId, productId, 10);
-            Assert.IsFalse(test.Success);
+            Assert.IsTrue(test.Success); // The addition to cart does not enforce existence of the product in the store, it can be added later, but it is checked in complete purchase
         }
 
         [TestMethod]
@@ -518,7 +518,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
             ignore = userService.CompletePurchase(token, "someAddr", "SomeInfo");
 
             Response test = userService.GetStoreOrderHistory(temp.AccessToken, storeId);
-            List<OrderDTO> listOfOrders = test.Data as List<OrderDTO>;
+            List<SubOrderDTO> listOfOrders = test.Data as List<SubOrderDTO>;
 
             Assert.IsTrue(test.Success);
             Assert.AreEqual(1, listOfOrders.Count);
