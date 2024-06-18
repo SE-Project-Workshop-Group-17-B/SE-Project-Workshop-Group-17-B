@@ -1,4 +1,5 @@
-﻿using Sadna_17_B.DomainLayer.Utils;
+﻿using Microsoft.IdentityModel.Tokens;
+using Sadna_17_B.DomainLayer.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,13 +23,21 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         public int add_product( string name, double price, string category,string description, int amount)
         {
-            Product product = new Product(name, price, category,description);
-            
-            if (product_to_amount.ContainsKey(product))
-                product_to_amount[product] += amount; 
+
+            bool cond = !products_by_name(name).IsNullOrEmpty();
+            Product product;
+
+            if (cond)
+            {
+                product = products_by_name(name)[0];
+                product_to_amount[product] += amount;
+            }
             else
+            {
+                product = new Product(name, price, category, description);
                 product_to_amount[product] = amount;
-            
+            }
+
             return product.ID;
         }
 
@@ -94,7 +103,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return purchase_result;
         }
 
-        public string increase_product_amount(int p_id, int p_amount) // called in case of failure
+        public string increase_product_amountS(int p_id, int p_amount) // called in case of failure
         {
             Product product = product_by_id(p_id);
 
@@ -104,7 +113,17 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             product_to_amount[product] += p_amount;
             return "product: " + product.name + " increased by: " + p_amount + " \tCurrent amount restored to:" + product_to_amount[product];
         }
-        
+
+        public int increase_product_amount(int p_id, int p_amount) // called in case of failure
+        {
+            
+            if (!product_to_amount.ContainsKey(product_by_id(p_id)))
+                return -1;
+
+            product_to_amount[product_by_id(p_id)] += p_amount;
+            return p_id;
+        }
+
         public void edit_product_amount(int p_id, int p_amount)
         {
 
@@ -212,7 +231,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                 .Where(product => product.name.Equals(name))
                 .ToList();
 
-            return result.Any() ? result : null; // if empty return null
+            return result.Any() ? result : new List<Product>(); // if empty return null
         }
 
         public List<Product> products_by_category(string category)
@@ -221,7 +240,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                 .Where(product => product.category.Equals(category))
                 .ToList();
 
-            return result.Any() ? result : null; // if empty return null
+            return result.Any() ? result : new List<Product>(); // if empty return null
         }
 
         public List<Product> products_by_keyword(string keyWords)
@@ -242,7 +261,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                                                     .ToList();
 
             // Return the sorted list or null if no products matched
-            return productKeywordCount.Any() ? productKeywordCount : null;
+            return productKeywordCount.Any() ? productKeywordCount : new List<Product>();
         }
 
         public List<Product> all_products()

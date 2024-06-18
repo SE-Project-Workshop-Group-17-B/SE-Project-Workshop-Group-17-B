@@ -477,7 +477,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
                                     .SetName("Test Store")
                                     .SetInventory(_inventory);
             var store = storeBuilder.Build();
-            int initialAmount = 10;
+            int initialAmount = store.amount_by_name("Test Product");
 
             _storeController.open_store(store);
 
@@ -508,18 +508,20 @@ namespace Sadna_17_B_Test.Tests.UnitTests
                                     .SetName("Test Store")
                                     .SetInventory(_inventory);
             var store = storeBuilder.Build();
-            int initialAmount = 10;
+            int initialAmount = store.amount_by_name("Test Product");
 
             _storeController.open_store(store);
 
-            Task task1 = Task.Run(() => _storeController.add_store_product(store.ID, "Test Product", 100, "Category", "Good product", initialAmount));
-            Task task2 = Task.Run(() => _storeController.add_store_product(store.ID, "Test Product", 100, "Category", "Good product", initialAmount));
-            Task task3 = Task.Run(() => _storeController.add_store_product(store.ID, "Test Product", 100, "Category", "Good product", initialAmount));
-            Task task4 = Task.Run(() => _storeController.add_store_product(store.ID, "Test Product", 100, "Category", "Good product", initialAmount));
-            Task task5 = Task.Run(() => _storeController.add_store_product(store.ID, "Test Product", 100, "Category", "Good product", initialAmount));
-            Task task6 = Task.Run(() => _storeController.add_store_product(store.ID, "Test Product", 100, "Category", "Good product", initialAmount));
+            int product_id = _storeController.add_store_product(store.ID, "Test Product", 100, "Category", "Good product", initialAmount);
+            Console.WriteLine(product_id);
+            Task task1 = Task.Run(() => _storeController.add_store_product(store.ID, product_id , initialAmount));
+            Task task2 = Task.Run(() => _storeController.add_store_product(store.ID, product_id, initialAmount));
+            Task task3 = Task.Run(() => _storeController.add_store_product(store.ID, product_id, initialAmount));
+            Task task4 = Task.Run(() => _storeController.add_store_product(store.ID, product_id, initialAmount));
+            Task task5 = Task.Run(() => _storeController.add_store_product(store.ID, product_id, initialAmount));
 
-            Task.WaitAll(task1, task2, task3, task4, task5, task6);
+
+            Task.WaitAll(task1, task2, task3, task4, task5);
 
             int finalAmount = store.amount_by_name("Test Product");
 

@@ -224,6 +224,7 @@
     <Compile Include="Utils\Sadna17BException.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="DomainLayer\Store\Policies\PurchaseRulescs" />
     <None Include="packages.config" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>

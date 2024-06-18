@@ -106,7 +106,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return inventory.add_product(name, price, category, description, amount);
         }
 
-        public string increase_product_amount(int id, int amount)
+        public int increase_product_amount(int id, int amount)
         {
             return inventory.increase_product_amount(id, amount);
         }

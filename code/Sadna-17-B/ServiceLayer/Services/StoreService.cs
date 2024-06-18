@@ -40,8 +40,10 @@ namespace Sadna_17_B.ServiceLayer.Services
         }
 
 
-        // ---------------- adjust stores options -------------------------------------------------------------------------------------------
-
+        // ---------------- adjust stores options -----------------------------------------------------------------------------------
+        
+        // -- 3.2 (open store), 
+        
         public Response create_store(string token, string name, string email, string phoneNumber, string storeDescription, string address, Inventory inv)
         {
             if (!_userService.IsSubscriberBool(token))
@@ -122,6 +124,7 @@ namespace Sadna_17_B.ServiceLayer.Services
 
         // ---------------- review options -------------------------------------------------------------------------------------------
 
+        // -- 3.3 (add store review), 
 
         public Response AddStoreReview(int storeID, string review)
         { 
@@ -147,6 +150,7 @@ namespace Sadna_17_B.ServiceLayer.Services
 
         // ---------------- rating options -------------------------------------------------------------------------------------------
 
+        // -- 3.4 (add store rating), 3.4 (add store complaint)
 
         public Response AddStoreRating(int storeID, int rating)
         {
@@ -171,6 +175,8 @@ namespace Sadna_17_B.ServiceLayer.Services
 
 
         // ---------------- stores Management -------------------------------------------------------------------------------------------
+
+        // -- 4.1 (add / remove products), 
 
         public Response reduce_products(string token, int storeID, Dictionary<int, int> quantities)
         {
@@ -366,6 +372,7 @@ namespace Sadna_17_B.ServiceLayer.Services
 
         // ---------------- adjust policy options -------------------------------------------------------------------------------------------
 
+        // -- 4.2 (edit policies), 
 
         public Response edit_policy(int store_id, string edit_type, string policy_doc)
         {

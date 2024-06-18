@@ -158,6 +158,16 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return store.add_product(name, price, category, description, amount);
         }
 
+        public int add_store_product(int storeID, int pid, int amount)
+        {
+            Store store = store_by_id(storeID);
+
+            if (store == null || store.filter_id(pid) == null)
+                return -1;
+
+            return store.increase_product_amount(pid,amount);
+        }
+
         public bool valid_order(int storeId, Dictionary<int, int> quantities)
         {
 
@@ -240,6 +250,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         {
             return line_in_purchase_result.EndsWith("something wrong");
         }
+
 
         // ---------------- store customer management ---------------------------------------------------------------------------------
 
