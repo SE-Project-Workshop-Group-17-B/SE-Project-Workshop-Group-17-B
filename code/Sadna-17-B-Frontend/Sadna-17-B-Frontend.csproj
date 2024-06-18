@@ -170,8 +170,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\cart-inverted.png" />
+    <Content Include="Content\cart.png" />
     <Content Include="Content\stars.png" />
     <Content Include="Content\store-image.png" />
+    <Content Include="Content\store-inverted.png" />
+    <Content Include="Content\store.png" />
     <Content Include="Views\About.aspx" />
     <Content Include="Views\Contact.aspx" />
     <Content Include="Content\bootstrap-theme.css" />

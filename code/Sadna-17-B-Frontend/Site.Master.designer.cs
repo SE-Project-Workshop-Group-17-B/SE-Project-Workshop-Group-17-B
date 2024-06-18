@@ -15,6 +15,24 @@ namespace Sadna_17_B_Frontend
     {
 
         /// <summary>
+        /// MyStoresBtn control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton MyStoresBtn;
+
+        /// <summary>
+        /// MyCartBtn control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton MyCartBtn;
+
+        /// <summary>
         /// LblHello control.
         /// </summary>
         /// <remarks>
