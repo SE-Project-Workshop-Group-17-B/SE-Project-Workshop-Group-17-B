@@ -29,6 +29,18 @@ namespace Sadna_17_B.DomainLayer.Order
             this.storeController = storeController;
         }
 
+        public OrderSystem(StoreController storeController, IPaymentSystem paymentInstance)
+        {
+            this.storeController = storeController;
+            this.paymentSystem = paymentInstance;
+        }
+
+        public OrderSystem(StoreController storeController, ISupplySystem supplyInstance)
+        {
+            this.storeController = storeController;
+            this.supplySystem = supplyInstance;
+        }
+
         private Dictionary<int, Dictionary<int, int>> GetShoppingCartQuantities(ShoppingCart shoppingCart)
         {
             Dictionary<int, Dictionary<int, int>> quantities = new Dictionary<int, Dictionary<int, int>>();
@@ -71,7 +83,7 @@ namespace Sadna_17_B.DomainLayer.Order
             Order order = new Order(orderCount, userID, isGuest, products, destinationAddress, creditCardInfo);
             // Check validity of total price
             double orderPrice = order.TotalPrice();
-            if (orderPrice <= 0)
+            if (orderPrice < 0)
             {
                 errorLogger.Log($"ORDER SYSTEM | Order with invalid price - {orderPrice}");
                 throw new Sadna17BException("Invalid order price: " + orderPrice);

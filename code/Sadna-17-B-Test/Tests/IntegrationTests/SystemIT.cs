@@ -7,6 +7,11 @@ using Sadna_17_B.Utils;
 using System.Runtime.CompilerServices;
 using Sadna_17_B.DomainLayer.StoreDom;
 using System.Collections.Generic;
+using Moq;
+using Sadna_17_B.ExternalServices;
+using Sadna_17_B.DomainLayer.Order;
+using Sadna_17_B.DomainLayer;
+using Sadna_17_B.DomainLayer.User;
 
 namespace Sadna_17_B_Test.Tests.IntegrationTests
 {
@@ -172,6 +177,44 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
             Assert.AreEqual(0, listOfOrders.Count);
         }
 
+        [TestMethod]
+        public void TestSupplySystemFailThrowException()
+        {
+            var testObject = new Mock<ISupplySystem>();
+            testObject.Setup(arg => arg.IsValidDelivery(" ", null)).Returns(false);
+            testObject.Setup(arg => arg.ExecuteDelivery(" ", null)).Returns(false);
 
+            OrderSystem os = new OrderSystem(new StoreController(), testObject.Object);
+            try
+            {
+                //should throw exception
+                os.ProcessOrder(new ShoppingCart(), "1", false, "some", "some");
+                Assert.IsTrue(false);
+            }
+            catch
+            {
+                Assert.IsTrue(true);
+            }
+        }
+
+        [TestMethod]
+        public void TestPaymentSystemFailThrowException()
+        {
+            var testObject = new Mock<IPaymentSystem>();
+            testObject.Setup(arg => arg.IsValidPayment(" ", 0)).Returns(false);
+            testObject.Setup(arg => arg.ExecutePayment(" ", 0)).Returns(false);
+
+            OrderSystem os = new OrderSystem(new StoreController(), testObject.Object);
+            try
+            {
+                //should throw exception
+                os.ProcessOrder(new ShoppingCart(), "1", false, "some", "some");
+                Assert.IsTrue(false);
+            }
+            catch
+            {
+                Assert.IsTrue(true);
+            }
+        }
     }
 }
