@@ -71,6 +71,12 @@ namespace Sadna_17_B.ServiceLayer
                 StoreService.AddProductReview(1, j, "Very good");
             }
 
+
+            // Add 10 products to the cart
+            //for (int j = 1; j <= 10; j++)
+            //{
+            //    UserService.AddToCart((res.Data as UserDTO).AccessToken, 1, j, j*2);
+            //}
         }
 
 
