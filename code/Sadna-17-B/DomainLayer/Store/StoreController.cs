@@ -487,7 +487,17 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return result.Any() ? result : null;
         }
 
+        public Dictionary<Product, int> filter_products_by_store_id(Dictionary<Product, int> searchResult, int storeID)
+        {
+            Dictionary<Product, int> result = new Dictionary<Product, int>();
 
+            foreach (var pair in searchResult)
+            {
+                if (storeID == pair.Value)
+                    result.Add(pair.Key, pair.Value);
+            }
+            return result.Any() ? result : null;
+        }
 
         public Dictionary<Product, int> filter_store_products_by_rating(Dictionary<Product, int> searchResult, int low)
         {
@@ -518,9 +528,21 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return result.Any() ? result : null;
         }
 
-        
-        
-        
+        public Dictionary<Product, int> all_products()
+        {
+            Dictionary<Product, int> res = new Dictionary<Product, int>();
+            foreach (Store store in active_stores)
+            {
+                Dictionary<Product, int> temp = store.all_products();
+                foreach(var line in temp)
+                {
+                    res.Add(line.Key, line.Value);
+                }
+            }
+            return res;
+        }
+
+
         // ----------------  info printing  -------------------------------------------------------------------------------------------
 
         public string get_store_info(int storeID)
@@ -537,5 +559,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         {
             return (store_by_id(storeID)).name;
         }
+
+
     }
 }

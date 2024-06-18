@@ -387,6 +387,16 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return s;
         }
 
+        public Dictionary<Product, int> all_products()
+        {
+            Dictionary<Product, int> res = new Dictionary<Product, int>();
+            foreach (Product product in inventory.all_products())
+            {
+                res.Add(product, ID);
+            }
+
+            return res;
+        }
 
     }
 }

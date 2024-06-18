@@ -228,6 +228,7 @@
     <Content Include="Views\SignUp.aspx" />
     <Content Include="Views\storePage.aspx" />
     <Content Include="Views\Stores.aspx" />
+    <Content Include="Views\all_product_page.aspx" />
     <Content Include="Web.config" />
     <Content Include="Bundle.config" />
     <Content Include="Site.Mobile.Master" />
@@ -324,6 +325,13 @@
     </Compile>
     <Compile Include="Views\Stores.aspx.designer.cs">
       <DependentUpon>Stores.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Views\all_product_page.aspx.cs">
+      <DependentUpon>all_product_page.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Views\all_product_page.aspx.designer.cs">
+      <DependentUpon>all_product_page.aspx</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>

@@ -43,6 +43,7 @@ namespace Sadna_17_B.ServiceLayer.Services
         // ---------------- search / filter options -------------------------------------------------------------------------------------------
 
         Response products_by_category(string category);
+        Response get_all_products();
         Response products_by_name(string name);
         Response products_by_keyWord(string keyWord);
         Response filter_search_by_price(Dictionary<Product, int> searchResult, int low, int high);
@@ -50,6 +51,7 @@ namespace Sadna_17_B.ServiceLayer.Services
         Response filter_all_products_in_store_by_price(int storeId, int low, int high);
         Response filter_search_by_store_rating(Dictionary<Product, int> searchResult, int low);
 
+        Response filter_search_by_store_id(Dictionary<Product, int> searchResult, int low);
 
         // ---------------- adjust policy options -------------------------------------------------------------------------------------------
 

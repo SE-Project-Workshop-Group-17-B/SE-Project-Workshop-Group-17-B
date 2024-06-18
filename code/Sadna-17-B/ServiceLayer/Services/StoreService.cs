@@ -440,6 +440,21 @@ namespace Sadna_17_B.ServiceLayer.Services
             return new Response(store_info, true);
         }
 
+        public Response get_all_products()
+        {
+            Dictionary<Product, int> output = _storeController.all_products();
+            string message = (!output.IsNullOrEmpty()) ? "products found successfully\n" : "failed to find products\n";
+            info_logger.Log("Store", message);
+
+            return new Response(message, (!output.IsNullOrEmpty()), output);
+        }
+
+        public Response filter_search_by_store_id(Dictionary<Product, int> searchResult, int storeId)
+        {
+            Dictionary<Product, int> output = _storeController.filter_products_by_store_id(searchResult, storeId);
+
+            return new Response("", (!output.IsNullOrEmpty()), output);
+        }
 
     }
 }
