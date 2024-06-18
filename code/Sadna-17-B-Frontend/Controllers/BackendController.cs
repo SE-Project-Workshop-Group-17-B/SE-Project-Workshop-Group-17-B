@@ -18,7 +18,7 @@ namespace Sadna_17_B_Frontend.Controllers
 
         private ServiceFactory serviceFactory;
         private IUserService userService;
-        private IStoreService storeService;
+        public IStoreService storeService;
         private UserDTO userDTO;
 
         private BackendController()

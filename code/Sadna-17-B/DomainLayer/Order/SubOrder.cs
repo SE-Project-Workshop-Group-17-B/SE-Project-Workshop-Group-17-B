@@ -21,7 +21,7 @@ namespace Sadna_17_B.DomainLayer.Order
 
         public SubOrder(int storeID, Order order)
         {
-            StoreID = StoreID;
+            StoreID = storeID;
             OrderID = order.OrderID;
             UserID = order.UserID;
             IsGuestOrder = order.IsGuestOrder;

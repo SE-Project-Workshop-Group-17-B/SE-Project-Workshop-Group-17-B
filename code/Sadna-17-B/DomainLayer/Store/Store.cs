@@ -12,7 +12,7 @@ using System.Xml.Linq;
 
 namespace Sadna_17_B.DomainLayer.StoreDom
 {
-    public class Store : informative_class
+    public class Store //: informative_class
     {
 
         // ---------------- Variables -------------------------------------------------------------------------------------------
@@ -48,7 +48,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         public Store(string name, string email, string phone_number, string store_description, string address, Inventory inventory)
         {
-            ID = idCounter++;
+            this.ID = idCounter++;
             
             this.name = name;
             this.email = email;
@@ -369,29 +369,20 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         public string info_to_print()
         {
-            string s = string.Empty;
+            string s = "";
+            s += "Our Email is " + email + "\n";
+            s += "To contact us, please call " + phone_number + "\n";
+            s += "We're Located at " + address + " feel free to drop by!\n";
 
-            s += "----------------------------------------------------------------------------------------------------------------------\n\n";
+            s += "A little about us ... \n" + description;
 
-            s += "Store   : " + name + "\n";
-            s += "Email   : " + email + "\n";
-            s += "Phone   : " + phone_number + "\n";
-            s += "address : " + address + "\n\n";
-
-            s += " ------ DESCRIPTION ------ \n\n" + description + "\n\n";
-
-            s += " ------ INVENTORY ------ \n\n" + inventory.info_to_print() + "\n\n";
-
-            s += "----------------------------------------------------------------------------------------------------------------------\n\n";
-
+            
             return s;
         }
 
-        public string info_to_UI()
+        public string show_inventory()
         {
-            string s = string.Empty;
-
-            // version 2 ....
+            string s = inventory.info_to_print();
 
             return s;
         }

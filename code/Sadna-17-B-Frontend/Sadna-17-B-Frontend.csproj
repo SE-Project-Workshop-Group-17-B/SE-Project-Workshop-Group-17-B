@@ -170,6 +170,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\cart-inverted.png" />
+    <Content Include="Content\cart.png" />
+    <Content Include="Content\stars.png" />
+    <Content Include="Content\store-image.png" />
+    <Content Include="Content\store-inverted.png" />
+    <Content Include="Content\store.png" />
     <Content Include="Views\About.aspx" />
     <Content Include="Views\Contact.aspx" />
     <Content Include="Content\bootstrap-theme.css" />
@@ -222,8 +228,11 @@
     <Content Include="Site.Master" />
     <Content Include="ViewSwitcher.ascx" />
     <Content Include="Views\Login.aspx" />
+    <Content Include="Views\MyCart.aspx" />
+    <Content Include="Views\MyStores.aspx" />
     <Content Include="Views\SearchProduct.aspx" />
     <Content Include="Views\SignUp.aspx" />
+    <Content Include="Views\Store_Page.aspx" />
     <Content Include="Views\Stores.aspx" />
     <Content Include="Web.config" />
     <Content Include="Bundle.config" />
@@ -294,6 +303,20 @@
     <Compile Include="Views\Login.aspx.designer.cs">
       <DependentUpon>Login.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Views\MyCart.aspx.cs">
+      <DependentUpon>MyCart.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Views\MyCart.aspx.designer.cs">
+      <DependentUpon>MyCart.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Views\MyStores.aspx.cs">
+      <DependentUpon>MyStores.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Views\MyStores.aspx.designer.cs">
+      <DependentUpon>MyStores.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Views\SearchProduct.aspx.cs">
       <DependentUpon>SearchProduct.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -307,6 +330,13 @@
     </Compile>
     <Compile Include="Views\SignUp.aspx.designer.cs">
       <DependentUpon>SignUp.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Store_Page.aspx.cs">
+      <DependentUpon>Store_Page.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Views\Store_Page.aspx.designer.cs">
+      <DependentUpon>Store_Page.aspx</DependentUpon>
     </Compile>
     <Compile Include="Views\Stores.aspx.cs">
       <DependentUpon>Stores.aspx</DependentUpon>

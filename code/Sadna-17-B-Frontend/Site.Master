@@ -17,6 +17,23 @@
 
 </head>
 <body>
+    <style>
+        #LblHello {
+            pointer-events: none;
+        }
+        .cart-button-with-image {
+            background-image: url(/Content/cart-inverted.png);
+            background-size: contain;
+            background-repeat: no-repeat;
+            margin: 10px 5px 0 5px;
+        }
+        .stores-button-with-image {
+            background-image: url(/Content/store-inverted.png);
+            background-size: contain;
+            background-repeat: no-repeat;
+            margin: 10px 5px 0 5px;
+        }
+    </style>
     <form runat="server">
         <asp:ScriptManager runat="server">
             <Scripts>
@@ -56,6 +73,9 @@
                         <li><a runat="server" href="~/Views/Contact">Contact</a></li>
                     </ul>
                     <ul class="nav navbar-nav" style="float: right" visible="false">
+                        <li><asp:LinkButton id="MyStoresBtn" CssClass="stores-button-with-image" runat="server" OnClick="MyStoresBtn_Click"></asp:LinkButton></li>
+                        <li><asp:LinkButton id="MyCartBtn" CssClass="cart-button-with-image" runat="server" OnClick="MyCartBtn_Click"></asp:LinkButton></li>
+                        <li><asp:LinkButton id="LblHello" runat="server">Hello </asp:LinkButton></li>
                         <li><asp:LinkButton id="LogoutBtn" runat="server" OnClick="Logout_Click">Log Out</asp:LinkButton></li>
                         <li><a id="LoginBtn" runat="server" href="~/Views/Login">Login</a></li>
                         <li><a id="SignUpBtn" runat="server" href="~/Views/SignUp">Sign Up</a></li>

@@ -15,9 +15,13 @@ namespace Sadna_17_B_Frontend
         protected string _loginLogoutButtons;
         protected void Page_Load(object sender, EventArgs e)
         {
+            MyCartBtn.Visible = true;
             if (backendController.IsLoggedIn())
             {
+                MyStoresBtn.Visible = true;
                 LogoutBtn.Visible = true;
+                LblHello.Text = "Hello " + backendController.GetUsername() + "!";
+                LblHello.Visible = true;
                 LoginBtn.Visible = false;
                 SignUpBtn.Visible = false;
                 //_loginLogoutButtons =
@@ -27,7 +31,9 @@ namespace Sadna_17_B_Frontend
             }
             else
             {
+                MyStoresBtn.Visible = false;
                 LogoutBtn.Visible = false;
+                LblHello.Visible = false;
                 LoginBtn.Visible = true;
                 SignUpBtn.Visible = true;
                 //_loginLogoutButtons =
@@ -52,8 +58,18 @@ namespace Sadna_17_B_Frontend
             }
             else
             {
-                Page_Load(this, e); // Refreshes the page after logging out
+                Response.Redirect("Homepage"); // Redirects back to the home page after logging out
             }
+        }
+
+        protected void MyCartBtn_Click(object sender, EventArgs e)
+        {
+            Response.Redirect("MyCart");
+        }
+
+        protected void MyStoresBtn_Click(object sender, EventArgs e)
+        {
+            Response.Redirect("MyStores");
         }
     }
 }

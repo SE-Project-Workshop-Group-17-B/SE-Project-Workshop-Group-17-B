@@ -1,4 +1,4 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using Sadna_17_B.ServiceLayer;
 using Sadna_17_B.ServiceLayer.Services;
@@ -9,11 +9,12 @@ using Sadna_17_B.DomainLayer.User;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 using System.Diagnostics;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Sadna_17_B_Test.Tests.AcceptanceTests
 {
     [TestClass]
-    public class SystemAT
+    public class UserAT
     {
         IUserService userService;
         IStoreService storeService;
@@ -114,76 +115,6 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
 
             Assert.IsTrue(res.Success);
         }
-
-        [TestMethod]
-        public void TestStoreOpening()
-        {
-            SetUp();
-
-            Response ignore = userService.CreateSubscriber(username1, password1);
-            ignore = userService.CreateSubscriber(username2, password2);
-            Response res = userService.Login(username1, password1);
-            userDTO = res.Data as UserDTO;
-            Response res2 = storeService.create_store(userDTO.AccessToken,name, email, phonenumber, storeDescr, addr, inv);
-
-            res = storeService.store_by_name(name);
-            Assert.IsTrue(res.Success);
-            Assert.IsTrue(res2.Success);
-            Assert.IsFalse(storeService.store_by_name(email).Success);  
-        }
-
-        [TestMethod]
-        public void TestStoreClose()
-        {
-            SetUp();
-
-            Response ignore = userService.CreateSubscriber(username1, password1);
-            ignore = userService.CreateSubscriber(username2, password2);
-            Response res = userService.Login(username1, password1);
-            userDTO = res.Data as UserDTO;
-            storeService.create_store(userDTO.AccessToken, name, email, phonenumber, storeDescr, addr, inv);
-            Response storeRes = storeService.store_by_name(name);
-            int newStoreID = (storeRes.Data as Store).ID;
-
-            Response res2 = storeService.close_store(userDTO.AccessToken, newStoreID);
-            Response res3 = storeService.close_store(userDTO.AccessToken, newStoreID + 1);
-
-            Assert.IsTrue(res2.Success);
-            Assert.IsFalse(res3.Success);
-        }
-
-        [TestMethod]
-        public void TestClosedStoreClosing()
-        {
-            SetUp();
-
-            Response ignore = userService.CreateSubscriber(username1, password1);
-            ignore = userService.CreateSubscriber(username2, password2);
-            Response res = userService.Login(username1, password1);
-            userDTO = res.Data as UserDTO;
-            storeService.create_store(userDTO.AccessToken, name, email, phonenumber, storeDescr, addr, inv);
-            Response storeRes = storeService.store_by_name(name);
-            int newStoreID = (storeRes.Data as Store).ID; // Note: may change if the response returns StoreDTO
-
-            Response res2 = storeService.close_store(userDTO.AccessToken, newStoreID);
-            Response res3 = storeService.close_store(userDTO.AccessToken, newStoreID);
-
-            Assert.IsFalse(res3.Success);
-        }
-
-        [TestMethod]
-        public void TestGetStoreByName()
-        {
-            SetUp();
-            Response ignore = userService.CreateSubscriber(username1, password1);
-            ignore = userService.CreateSubscriber(username2, password2);
-            Response res = userService.Login(username1, password1);
-            userDTO = res.Data as UserDTO;
-            storeService.create_store(userDTO.AccessToken, name, email, phonenumber, storeDescr, addr, inv);
-            Response storeRes = storeService.store_by_name(name);
-            Assert.AreEqual((storeRes.Data as Store).name, name);
-        }
-
 
         [TestMethod]
         public void TestCreateStoreFounder()
@@ -407,6 +338,220 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
             Assert.IsTrue(res.Success);
             Assert.IsTrue(data.Item1.Contains(username1));
             Assert.IsTrue(data.Item2[username2].SetEquals(auth));
+        }
+
+        [TestMethod]
+        public void TestRegisterSameUserTwice()
+        {
+            SetUp();
+
+            Response ignore = userService.CreateSubscriber(username1, password1);
+            Response res = userService.CreateSubscriber(username1, password1);
+            Assert.IsFalse(res.Success);
+        }
+
+        [TestMethod]
+        public void TestSuccesfullAddToCart()
+        {
+            SetUp();
+
+            Response ignore = userService.CreateSubscriber(username1, password1);
+            ignore = userService.Login(username1, password1);
+            UserDTO temp = ignore.Data as UserDTO;
+            inv = new Inventory();
+            ignore = storeService.create_store(temp.AccessToken, name, email, phonenumber, storeDescr, addr);
+            storeId = ((Store)storeService.store_by_name(name).Data).ID;
+
+            storeService.add_products_to_store(temp.AccessToken, storeId, productName, productPrice, productCategory, "Description", 10);
+            List<Product> products = ((Store)storeService.store_by_name(name).Data).filter_name(productName);
+            int productId = products[0].ID;
+
+            ignore = userService.CreateSubscriber(username2, password2);
+            Response res = userService.Login(username2, password2);
+            userDTO = res.Data as UserDTO;
+            string token = userDTO.AccessToken;
+
+            Response test = userService.AddToCart(token, storeId, productId, 10);
+            Response test2 = userService.GetShoppingCart(token);
+            ShoppingCartDTO shoppingCart = test2.Data as ShoppingCartDTO;
+            ShoppingBasketDTO shoppingBasket = shoppingCart.ShoppingBaskets[storeId];
+
+            Assert.IsTrue(test.Success);
+            Assert.AreEqual(1, shoppingBasket.ProductQuantities.Count);
+        }
+
+        [TestMethod]
+        public void TestAddToCartWrongProduct()
+        {
+            SetUp();
+
+            Response ignore = userService.CreateSubscriber(username1, password1);
+            ignore = userService.Login(username1, password1);
+            UserDTO temp = ignore.Data as UserDTO;
+            inv = new Inventory();
+            ignore = storeService.create_store(temp.AccessToken, name, email, phonenumber, storeDescr, addr);
+            storeId = ((Store)storeService.store_by_name(name).Data).ID;
+
+            ignore = userService.CreateSubscriber(username2, password2);
+            Response res = userService.Login(username2, password2);
+            userDTO = res.Data as UserDTO;
+            string token = userDTO.AccessToken;
+
+            int productId = 10; //does not exist in our store
+            Response test = userService.AddToCart(token, storeId, productId, 10);
+            Assert.IsTrue(test.Success); // The addition to cart does not enforce existence of the product in the store, it can be added later, but it is checked in complete purchase
+        }
+
+        [TestMethod]
+        public void TestAddToMuchProductsToCart()
+        {
+            SetUp();
+            int quantity = 10;
+
+            Response ignore = userService.CreateSubscriber(username1, password1);
+            ignore = userService.Login(username1, password1);
+            UserDTO temp = ignore.Data as UserDTO;
+            inv = new Inventory();
+            ignore = storeService.create_store(temp.AccessToken, name, email, phonenumber, storeDescr, addr);
+            storeId = ((Store)storeService.store_by_name(name).Data).ID;
+
+            storeService.add_products_to_store(temp.AccessToken, storeId, productName, productPrice, productCategory, "Description", quantity);
+            List<Product> products = ((Store)storeService.store_by_name(name).Data).filter_name(productName);
+            int productId = products[0].ID;
+
+            ignore = userService.CreateSubscriber(username2, password2);
+            Response res = userService.Login(username2, password2);
+            userDTO = res.Data as UserDTO;
+            string token = userDTO.AccessToken;
+
+            Response test = userService.AddToCart(token, storeId, productId, 2*quantity);
+            Assert.IsTrue(test.Success);
+        }
+
+        [TestMethod]
+        public void TestGoodPurchaseHistory()
+        {
+            SetUp();
+            int quantity = 10;
+
+            Response ignore = userService.CreateSubscriber(username1, password1);
+            ignore = userService.Login(username1, password1);
+            UserDTO temp = ignore.Data as UserDTO;
+            inv = new Inventory();
+            ignore = storeService.create_store(temp.AccessToken, name, email, phonenumber, storeDescr, addr);
+            storeId = ((Store)storeService.store_by_name(name).Data).ID;
+
+            storeService.add_products_to_store(temp.AccessToken, storeId, productName, productPrice, productCategory, "Description", quantity);
+            List<Product> products = ((Store)storeService.store_by_name(name).Data).filter_name(productName);
+            int productId = products[0].ID;
+
+            ignore = userService.CreateSubscriber(username2, password2);
+            Response res = userService.Login(username2, password2);
+            userDTO = res.Data as UserDTO;
+            string token = userDTO.AccessToken;
+
+            ignore = userService.AddToCart(token, storeId, productId, quantity);
+            ignore = userService.CompletePurchase(token, "someAddr", "SomeInfo");
+
+            Response test = userService.GetMyOrderHistory(token);
+            List<OrderDTO> listOfOrders = test.Data as List<OrderDTO>;
+
+            Assert.IsTrue(test.Success);
+            Assert.AreEqual(1, listOfOrders.Count);
+        }
+
+        [TestMethod]
+        public void TestBadPurchaseHistory()
+        {
+            SetUp();
+            int quantity = 10;
+
+            Response ignore = userService.CreateSubscriber(username1, password1);
+            ignore = userService.Login(username1, password1);
+            UserDTO temp = ignore.Data as UserDTO;
+            inv = new Inventory();
+            ignore = storeService.create_store(temp.AccessToken, name, email, phonenumber, storeDescr, addr);
+            storeId = ((Store)storeService.store_by_name(name).Data).ID;
+
+            storeService.add_products_to_store(temp.AccessToken, storeId, productName, productPrice, productCategory, "Description", quantity);
+            List<Product> products = ((Store)storeService.store_by_name(name).Data).filter_name(productName);
+            int productId = products[0].ID;
+
+            ignore = userService.CreateSubscriber(username2, password2);
+            Response res = userService.Login(username2, password2);
+            userDTO = res.Data as UserDTO;
+            string token = userDTO.AccessToken;
+
+            ignore = userService.AddToCart(token, storeId, productId, quantity);
+            ignore = userService.CompletePurchase(token, "someAddr", "SomeInfo");
+
+            Response test = userService.GetMyOrderHistory(token);
+            List<OrderDTO> listOfOrders = test.Data as List<OrderDTO>;
+
+            Assert.IsTrue(test.Success);
+            Assert.AreNotEqual(2, listOfOrders.Count);
+        }
+
+        [TestMethod]
+        public void TestGettingDataOfStoreByAdmin()
+        {
+            SetUp();
+            int quantity = 10;
+
+            Response ignore = userService.CreateSubscriber(username1, password1);
+            ignore = userService.Login(username1, password1);
+            UserDTO temp = ignore.Data as UserDTO;
+            inv = new Inventory();
+            ignore = storeService.create_store(temp.AccessToken, name, email, phonenumber, storeDescr, addr);
+            storeId = ((Store)storeService.store_by_name(name).Data).ID;
+
+            storeService.add_products_to_store(temp.AccessToken, storeId, productName, productPrice, productCategory, "Description", quantity);
+            List<Product> products = ((Store)storeService.store_by_name(name).Data).filter_name(productName);
+            int productId = products[0].ID;
+
+            ignore = userService.CreateSubscriber(username2, password2);
+            Response res = userService.Login(username2, password2);
+            userDTO = res.Data as UserDTO;
+            string token = userDTO.AccessToken;
+
+            ignore = userService.AddToCart(token, storeId, productId, quantity);
+            ignore = userService.CompletePurchase(token, "someAddr", "SomeInfo");
+
+            Response test = userService.GetStoreOrderHistory(temp.AccessToken, storeId);
+            List<SubOrderDTO> listOfOrders = test.Data as List<SubOrderDTO>;
+
+            Assert.IsTrue(test.Success);
+            Assert.AreEqual(1, listOfOrders.Count);
+        }
+
+        [TestMethod]
+        public void TestGettingDataOfStoreByRandomUser()
+        {
+            SetUp();
+            int quantity = 10;
+
+            Response ignore = userService.CreateSubscriber(username1, password1);
+            ignore = userService.Login(username1, password1);
+            UserDTO temp = ignore.Data as UserDTO;
+            inv = new Inventory();
+            ignore = storeService.create_store(temp.AccessToken, name, email, phonenumber, storeDescr, addr);
+            storeId = ((Store)storeService.store_by_name(name).Data).ID;
+
+            storeService.add_products_to_store(temp.AccessToken, storeId, productName, productPrice, productCategory, "Description", quantity);
+            List<Product> products = ((Store)storeService.store_by_name(name).Data).filter_name(productName);
+            int productId = products[0].ID;
+
+            ignore = userService.CreateSubscriber(username2, password2);
+            Response res = userService.Login(username2, password2);
+            userDTO = res.Data as UserDTO;
+            string token = userDTO.AccessToken;
+
+            ignore = userService.AddToCart(token, storeId, productId, quantity);
+            ignore = userService.CompletePurchase(token, "someAddr", "SomeInfo");
+
+            Response test = userService.GetStoreOrderHistory(token, storeId);
+
+            Assert.IsFalse(test.Success);
         }
     }
 }
