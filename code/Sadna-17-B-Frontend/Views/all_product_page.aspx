@@ -1,5 +1,6 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="all_product_page.aspx.cs" Inherits="Sadna_17_B_Frontend.Views.all_product_page" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" MasterPageFile="~/Site.Master" CodeBehind="all_product_page.aspx.cs" Inherits="Sadna_17_B_Frontend.Views.all_product_page" %>
 <%@ MasterType VirtualPath="~/Site.Master" %>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -23,36 +24,7 @@
         .main-content {
             text-align: center;
         }
-        .search-container {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
-        .search-box {
-            display: flex;
-            align-items: center;
-            border: 2px solid #008080;
-            border-radius: 5px;
-            width: 426px;
-        }
-        .search-box input[type="text"] {
-            border: none;
-            padding: 10px;
-            flex-grow: 1;
-            outline: none;
-        }
-        .search-box button {
-            position: relative;
-            right: -38px;
-            background-color: #008080;
-            border: none;
-            padding: 10px 20px;
-            cursor: pointer;
-            color: white;
-            font-size: 16px;
-            align-content: baseline;
-            border-radius: 0 5px 5px 0;
-        }
+
         .product-row {
             display: flex;
             justify-content: space-between;
@@ -106,7 +78,7 @@
 <body>
     <form id="form1" runat="server">
         <div class="container">
-            <h1>All Products</h1>
+            <h1>Products</h1>
             <div class="search-container">
                 <div class="search-box">
                     <input type="text" id="searchInput" placeholder="Search items" />
@@ -146,8 +118,7 @@
     </form>
     <script>
         function searchItems() {
-            // Placeholder function for search items
-            alert('Search button clicked!');
+            window.open('SearchProduct.aspx', 'SearchProduct', 'width=1000,height=400');
         }
 
         function addToCart(productId) {
