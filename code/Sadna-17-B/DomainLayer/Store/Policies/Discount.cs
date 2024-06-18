@@ -1,6 +1,7 @@
 using Sadna_17_B.DomainLayer.Utils;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.Remoting.Messaging;
 using System.Text;
@@ -13,22 +14,25 @@ namespace Sadna_17_B.DomainLayer.StoreDom
     // ----------- Base Discount Class ------------------------------------------------------------------------------------------------------------------  
 
 
-    public abstract class Discount : informative_class
+    public abstract class Discount : I_informative_class, I_discount
     {
 
         // ----------- variables --------------------------------------------------------------
+
+        public List<Func<Cart, bool>> relevant_conditions = new List<Func<Cart, bool>>();
+        protected Func<Cart, double> relevant_products_price { get; set; }
 
 
         private static int discount_id;
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
-        public IDiscount_Strategy strategy { get; set; }
+        public Discount_Strategy strategy { get; set; }
 
 
         // ----------- Constructor ------------------------------------------------------------  
 
 
-        public Discount(DateTime StartDate, DateTime EndDate, IDiscount_Strategy strategy)
+        public Discount(DateTime StartDate, DateTime EndDate, Discount_Strategy strategy)
         {
             discount_id += 1;
 
@@ -38,6 +42,10 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         }
 
+        public Discount()
+        {
+            discount_id += 1;
+        }
 
         // ----------- Base Functionalities --------------------------------------------------------  
 
@@ -61,11 +69,20 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         // ----------- Abstract Functionalities --------------------------------------------------------  
 
 
-        public abstract double calculate_discount(double price);
+        public abstract Mini_Receipt apply_discount(Cart cart);
+        
 
-        public abstract string info_to_print();
+        public virtual string info_to_print()
+        {
+            // TODO
+            return "discount";
+        }
 
-        public abstract string info_to_UI();
+        public virtual string info_to_UI() 
+        {
+            // TODO
+            return "discount";
+        }
         
 
 
@@ -73,77 +90,75 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
 
 
-    // ----------- Discout Types ------------------------------------------------------------------------------------------------------------------  
+    // ----------- Discount simple : discount with no conditions to apply ---------------------------------------------------------------------------------------------  
 
 
-    public class VisibleDiscount : Discount
+    public class Discount_Simple : Discount
     {
 
-        public VisibleDiscount(DateTime StartDate, DateTime EndDate, IDiscount_Strategy strategy) : base(StartDate, EndDate, strategy) { }
-
-        public override double calculate_discount(double price)
+        public Discount_Simple(DateTime StartDate, DateTime EndDate, Discount_Strategy strategy,
+                                                                    Func<Cart, double> relevant_products_price) : base(StartDate, EndDate, strategy) 
         {
-            return strategy.apply_discount(price);
-
-            // version 2 implementation ...
+            relevant_conditions.Add((c) => (true));
+            base.relevant_products_price = relevant_products_price;
         }
 
-        public override string info_to_print()
+        public override Mini_Receipt apply_discount(Cart cart)
         {
-            string s = string.Empty;
+            List<Tuple<Discount, double>> applied_discounts = new List<Tuple<Discount, double>>();
 
-            // version 2 ....
+            double relevant_price = relevant_products_price(cart);
 
-            return s;
-        }
+            if (relevant_price != 0)
+                applied_discounts.Add(Tuple.Create((Discount)this, strategy.apply_discount_strategy(relevant_price)));
 
-        public override string info_to_UI()
-        {
-            string s = string.Empty;
 
-            // version 2 ....
-
-            return s;
+            return new Mini_Receipt(applied_discounts);
         }
 
     }
 
 
+    // ----------- Discount conditional : discount with conditions to apply ---------------------------------------------------------------------------------------------  
 
-    // ----------- Discout Types ------------------------------------------------------------------------------------------------------------------  
 
-
-    public class HiddenDiscount : Discount
+    public class Discount_Conditional : Discount 
     {
 
-        public HiddenDiscount(DateTime StartDate, DateTime EndDate, IDiscount_Strategy strategy) : base(StartDate, EndDate, strategy) { }
-
-        public override double calculate_discount(double price)
-        {
-            return strategy.apply_discount(price);
-
-            // version 2 implementation ...
+        
+        public Discount_Conditional(DateTime StartDate, DateTime EndDate, Discount_Strategy strategy,
+                                        List<Func<Cart,bool>> condition_funcs, Func<Cart, double> relevant_price_func) : base(StartDate, EndDate, strategy) 
+        { 
+            relevant_conditions.AddRange(condition_funcs);
+            relevant_products_price = relevant_price_func;
         }
 
-        public override string info_to_print()
+        public Discount_Conditional(DateTime StartDate, DateTime EndDate, Discount_Strategy strategy,
+                                        Func<Cart, bool> condition_func, Func<Cart, double> relevant_price_func) : base(StartDate, EndDate, strategy)
         {
-            string s = string.Empty;
-
-            // version 2 ....
-
-            return s;
+            relevant_conditions.Add(condition_func);
+            relevant_products_price = relevant_price_func;
         }
 
-        public override string info_to_UI()
+        public override Mini_Receipt apply_discount(Cart cart)
         {
-            string s = string.Empty;
 
-            // version 2 ....
+            List<Tuple<Discount, double>> applied_discounts = new List<Tuple<Discount, double>>();
 
-            return s;
+            double relevant_price = relevant_products_price(cart);
+
+            if (relevant_price != 0)
+                applied_discounts.Add(Tuple.Create((Discount) this, strategy.apply_discount_strategy(relevant_price)));
+
+            return new Mini_Receipt(applied_discounts);
         }
+
 
     }
+
+
+   
+
 
 
 

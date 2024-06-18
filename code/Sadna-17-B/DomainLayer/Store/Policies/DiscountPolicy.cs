@@ -24,7 +24,10 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         public string policy_name { get; set; }
 
         public Dictionary<Discount, HashSet<int>> discount_to_products;
-        public Dictionary<Discount_Membership, int> discount_to_member;
+        public Dictionary<Discount, HashSet<int>> discount_to_categories;
+        public Dictionary<Discount, HashSet<int>> discount_to_member;
+
+        public HashSet<DiscountRule> discount_rules;
 
 
         // ----------- constructor -----------------------------------------------------------
@@ -39,7 +42,49 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         }
 
 
-        // ----------- functions -----------------------------------------------------------
+        // ----------- products discount -----------------------------------------------------------
+
+
+        public bool add_product_to_discount(Discount discount, int pid)
+        {
+            return discount_to_products[discount].Add(pid);
+        }
+
+        public bool remove_product_from_discount(Discount discount, int pid)
+        {
+            return discount_to_products[discount].Remove(pid);
+        }
+
+
+
+        // ----------- categories discount -----------------------------------------------------------
+
+
+        public bool add_category_to_discount(Discount discount, int category)
+        {
+            return discount_to_categories[discount].Add(category);
+        }
+
+        public bool remove_category_from_discount(Discount discount, int category)
+        {
+            return discount_to_categories[discount].Remove(category);
+        }
+
+
+        // ----------- membership discount -----------------------------------------------------------
+
+        public bool add_membership(Discount discount, int pid)
+        {
+            return discount_to_member[discount].Add(pid);
+        }
+
+        public bool remove_membership(Discount discount, int pid)
+        {
+            return discount_to_member[discount].Remove(pid);
+        }
+
+
+        // ----------- other -----------------------------------------------------------
 
 
         public bool add_discount(Discount discount)
@@ -80,20 +125,16 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return false;
         }
 
-        public double calculate_discount(int pid, double price)
+        public Receipt calculate_discount(Cart cart)
         {
-            foreach (var item in discount_to_products)
+             Receipt Receipt = new Receipt(cart);
+
+            foreach (DiscountRule discount_rule in discount_rules)
             {
-                Discount discount = item.Key;
-                HashSet<int> p_ids = item.Value;
-
-                // double discount possible
-
-                if (p_ids.Contains(pid))
-                    price = discount.calculate_discount(price);
+                Receipt.add_discounts(discount_rule.apply_discount(cart));
             }
-
-            return price;
+                
+            return Receipt;
         }
 
         public int get_id()
