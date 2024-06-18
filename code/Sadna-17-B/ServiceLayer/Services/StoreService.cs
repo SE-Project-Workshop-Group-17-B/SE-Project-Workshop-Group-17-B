@@ -295,14 +295,6 @@ namespace Sadna_17_B.ServiceLayer.Services
             return new Response(message, (!output.IsNullOrEmpty()), output);
         }
 
-        public Response products_by_name(string name)
-        {
-            Dictionary<Product, int> output = _storeController.filter_products_by_name(name);
-            string message = (!output.IsNullOrEmpty()) ? "products found successfully\n" : "failed to find products\n";
-            info_logger.Log("Store", message);
-
-            return new Response(message, (!output.IsNullOrEmpty()), output);
-        }
 
         public Response products_by_keyWord(string keyWord)
         {
@@ -313,12 +305,7 @@ namespace Sadna_17_B.ServiceLayer.Services
             return new Response(message, (!output.IsNullOrEmpty()), output);
         }
 
-        public Response filter_search_by_price(Dictionary<Product, int> searchResult, int low, int high)
-        {
-            Dictionary<Product, int> output = _storeController.filter_products_by_price(searchResult, low, high);
 
-            return new Response("", (!output.IsNullOrEmpty()), output);
-        }
 
         public Response filter_search_by_product_rating(Dictionary<Product, int> searchResult, int low)
         {
@@ -327,9 +314,16 @@ namespace Sadna_17_B.ServiceLayer.Services
             return new Response("", (!output.IsNullOrEmpty()), output);
         }
 
-        public Response filter_all_products_in_store_by_price(int storeId, int low, int high)
+
+        public Response filter_search_by_store_id(Dictionary<Product, int> searchResult, int storeId)
         {
-            Dictionary<Product, int> output = _storeController.filter_store_products_by_price(storeId, low, high);
+            Dictionary<Product, int> output = _storeController.filter_products_by_store_id(searchResult, storeId);
+
+            return new Response("", (!output.IsNullOrEmpty()), output);
+        }
+        public Response filter_search_by_price(Dictionary<Product, int> searchResult, int low, int high)
+        {
+            Dictionary<Product, int> output = _storeController.filter_products_by_price(searchResult, low, high);
 
             return new Response("", (!output.IsNullOrEmpty()), output);
         }
@@ -341,6 +335,16 @@ namespace Sadna_17_B.ServiceLayer.Services
             return new Response("", (!output.IsNullOrEmpty()), output);
         }
 
+
+/*
+        public Response products_by_name(string name)
+        {
+            Dictionary<Product, int> output = _storeController.filter_products_by_name(name);
+            string message = (!output.IsNullOrEmpty()) ? "products found successfully\n" : "failed to find products\n";
+            info_logger.Log("Store", message);
+
+            return new Response(message, (!output.IsNullOrEmpty()), output);
+        }*/
 
 
         // ---------------- adjust policy options -------------------------------------------------------------------------------------------

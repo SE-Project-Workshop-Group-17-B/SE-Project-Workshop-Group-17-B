@@ -24,13 +24,31 @@ namespace Sadna_17_B_Frontend.Views
         protected global::System.Web.UI.HtmlControls.HtmlInputText txtKeyword;
 
         /// <summary>
-        /// ddlCategory control.
+        /// litKeywordMessage control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlSelect ddlCategory;
+        protected global::System.Web.UI.WebControls.Literal litKeywordMessage;
+
+        /// <summary>
+        /// txtCategory control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlInputText txtCategory;
+
+        /// <summary>
+        /// litCategoryMessage control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal litCategoryMessage;
 
         /// <summary>
         /// txtMinPrice control.
@@ -51,6 +69,15 @@ namespace Sadna_17_B_Frontend.Views
         protected global::System.Web.UI.HtmlControls.HtmlInputText txtMaxPrice;
 
         /// <summary>
+        /// litPriceMessage control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal litPriceMessage;
+
+        /// <summary>
         /// txtMinRating control.
         /// </summary>
         /// <remarks>
@@ -58,6 +85,15 @@ namespace Sadna_17_B_Frontend.Views
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlInputGenericControl txtMinRating;
+
+        /// <summary>
+        /// litRatingMessage control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal litRatingMessage;
 
         /// <summary>
         /// txtMinStoreRating control.
@@ -69,6 +105,33 @@ namespace Sadna_17_B_Frontend.Views
         protected global::System.Web.UI.HtmlControls.HtmlInputGenericControl txtMinStoreRating;
 
         /// <summary>
+        /// litStoreRatingMessage control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal litStoreRatingMessage;
+
+        /// <summary>
+        /// txtStoreID control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlInputText txtStoreID;
+
+        /// <summary>
+        /// litStoreIDMessage control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal litStoreIDMessage;
+
+        /// <summary>
         /// searchResults control.
         /// </summary>
         /// <remarks>
@@ -76,5 +139,23 @@ namespace Sadna_17_B_Frontend.Views
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl searchResults;
+
+        /// <summary>
+        /// rptProducts control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Repeater rptProducts;
+
+        /// <summary>
+        /// lblMessage control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal lblMessage;
     }
 }
