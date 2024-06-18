@@ -99,6 +99,16 @@ namespace Sadna_17_B.ServiceLayer.Services
             return new Response(false, "the user is not authorized to enter the store(he is not the founder)\n");
         }
 
+        public Response GetStoreById(int storeID)
+        {
+            Store store = _storeController.store_by_id(storeID);
+            if (store != null)
+            {
+                return new Response(true, store);
+            }
+            return new Response("Failed to return Info about store ID: " + storeID, false);
+        }
+
         public Response valid_order(int storeId, Dictionary<int, int> quantities)
         {
             bool result = _storeController.valid_order(storeId, quantities);
@@ -432,12 +442,14 @@ namespace Sadna_17_B.ServiceLayer.Services
         public Response get_store_info(int storeID)
         {
             string store_info = _storeController.get_store_info(storeID);
-            
-            if(store_info == null)
+
+            if (store_info == null)
                 return new Response("Failed to return Info about store ID: " + storeID, false);
 
             return new Response(store_info, true);
         }
+
+
 
         public Response get_store_name(int storeID)
         {

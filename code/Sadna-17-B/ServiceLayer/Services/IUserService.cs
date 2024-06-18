@@ -79,6 +79,11 @@ namespace Sadna_17_B.ServiceLayer.Services
         Response /*bool*/ IsManager(string token, int storeID);
 
         /// <summary>
+        /// Returns a Response with Success "true" and Data "true" iff the given token corresponds to the store founder of the store with the given storeID.
+        /// </summary>
+        Response /*bool*/ IsFounder(string token, int storeID);
+
+        /// <summary>
         /// Returns a Response with Success "true" and Data "true" iff the given token corresponds to a store manager of the given store with the given storeID and with the given ManagerAuthorization.
         /// </summary>
         Response /*bool*/ HasManagerAuthorization(string token, int storeID, Manager.ManagerAuthorization auth);

@@ -190,6 +190,7 @@
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\Site.css" />
     <Content Include="Views\CreateStores.aspx" />
+    <Content Include="Views\FounderStorePage.aspx" />
     <Content Include="Views\Homepage.aspx" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
@@ -234,6 +235,7 @@
     <Content Include="Site.Master" />
     <Content Include="ViewSwitcher.ascx" />
     <Content Include="Views\Login.aspx" />
+    <Content Include="Views\ManagerStorePage.aspx" />
     <Content Include="Views\MyCart.aspx" />
     <Content Include="Views\MyStores.aspx" />
     <Content Include="Views\SearchProduct.aspx" />
@@ -277,6 +279,13 @@
     <Compile Include="Views\CreateStores.aspx.designer.cs">
       <DependentUpon>CreateStores.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Views\FounderStorePage.aspx.cs">
+      <DependentUpon>FounderStorePage.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Views\FounderStorePage.aspx.designer.cs">
+      <DependentUpon>FounderStorePage.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Views\Homepage.aspx.cs">
       <DependentUpon>Homepage.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -315,6 +324,13 @@
     </Compile>
     <Compile Include="Views\Login.aspx.designer.cs">
       <DependentUpon>Login.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ManagerStorePage.aspx.cs">
+      <DependentUpon>ManagerStorePage.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Views\ManagerStorePage.aspx.designer.cs">
+      <DependentUpon>ManagerStorePage.aspx</DependentUpon>
     </Compile>
     <Compile Include="Views\MyCart.aspx.cs">
       <DependentUpon>MyCart.aspx</DependentUpon>
