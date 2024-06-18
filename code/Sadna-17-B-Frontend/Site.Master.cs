@@ -18,6 +18,8 @@ namespace Sadna_17_B_Frontend
             if (backendController.IsLoggedIn())
             {
                 LogoutBtn.Visible = true;
+                LblHello.Text = "Hello " + backendController.GetUsername() + "!";
+                LblHello.Visible = true;
                 LoginBtn.Visible = false;
                 SignUpBtn.Visible = false;
                 //_loginLogoutButtons =
@@ -28,6 +30,7 @@ namespace Sadna_17_B_Frontend
             else
             {
                 LogoutBtn.Visible = false;
+                LblHello.Visible = false;
                 LoginBtn.Visible = true;
                 SignUpBtn.Visible = true;
                 //_loginLogoutButtons =

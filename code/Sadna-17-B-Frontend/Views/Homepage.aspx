@@ -14,7 +14,7 @@
                 Optional Description #1
             </p>
             <p>
-                <a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301948">See more &raquo;</a>
+                <a class="btn btn-default" href="Store_Page?storeId=1">See more &raquo;</a>
             </p>
         </div>
         <div class="col-md-4">
@@ -23,7 +23,7 @@
                 Optional Description #2
             </p>
             <p>
-                <a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301949">See more &raquo;</a>
+                <a class="btn btn-default" href="Store_Page?storeId=2">See more &raquo;</a>
             </p>
         </div>
         <div class="col-md-4">
@@ -32,7 +32,7 @@
                 Optional Description #3
             </p>
             <p>
-                <a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301950">See more &raquo;</a>
+                <a class="btn btn-default" href="Store_Page?storeId=3">See more &raquo;</a>
             </p>
         </div>
     </div>
