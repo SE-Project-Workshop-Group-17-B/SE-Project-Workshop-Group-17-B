@@ -29,6 +29,18 @@ namespace Sadna_17_B.DomainLayer.Order
             this.storeController = storeController;
         }
 
+        public OrderSystem(StoreController storeController, IPaymentSystem paymentInstance)
+        {
+            this.storeController = storeController;
+            this.paymentSystem = paymentInstance;
+        }
+
+        public OrderSystem(StoreController storeController, ISupplySystem supplyInstance)
+        {
+            this.storeController = storeController;
+            this.supplySystem = supplyInstance;
+        }
+
         private Dictionary<int, Dictionary<int, int>> GetShoppingCartQuantities(ShoppingCart shoppingCart)
         {
             Dictionary<int, Dictionary<int, int>> quantities = new Dictionary<int, Dictionary<int, int>>();
@@ -62,15 +74,22 @@ namespace Sadna_17_B.DomainLayer.Order
 
             // Calculate Product Final Prices with StoreController: containing all product prices after discounts
             Dictionary<int, Dictionary<int, Tuple<int, double>>> products = new Dictionary<int, Dictionary<int, Tuple<int, double>>>();
+            double orderPrice = 0;
             foreach (var quantitiesOfStore in quantities)
             {
                 int storeID = quantitiesOfStore.Key;
-                Dictionary<int, Tuple<int, double>> storeProductsPrices = storeController.calculate_products_prices(storeID, quantitiesOfStore.Value);
-                products[storeID] = storeProductsPrices;
+                Receipt storeModuleReceipt = storeController.calculate_products_prices(storeID, quantitiesOfStore.Value);
+                Dictionary<Product, Tuple<int, double>> storeProductsPrices = storeModuleReceipt.cart.product_TO_amount_Bprice;
+                Dictionary<int, Tuple<int, double>> storeProductIdsPrices = new Dictionary<int, Tuple<int, double>>();
+                foreach (var product in storeProductsPrices)
+                {
+                    storeProductIdsPrices[product.Key.ID] = product.Value;
+                }
+                products[storeID] = storeProductIdsPrices;
+                orderPrice += storeModuleReceipt.TotalPrice();
             }
-            Order order = new Order(orderCount, userID, isGuest, products, destinationAddress, creditCardInfo);
+            Order order = new Order(orderCount, userID, isGuest, products, destinationAddress, creditCardInfo, orderPrice);
             // Check validity of total price
-            double orderPrice = order.TotalPrice();
             if (orderPrice <= 0)
             {
                 errorLogger.Log($"ORDER SYSTEM | Order with invalid price - {orderPrice}");
@@ -79,7 +98,7 @@ namespace Sadna_17_B.DomainLayer.Order
             List<int> manufacturerProductNumbers = order.GetManufacturerProductNumbers();
 
             // Check availability of PaymentSystem external service:
-            if (!paymentSystem.IsValidPayment(creditCardInfo, order.TotalPrice()))
+            if (!paymentSystem.IsValidPayment(creditCardInfo, order.TotalPrice))
             {
                 infoLogger.Log($"ORDER SYSTEM | Payment system failure: invalid credit card information given.");
                 throw new Sadna17BException("Payment system failure: invalid credit card information given.");
@@ -103,7 +122,7 @@ namespace Sadna_17_B.DomainLayer.Order
             }
 
             // Execute Order by PaymentSystem external service:
-            paymentSystem.ExecutePayment(creditCardInfo, order.TotalPrice());
+            paymentSystem.ExecutePayment(creditCardInfo, order.TotalPrice);
             // Execute Order by SupplySystem external service:
             supplySystem.ExecuteDelivery(destinationAddress, manufacturerProductNumbers);
 

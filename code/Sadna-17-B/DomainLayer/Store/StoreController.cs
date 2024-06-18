@@ -226,14 +226,14 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return purchase_result;
         }
 
-        public Dictionary<int, Tuple<int,double>> calculate_products_prices(int storeID, Dictionary<int, int> quantities)
+        public Receipt calculate_products_prices(int storeID, Dictionary<int, int> quantities)
         {
             Store store = store_by_id(storeID);
 
             if (store == null)
                 throw new Exception("Invalid Parameter : store not found");
 
-            return store.calculate_product_prices(quantities).to_user(); // !!!!! user must change type to reciept !!!!!!  - delete to_user() afterwards
+            return store.calculate_product_prices(quantities); // !!!!! Fixed by Gal (maybe)
         }
 
         public bool Last_addition_failed(string line_in_purchase_result)

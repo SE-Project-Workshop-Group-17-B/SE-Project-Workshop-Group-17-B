@@ -14,8 +14,9 @@ namespace Sadna_17_B.DomainLayer.Order
         public Dictionary<int, Dictionary<int, Tuple<int, double>>> Products { get; } // StoreID -> ProductID -> (quantity,unitPrice)
         public string DestinationAddress { get; }
         public string CreditCardInfo { get; }
+        public double TotalPrice { get; } // Price after discount
 
-        public Order(int orderID, string userID, bool isGuestOrder, Dictionary<int,Dictionary<int,Tuple<int, double>>> products, string destinationAddress, string creditCardInfo)
+        public Order(int orderID, string userID, bool isGuestOrder, Dictionary<int,Dictionary<int,Tuple<int, double>>> products, string destinationAddress, string creditCardInfo, double totalPrice)
         {
             OrderID = orderID;
             UserID = userID;
@@ -24,19 +25,7 @@ namespace Sadna_17_B.DomainLayer.Order
             Timestamp = DateTime.Now;
             DestinationAddress = destinationAddress;
             CreditCardInfo = creditCardInfo;
-        }
-
-        public double TotalPrice()
-        {
-            double price = 0;
-            foreach (var productsInStore in Products.Values)
-            {
-                foreach (Tuple<int, double> product in productsInStore.Values)
-                {
-                    price += product.Item2;
-                }
-            }
-            return price;
+            TotalPrice = totalPrice;
         }
 
         public List<int> GetManufacturerProductNumbers()

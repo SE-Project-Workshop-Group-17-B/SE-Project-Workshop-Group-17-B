@@ -239,13 +239,5 @@ namespace Sadna_17_B_Test.Tests.UnitTests
             Dictionary<int, int> busket = sc.ShoppingBaskets[storeId].ProductQuantities;
             Assert.AreEqual(2, busket[productId]);
         }
-
-        [TestMethod]
-        public void TestRegisterSameUserTwice()
-        {
-            /*
-             * TODO
-             */
-        }
     }
 }

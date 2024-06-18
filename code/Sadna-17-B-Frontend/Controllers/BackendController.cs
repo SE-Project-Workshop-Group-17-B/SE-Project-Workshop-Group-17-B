@@ -106,6 +106,7 @@ namespace Sadna_17_B_Frontend.Controllers
             }
             return new Tuple<string, int>(null, (int)(response.Data));
         }
+
         public Response SearchProducts(string keyword, string category, int minPrice, int maxPrice, int minRating, int minStoreRating, int storeId)
         {
             try
@@ -126,37 +127,37 @@ namespace Sadna_17_B_Frontend.Controllers
                     products = response.Data as Dictionary<Product, int>;
                 }
 
-                // Filter by Store ID if provided
-                if (storeId != -1 && products != null)
-                {
-                    var response = storeService.filter_search_by_store_id(products, storeId);
-                    if (!response.Success) return response;
-                    products = response.Data as Dictionary<Product, int>;
-                }
+                //// Filter by Store ID if provided
+                //if (storeId != -1 && products != null)
+                //{
+                //    var response = storeService.filter_search_by_store_id(products, storeId);
+                //    if (!response.Success) return response;
+                //    products = response.Data as Dictionary<Product, int>;
+                //}
 
-                // Filter by price range if valid
-                if (minPrice <= maxPrice && products != null)
-                {
-                    var response = storeService.filter_search_by_price(products, minPrice, maxPrice);
-                    if (!response.Success) return response;
-                    products = response.Data as Dictionary<Product, int>;
-                }
+                //// Filter by price range if valid
+                //if (minPrice <= maxPrice && products != null)
+                //{
+                //    var response = storeService.filter_search_by_price(products, minPrice, maxPrice);
+                //    if (!response.Success) return response;
+                //    products = response.Data as Dictionary<Product, int>;
+                //}
 
-                // Filter by product rating if valid
-                if (minRating != -1 && products != null)
-                {
-                    var response = storeService.filter_search_by_product_rating(products, minRating);
-                    if (!response.Success) return response;
-                    products = response.Data as Dictionary<Product, int>;
-                }
+                //// Filter by product rating if valid
+                //if (minRating != -1 && products != null)
+                //{
+                //    var response = storeService.filter_search_by_product_rating(products, minRating);
+                //    if (!response.Success) return response;
+                //    products = response.Data as Dictionary<Product, int>;
+                //}
 
-                // Filter by store rating if valid
-                if (minStoreRating != -1 && products != null)
-                {
-                    var response = storeService.filter_search_by_store_rating(products, minStoreRating);
-                    if (!response.Success) return response;
-                    products = response.Data as Dictionary<Product, int>;
-                }
+                //// Filter by store rating if valid
+                //if (minStoreRating != -1 && products != null)
+                //{
+                //    var response = storeService.filter_search_by_store_rating(products, minStoreRating);
+                //    if (!response.Success) return response;
+                //    products = response.Data as Dictionary<Product, int>;
+                //}
 
                 // Final check if any products are found after all filters
                 if (products == null || products.Count == 0)
