@@ -12,7 +12,7 @@ using System.Xml.Linq;
 
 namespace Sadna_17_B.DomainLayer.StoreDom
 {
-    public class Store : informative_class
+    public class Store : I_informative_class
     {
 
         // ---------------- Variables -------------------------------------------------------------------------------------------
@@ -237,27 +237,19 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return false;
         }
 
-        
 
-     /*   public Dictionary<int, Tuple<int, double>> calculate_product_prices(Dictionary<int, int> quantities)
+        public bool add_discount(Discount discount)
         {
-            Dictionary<int, Tuple<int, double>> prices = new Dictionary<int, Tuple<int, double>>();
+            return discount_policy.add_discount(discount);
+        }
 
-            foreach (var item in quantities)
-            {
-                int p_id = item.Key;
-                int p_amount = item.Value;
+        public bool remove_discount(Discount discount)
+        {
+            return discount_policy.remove_discount(discount);
+        }
 
-                double total_price = calculate_product_bag(p_id, p_amount);
-                double discount_price = discount_policy.calculate_discount(p_id, total_price);
 
-                prices.Add(p_id, new Tuple<int, double>(p_amount, discount_price));
-            }
-
-            return prices;
-        }*/
-
-        public Dictionary<int, Tuple<int, double>> calculate_product_prices(Dictionary<int, int> quantities)
+        public Reciept calculate_product_prices(Dictionary<int, int> quantities)
         {
 
             Cart cart = new Cart();
@@ -272,10 +264,10 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                 cart.add_product(product, p_amount, p_bag_price);
             }
 
-            return discount_policy.calculate_discount(cart); ;
+            return discount_policy.calculate_discount(cart); 
         }
 
-
+      
 
         // ---------------- filters ----------------------------------------------------------------------------------------
 

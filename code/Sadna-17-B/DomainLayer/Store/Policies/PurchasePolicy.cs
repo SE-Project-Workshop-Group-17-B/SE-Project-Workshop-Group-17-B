@@ -14,7 +14,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
     // ---------------- Policy ----------------------------------------------------------------------------------------
 
 
-    public class PurchasePolicy : informative_class
+    public class PurchasePolicy : I_informative_class
     {
 
         // ---------------- variables ----------------------------------------------------

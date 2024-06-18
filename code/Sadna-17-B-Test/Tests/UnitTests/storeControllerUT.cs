@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Sadna_17_B.DomainLayer.StoreDom;
 using Sadna_17_B.DomainLayer.User;
+using Sadna_17_B.DomainLayer.Utils;
 
 namespace Sadna_17_B_Test.Tests.UnitTests
 {
@@ -14,103 +15,231 @@ namespace Sadna_17_B_Test.Tests.UnitTests
     public class StoreControllerTests
     {
         private StoreController _storeController;
-        private DiscountPolicy _discountPolicy;
         private Product _product;
         private Inventory _inventory;
         private Subscriber _owner;
+        private Cart _cart;
+
+        private DateTime _discount_start;
+        private DateTime _discount_end;
+
+        private DiscountPolicy _discountPolicy;
+        private Discount_Flat _strategy_flat;
+        private Discount_Percentage _strategy_percentage;
+        private Discount_Membership _strategy_membership;
+
+        Func<Cart, double> _choose_relevant_by_category;
+        Func<Cart, double> _choose_relevant_by_product;
+        Func<Cart, double> _choose_relevant_by_all;
+
+        Func<Cart, bool> _condition_category;
+        Func<Cart, bool> _condition_product;
+        Func<Cart, bool> _condition_all;
+
 
         [TestInitialize]
         public void SetUp()
         {
             _storeController = new StoreController();
             _inventory = new Inventory();
-            _discountPolicy = new DiscountPolicy("Test Policy");
+
             _product = new Product("Test Product", 100, "Category", "Good product");
             _product.add_rating(5);
+            _inventory.add_product("Test Product", 100, "Category", "Good Product", 25);
+
+            _cart = new Cart();
+            _cart.add_product(_product, 7, _product.price * 7);
+
+            _discountPolicy = new DiscountPolicy("Test Policy");
+            _strategy_flat = new Discount_Flat(50);
+            _strategy_percentage = new Discount_Percentage(10);
+            _strategy_membership = new Discount_Membership();
+
+            _discount_start = DateTime.Now;
+            _discount_end = DateTime.Now.AddDays(14);
+
+            // -------- relevant functions -------------------------------
+
+            _choose_relevant_by_product = (c) => (c.relevant_product(_product).Item2);
+            _choose_relevant_by_all = (c) => (c.price_all());
+            _choose_relevant_by_category = (c) =>
+            {
+                double price = 0;
+                foreach (var t in c.relevant_category(_product.category))
+                    price += t.Value.Item2;
+
+                return price;
+            };
+
+
+            // -------- conditions functions -------------------------------
+
+            _condition_product = (Cart c) =>
+            {
+                if (c.product_TO_amount_Bprice.Keys.Contains(_product))
+                    return c.product_TO_amount_Bprice[_product].Item1 > 5;
+
+                return false;
+            };
+
+            _condition_category = (Cart c) =>
+            {
+                return c.category_TO_products.Keys.Contains(_product.category);
+            };
+
+            _condition_all = (Cart c) =>
+            {
+                double sum = 0;
+
+                foreach (var item in c.product_TO_amount_Bprice)
+                    sum += item.Value.Item2;
+
+                return sum > 200;
+            };
+
+            // -------- rule functions -------------------------------
+
+            _condition_category = (Cart c) =>
+            {
+                return c.category_TO_products.Keys.Contains(_product.category);
+            };
+
 
         }
 
         [TestMethod]
         public void TestAddAndRemoveDiscount()
         {
-            // Arrange
-            var discount = new VisibleDiscount(DateTime.Now, DateTime.Now.AddDays(10), new Discount_Percentage(10));
+            
+            Discount_Simple discount = new Discount_Simple( _discount_start,
+                                                            _discount_end,
+                                                            _strategy_flat,
+                                                            _choose_relevant_by_product);
 
-            // Act
-            var addResult = _discountPolicy.add_discount(discount);
-            var removeResult = _discountPolicy.remove_discount(discount);
 
-            // Assert
-            Assert.IsTrue(addResult);
-            Assert.IsTrue(removeResult);
-        }
-
-        [TestMethod]
-        public void TestCalculateDiscount_Percentage()
-        {
-            // Arrange
-            var discount = new VisibleDiscount(DateTime.Now, DateTime.Now.AddDays(10), new Discount_Percentage(10));
             _discountPolicy.add_discount(discount);
-            _discountPolicy.add_product(discount, _product.ID);
+            Assert.AreEqual(_discountPolicy.discount_to_products.Count, 1, 0.01);
 
-            // Act
-            var discountedPrice = _discountPolicy.calculate_discount(_product.ID, _product.price);
-
-            // Assert
-            Assert.AreEqual(90, discountedPrice, 0.01);
+            _discountPolicy.remove_discount(discount);
+            Assert.AreEqual(_discountPolicy.discount_to_products.Count, 0, 0.01);
         }
 
         [TestMethod]
-        public void TestCalculateDiscount_Flat()
+        public void TestDiscoun_Percentage()
         {
             // Arrange
-            var discount = new HiddenDiscount(DateTime.Now, DateTime.Now.AddDays(10), new Discount_Flat(20));
-            _discountPolicy.add_discount(discount);
-            _discountPolicy.add_product(discount, _product.ID);
+            Discount_Simple simple_discount = new Discount_Simple(_discount_start,
+                                                             _discount_end,
+                                                             _strategy_percentage,
+                                                             _choose_relevant_by_product);
+
+            Discount_Conditional cond_discount = new Discount_Conditional(_discount_start,
+                                                             _discount_end,
+                                                             _strategy_percentage,
+                                                             _condition_product,
+                                                             _choose_relevant_by_product);
 
             // Act
-            var discountedPrice = _discountPolicy.calculate_discount(_product.ID, _product.price);
+            Mini_Reciept simple_applied = simple_discount.apply_discount(_cart);
+            Mini_Reciept cond_applied = cond_discount.apply_discount(_cart);
 
             // Assert
-            Assert.AreEqual(80, discountedPrice, 0.01);
+            Assert.AreEqual(simple_applied.discounts.Count, 1, 0.01);
+            Assert.AreEqual(simple_applied.discounts[0].Item2, 70, 0.01);
+
+            Assert.AreEqual(cond_applied.discounts.Count, 1, 0.01);
+            Assert.AreEqual(cond_applied.discounts[0].Item2, 70, 0.01);
         }
 
         [TestMethod]
-        public void TestCalculateDiscount_Member()
+        public void TestDiscount_Flat()
         {
-            Product product3 = new Product("Test Product", 100, "Category", "Good product");
-            _product.add_rating(5);
 
             // Arrange
-            DateTime start = DateTime.Now;
-            var discount = new VisibleDiscount(start, start.AddDays(10), new Discount_Membership(start));
-            _discountPolicy.add_discount(discount);
-            _discountPolicy.add_product(discount, product3.ID);
+            Discount_Simple simple_discount = new Discount_Simple(_discount_start,
+                                                             _discount_end,
+                                                             _strategy_flat,
+                                                             _choose_relevant_by_category);
+
+            Discount_Conditional cond_discount = new Discount_Conditional(_discount_start,
+                                                             _discount_end,
+                                                             _strategy_flat,
+                                                             _condition_category,
+                                                             _choose_relevant_by_category);
 
             // Act
-            var discountedPrice = _discountPolicy.calculate_discount(product3.ID, product3.price);
+            Mini_Reciept simple_applied = simple_discount.apply_discount(_cart);
+            Mini_Reciept cond_applied = cond_discount.apply_discount(_cart);
 
             // Assert
-            Assert.AreEqual(70, discountedPrice, 0.01); // Assuming the membership discount applied correctly
+            Assert.AreEqual(simple_applied.discounts.Count, 1, 0.01);
+            Assert.AreEqual(simple_applied.discounts[0].Item2, 50, 0.01);
+
+            Assert.AreEqual(cond_applied.discounts.Count, 1, 0.01);
+            Assert.AreEqual(cond_applied.discounts[0].Item2, 50, 0.01);
+
         }
 
         [TestMethod]
-        public void TestMultipleDiscounts()
+        public void TesDiscount_Membership()
         {
+
             // Arrange
-            var discount1 = new VisibleDiscount(DateTime.Now, DateTime.Now.AddDays(10), new Discount_Percentage(10));
-            var discount2 = new HiddenDiscount(DateTime.Now, DateTime.Now.AddDays(10), new Discount_Flat(5));
-            _discountPolicy.add_discount(discount1);
-            _discountPolicy.add_discount(discount2);
-            _discountPolicy.add_product(discount1, _product.ID);
-            _discountPolicy.add_product(discount2, _product.ID);
+            Discount_Simple simple_discount = new Discount_Simple(_discount_start,
+                                                             _discount_end,
+                                                             _strategy_membership,
+                                                             _choose_relevant_by_all);
+
+            Discount_Conditional cond_discount = new Discount_Conditional(_discount_start,
+                                                             _discount_end,
+                                                             _strategy_membership,
+                                                             _condition_all,
+                                                             _choose_relevant_by_all);
 
             // Act
-            var discountedPrice = _discountPolicy.calculate_discount(_product.ID, _product.price);
+            _strategy_membership.member_start_date(DateTime.Now.AddDays(-100));
+            Mini_Reciept simple_applied = simple_discount.apply_discount(_cart);
+            Mini_Reciept cond_applied = cond_discount.apply_discount(_cart);
 
             // Assert
-            Assert.AreEqual(85, discountedPrice, 0.01); // 10% discount applied first, then 5 flat discount
+            Assert.AreEqual(simple_applied.discounts.Count, 1, 0.01);
+            Assert.AreEqual(simple_applied.discounts[0].Item2, 210, 0.01);
+
+            Assert.AreEqual(cond_applied.discounts.Count, 1, 0.01);
+            Assert.AreEqual(cond_applied.discounts[0].Item2, 210, 0.01);
+
         }
+
+        [TestMethod]
+        public void TestDiscount_Rule()
+        {
+
+            // Arrange
+            Discount_Simple simple_discount = new Discount_Simple(_discount_start,
+                                                             _discount_end,
+                                                             _strategy_membership,
+                                                             _choose_relevant_by_all);
+
+            Discount_Conditional cond_discount = new Discount_Conditional(_discount_start,
+                                                             _discount_end,
+                                                             _strategy_membership,
+                                                             _condition_all,
+                                                             _choose_relevant_by_all);
+
+            // Act
+            _strategy_membership.member_start_date(DateTime.Now.AddDays(-100));
+            Mini_Reciept simple_applied = simple_discount.apply_discount(_cart);
+            Mini_Reciept cond_applied = cond_discount.apply_discount(_cart);
+
+            // Assert
+            Assert.AreEqual(simple_applied.discounts.Count, 1, 0.01);
+            Assert.AreEqual(simple_applied.discounts[0].Item2, 210, 0.01);
+
+            Assert.AreEqual(cond_applied.discounts.Count, 1, 0.01);
+
+        }
+
+        
 
 
         [TestMethod]
@@ -252,7 +381,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
 
             _storeController.open_store(store);
 
-            var productId = _storeController.add_store_product(store.ID, "Test Product", 100, "Category", "Good product", initialAmount);
+            var productId = _storeController.add_store_product(store.ID, "Test Product other", 100, "Category", "Good product", initialAmount);
             
             Dictionary<int, int> order = new Dictionary<int, int>();
             order[productId] = 5;
@@ -266,7 +395,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
 
             Task.WaitAll(task1, task2, task3, task4, task5, task6);
 
-            int finalAmount = store.amount_by_name("Test Product");
+            int finalAmount = store.amount_by_name("Test Product other");
         
             Assert.AreEqual(initialAmount - 30, finalAmount);
         }

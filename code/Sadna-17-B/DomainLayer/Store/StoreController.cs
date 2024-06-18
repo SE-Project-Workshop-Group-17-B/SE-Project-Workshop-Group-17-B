@@ -1,5 +1,6 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using Sadna_17_B.DomainLayer.User;
+using Sadna_17_B.DomainLayer.Utils;
 using Sadna_17_B.Utils;
 using System;
 using System.Collections.Generic;
@@ -213,8 +214,10 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             if (store == null)
                 throw new Exception("Invalid Parameter : store not found");
 
-            return store.calculate_product_prices(quantities);
+            return store.calculate_product_prices(quantities).to_user(); // !!!!! user must change type to reciept !!!!!!  - delete to_user() afterwards
         }
+
+      
 
 
 
@@ -310,13 +313,13 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
                     DateTime start = DateTime.Parse(components[0]);
                     DateTime end = DateTime.Parse(components[1]);
-                    IDiscount_Strategy strategy = null;
+                    Discount_Strategy strategy = null;
 
                     switch (components[2])
                     {
                         case "membership":
 
-                            strategy = new Discount_Membership(start);
+                            strategy = new Discount_Membership();
                             break;
 
                         case "percentage":
@@ -330,7 +333,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                             break;
                     }
 
-                    Discount discount = new VisibleDiscount(start, end, strategy);
+                    Discount discount = new Discount_Simple(start, end, strategy, null);
 
                     store.edit_discount_policy(edit_type, discount);
                     return true;
