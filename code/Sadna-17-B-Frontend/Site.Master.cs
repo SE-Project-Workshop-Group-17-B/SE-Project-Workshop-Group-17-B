@@ -58,18 +58,18 @@ namespace Sadna_17_B_Frontend
             }
             else
             {
-                Page_Load(this, e); // Refreshes the page after logging out
+                Response.Redirect("Homepage"); // Redirects back to the home page after logging out
             }
         }
 
         protected void MyCartBtn_Click(object sender, EventArgs e)
         {
-
+            Response.Redirect("MyCart");
         }
 
         protected void MyStoresBtn_Click(object sender, EventArgs e)
         {
-
+            Response.Redirect("MyStores");
         }
     }
 }

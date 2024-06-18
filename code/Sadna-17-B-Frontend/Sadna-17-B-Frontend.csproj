@@ -228,6 +228,8 @@
     <Content Include="Site.Master" />
     <Content Include="ViewSwitcher.ascx" />
     <Content Include="Views\Login.aspx" />
+    <Content Include="Views\MyCart.aspx" />
+    <Content Include="Views\MyStores.aspx" />
     <Content Include="Views\SearchProduct.aspx" />
     <Content Include="Views\SignUp.aspx" />
     <Content Include="Views\Store_Page.aspx" />
@@ -300,6 +302,20 @@
     </Compile>
     <Compile Include="Views\Login.aspx.designer.cs">
       <DependentUpon>Login.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Views\MyCart.aspx.cs">
+      <DependentUpon>MyCart.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Views\MyCart.aspx.designer.cs">
+      <DependentUpon>MyCart.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Views\MyStores.aspx.cs">
+      <DependentUpon>MyStores.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Views\MyStores.aspx.designer.cs">
+      <DependentUpon>MyStores.aspx</DependentUpon>
     </Compile>
     <Compile Include="Views\SearchProduct.aspx.cs">
       <DependentUpon>SearchProduct.aspx</DependentUpon>
