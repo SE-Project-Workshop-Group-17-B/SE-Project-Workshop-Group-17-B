@@ -176,6 +176,11 @@
     <Content Include="Content\store-image.png" />
     <Content Include="Content\store-inverted.png" />
     <Content Include="Content\store.png" />
+    <Content Include="Content\store1.png" />
+    <Content Include="Content\store2.png" />
+    <Content Include="Content\store3.png" />
+    <Content Include="Content\store4.png" />
+    <Content Include="Content\store5.png" />
     <Content Include="Views\About.aspx" />
     <Content Include="Views\Contact.aspx" />
     <Content Include="Content\bootstrap-theme.css" />
