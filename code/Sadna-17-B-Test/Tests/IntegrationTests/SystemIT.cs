@@ -123,8 +123,6 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
         [TestMethod]
         public void TestPaymentServiceError()
         {
-            
-
             Response ignore = userService.CreateSubscriber(username2, password2);
             Response res = userService.Login(username2, password2);
             userDTO = res.Data as UserDTO;
@@ -141,8 +139,6 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
         [TestMethod]
         public void TestSupplyMethodError()
         {
-            
-
             Response ignore = userService.CreateSubscriber(username2, password2);
             Response res = userService.Login(username2, password2);
             userDTO = res.Data as UserDTO;
@@ -184,11 +180,19 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
             testObject.Setup(arg => arg.IsValidDelivery(" ", null)).Returns(false);
             testObject.Setup(arg => arg.ExecuteDelivery(" ", null)).Returns(false);
 
-            OrderSystem os = new OrderSystem(new StoreController(), testObject.Object);
+            StoreController sc = new StoreController();
+            sc.open_store(new Store("name", "email", "054", "desc", "addr", new Inventory()));
+            int storeId = sc.store_by_name("name").ID;
+            int productId = sc.add_store_product(storeId, "prd", 5.0, "category", "desc", 10);
+
+            ShoppingCart cart = new ShoppingCart();
+            cart.AddToCart(storeId,productId, 2);
+
+            OrderSystem os = new OrderSystem(sc, testObject.Object);
             try
             {
                 //should throw exception
-                os.ProcessOrder(new ShoppingCart(), "1", false, "some", "some");
+                os.ProcessOrder(cart, "1", false, "some", "some");
                 Assert.IsTrue(false);
             }
             catch
@@ -204,11 +208,19 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
             testObject.Setup(arg => arg.IsValidPayment(" ", 0)).Returns(false);
             testObject.Setup(arg => arg.ExecutePayment(" ", 0)).Returns(false);
 
-            OrderSystem os = new OrderSystem(new StoreController(), testObject.Object);
+            StoreController sc = new StoreController();
+            sc.open_store(new Store("name", "email", "054", "desc", "addr", new Inventory()));
+            int storeId = sc.store_by_name("name").ID;
+            int productId = sc.add_store_product(storeId, "prd", 5.0, "category", "desc", 10);
+
+            ShoppingCart cart = new ShoppingCart();
+            cart.AddToCart(storeId, productId, 2);
+
+            OrderSystem os = new OrderSystem(sc, testObject.Object);
             try
             {
                 //should throw exception
-                os.ProcessOrder(new ShoppingCart(), "1", false, "some", "some");
+                os.ProcessOrder(cart, "1", false, "some", "some");
                 Assert.IsTrue(false);
             }
             catch

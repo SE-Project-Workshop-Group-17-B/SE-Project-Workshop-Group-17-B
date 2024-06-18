@@ -11,7 +11,7 @@ namespace Sadna_17_B.ExternalServices
         {
             // Should actually check credit card credentials and validity of amount
             // Proxy implementation:
-            return creditCardInfo != null && creditCardInfo.Length > 0 && amount >= 0;
+            return creditCardInfo != null && creditCardInfo.Length > 0 && amount > 0;
         }
         public bool ExecutePayment(string creditCardInfo, double amount)
         {
