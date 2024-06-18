@@ -170,6 +170,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\stars.png" />
+    <Content Include="Content\store-image.png" />
     <Content Include="Views\About.aspx" />
     <Content Include="Views\Contact.aspx" />
     <Content Include="Content\bootstrap-theme.css" />
@@ -224,6 +226,7 @@
     <Content Include="Views\Login.aspx" />
     <Content Include="Views\SearchProduct.aspx" />
     <Content Include="Views\SignUp.aspx" />
+    <Content Include="Views\storePage.aspx" />
     <Content Include="Views\Stores.aspx" />
     <Content Include="Web.config" />
     <Content Include="Bundle.config" />
@@ -307,6 +310,13 @@
     </Compile>
     <Compile Include="Views\SignUp.aspx.designer.cs">
       <DependentUpon>SignUp.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Views\storePage.aspx.cs">
+      <DependentUpon>storePage.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Views\storePage.aspx.designer.cs">
+      <DependentUpon>storePage.aspx</DependentUpon>
     </Compile>
     <Compile Include="Views\Stores.aspx.cs">
       <DependentUpon>Stores.aspx</DependentUpon>
