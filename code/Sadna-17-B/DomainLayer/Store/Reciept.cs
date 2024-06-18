@@ -78,6 +78,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
     public class Receipt : Mini_Receipt
     {
+
         public Cart cart; 
 
         public Receipt(Cart cart)

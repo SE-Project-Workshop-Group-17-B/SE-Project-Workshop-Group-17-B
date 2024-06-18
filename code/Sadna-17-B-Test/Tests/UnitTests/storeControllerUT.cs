@@ -28,13 +28,16 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         private Discount_Percentage _strategy_percentage;
         private Discount_Membership _strategy_membership;
 
-        Func<Cart, double> _choose_relevant_by_category;
-        Func<Cart, double> _choose_relevant_by_product;
-        Func<Cart, double> _choose_relevant_by_all;
+        Func<Cart, double> _relevant_price_by_category;
+        Func<Cart, double> _relevant_price_by_product;
+        Func<Cart, double> _relevant_price_by_all;
 
         Func<Cart, bool> _condition_category;
         Func<Cart, bool> _condition_product;
         Func<Cart, bool> _condition_all;
+
+        Condition_Lambdas conditions_generator = new Condition_Lambdas();
+        Relevant_product_Lambdas relevant_prices_generator = new Relevant_product_Lambdas();
 
 
         [TestInitialize]
@@ -54,58 +57,41 @@ namespace Sadna_17_B_Test.Tests.UnitTests
             _strategy_flat = new Discount_Flat(50);
             _strategy_percentage = new Discount_Percentage(10);
             _strategy_membership = new Discount_Membership();
+            _strategy_membership.member_start_date(DateTime.Now.AddDays(-100));
 
             _discount_start = DateTime.Now;
             _discount_end = DateTime.Now.AddDays(14);
 
+
             // -------- relevant functions -------------------------------
 
-            _choose_relevant_by_product = (c) => (c.relevant_product(_product).Item2);
-            _choose_relevant_by_all = (c) => (c.price_all());
-            _choose_relevant_by_category = (c) =>
-            {
-                double price = 0;
-                foreach (var t in c.relevant_category(_product.category))
-                    price += t.Value.Item2;
 
-                return price;
-            };
+
+            _relevant_price_by_category = relevant_prices_generator.category(_product.category);
+
+            _relevant_price_by_product = relevant_prices_generator.product(_product);
+           
+            _relevant_price_by_all = relevant_prices_generator.cart();
+            
+            
 
 
             // -------- conditions functions -------------------------------
 
-            _condition_product = (Cart c) =>
-            {
-                if (c.product_TO_amount_Bprice.Keys.Contains(_product))
-                    return c.product_TO_amount_Bprice[_product].Item1 > 5;
+            
 
-                return false;
-            };
+            _condition_product = conditions_generator.condition_product_amount(_product, "<", 5);
 
-            _condition_category = (Cart c) =>
-            {
-                return c.category_TO_products.Keys.Contains(_product.category);
-            };
+            _condition_category = conditions_generator.condition_category_amount(_product.category, "!=", 0);
 
-            _condition_all = (Cart c) =>
-            {
-                double sum = 0;
+            _condition_all = conditions_generator.condition_cart_price(">", 200);
 
-                foreach (var item in c.product_TO_amount_Bprice)
-                    sum += item.Value.Item2;
-
-                return sum > 200;
-            };
-
-            // -------- rule functions -------------------------------
-
-            _condition_category = (Cart c) =>
-            {
-                return c.category_TO_products.Keys.Contains(_product.category);
-            };
 
 
         }
+
+
+        // ----------------------------------------------------------------------- Discount Policy related ---------------------------------------------------------------------------------------
 
         [TestMethod]
         public void TestAddAndRemoveDiscount()
@@ -114,7 +100,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
             Discount_Simple discount = new Discount_Simple( _discount_start,
                                                             _discount_end,
                                                             _strategy_flat,
-                                                            _choose_relevant_by_product);
+                                                            _relevant_price_by_product);
 
 
             _discountPolicy.add_discount(discount);
@@ -125,19 +111,19 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         }
 
         [TestMethod]
-        public void TestDiscoun_Percentage()
+        public void TestDiscount_Percentage()
         {
             // Arrange
             Discount_Simple simple_discount = new Discount_Simple(_discount_start,
                                                              _discount_end,
                                                              _strategy_percentage,
-                                                             _choose_relevant_by_product);
+                                                             _relevant_price_by_product);
 
             Discount_Conditional cond_discount = new Discount_Conditional(_discount_start,
                                                              _discount_end,
                                                              _strategy_percentage,
                                                              _condition_product,
-                                                             _choose_relevant_by_product);
+                                                             _relevant_price_by_product);
 
             // Act
             Mini_Receipt simple_applied = simple_discount.apply_discount(_cart);
@@ -159,13 +145,13 @@ namespace Sadna_17_B_Test.Tests.UnitTests
             Discount_Simple simple_discount = new Discount_Simple(_discount_start,
                                                              _discount_end,
                                                              _strategy_flat,
-                                                             _choose_relevant_by_category);
+                                                             _relevant_price_by_category);
 
             Discount_Conditional cond_discount = new Discount_Conditional(_discount_start,
                                                              _discount_end,
                                                              _strategy_flat,
                                                              _condition_category,
-                                                             _choose_relevant_by_category);
+                                                             _relevant_price_by_category);
 
             // Act
             Mini_Receipt simple_applied = simple_discount.apply_discount(_cart);
@@ -188,13 +174,13 @@ namespace Sadna_17_B_Test.Tests.UnitTests
             Discount_Simple simple_discount = new Discount_Simple(_discount_start,
                                                              _discount_end,
                                                              _strategy_membership,
-                                                             _choose_relevant_by_all);
+                                                             _relevant_price_by_all);
 
             Discount_Conditional cond_discount = new Discount_Conditional(_discount_start,
                                                              _discount_end,
                                                              _strategy_membership,
                                                              _condition_all,
-                                                             _choose_relevant_by_all);
+                                                             _relevant_price_by_all);
 
             // Act
             _strategy_membership.member_start_date(DateTime.Now.AddDays(-100));
@@ -203,10 +189,10 @@ namespace Sadna_17_B_Test.Tests.UnitTests
 
             // Assert
             Assert.AreEqual(simple_applied.discounts.Count, 1, 0.01);
-            Assert.AreEqual(simple_applied.discounts[0].Item2, 210, 0.01);
+            Assert.AreEqual(simple_applied.discounts[0].Item2, 9.5, 0.1);
 
             Assert.AreEqual(cond_applied.discounts.Count, 1, 0.01);
-            Assert.AreEqual(cond_applied.discounts[0].Item2, 210, 0.01);
+            Assert.AreEqual(cond_applied.discounts[0].Item2, 9.5, 0.1);
 
         }
 
@@ -215,31 +201,113 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         {
 
             // Arrange
-            Discount_Simple simple_discount = new Discount_Simple(_discount_start,
-                                                             _discount_end,
-                                                             _strategy_membership,
-                                                             _choose_relevant_by_all);
+            Cart cart = new Cart();
+            Inventory inventory = new Inventory();
 
-            Discount_Conditional cond_discount = new Discount_Conditional(_discount_start,
-                                                             _discount_end,
-                                                             _strategy_membership,
-                                                             _condition_all,
-                                                             _choose_relevant_by_all);
+            Product p1 = new Product("p1", 1000, "Food", "Nice");
+            Product p2 = new Product("p2", 100, "Drink", "Perfect");
+            Product p3 = new Product("p3", 10, "Food", "Eh");
 
-            // Act
-            _strategy_membership.member_start_date(DateTime.Now.AddDays(-100));
-            Mini_Receipt simple_applied = simple_discount.apply_discount(_cart);
-            Mini_Receipt cond_applied = cond_discount.apply_discount(_cart);
+            cart.add_product(p1, 20, 20 * p1.price);
+            cart.add_product(p2, 50, 50 * p2.price);
+            cart.add_product(p3, 231, 231 * p3.price);
+
+            Func<Cart, double>  relevant_price_by_category = relevant_prices_generator.category(p1.category);
+            Func<Cart, double>  relevant_price_by_product = relevant_prices_generator.product(p2);
+            Func<Cart, double>  relevant_price_by_all = relevant_prices_generator.cart();
+
+            Func<Cart, bool> condition_product = conditions_generator.condition_product_amount(p1, ">", 50); ;
+            Func<Cart, bool> condition_category = conditions_generator.condition_category_amount(p2.category, "!=", 0); ;
+            Func<Cart, bool> condition_all = conditions_generator.condition_cart_price(">", 25000); ;
+
+            Discount_Simple simple_flat_discount = new Discount_Simple(_discount_start, _discount_end, _strategy_flat, relevant_price_by_product);
+            Discount_Simple simple_prec_discount = new Discount_Simple(_discount_start, _discount_end, _strategy_percentage, relevant_price_by_product);
+            Discount_Simple simple_memb_discount = new Discount_Simple(_discount_start, _discount_end, _strategy_membership, relevant_price_by_product);
+
+            Discount_Conditional cond_flat_discount = new Discount_Conditional(_discount_start, _discount_end, _strategy_flat, condition_product, relevant_price_by_product); // 
+            Discount_Conditional cond_prec_discount = new Discount_Conditional(_discount_start, _discount_end, _strategy_percentage, condition_category, relevant_price_by_product);
+            Discount_Conditional cond_memb_discount = new Discount_Conditional(_discount_start, _discount_end, _strategy_membership, condition_all, relevant_price_by_product);
+
+            Rule_Logic logic_rules = new Rule_Logic();
+            Rule_Numeric numeric_rules = new Rule_Numeric();
+
+            DiscountRule_Logic and_rule = new DiscountRule_Logic(logic_rules.and());
+            DiscountRule_Logic or_rule = new DiscountRule_Logic(logic_rules.or());
+            DiscountRule_Logic xor_rule = new DiscountRule_Logic(logic_rules.xor());
+
+            DiscountRule_Numeric add_rule = new DiscountRule_Numeric(numeric_rules.addition());
+            DiscountRule_Numeric max_rule = new DiscountRule_Numeric(numeric_rules.maximum());
+
+
+            and_rule.add_discount(cond_prec_discount);
+            and_rule.add_discount(cond_flat_discount);
+
+            or_rule.add_discount(cond_prec_discount);
+            or_rule.add_discount(cond_flat_discount);
+
+            max_rule.add_discount(and_rule);
+            max_rule.add_discount(or_rule);
+            
+            add_rule.add_discount(or_rule);
+            add_rule.add_discount(simple_flat_discount);
+            add_rule.add_discount(max_rule);
+
+
+
+            /*
+             * 
+             *  Cart:           | name  |  price    | category  | descript  | amount   | total price
+             *  ------------------------------------------------------------------------------------
+             *  
+             *  - product 1 :   |   p1  |   1000    |   Food    |   Nice    |  20      | 20,000
+             *  
+             *  - product 2 :   |   p2  |   100     |   Drink   |   Perfect |  50      | 5,000
+             * 
+             *  - product 3 :   |   p3  |   10      |   Food    |   Eh      |  231     | 2,310
+             * 
+             * 
+             *  -------------------------------------------------------------------------------------
+             *  
+             *   _relevant_price_by_category        22,310
+             *   _relevant_price_by_product         5,000      
+             *   _relevant_price_by_all             27,310
+             *
+             *   _condition_category                false
+             *   _condition_product                 true
+             *   _condition_all                     true
+             *      
+             *   
+             *   cond_flat                          true, 50                                        out of 5000
+             *   cond_prec                          false, 500                                      out of 5000  // only rules weight the conditions
+             *   cond_member                        true, 68.5                                      out of 5000
+             *   
+             *   simple_flat                        true, 50    ( 50 flat)                          out of 5000
+             *   simple_prec                        true, 500   ( 10% of 5,000)                     out of 5000
+             *   simple_member                      true, 68.5  ( 100 days in membership )          out of 5000
+             *   
+             *   and_rule                           false, 0           
+             *   or_rule                            true, 550   (500 + 50) 
+             *   max_rule                           true, 550   (550 bigger than 0)
+             *   add_rule                           true, 1150  (550 + 50 + 550)
+             * 
+             */
+
+
 
             // Assert
-            Assert.AreEqual(simple_applied.discounts.Count, 1, 0.01);
-            Assert.AreEqual(simple_applied.discounts[0].Item2, 210, 0.01);
 
-            Assert.AreEqual(cond_applied.discounts.Count, 1, 0.01);
+            Assert.AreEqual(and_rule.apply_discount(cart).total_discount, 0, 0.01);
+            Assert.AreEqual(or_rule.apply_discount(cart).total_discount, 550, 0.01);
+            Assert.AreEqual(max_rule.apply_discount(cart).total_discount, 550, 0.01);
+            Assert.AreEqual(add_rule.apply_discount(cart).total_discount, 1150, 0.01);
+
+
+            
 
         }
 
-        
+
+        // ----------------------------------------------------------------------- Store Controller related ---------------------------------------------------------------------------------------
 
 
         [TestMethod]

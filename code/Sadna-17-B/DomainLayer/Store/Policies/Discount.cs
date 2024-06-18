@@ -19,8 +19,8 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         // ----------- variables --------------------------------------------------------------
 
-        public List<Func<Cart, bool>> condition_functions = new List<Func<Cart, bool>>();
-        protected Func<Cart, double> relevant_price_function { get; set; }
+        public List<Func<Cart, bool>> relevant_conditions = new List<Func<Cart, bool>>();
+        protected Func<Cart, double> relevant_products_price { get; set; }
 
 
         private static int discount_id;
@@ -97,20 +97,21 @@ namespace Sadna_17_B.DomainLayer.StoreDom
     {
 
         public Discount_Simple(DateTime StartDate, DateTime EndDate, Discount_Strategy strategy,
-                                                                    Func<Cart, double> relevant_price_func) : base(StartDate, EndDate, strategy) 
+                                                                    Func<Cart, double> relevant_products_price) : base(StartDate, EndDate, strategy) 
         {
-            condition_functions.Add((c) => (true));
-            relevant_price_function = relevant_price_func;
+            relevant_conditions.Add((c) => (true));
+            base.relevant_products_price = relevant_products_price;
         }
 
         public override Mini_Receipt apply_discount(Cart cart)
         {
             List<Tuple<Discount, double>> applied_discounts = new List<Tuple<Discount, double>>();
 
-            double relevant_price = relevant_price_function(cart);
+            double relevant_price = relevant_products_price(cart);
 
             if (relevant_price != 0)
                 applied_discounts.Add(Tuple.Create((Discount)this, strategy.apply_discount_strategy(relevant_price)));
+
 
             return new Mini_Receipt(applied_discounts);
         }
@@ -128,15 +129,15 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         public Discount_Conditional(DateTime StartDate, DateTime EndDate, Discount_Strategy strategy,
                                         List<Func<Cart,bool>> condition_funcs, Func<Cart, double> relevant_price_func) : base(StartDate, EndDate, strategy) 
         { 
-            condition_functions.AddRange(condition_funcs);
-            relevant_price_function = relevant_price_func;
+            relevant_conditions.AddRange(condition_funcs);
+            relevant_products_price = relevant_price_func;
         }
 
         public Discount_Conditional(DateTime StartDate, DateTime EndDate, Discount_Strategy strategy,
                                         Func<Cart, bool> condition_func, Func<Cart, double> relevant_price_func) : base(StartDate, EndDate, strategy)
         {
-            condition_functions.Add(condition_func);
-            relevant_price_function = relevant_price_func;
+            relevant_conditions.Add(condition_func);
+            relevant_products_price = relevant_price_func;
         }
 
         public override Mini_Receipt apply_discount(Cart cart)
@@ -144,7 +145,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
             List<Tuple<Discount, double>> applied_discounts = new List<Tuple<Discount, double>>();
 
-            double relevant_price = relevant_price_function(cart);
+            double relevant_price = relevant_products_price(cart);
 
             if (relevant_price != 0)
                 applied_discounts.Add(Tuple.Create((Discount) this, strategy.apply_discount_strategy(relevant_price)));

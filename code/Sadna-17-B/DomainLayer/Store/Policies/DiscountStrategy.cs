@@ -87,18 +87,18 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         {
             double membership_days = get_days();
             double membership_years = membership_days / 365;
-
-            double membership_daily_discount = membership_days / (365 * 50 * 100);
-            double membership_yearly_discount = membership_years * 2;
+      
+            double membership_daily_discount = membership_days / (365 * 500 * 100);
+            double membership_yearly_discount = membership_years * 0.05;
 
             double membership_discount = membership_daily_discount + membership_yearly_discount;
-
+            
             return price *  Math.Min(membership_discount, membership_discount_maximum);
         }
 
         public double get_days()
         {
-            return (DateTime.Now - start_date).TotalDays;
+            return (DateTime.Now.Date - start_date.Date).TotalDays;
         }
 
         public void member_start_date(DateTime start)

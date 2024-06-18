@@ -249,7 +249,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         }
 
 
-        public Reciept calculate_product_prices(Dictionary<int, int> quantities)
+        public Receipt calculate_product_prices(Dictionary<int, int> quantities)
         {
 
             Cart cart = new Cart();
