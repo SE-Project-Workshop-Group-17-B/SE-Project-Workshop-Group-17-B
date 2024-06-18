@@ -222,7 +222,7 @@ namespace Sadna_17_B_Frontend.Controllers
             Response response = storeService.calculate_products_prices(storeID, quantities);
             if (response.Success)
             {
-                return (response.Data as Receipt));
+                return (response.Data as Receipt);
             }
             return null;
         }

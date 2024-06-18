@@ -456,7 +456,7 @@ namespace Sadna_17_B.ServiceLayer.Services
         }
 
         // ---------------- calculate prices ---------------------
-        Response calculate_products_prices(int storeID, Dictionary<int, int> quantities)
+        public Response calculate_products_prices(int storeID, Dictionary<int, int> quantities)
         {
             Receipt receipt = _storeController.calculate_products_prices(storeID, quantities);
             if (receipt == null)
