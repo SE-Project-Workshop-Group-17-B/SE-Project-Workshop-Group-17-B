@@ -1,69 +1,90 @@
 ﻿<%@ Page Title="My Stores" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="MyStores.aspx.cs" Inherits="Sadna_17_B_Frontend.Views.MyStores" %>
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
     <style>
-        .store-item {
-            padding: 15px;
-            margin-bottom: 15px;
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .store-section {
+            margin: 20px 0;
+        }
+        .store-section h2 {
+            text-align: left;
+            color: #333;
+        }
+        .store-section .store-item {
+            padding: 10px;
+            margin: 10px 0;
             border: 1px solid #ddd;
             border-radius: 5px;
-            background-color: #fff;
-            cursor: pointer;
-            text-align: center;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
-        .store-item:hover {
-            background-color: #f9f9f9;
+        .store-section .store-item strong {
+            font-size: 1.2em;
+            color: #333;
         }
-        .store-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .store-section .store-item small {
+            color: #666;
         }
-        .store-header h4 {
-            margin: 0;
-        }
-        .store-actions {
+        .store-section .store-item .btn-manage {
+            display: inline-block;
             margin-top: 10px;
         }
-        .create-store-btn {
+        .btn-primary {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            border: none;
+            color: #fff;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+        .btn-create-store {
             margin-bottom: 20px;
-            text-align: center;
         }
     </style>
-    <div class="container my-4">
-        <div class="create-store-btn">
-            <asp:Button ID="btnCreateStore" runat="server" Text="Create New Store" CssClass="btn btn-primary" OnClick="btnCreateStore_Click" />
+    <div class="container">
+        <header class="header">
+            <h1>My Stores</h1>
+        </header>
+        <asp:Button ID="btnCreateStore" runat="server" Text="Create New Store" CssClass="btn-primary btn-create-store" OnClick="btnCreateStore_Click" />
+        <div class="store-section">
+            <h2>Managed Stores</h2>
+            <asp:Repeater ID="rptManagedStores" runat="server">
+                <ItemTemplate>
+                    <div class="store-item">
+                        <strong>Store: <%# Eval("Name") %></strong><br />
+                        <small>ID: <%# Eval("ID") %></small><br />
+                        <small><%# Eval("Description") %></small><br />
+                        <asp:Button ID="btnManage" runat="server" Text="Manage" CssClass="btn-primary btn-manage" CommandArgument='<%# Eval("ID") %>' OnClick="btnManage_Click" />
+                    </div>
+                </ItemTemplate>
+            </asp:Repeater>
         </div>
-        <h2 class="mb-3">Managed Stores</h2>
-        <asp:Repeater ID="rptManagedStores" runat="server">
-            <ItemTemplate>
-                <div class="store-item">
-                    <div class="store-header">
-                        <h4><%# Eval("Name") %></h4>
-                        <small>ID: <%# Eval("ID") %></small>
+        <div class="store-section">
+            <h2>Owned Stores</h2>
+            <asp:Repeater ID="rptOwnedStores" runat="server">
+                <ItemTemplate>
+                    <div class="store-item">
+                        <strong>Store: <%# Eval("Name") %></strong><br />
+                        <small>ID: <%# Eval("ID") %></small><br />
+                        <small><%# Eval("Description") %></small><br />
+                        <asp:Button ID="btnManage" runat="server" Text="Manage" CssClass="btn-primary btn-manage" CommandArgument='<%# Eval("ID") %>' OnClick="btnManage_Click" />
                     </div>
-                    <p><%# Eval("Description") %></p>
-                    <div class="store-actions">
-                        <asp:Button ID="btnManage" runat="server" Text="Manage" CssClass="btn btn-primary" CommandArgument='<%# Eval("ID") %>' OnClick="btnManage_Click" />
-                    </div>
-                </div>
-            </ItemTemplate>
-        </asp:Repeater>
-
-        <h2 class="mb-3">Owned Stores</h2>
-        <asp:Repeater ID="rptOwnedStores" runat="server">
-            <ItemTemplate>
-                <div class="store-item">
-                    <div class="store-header">
-                        <h4><%# Eval("Name") %></h4>
-                        <small>ID: <%# Eval("ID") %></small>
-                    </div>
-                    <p><%# Eval("Description") %></p>
-                    <div class="store-actions">
-                        <asp:Button ID="btnManage" runat="server" Text="Manage" CssClass="btn btn-primary" CommandArgument='<%# Eval("ID") %>' OnClick="btnManage_Click" />
-                    </div>
-                </div>
-            </ItemTemplate>
-        </asp:Repeater>
+                </ItemTemplate>
+            </asp:Repeater>
+        </div>
     </div>
 </asp:Content>

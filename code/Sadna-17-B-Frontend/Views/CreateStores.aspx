@@ -1,4 +1,4 @@
-﻿<%@ Page Title="CreateStore" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="CreateStore.aspx.cs" Inherits="Sadna_17_B_Frontend.Views.CreateStore" %>
+﻿<%@ Page Title="Create Store" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="CreateStore.aspx.cs" Inherits="Sadna_17_B_Frontend.Views.CreateStore" %>
 
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
     <style>
@@ -28,14 +28,14 @@
             color: #333;
         }
         .form-group {
-            margin-bottom: 2rem; /* Increased bottom margin for more space */
+            margin-bottom: 2rem;
         }
         .form-group label {
             display: block;
             margin-bottom: 0.5rem;
             color: #555;
         }
-        .form-group input, 
+        .form-group input,
         .form-group textarea {
             width: 100%;
             padding: 10px;
@@ -43,7 +43,7 @@
             border-radius: 5px;
             transition: border-color 0.3s;
         }
-        .form-group input:focus, 
+        .form-group input:focus,
         .form-group textarea:focus {
             border-color: #007bff;
             outline: none;

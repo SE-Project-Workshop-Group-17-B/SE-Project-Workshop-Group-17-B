@@ -29,9 +29,18 @@ namespace Sadna_17_B_Frontend.Views
             var store = backendController.GetStoreDetailsById(storeId);
             if (store != null)
             {
-                storeNameLiteral.Text = store.name;
-                storeDescriptionLiteral.Text = store.description;
+                storeIdLiteral.Text = storeId.ToString();
             }
+        }
+
+        protected void purchaseHistory()
+        {
+            // Implement purchase history redirection logic
+        }
+
+        protected void manageInventory()
+        {
+            // Implement manage inventory redirection logic
         }
     }
 }

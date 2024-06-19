@@ -18,8 +18,8 @@ namespace Sadna_17_B_Frontend.Views
 
         private void LoadStores()
         {
-            var managedStoresResponse = backendController.GetMyManagedStores();
-            var ownedStoresResponse = backendController.GetMyOwnedStores();
+            var managedStoresResponse = backendController.GetMyManagedStores(); // Assume this method gets the list of managed stores
+            var ownedStoresResponse = backendController.GetMyOwnedStores(); // Assume this method gets the list of owned stores
 
             if (managedStoresResponse != null && managedStoresResponse.Count > 0)
             {
@@ -42,6 +42,11 @@ namespace Sadna_17_B_Frontend.Views
             }
         }
 
+        private void DisplayMessage(string message, bool isSuccess)
+        {
+            // Implement a method to display messages to the user
+        }
+
         protected void btnCreateStore_Click(object sender, EventArgs e)
         {
             Response.Redirect("~/Views/CreateStores.aspx");
@@ -49,17 +54,18 @@ namespace Sadna_17_B_Frontend.Views
 
         protected void btnManage_Click(object sender, EventArgs e)
         {
-            Button btnManage = (Button)sender;
-            int storeId = int.Parse(btnManage.CommandArgument);
-            string redirectUrl = backendController.IsFounder(storeId) ? $"~/Views/FounderStorePage.aspx?storeId={storeId}" : $"~/Views/ManagerStorePage.aspx?storeId={storeId}";
-            Response.Redirect(redirectUrl);
-        }
+            var button = (Button)sender;
+            int storeId = int.Parse(button.CommandArgument);
+            bool isFounder = backendController.IsFounder(storeId); // Assume this method checks if the current user is the founder
 
-        private void DisplayMessage(string message, bool isSuccess)
-        {
-            string cssClass = isSuccess ? "alert alert-success" : "alert alert-danger";
-            // lblMessage.Text = $"<div class='{cssClass}'>{message}</div>";
-            // lblMessage.Visible = true;
+            if (isFounder)
+            {
+                Response.Redirect("~/Views/FounderStorePage.aspx?storeId=" + storeId);
+            }
+            else
+            {
+                Response.Redirect("~/Views/ManagerStorePage.aspx?storeId=" + storeId);
+            }
         }
     }
 }
