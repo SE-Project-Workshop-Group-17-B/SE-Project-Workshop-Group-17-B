@@ -1,7 +1,6 @@
 ﻿using Sadna_17_B_Frontend.Controllers;
 using System;
 using System.Web.UI;
-using System.Web.UI.WebControls;
 
 namespace Sadna_17_B_Frontend.Views
 {
@@ -87,7 +86,7 @@ namespace Sadna_17_B_Frontend.Views
                 if (response.Item1 == null)
                 {
                     DisplayMessage("Store created successfully. StoreID = " + response.Item2, true);
-                    Response.Redirect($"~/Views/StoreDetails.aspx?storeId={response.Item2}"); // Ensure the URL is correct
+                    Response.Redirect("~/Views/StoreDetails.aspx?storeId=" + response.Item2); // Ensure the URL is correct
                 }
                 else
                 {

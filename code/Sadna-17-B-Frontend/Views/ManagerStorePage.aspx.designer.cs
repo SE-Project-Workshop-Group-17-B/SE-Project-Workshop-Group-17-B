@@ -15,21 +15,12 @@ namespace Sadna_17_B_Frontend.Views
     {
 
         /// <summary>
-        /// storeNameLiteral control.
+        /// storeIdLiteral control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Literal storeNameLiteral;
-
-        /// <summary>
-        /// storeDescriptionLiteral control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Literal storeDescriptionLiteral;
+        protected global::System.Web.UI.WebControls.Literal storeIdLiteral;
     }
 }
