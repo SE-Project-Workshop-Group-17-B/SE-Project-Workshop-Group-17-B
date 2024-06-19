@@ -44,7 +44,7 @@ namespace Sadna_17_B_Frontend.Views
 
         protected void btnCreateStore_Click(object sender, EventArgs e)
         {
-            Response.Redirect("~/Views/CreateStore.aspx");
+            Response.Redirect("~/Views/CreateStores.aspx");
         }
 
         protected void btnManage_Click(object sender, EventArgs e)
