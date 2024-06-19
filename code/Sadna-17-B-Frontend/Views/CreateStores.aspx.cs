@@ -1,12 +1,11 @@
-﻿using Sadna_17_B.Utils;
-using Sadna_17_B_Frontend.Controllers;
+﻿using Sadna_17_B_Frontend.Controllers;
 using System;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
 namespace Sadna_17_B_Frontend.Views
 {
-    public partial class CreateStores : Page
+    public partial class CreateStore : Page
     {
         BackendController backendController = BackendController.GetInstance();
 
@@ -20,7 +19,6 @@ namespace Sadna_17_B_Frontend.Views
             lblMessage.CssClass = isSuccess ? "alert alert-success" : "alert alert-danger";
             lblMessage.Visible = true;
         }
-
 
         protected void btnCreateStore_Click(object sender, EventArgs e)
         {
@@ -89,7 +87,7 @@ namespace Sadna_17_B_Frontend.Views
                 if (response.Item1 == null)
                 {
                     DisplayMessage("Store created successfully. StoreID = " + response.Item2, true);
-                    Response.Redirect("~/Views/StoreDetails.aspx?storeId=" + response.Item2); // Ensure the URL is correct
+                    Response.Redirect($"~/Views/StoreDetails.aspx?storeId={response.Item2}"); // Ensure the URL is correct
                 }
                 else
                 {
@@ -97,7 +95,5 @@ namespace Sadna_17_B_Frontend.Views
                 }
             }
         }
-
-    
     }
 }

@@ -42,11 +42,16 @@ namespace Sadna_17_B_Frontend.Views
             }
         }
 
+        protected void btnCreateStore_Click(object sender, EventArgs e)
+        {
+            Response.Redirect("~/Views/CreateStores.aspx");
+        }
+
         protected void btnManage_Click(object sender, EventArgs e)
         {
             Button btnManage = (Button)sender;
             int storeId = int.Parse(btnManage.CommandArgument);
-            string redirectUrl = backendController.IsFounder(storeId) ? $"FounderStorePage.aspx?storeId={storeId}" : $"ManagerStorePage.aspx?storeId={storeId}";
+            string redirectUrl = backendController.IsFounder(storeId) ? $"~/Views/FounderStorePage.aspx?storeId={storeId}" : $"~/Views/ManagerStorePage.aspx?storeId={storeId}";
             Response.Redirect(redirectUrl);
         }
 
