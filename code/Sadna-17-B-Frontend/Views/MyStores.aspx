@@ -1,7 +1,7 @@
 ﻿<%@ Page Title="My Stores" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="MyStores.aspx.cs" Inherits="Sadna_17_B_Frontend.Views.MyStores" %>
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
     <style>
-        .container {
+        .my-stores-container {
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
@@ -9,7 +9,7 @@
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
-        .header {
+        .my-stores-header {
             text-align: center;
             margin-bottom: 20px;
         }
@@ -55,8 +55,8 @@
             margin-bottom: 20px;
         }
     </style>
-    <div class="container">
-        <header class="header">
+    <div class="my-stores-container">
+        <header class="my-stores-header">
             <h1>My Stores</h1>
         </header>
         <asp:Button ID="btnCreateStore" runat="server" Text="Create New Store" CssClass="btn-primary btn-create-store" OnClick="btnCreateStore_Click" />
@@ -68,7 +68,7 @@
                         <strong>Store: <%# Eval("Name") %></strong><br />
                         <small>ID: <%# Eval("ID") %></small><br />
                         <small><%# Eval("Description") %></small><br />
-                        <asp:Button ID="btnManage" runat="server" Text="Manage" CssClass="btn-primary btn-manage" CommandArgument='<%# Eval("ID") %>' OnClick="btnManage_Click" />
+                        <asp:Button ID="btnManage" runat="server" Text="Manage" CssClass="btn-primary zzzzzbtn-manage" CommandArgument='<%# Eval("ID") %>' OnClick="btnManage_Click" />
                     </div>
                 </ItemTemplate>
             </asp:Repeater>
