@@ -459,7 +459,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                         result.Add(product, store.ID);
             }
 
-            return result.Any() ? result : null;
+            return result;
         }
 
         public Dictionary <Product, int> filter_products_by_store_id(Dictionary<Product, int> searchReesult, int storeID)

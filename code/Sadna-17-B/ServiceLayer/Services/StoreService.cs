@@ -326,10 +326,10 @@ namespace Sadna_17_B.ServiceLayer.Services
         public Response products_by_keyWord(string keyWord)
         {
             Dictionary<Product, int> output = _storeController.filter_products_by_keyword(keyWord);
-            string message = (!output.IsNullOrEmpty()) ? "products found successfully\n" : "failed to find products\n";
+            string message = (output.IsNullOrEmpty()) ? "products found successfully\n" : "failed to find products\n";
             info_logger.Log("Store", message);
 
-            return new Response(message, (!output.IsNullOrEmpty()), output);
+            return new Response(message, output != null, output);
         }
 
 
@@ -350,6 +350,10 @@ namespace Sadna_17_B.ServiceLayer.Services
         }
         public Response filter_search_by_price(Dictionary<Product, int> searchResult, int low, int high)
         {
+            if (low <= 0)
+                low = 0;
+            if (high <= 0)
+                high = 9999;
             Dictionary<Product, int> output = _storeController.filter_products_by_price(searchResult, low, high);
 
             return new Response("", (!output.IsNullOrEmpty()), output);
