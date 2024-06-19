@@ -181,6 +181,7 @@
     <Compile Include="DomainLayer\Store\Inventory.cs" />
     <Compile Include="DomainLayer\Store\Policies\DiscountRule.cs" />
     <Compile Include="DomainLayer\Store\Policies\DiscountStrategy.cs" />
+    <Compile Include="DomainLayer\Store\Policies\PurchaseRule.cs" />
     <Compile Include="DomainLayer\Store\Product.cs" />
     <Compile Include="DomainLayer\Store\Policies\PurchasePolicy.cs" />
     <Compile Include="DomainLayer\Store\Reciept.cs" />
