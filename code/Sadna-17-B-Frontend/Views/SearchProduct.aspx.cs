@@ -8,6 +8,7 @@ using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using System.Web.WebPages;
 
 namespace Sadna_17_B_Frontend.Views
 {
@@ -33,44 +34,66 @@ namespace Sadna_17_B_Frontend.Views
             string minStoreRatingText = txtMinStoreRating.Value.Trim();
             string storeIdText = txtStoreID.Value.Trim();
 
-            int storeId = -1, minRating = -1, minStoreRating = -1;
-            int minPrice = -1, maxPrice = -1;
-
-            int.TryParse(storeIdText, out storeId);
-            int.TryParse(minPriceText, out minPrice);
-            int.TryParse(maxPriceText, out maxPrice);
-            int.TryParse(minRatingText, out minRating);
-            int.TryParse(minStoreRatingText, out minStoreRating);
-
             BackendController backendController = BackendController.GetInstance();
             IStoreService storeService = backendController.storeService;
+            Response response;
 
-            Response response = backendController.SearchProducts(keyword, category, minPrice, maxPrice, minRating, minStoreRating, storeId);
+            if (keyword.IsEmpty() && category.IsEmpty() && minPriceText.IsEmpty() && maxPriceText.IsEmpty() && minRatingText.IsEmpty() && minStoreRatingText.IsEmpty() && storeIdText.IsEmpty())
+            {
+                response = backendController.storeService.all_products();
+            }
+            else
+            {
+                int storeId = -1, minRating = -1, minStoreRating = -1;
+                int minPrice = -1, maxPrice = -1;
 
+                int.TryParse(storeIdText, out storeId);
+                int.TryParse(minPriceText, out minPrice);
+                int.TryParse(maxPriceText, out maxPrice);
+                int.TryParse(minRatingText, out minRating);
+                int.TryParse(minStoreRatingText, out minStoreRating);
+
+
+                response = backendController.SearchProducts(keyword, category, minPrice, maxPrice, minRating, minStoreRating, storeId);
+            }
             if (response.Success)
             {
                 var products = (Dictionary<Product, int>)response.Data;
-
                 var productList = products.Select(p => new
                 {
-                    ID = p.Key.ID,
-                    name = p.Key.name,
-                    price = p.Key.price,
-                    category = p.Key.category,
-                    rating = p.Key.rating,
-                    description = p.Key.description,
+                    p.Key.ID,
+                    p.Key.name,
+                    p.Key.price,
+                    p.Key.category,
+                    p.Key.rating,
+                    p.Key.description,
                     StoreID = p.Value
                 }).ToList();
+
+
+                rptProducts.DataSource = productList;
+                rptProducts.DataBind();
+
+            }
+            else
+            {
+                var products = new Dictionary<Product, int>();
+                var productList = products.Select(p => new
+                {
+                    p.Key.ID,
+                    p.Key.name,
+                    p.Key.price,
+                    p.Key.category,
+                    p.Key.rating,
+                    p.Key.description,
+                    StoreID = p.Value
+                }).ToList();
+
 
                 rptProducts.DataSource = productList;
                 rptProducts.DataBind();
             }
-            else
-            {
-                // Display error message if search fails
-                lblMessage.Text = "Failed to load filtered products.";
-                lblMessage.Visible = true;
-            }
+
         }
     }
 }

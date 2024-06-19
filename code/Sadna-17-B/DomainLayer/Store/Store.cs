@@ -313,8 +313,10 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         public List<Product> filter_keyword(string keyWord)
         {
             List<Product> result = inventory.products_by_keyword(keyWord);
+            if (result == null)
+                return new List<Product>();
 
-            return result.Any() ? result : null;
+            return result;
         }
 
         public List<Product> filter_price(List<Product> searchResult, int low, int high)
