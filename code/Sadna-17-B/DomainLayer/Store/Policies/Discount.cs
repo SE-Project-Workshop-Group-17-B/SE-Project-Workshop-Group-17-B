@@ -18,13 +18,17 @@ namespace Sadna_17_B.DomainLayer.StoreDom
     public abstract class Discount : I_informative_class, I_discount
     {
 
+
+
         // ----------- variables --------------------------------------------------------------
+
+        public static int discount_counter;
 
         public List<Func<Cart, bool>> relevant_conditions = new List<Func<Cart, bool>>();
         protected Func<Cart, double> relevant_products_price { get; set; }
 
 
-        private static int discount_id;
+        public int ID;
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public Discount_Strategy strategy { get; set; }
@@ -35,7 +39,9 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         public Discount(DateTime StartDate, DateTime EndDate, Discount_Strategy strategy)
         {
-            discount_id += 1;
+
+            discount_counter += 1;
+            ID = discount_counter;
 
             this.StartDate = StartDate;
             this.EndDate = EndDate;
@@ -45,7 +51,6 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         public Discount()
         {
-            discount_id += 1;
         }
 
         // ----------- Base Functionalities --------------------------------------------------------  
@@ -128,14 +133,14 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         
         public Discount_Conditional(DateTime StartDate, DateTime EndDate, Discount_Strategy strategy,
-                                        List<Func<Cart,bool>> condition_funcs, Func<Cart, double> relevant_price_func) : base(StartDate, EndDate, strategy) 
+                                        Func<Cart, double> relevant_price_func, List<Func<Cart, bool>> condition_funcs) : base(StartDate, EndDate, strategy) 
         { 
             relevant_conditions.AddRange(condition_funcs);
             relevant_products_price = relevant_price_func;
         }
 
         public Discount_Conditional(DateTime StartDate, DateTime EndDate, Discount_Strategy strategy,
-                                        Func<Cart, bool> condition_func, Func<Cart, double> relevant_price_func) : base(StartDate, EndDate, strategy)
+                                        Func<Cart, double> relevant_price_func, Func<Cart, bool> condition_func) : base(StartDate, EndDate, strategy)
         {
             relevant_conditions.Add(condition_func);
             relevant_products_price = relevant_price_func;

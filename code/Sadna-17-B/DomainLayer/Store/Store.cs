@@ -8,6 +8,7 @@ using Microsoft.IdentityModel.Tokens;
 using Sadna_17_B.DomainLayer.Utils;
 using System.Diagnostics;
 using System.Xml.Linq;
+using System.Data;
 
 
 namespace Sadna_17_B.DomainLayer.StoreDom
@@ -219,12 +220,20 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return false;
         }
 
-        public bool add_discount(Discount discount)
+        public bool add_discount(string type, DateTime start, DateTime end, Discount_Strategy strategy, Func<Cart, double> relevant_product_lambda, List<Func<Cart, bool>> condition_lambdas = null)
         {
+
+            Discount discount;
+
+            if (condition_lambdas.IsNullOrEmpty())
+                discount = new Discount_Simple(start, end, strategy, relevant_product_lambda);
+            else
+                discount = new Discount_Conditional(start, end, strategy, relevant_product_lambda, condition_lambdas);
+
             return discount_policy.add_discount(discount);
         }
 
-        public bool remove_discount(Discount discount)
+        public bool remove_discount(int discount)
         {
             return discount_policy.remove_discount(discount);
         }

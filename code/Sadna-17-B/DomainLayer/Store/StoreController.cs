@@ -1,9 +1,11 @@
 ﻿using Microsoft.IdentityModel.Tokens;
+using Microsoft.SqlServer.Server;
 using Sadna_17_B.DomainLayer.User;
 using Sadna_17_B.DomainLayer.Utils;
 using Sadna_17_B.Utils;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Web;
 using System.Web.UI.WebControls;
@@ -33,6 +35,8 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         public class StoreBuilder
         {
+            
+
             private string name;
             private string email;
             private string phone_number;
@@ -308,39 +312,44 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         // ---------------- store discount policy -------------------------------------------------------------------------------------------
 
-        public bool edit_discount_policy(int store_id, string policy_doc)
+        public bool edit_discount_policy(int store_id, string[] policy_doc)
         {
+            // doc[0] : change type (add,remove)
+            // doc[1] : discount id
+            // doc[2] : discount start
+            // doc[3] : discount end 
+            // doc[4] : discount strategy ()
+            
+
             foreach (Store store in active_stores)
             {
                 if (store_id == store.ID)
                 {
-                    string[] components = policy_doc.Split(',');
+                    string type = Parser.parse_string(policy_doc[0]);
 
-                    DateTime start = DateTime.Parse(components[0]);
-                    DateTime end = DateTime.Parse(components[1]);
-                    Discount_Strategy strategy = null;
-
-                    switch (components[2])
+                    switch (type)
                     {
-                        case "membership":
+                        case "add":
+                            
+                            string dtype = policy_doc[1];
+                            DateTime start = Parser.parse_date(policy_doc[2]);
+                            DateTime end = Parser.parse_date(policy_doc[3]);
+                            Discount_Strategy strategy = parse_discount_strategy(policy_doc);
+                            Func<Cart, double> relevant_product_lambda = parse_relevant_lambdas(policy_doc);
+                            List<Func<Cart, bool>> condition_lambdas = parse_condition_lambdas(policy_doc);
 
-                            strategy = new Discount_Membership();
-                            break;
+                            return store.add_discount(dtype,start,end, strategy, relevant_product_lambda, condition_lambdas);
 
-                        case "percentage":
+                             
 
-                            strategy = new Discount_Percentage(Double.Parse(components[3]));
-                            break;
+                        case "remove":
 
-                        case "flat":
+                            int id = Parser.parse_int(policy_doc[1]);
 
-                            strategy = new Discount_Flat(Double.Parse(components[3]));
-                            break;
+                            return store.remove_discount(id);
+
                     }
 
-                    Discount discount = new Discount_Simple(start, end, strategy, null);
-
-                    store.edit_discount_policy(discount);
                     return true;
                 }
 
@@ -551,6 +560,92 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         public string get_store_name(int storeID)
         {
             return (store_by_id(storeID)).name;
+        }
+
+
+        // ----------------  parsing  -------------------------------------------------------------------------------------------------
+
+
+        public Discount parse_discount(string type, DateTime start, DateTime end, Discount_Strategy strategy)
+        {
+            // TODO
+
+            return new Discount_Simple(start,end,strategy,(c) => 0);
+        }
+
+        public Discount_Strategy parse_discount_strategy(string[] s)
+        {
+            string type = s[4];
+
+            switch (type)
+            {
+                case "flat":
+
+                    double factor = Parser.parse_double(s[5]);
+                    return new Discount_Flat(factor);
+
+                case "precentage":
+
+                    factor = Parser.parse_double(s[5]);
+                    return new Discount_Percentage(factor);
+
+                case "membership":
+
+                    return new Discount_Membership();
+            }
+
+            throw new Sadna17BException("store controller : illegal strategy detected");
+        }
+
+        public List<Func<Cart, double>> parse_relevant_lambdas(string[] s)
+        {
+            string type = s[6];
+
+            switch (type)
+            {
+                case "product":
+
+                    int product = Parser.parse_int(s[7]);
+                    return Discount_relevant_products_lambdas.product(product);
+
+                case "category":
+
+                    string category = Parser.parse_string(s[7]);
+                    return Discount_relevant_products_lambdas.category(category);
+
+            }
+
+            throw new Sadna17BException("store controller : illegal relevant product search functionality detected");
+
+        }
+
+        public List<Func<Cart, bool>> parse_condition_lambdas(string[] s)
+        {
+            string type = s[8];
+            double factor = Parser.parse_double(s[9]);
+
+            switch (type)
+            {
+                case "product amount":
+                    
+                    return Discount_condition_lambdas.condition_product_amount(factor);
+
+                case "product price":
+                    
+                    return Discount_condition_lambdas.condition_product_price(factor);
+
+                case "category amount":
+
+                    return Discount_condition_lambdas.condition_category_amount(factor);
+
+                case "category price":
+
+                    return Discount_condition_lambdas.condition_product_price(factor);
+
+
+            }
+
+            throw new Sadna17BException("store controller : illegal condition functionality detected");
         }
     }
 }

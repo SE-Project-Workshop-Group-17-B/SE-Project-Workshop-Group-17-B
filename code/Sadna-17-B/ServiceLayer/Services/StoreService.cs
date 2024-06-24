@@ -386,7 +386,7 @@ namespace Sadna_17_B.ServiceLayer.Services
 
             try
             {
-                message = _storeController.edit_discount_policy(store_id, policy_doc) ? "edited policy successfully" : "did not edit policy";
+                message = _storeController.edit_discount_policy(store_id, policy_doc.Split(';')) ? "edited policy successfully" : "did not edit policy";
                 info_logger.Log("Store", message);
             }
             catch (Exception e)

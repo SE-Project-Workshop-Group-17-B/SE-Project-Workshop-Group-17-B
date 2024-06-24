@@ -36,8 +36,8 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         Func<Cart, bool> _condition_product;
         Func<Cart, bool> _condition_all;
 
-        Condition_Lambdas conditions_generator = new Condition_Lambdas();
-        Relevant_product_Lambdas relevant_prices_generator = new Relevant_product_Lambdas();
+        Discount_condition_lambdas conditions_generator = new Discount_condition_lambdas();
+        Discount_relevant_products_lambdas relevant_prices_generator = new Discount_relevant_products_lambdas();
 
 
         [TestInitialize]
@@ -62,23 +62,23 @@ namespace Sadna_17_B_Test.Tests.UnitTests
             _discount_start = DateTime.Now;
             _discount_end = DateTime.Now.AddDays(14);
 
+
             // -------- relevant functions -------------------------------
 
-            _relevant_price_by_category = relevant_prices_generator.category(_product.category);
+            _relevant_price_by_category = Discount_relevant_products_lambdas.category(_product.category);
 
-            _relevant_price_by_product = relevant_prices_generator.product(_product);
+            _relevant_price_by_product = Discount_relevant_products_lambdas.product(_product);
 
-            _relevant_price_by_all = relevant_prices_generator.cart();
+            _relevant_price_by_all = Discount_relevant_products_lambdas.cart();
+
 
             // -------- conditions functions -------------------------------
 
+            _condition_product = Discount_condition_lambdas.condition_product_amount(_product, "<", 5);
 
+            _condition_category = Discount_condition_lambdas.condition_category_amount(_product.category, "!=", 0);
 
-            _condition_product = conditions_generator.condition_product_amount(_product, "<", 5);
-
-            _condition_category = conditions_generator.condition_category_amount(_product.category, "!=", 0);
-
-            _condition_all = conditions_generator.condition_cart_price(">", 200);
+            _condition_all = Discount_condition_lambdas.condition_cart_price(">", 200);
         }
 
         //[TestMethod]

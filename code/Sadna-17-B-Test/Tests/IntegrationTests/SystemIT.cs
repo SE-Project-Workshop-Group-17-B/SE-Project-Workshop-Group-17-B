@@ -87,9 +87,7 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
 
         [TestMethod]
         public void TestBuyingItemThatNotExist()
-        {
-            
-
+        { 
             Response ignore = userService.CreateSubscriber(username2, password2);
             Response res = userService.Login(username2, password2);
             userDTO = res.Data as UserDTO;

@@ -23,6 +23,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         public static int policy_id;
         public string policy_name { get; set; }
 
+        public Dictionary<int, Discount> id_to_discount;
         public Dictionary<Discount, HashSet<int>> discount_to_products;
         public Dictionary<Discount, HashSet<int>> discount_to_categories;
         public Dictionary<Discount, HashSet<int>> discount_to_member;
@@ -38,6 +39,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             policy_id += 1;
 
             this.policy_name = policy_name;
+            this.id_to_discount = new Dictionary<int, Discount>();
             this.discount_to_products = new Dictionary<Discount, HashSet<int>>();
             this.discount_to_categories = new Dictionary<Discount, HashSet<int>>();
             this.discount_to_member = new Dictionary<Discount, HashSet<int>>();
@@ -95,35 +97,40 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             if (!discount_to_products.ContainsKey(discount))
             {
                 discount_to_products.Add(discount, new HashSet<int>());
+                id_to_discount.Add(discount.ID, discount);
+
                 return true;
             }
 
             return false;
         }
 
-        public bool remove_discount(Discount discount)
+        public bool remove_discount(int id)
         {
-            if (discount_to_products.ContainsKey(discount))
+            
+            if (id_to_discount.ContainsKey(id))
             {
-                discount_to_products.Remove(discount);
+                discount_to_products.Remove(id_to_discount[id]);
+                id_to_discount.Remove(id);
+
                 return true;
             }
 
             return false;
         }
 
-        public bool add_product(Discount discount, int pid)
+        public bool add_product(int did, int pid)
         {
-            if (discount_to_products.ContainsKey(discount))
-                return discount_to_products[discount].Add(pid);
+            if (id_to_discount.ContainsKey(did))
+                return discount_to_products[id_to_discount[did]].Add(pid);
             
             return false;
         }
 
-        public bool remove_product(Discount discount, int pid)
+        public bool remove_product(int did, int pid)
         {
-            if (discount_to_products.ContainsKey(discount))
-                return discount_to_products[discount].Remove(pid);
+            if (id_to_discount.ContainsKey(did) && discount_to_products[id_to_discount[did]].Contains(pid))
+                return discount_to_products[id_to_discount[did]].Remove(pid);
 
             return false;
         }
