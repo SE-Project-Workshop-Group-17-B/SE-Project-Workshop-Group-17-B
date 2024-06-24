@@ -14,6 +14,95 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 {
 
 
+
+    // ------------------- Condition_Lambdas : generator of discount conditions -----------------------------------------------------------------------------------------
+
+
+    public class Purchase_Rule : Purchase
+
+    {
+        protected List<Purchase> purchase_rules = new List<Purchase>();
+
+        protected List<Func<Cart, bool>> conditions = new List<Func<Cart, bool>>();
+
+        protected Func<Cart, List<Func<Cart, bool>>, bool> purchase_rule { get; set; }
+
+
+
+        public Purchase_Rule(Func<Cart, List<Func<Cart, bool>>, bool> purchase_rule)  { purchase_rule = purchase_rule; }
+
+
+
+        public void add_condition(Func<Cart, bool> cond)
+        {
+            conditions.Add(cond);
+        }
+
+        public void remove_condition(Func<Cart, bool> cond)
+        {
+            conditions.Remove(cond);
+        }
+
+
+
+        public override bool apply_purchase(Cart cart)
+        {
+            bool purchase = purchase_rule(cart, conditions);
+
+            foreach (var rule in purchase_rules)
+            {
+                
+                purchase = rule.apply_purchase(cart);
+            }
+
+            return purchase;
+        }
+
+
+    }
+
+    // ------------------- Purchase_rule_Lambdas : generator of discount conditions -----------------------------------------------------------------------------------------
+
+
+
+    public class Purchase_Rule_Lambdas
+    {
+
+
+        public Func<Cart, List<Func<Cart, bool>>, bool> and { get; set; }
+
+        public Func<Cart, List<Func<Cart, bool>>, bool> or { get; set; }  
+
+        public Func<Cart, List<Func<Cart, bool>>, bool> conditional { get; set; } 
+
+
+
+        public Purchase_Rule_Lambdas()
+        {
+
+            
+            or = (Cart cart, List<Func<Cart, bool>> conditions) =>  // at least one condition applies on cart
+            {
+                foreach (var condition in conditions)
+                {
+                    if (condition(cart))
+                        return true;
+                }
+
+                return false;
+            };
+
+            conditional = (Cart cart, List<Func<Cart,bool>> conditions) => 
+            {
+                return (conditions[0](cart) & !conditions[1](cart)) | (!conditions[0](cart) & !conditions[1](cart));
+            };
+
+
+        }
+
+    }
+
+
     // ------------------- Condition_Lambdas : generator of discount conditions -----------------------------------------------------------------------------------------
 
 
@@ -76,7 +165,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         // --------------------------- category conditions ------------------------------
 
 
-        public Func<Cart, bool> condition_category_amount(string category, string op, int factor) 
+        public Func<Cart, bool> condition_category_amount(string category, string op, int factor)
         {
             return (Cart cart) =>
 
@@ -89,7 +178,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             };
         }
 
-        public Func<Cart, bool> condition_category_price(string category, string op, int factor) 
+        public Func<Cart, bool> condition_category_price(string category, string op, int factor)
         {
             return (Cart cart) =>
 
@@ -106,7 +195,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         // --------------------------- cart conditions ------------------------------
 
 
-        public Func<Cart, bool> condition_cart_amount(string op, int factor) 
+        public Func<Cart, bool> condition_cart_amount(string op, int factor)
         {
             return (Cart cart) =>
 
@@ -116,7 +205,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             };
         }
 
-        public Func<Cart, bool> condition_cart_price(string op, int factor) 
+        public Func<Cart, bool> condition_cart_price(string op, int factor)
         {
             return (Cart cart) =>
 
@@ -148,7 +237,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             };
         }
 
-        public Func<Cart, bool> condition_alcohol_age(string op, int factor) 
+        public Func<Cart, bool> condition_alcohol_age(string op, int factor)
         {
             return (Cart cart) =>
 
@@ -161,93 +250,6 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
     }
 
-
-    // ------------------- Condition_Lambdas : generator of discount conditions -----------------------------------------------------------------------------------------
-
-
-    public class Purchase_Rule
-
-    {
-        protected List<Purchase_Rule> purchase_rules = new List<Purchase_Rule>();
-
-        protected List<Func<Cart, bool>> conditions = new List<Func<Cart, bool>>();
-
-        protected Func<Cart, List<Func<Cart, bool>>, bool> purchase_rule { get; set; }
-
-
-
-        public Purchase_Rule(Func<Cart, List<Func<Cart, bool>>, bool> purchase_rule)  { purchase_rule = purchase_rule; }
-
-
-
-        public void add_condition(Func<Cart, bool> cond)
-        {
-            conditions.Add(cond);
-        }
-
-        public void remove_condition(Func<Cart, bool> cond)
-        {
-            conditions.Remove(cond);
-        }
-
-
-
-        public  bool apply_purchase(Cart cart)
-        {
-            bool purchase = purchase_rule(cart, conditions);
-
-            foreach (var rule in purchase_rules)
-            {
-                
-                purchase = rule.apply_purchase(cart);
-            }
-
-            return purchase;
-        }
-
-
-    }
-
-    // ------------------- Purchase_rule_Lambdas : generator of discount conditions -----------------------------------------------------------------------------------------
-
-
-
-    public class Purchase_Rule_Lambdas
-    {
-
-
-        public Func<Cart, List<Func<Cart, bool>>, bool> and { get; set; }
-
-        public Func<Cart, List<Func<Cart, bool>>, bool> or { get; set; }  
-
-        public Func<Cart, List<Func<Cart, bool>>, bool> conditional { get; set; } 
-
-
-
-        public Purchase_Rule_Lambdas()
-        {
-
-            
-            or = (Cart cart, List<Func<Cart, bool>> conditions) =>  // at least one condition applies on cart
-            {
-                foreach (var condition in conditions)
-                {
-                    if (condition(cart))
-                        return true;
-                }
-
-                return false;
-            };
-
-            conditional = (Cart cart, List<Func<Cart,bool>> conditions) => 
-            {
-                return (conditions[0](cart) & !conditions[1](cart)) | (!conditions[0](cart) & !conditions[1](cart));
-            };
-
-
-        }
-
-    }
 
 
 

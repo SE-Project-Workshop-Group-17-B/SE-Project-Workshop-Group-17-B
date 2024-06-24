@@ -308,36 +308,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         // ---------------- store discount policy -------------------------------------------------------------------------------------------
 
-
-        public bool add_discount_policy(int store_id, string policy_doc)
-        {
-            foreach (Store store in active_stores)
-            {
-                if (store.ID == store_id)
-                {
-                    store.add_discount_policy(policy_doc);
-                    return true;
-                }
-            }
-
-            return false; 
-        }
-
-        public bool remove_discount_policy(int store_id, int policy_id)
-        {
-            foreach (Store store in active_stores)
-            {
-                if (store.ID == store_id)
-                {
-                    store.remove_discount_policy(policy_id);
-                    return true;
-                }
-            }
-
-            return false; ;
-        }
-
-        public bool edit_discount_policy(int store_id, string edit_type, string policy_doc)
+        public bool edit_discount_policy(int store_id, string policy_doc)
         {
             foreach (Store store in active_stores)
             {
@@ -369,13 +340,19 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
                     Discount discount = new Discount_Simple(start, end, strategy, null);
 
-                    store.edit_discount_policy(edit_type, discount);
+                    store.edit_discount_policy(discount);
                     return true;
                 }
 
             }
 
             return false;
+        }
+
+        public bool edit_purchase_policy(int store_id, string policy_doc) // version 3
+        {
+
+            return active_stores[0].edit_purchase_policy(policy_doc);
         }
 
 

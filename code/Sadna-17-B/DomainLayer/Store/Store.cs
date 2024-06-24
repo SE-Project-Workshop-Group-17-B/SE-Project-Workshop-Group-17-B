@@ -203,44 +203,21 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         }
 
 
-        // ---------------- discount policy ----------------------------------------------------------------------------------------
+        // ---------------- policies ----------------------------------------------------------------------------------------
 
 
-        public bool add_discount_policy(string policy_doc)
+        public bool edit_purchase_policy(string policy_doc) // version 3
         {
-            string[] components = policy_doc.Split(',');
-            discount_policy = new DiscountPolicy(components[0]);
-
             return true;
         }
 
-        public bool remove_discount_policy(int policy_id)
-        {
-            if (policy_id == discount_policy.get_id())
-                discount_policy = null;
-
-            return true;
-        }
-
-        public bool edit_discount_policy(string edit_type, Discount discount)
+        public bool edit_discount_policy(Discount discount)
         {
 
-            switch (edit_type)
-            {
-                case ("add discount"):
-
-                    add_discount(discount);
-                    return true;
-
-                case ("remove discount"):
-
-                    remove_discount(discount);
-                    return true;
-            }
+            discount_policy.add_discount(discount);
 
             return false;
         }
-
 
         public bool add_discount(Discount discount)
         {

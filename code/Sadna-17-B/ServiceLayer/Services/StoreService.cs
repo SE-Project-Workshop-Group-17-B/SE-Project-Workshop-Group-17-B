@@ -157,7 +157,6 @@ namespace Sadna_17_B.ServiceLayer.Services
 
         // ---------------- rating options -------------------------------------------------------------------------------------------
 
-
         public Response AddStoreRating(int storeID, int rating)
         {
             bool result = _storeController.add_store_rating(storeID, rating);
@@ -178,6 +177,7 @@ namespace Sadna_17_B.ServiceLayer.Services
 
             return new Response(result, result ? "Review Sent.\n" : "complaint not sent.\n");
         }
+
 
 
         // ---------------- stores Management -------------------------------------------------------------------------------------------
@@ -288,6 +288,7 @@ namespace Sadna_17_B.ServiceLayer.Services
         }
 
 
+
         // ---------------- search stores options -------------------------------------------------------------------------------------------
 
         public Response all_stores()
@@ -310,6 +311,7 @@ namespace Sadna_17_B.ServiceLayer.Services
         }
 
 
+
         // ---------------- search / filter products options -------------------------------------------------------------------------------------------
 
 
@@ -322,7 +324,6 @@ namespace Sadna_17_B.ServiceLayer.Services
             return new Response(message, (!output.IsNullOrEmpty()), output);
         }
 
-
         public Response products_by_keyWord(string keyWord)
         {
             Dictionary<Product, int> output = _storeController.filter_products_by_keyword(keyWord);
@@ -332,8 +333,6 @@ namespace Sadna_17_B.ServiceLayer.Services
             return new Response(message, output != null, output);
         }
 
-
-
         public Response filter_search_by_product_rating(Dictionary<Product, int> searchResult, int low)
         {
             Dictionary<Product, int> output = _storeController.filter_products_by_rating(searchResult, low);
@@ -341,13 +340,13 @@ namespace Sadna_17_B.ServiceLayer.Services
             return new Response("", (!output.IsNullOrEmpty()), output);
         }
 
-
         public Response filter_search_by_store_id(Dictionary<Product, int> searchResult, int storeId)
         {
             Dictionary<Product, int> output = _storeController.filter_products_by_store_id(searchResult, storeId);
 
             return new Response("", (!output.IsNullOrEmpty()), output);
         }
+        
         public Response filter_search_by_price(Dictionary<Product, int> searchResult, int low, int high)
         {
             if (low <= 0)
@@ -378,20 +377,21 @@ namespace Sadna_17_B.ServiceLayer.Services
         }*/
 
 
-        // ---------------- adjust policy options -------------------------------------------------------------------------------------------
+        // ---------------- Policy Requirements -------------------------------------------------------------------------------------------
 
 
-        public Response edit_policy(int store_id, string edit_type, string policy_doc)
+        public Response edit_discount_policy(int store_id, string policy_doc)
         {
             string message = "";
 
             try
             {
-                message = _storeController.edit_discount_policy(store_id, edit_type, policy_doc) ? "edited policy successfully" : "did not edit policy";
+                message = _storeController.edit_discount_policy(store_id, policy_doc) ? "edited policy successfully" : "did not edit policy";
                 info_logger.Log("Store", message);
             }
             catch (Exception e)
             {
+                message = e.Message;
                 error_logger.Log(message);
 
                 return new Response(message, false, e);
@@ -400,17 +400,23 @@ namespace Sadna_17_B.ServiceLayer.Services
             return new Response(message, true);
         }
 
-        public Response add_policy(int store_id, string policy_doc)
+        public Response show_discount_policy(int store_id, string policy_doc) // version 3
+        {
+            return new Response("",false);
+        }
+        
+        public Response edit_purchase_policy(int store_id, string policy_doc) // version 3
         {
             string message = "";
 
             try
             {
-                message = _storeController.add_discount_policy(store_id, policy_doc) ? "added policy successfully" : "did not add policy";
+                message = _storeController.edit_purchase_policy(store_id, policy_doc) ? "edited policy successfully" : "did not edit policy";
                 info_logger.Log("Store", message);
             }
             catch (Exception e)
             {
+                message = e.Message;
                 error_logger.Log(message);
 
                 return new Response(message, false, e);
@@ -419,26 +425,12 @@ namespace Sadna_17_B.ServiceLayer.Services
             return new Response(message, true);
         }
 
-        public Response remove_policy(int store_id, int policy_id)
+        public Response show_purchase_policy(int store_id, string policy_doc) // version 3
         {
-            string message = "";
-
-            try
-            {
-                message = _storeController.remove_discount_policy(store_id, policy_id) ? "removed policy successfully" : "did not remove policy";
-                info_logger.Log("Store", message);
-            }
-            catch (Exception e)
-            {
-                error_logger.Log(message);
-
-                return new Response(message, false, e);
-            }
-
-            return new Response(message, true);
+            return new Response("", false);
         }
-
-
+        
+        
 
         // ---------------- store info -------------------------------------------------------------------------------------------
 
@@ -453,13 +445,10 @@ namespace Sadna_17_B.ServiceLayer.Services
             return new Response(store_info, true);
         }
 
-
-
         public Response get_store_name(int storeID)
         {
             return new Response(_storeController.get_store_name(storeID), true);
         }
-
 
         public Response get_store_inventory(int storeID)
         {
@@ -471,7 +460,8 @@ namespace Sadna_17_B.ServiceLayer.Services
             return new Response(store_info, true);
         }
 
-        // ---------------- calculate prices ---------------------
+
+
         public Response calculate_products_prices(int storeID, Dictionary<int, int> quantities)
         {
             Receipt receipt = _storeController.calculate_products_prices(storeID, quantities);

@@ -27,7 +27,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         public Dictionary<Discount, HashSet<int>> discount_to_categories;
         public Dictionary<Discount, HashSet<int>> discount_to_member;
 
-        public HashSet<DiscountRule> discount_rules;
+        public List<DiscountRule> discount_rules;
 
 
         // ----------- constructor -----------------------------------------------------------
@@ -41,7 +41,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             this.discount_to_products = new Dictionary<Discount, HashSet<int>>();
             this.discount_to_categories = new Dictionary<Discount, HashSet<int>>();
             this.discount_to_member = new Dictionary<Discount, HashSet<int>>();
-            this.discount_rules = new HashSet<DiscountRule>();
+            this.discount_rules = new List<DiscountRule>();
         }
 
 

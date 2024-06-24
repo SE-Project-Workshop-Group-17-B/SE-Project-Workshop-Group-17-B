@@ -14,6 +14,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
     // ----------- Base Discount Class ------------------------------------------------------------------------------------------------------------------  
 
 
+
     public abstract class Discount : I_informative_class, I_discount
     {
 

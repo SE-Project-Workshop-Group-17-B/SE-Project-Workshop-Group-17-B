@@ -19,31 +19,42 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         // ---------------- variables ----------------------------------------------------
 
-
+        public static int ID;
         public string PolicyName { get; set; }
-        public List<PurchaseType> AllowedPurchaseTypes { get; set; }
+
+        public List<Purchase_Rule> purchase_rules;
 
 
+        public PurchasePolicy() 
+        {
+            ID += 1;
+            this.purchase_rules = new List<Purchase_Rule>();
+        }
 
         // ---------------- functions -----------------------------------------------------
 
 
-        public void AllowPurchaseType(PurchaseType type)
+        public bool add_rule(Purchase_Rule rule)
         {
-            AllowedPurchaseTypes.Add(type);
+            if (!purchase_rules.Contains(rule))
+            {
+                purchase_rules.Add(rule);
+                return true;
+            }
+
+            return false;
         }
 
-        public void AddPurchaseType(PurchaseType type)
+        public bool remove_rule(Purchase_Rule rule)
         {
-            AllowedPurchaseTypes.Add(type);
+            if (purchase_rules.Contains(rule))
+            {
+                purchase_rules.Remove(rule);
+                return true;
+            }
+
+            return false;
         }
-
-        public void RemovePurchaseType(PurchaseType type)
-        {
-            AllowedPurchaseTypes.Remove(type);
-        }
-
-
 
         public string info_to_print()
         {
@@ -66,83 +77,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
     }
 
 
-    // ---------------- Purchase ----------------------------------------------------------------------------------------
 
-
-    public abstract class PurchaseType
-    {
-        protected double price;
-        public abstract void executePurchase();
-    }
-
-
-    public class ImmediatePurchase : PurchaseType
-    {
-        public override void executePurchase()
-        {
-            //implement purchase logic
-
-        }
-    }
-
-    public class BidPurchase : PurchaseType
-    {
-        public double BidPrice { get; set; }
-        public override void executePurchase()
-        {
-            //implement purchase logic
-        }
-
-        public void submitBid(double bidPrice)
-        {
-            //implement bid logic
-        }
-
-        public void AcceptBid(double bidPrice)
-        {
-            //implement bid accept logic
-        }
-
-        public void RejectBid(double bidPrice)
-        {
-            //implement bid accept logic
-        }
-
-        public void CounterBid(double bidPrice)
-        {
-            //implement bid accept logic
-        }
-    }
-
-
-    public class AuctionPurchase : PurchaseType
-    {
-        public double StartingPrice { get; set; }
-        public double HighestBid { get; set; }
-        public string HighestBidder { get; set; }
-
-        public override void executePurchase()
-        {
-            //implement purchase logic
-        }
-    }
-
-    public class LutteryPurchase : PurchaseType
-    {
-        public double TotalAmountCollected { get; set; }
-        public Dictionary<string, double> Participants { get; set; }
-        public int WinningTicket { get; set; }
-        public override void executePurchase()
-        {
-            //implement purchase logic
-        }
-
-        public void EnterLuttery(string userName, double amount)
-        {
-            //implement luttery logic
-        }
-
-    }
 }
 
     

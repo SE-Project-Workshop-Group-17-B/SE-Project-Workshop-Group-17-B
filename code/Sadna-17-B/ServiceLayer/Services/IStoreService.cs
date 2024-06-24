@@ -51,20 +51,20 @@ namespace Sadna_17_B.ServiceLayer.Services
         Response filter_search_by_price(Dictionary<Product, int> searchResult, int low, int high);
         Response filter_search_by_product_rating(Dictionary<Product, int> searchResult, int low);
         Response filter_search_by_store_rating(Dictionary<Product, int> searchResult, int low);
-       
+
 
 
 
         // ---------------- adjust policy options -------------------------------------------------------------------------------------------
 
-        Response edit_policy(int store_id, string edit_type, string policy_doc);
-        Response add_policy(int store_id, string policy_doc);
-        Response remove_policy(int store_id, int policy_id);
-
+        Response edit_discount_policy(int store_id, string policy_doc);
+        Response show_discount_policy(int store_id, string policy_doc);
+        Response edit_purchase_policy(int store_id, string policy_doc);
+        Response show_purchase_policy(int store_id, string policy_doc);
 
 
         // ---------------- Stores info -------------------------------------------------------------------------------------------
-        
+
         Response get_store_inventory(int storeID);
         Response get_store_info(int storeID);
 

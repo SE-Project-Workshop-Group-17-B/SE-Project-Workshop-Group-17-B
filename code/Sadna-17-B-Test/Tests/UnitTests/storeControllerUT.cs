@@ -272,13 +272,13 @@ namespace Sadna_17_B_Test.Tests.UnitTests
              *   _relevant_price_by_product         5,000      
              *   _relevant_price_by_all             27,310
              *
-             *   _condition_category                false
-             *   _condition_product                 true
+             *   _condition_category                true
+             *   _condition_product                 false
              *   _condition_all                     true
              *      
              *   
-             *   cond_flat                          true, 50                                        out of 5000
-             *   cond_prec                          false, 500                                      out of 5000  // only rules weight the conditions
+             *   cond_flat                          true, 50                                        out of 5000  // only rules weight the conditions
+             *   cond_prec                          false, 500                                      out of 5000  
              *   cond_member                        true, 68.5                                      out of 5000
              *   
              *   simple_flat                        true, 50    ( 50 flat)                          out of 5000
