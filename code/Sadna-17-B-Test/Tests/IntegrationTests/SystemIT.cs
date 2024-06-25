@@ -179,7 +179,7 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
             testObject.Setup(arg => arg.ExecuteDelivery(" ", null)).Returns(false);
 
             StoreController sc = new StoreController();
-            sc.open_store(new Store("name", "email", "054", "desc", "addr", new Inventory()));
+            sc.create_store("name", "email", "054", "desc", "addr");
             int storeId = sc.store_by_name("name").ID;
             int productId = sc.add_store_product(storeId, "prd", 5.0, "category", "desc", 10);
 
@@ -207,7 +207,7 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
             testObject.Setup(arg => arg.ExecutePayment(" ", 0)).Returns(false);
 
             StoreController sc = new StoreController();
-            sc.open_store(new Store("name", "email", "054", "desc", "addr", new Inventory()));
+            sc.create_store("name", "email", "054", "desc", "addr");
             int storeId = sc.store_by_name("name").ID;
             int productId = sc.add_store_product(storeId, "prd", 5.0, "category", "desc", 10);
 

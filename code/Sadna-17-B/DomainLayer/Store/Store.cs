@@ -48,7 +48,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         // ---------------- Constructor & store management -------------------------------------------------------------------------------------------
 
 
-        public Store(string name, string email, string phone_number, string store_description, string address, Inventory inventory)
+        public Store(string name, string email, string phone_number, string store_description, string address)
         {
             this.ID = idCounter++;
             
@@ -59,6 +59,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             this.address = address;
             this.inventory = inventory;
 
+            this.inventory = new Inventory(ID);
             this.discount_policy = new DiscountPolicy("default policy");
             this.purchase_policy = new PurchasePolicy();
 
@@ -102,34 +103,22 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             
             return res;
         }
+        
         public int add_product(string name, double price, string category, string description, int amount)
         {
             return inventory.add_product(name, price, category, description, amount);
         }
 
-        public string increase_product_amount(int id, int amount)
+        public void increase_product_amount(int id, int amount)
         {
-            return inventory.increase_product_amount(id, amount);
+            inventory.increase_product_amount(id, amount);
         }
 
-        public string decrease_product_amount(int p_id, int amount)
+        public void decrease_product_amount(int p_id, int amount)
         {
-            string purchase_result = "something wrong";
-            purchase_result = inventory.decrease_product_amount(p_id, amount); 
-            return purchase_result;
-        }
-
-        public bool edit_product_amount(int p_id, int amount)
-        {
-            Product product_to_reduce = inventory.product_by_id(p_id);
-
-            if (product_to_reduce == null)
-                return false;
-
-            try { inventory.edit_product_amount(p_id, amount); }
-            catch (Exception e) { return false; }
-
-            return true;
+            
+           inventory.decrease_product_amount(p_id, amount); 
+            
         }
 
 
@@ -142,54 +131,14 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                 return false;
 
             foreach (Product product in products_to_remove)
-                result = result && inventory.remove_product(product);
+                result = result && inventory.remove_product(product.ID);
             
             return result;
         }
 
-        public bool remove_product_by_id(int p_id)
+        public bool remove_product_by_id(int pid)
         {
-            Product product_to_remove = inventory.product_by_id(p_id);
-
-            if (product_to_remove == null)
-                return false;
-
-            return inventory.remove_product(product_to_remove);
-
-        }
-
-        public bool edit_product(int productId)
-        {
-            Product productEdit = inventory.product_by_id(productId);
-            if (productEdit == null)
-                return false;
-
-            Console.WriteLine("Edit Product Name: ( -1 to continue ...)");
-            string new_name = Console.ReadLine();
-            if (!new_name.Equals("-1"))
-                inventory.edit_product_name(productId, new_name);
-
-            Console.WriteLine("Edit Product Price: ( -1 to continue ...)");
-            int new_price = Convert.ToInt32(Console.ReadLine());
-            if(new_price > 0)
-                inventory.edit_product_price(productId, new_price);
-
-            Console.WriteLine("Edit Product Category: ( -1 to continue ...)");
-            string new_Category = Console.ReadLine();
-            if (!new_Category.Equals("-1"))
-                inventory.edit_product_category(productId, new_Category);
-
-            Console.WriteLine("Edit Product Amount: ( -1 to continue ...)");
-            int new_amount = Convert.ToInt32(Console.ReadLine());
-            if (new_amount > 0)
-                inventory.edit_product_amount(productId, new_amount);
-
-            Console.WriteLine("Edit Product Description: ( -1 to continue ...)");
-            string new_Description = Console.ReadLine();
-            if (!new_Description.Equals("-1"))
-                inventory.edit_product_description(productId, new_Description);
-
-            return true;
+            return inventory.remove_product(pid);
         }
 
         public double calculate_product_bag(int p_id, int amount)
@@ -220,7 +169,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return false;
         }
 
-        public bool add_discount(string type, DateTime start, DateTime end, Discount_Strategy strategy, Func<Cart, double> relevant_product_lambda, List<Func<Cart, bool>> condition_lambdas = null)
+        public bool add_discount(DateTime start, DateTime end, Discount_Strategy strategy, Func<Cart, double> relevant_product_lambda, List<Func<Cart, bool>> condition_lambdas = null)
         {
 
             Discount discount;
@@ -296,9 +245,9 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return result.Any() ? result : null;
         }
 
-        public List<Product> filter_keyword(string keyWord)
+        public List<Product> filter_keyword(string[] keyword)
         {
-            List<Product> result = inventory.products_by_keyword(keyWord);
+            List<Product> result = inventory.products_by_keyword(keyword);
             if (result == null)
                 return new List<Product>();
 

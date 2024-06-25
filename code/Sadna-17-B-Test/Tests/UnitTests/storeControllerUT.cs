@@ -324,7 +324,8 @@ namespace Sadna_17_B_Test.Tests.UnitTests
                                 .SetAddress("Test Address")
                                 .SetInventory(_inventory);
             var store = storeBuilder.Build();
-            _storeController.open_store(store);
+            _storeController.create_store("Test Store", "testemail@example.com", "1234567890", "Test Store Description", "Test Address");
+
 
             // Assert
             Assert.IsNotNull(store);

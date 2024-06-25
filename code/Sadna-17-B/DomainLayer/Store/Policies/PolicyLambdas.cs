@@ -138,7 +138,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             };
         }
 
-        public static Func<Cart, double> products(List<int> products) // relevant products price
+        public static Func<Cart, double> products(int[] products) // relevant products price
         {
             return (Cart cart) =>
 
@@ -163,7 +163,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             };
         }
 
-        public static Func<Cart, double> categories(List<string> categories) // relevant products from given categories price
+        public static Func<Cart, double> categories(string[] categories) // relevant products from given categories price
         {
             return (Cart cart) =>
 

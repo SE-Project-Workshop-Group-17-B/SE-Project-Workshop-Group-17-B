@@ -18,15 +18,15 @@ namespace Sadna_17_B.ServiceLayer.Services
 
         // ---------------- rating options -------------------------------------------------------------------------------------------
 
-        Response AddStoreRating(int storeID, int rating);
-        Response AddProductRating(int storeID, int productID, int rating);
-        Response SendComplaintToStore(int storeID, string complaint);
+        Response add_store_rating(int storeID, int rating);
+        Response add_product_rating(int storeID, int productID, int rating);
+        Response add_store_complaint(int storeID, string complaint);
 
         // ---------------- review options -------------------------------------------------------------------------------------------
 
-        Response AddStoreReview(int storeID, string review);
-        Response AddProductReview(int storeID, int productID, string review);
-        Response EditProductReview(int storeID, int productID, string old_review, string new_review);
+        Response add_store_review(int storeID, string review);
+        Response add_product_review(int storeID, int productID, string review);
+        Response edit_product_review(int storeID, int productID, string old_review, string new_review);
 
         // ---------------- store management options -------------------------------------------------------------------------------------------
 
@@ -68,7 +68,7 @@ namespace Sadna_17_B.ServiceLayer.Services
         Response get_store_inventory(int storeID);
         Response get_store_info(int storeID);
 
-        Response GetStoreById(int storeID);
+        Response store_by_id(int storeID);
         Response get_store_name(int storeID);
 
         // ---------------- calculate prices ---------------------

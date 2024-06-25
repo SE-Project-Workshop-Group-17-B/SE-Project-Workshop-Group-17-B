@@ -87,32 +87,38 @@ namespace Sadna_17_B.Utils
 
         // ------------------- non - primitive ---------------------------------------------------------------------------------
 
-        public static List<int> parse_int_list(string[] a)
+        public static T parse_the_string<T>(string s)
         {
-            List<int> parsed = new List<int>();
-
-            foreach (string s in a)
+            try
             {
-                if (s == "]")
-                    break;
+                if (typeof(T) == typeof(int))
+                    return (T)(object)parse_int(s);
 
-                parsed.Add(parse_int(s));
+                else if (typeof(T) == typeof(double))
+                    return (T)(object)parse_double(s);
+
+                else if (typeof(T) == typeof(string))
+                    return (T)(object)parse_string(s);
+
+                else if (typeof(T) == typeof(bool))
+                    return (T)(object)parse_boolean(s);
+
+                else
+                    throw new ArgumentException($"Unsupported return type: {typeof(T)}");
             }
-
-            return parsed;
+            catch (FormatException)
+            {
+                throw new ArgumentException($"Invalid value for return type {typeof(T)}: {s}");
+            }
         }
-
-        public static List<string> parse_string_list(string[] a)
+        
+        public static T[] parse_array<T>(string s)
         {
-            List<string> parsed = new List<string>();
+            string[] array = s.Split('|');
+            T[] parsed = new T[array.Length];
 
-            foreach (string s in a)
-            {
-                if (s == "]")
-                    break;
-
-                parsed.Add(s);
-            }
+            for (int i = 0; i < array.Length; i++)
+                parsed[i] = parse_the_string<T>(array[i]);
 
             return parsed;
         }

@@ -7,12 +7,29 @@ using System.Web.UI.WebControls;
 using System.Diagnostics.Metrics;
 using System.Web.Services.Description;
 using System.Xml.Linq;
+using System.Linq.Expressions;
+using System.Diagnostics;
 
 
 namespace Sadna_17_B.ServiceLayer.Services
 {
     public class StoreService : IStoreService
     {
+        /*
+         *     response                            data
+         *    ----------                          ------
+         *    
+         *   create_store         ----->          store_ID
+         * 
+         * 
+         * 
+         * 
+         * 
+         * 
+         * 
+         */
+
+
 
         // ---------------- readonly Variables -------------------------------------------------------------------------------------------
 
@@ -42,140 +59,230 @@ namespace Sadna_17_B.ServiceLayer.Services
 
         // ---------------- adjust stores options -------------------------------------------------------------------------------------------
 
-        public Response create_store(string token, string name, string email, string phoneNumber, string storeDescription, string address, Inventory inv)
+        
+        public Response create_store(string token, string name, string email, string phoneNumber, string storeDescription, string address)// fixed :)
         {
+            // ---------- subscriber authentication ---------------
+
             if (!_userService.IsSubscriberBool(token))
             {
-                error_logger.Log("Authentication", " user should be subscriber");
-                return new Response(false);
+                error_logger.Log("Store Service", " authentication error, user should be subscriber to create store");
+                return new Response("store creation : user should be subscriber to create store", false);
             }
 
-            var storeBuilder = _storeController.store_builder()
-                                .SetName(name)
-                                .SetEmail(email)
-                                .SetPhoneNumber(phoneNumber)
-                                .SetStoreDescription(storeDescription)
-                                .SetAddress(address)
-                                .SetDiscountPolicy(new DiscountPolicy("DefaultDiscountPolicy"))
-                                .SetInventory(inv);
-            var store = storeBuilder.Build();
+            // ---------- store controller action ---------------
 
-            _storeController.open_store(store);
-            info_logger.Log("Store", "new store was added : \n\n" + store.info_to_print());
-
-          
-            _userService.CreateStoreFounder(token, store.ID);
-            info_logger.Log("User", "user is now founder of the '" + store.name + "' store");
-
-
-            return new Response("\nNew Store Created.\nStoreID: " + store.ID + "\nStore name: " + store.name, true, store.ID);
-
-        }
-
-        public Response create_store(string token, string name, string email, string phoneNumber, string storeDescription, string address)
-        {
-            return create_store(token, name, email, phoneNumber, storeDescription, address, new Inventory());
-        }
-
-        public Response close_store(string token, int storeID)
-        {
-            if (_userService.IsFounderBool(token, storeID))
+            try
             {
-                try
-                {
-                    _storeController.close_store(storeID);
-                    info_logger.Log("Store", "the store '" + _storeController.store_by_id(storeID) + "' closed by user");
-                    _userService.NotifyStoreClosing(token, storeID); // Added in Version 2 to notify all other store owners & managers about the store closing (Requirement 4.9)
-                    return new Response(true, "Store closed successfully\n"); ;
-                }
-                catch (Sadna17BException e)
-                {
-                    return Response.GetErrorResponse(e);
-                }
+                int store_id = _storeController.create_store(name, email, phoneNumber, storeDescription, address);
+
+                info_logger.Log("Store service", "new store was added : \n\n" + _storeController.get_store_info(store_id));
+                info_logger.Log("Store service", "user is now founder of store" + store_id);
             }
 
-            info_logger.Log("Store", "the user is not authorized to enter the store (he is not the founder)");
-
-            return new Response(false, "the user is not authorized to enter the store(he is not the founder)\n");
-        }
-
-        public Response GetStoreById(int storeID)
-        {
-            Store store = _storeController.store_by_id(storeID);
-            if (store != null)
+            catch (Sadna17BException ex) 
             {
-                return new Response(true, store);
+                error_logger.Log("Store Service", "store could not be created");
+                return Response.GetErrorResponse(ex);
             }
-            return new Response("Failed to return Info about store ID: " + storeID, false);
+
+            return new Response("New store was created successfully !!!", true, store_id);
+
         }
 
-        public Response valid_order(int storeId, Dictionary<int, int> quantities)
+        public Response close_store(string token, int storeID)// fixed :)
         {
-            bool result = _storeController.valid_order(storeId, quantities);
-            string message = result ? "order is valid.\n" : "order not valid, at least one of the quantities in products higher than in the inventory.\n";
 
-            info_logger.Log("Store", message);
+            // ---------- founder authentication ---------------
 
-            return new Response(result, message);
-        }
+            if (!_userService.IsFounderBool(token, storeID))
+            {
+                error_logger.Log("Store Service", " authentication error, user should be founder to close store");
+                return new Response("store creation : user should be founder to close store", false);
+            }
 
-        public Response all_products()
-        {
-            Dictionary <Product,int> result = _storeController.all_products();
-            string message = result.IsNullOrEmpty() ? "No products found.\n" : "Products found.\n";
+            // ---------- store controller action ---------------
 
-            info_logger.Log("Store", message);
+            try
+            {
+                _storeController.close_store(storeID);
 
-            return new Response(message, !result.IsNullOrEmpty(), result);
-        }
+                info_logger.Log("Store Service", "store " + storeID + " closed by user");
+                _userService.NotifyStoreClosing(token, storeID);                    // Added in Version 2 to notify all other store owners & managers about the store closing (Requirement 4.9)
+                return new Response("Store closed successfully !!!", true); ;
+            }
 
-
-        // ---------------- review options -------------------------------------------------------------------------------------------
-
-
-        public Response AddStoreReview(int storeID, string review)
-        { 
-            bool result = _storeController.add_store_review(storeID, review);
+            catch (Sadna17BException ex)
+            {
+                error_logger.Log("Store Service", " authentication error, user should be founder to close store");
+                return Response.GetErrorResponse(ex);
+            }
             
-            return new Response(result, result ? "Review Added.\n" : "Review not added.\n");
         }
 
-        public Response AddProductReview(int storeID,int productID, string review)
+        public Response valid_order(int storeId, Dictionary<int, int> quantities) // fixed :)
         {
-            bool result = _storeController.add_product_review(storeID, productID, review);
+            try
+            {
+                bool result = _storeController.valid_order(storeId, quantities);
 
-            return new Response(result, result ? "Review Added.\n" : "Review not added.\n");
+                info_logger.Log("Store Service", "order validation completed");
+
+                if (result) 
+                    return new Response("order validation : success ", true)
+                else
+                    return new Response("order validation : fail ", false)
+            }
+
+            catch (Sadna17BException ex)
+            {
+                error_logger.Log("Store Service", "validation error, order is not valid");
+                return Response.GetErrorResponse(ex);
+            }
+
         }
 
-        public Response EditProductReview(int storeID, int productID, string old_review, string new_review)
-        {
-            bool result = _storeController.edit_product_review(storeID, productID, old_review, new_review);
 
-            return new Response(result, result ? "Review Added.\n" : "Review not added.\n");
+
+        // ---------------- store feedbacks -------------------------------------------------------------------------------------------
+
+
+        public Response add_store_review(int storeID, string review) // --> bool
+        {
+            try
+            {
+                bool result = _storeController.add_store_review(storeID, review);
+
+                info_logger.Log("Store Service", "store review added");
+
+                if (result)
+                    return new Response("store review added", true)
+                else
+                    return new Response("store review was not added for some reason", false)
+            }
+
+            catch (Sadna17BException ex)
+            {
+                error_logger.Log("Store Service", "error, review was not added");
+                return Response.GetErrorResponse(ex);
+            }
+
+        }
+
+        public Response add_store_rating(int storeID, int rating) // --> bool 
+        {
+            try
+            {
+                bool result = _storeController.add_store_rating(storeID, rating);
+
+                info_logger.Log("Store Service", "store rating added");
+
+                if (result)
+                    return new Response("store rating added", true)
+                else
+                    return new Response("store rating was not added for some reason", false)
+            }
+
+            catch (Sadna17BException ex)
+            {
+                error_logger.Log("Store Service", "error, rating was not added");
+                return Response.GetErrorResponse(ex);
+            }
+
+        }
+
+        public Response add_store_complaint(int storeID, string complaint) // --> bool 
+        {
+            try
+            {
+                bool result = _storeController.add_store_complaints(storeID, complaint);
+
+                info_logger.Log("Store Service", "store complaint added");
+
+                if (result)
+                    return new Response("store complaint added", true)
+                else
+                    return new Response("store complaint was not added for some reason", false)
+            }
+
+            catch (Sadna17BException ex)
+            {
+                error_logger.Log("Store Service", "error, complaint was not added");
+                return Response.GetErrorResponse(ex);
+            }
+
         }
 
 
-        // ---------------- rating options -------------------------------------------------------------------------------------------
 
-        public Response AddStoreRating(int storeID, int rating)
+        // ---------------- product feedbacks -------------------------------------------------------------------------------------------
+
+        
+        public Response add_product_rating(int storeID, int productID, int rating) // --> bool 
         {
-            bool result = _storeController.add_store_rating(storeID, rating);
+            try
+            {
+                bool result = _storeController.add_product_rating(storeID, productID, rating);
 
-            return new Response(result, result ? "Rating Added.\n" : "Rating not added.\n");
+                info_logger.Log("Store Service", "product rating added");
+
+                if (result)
+                    return new Response("product rating added", true)
+                else
+                    return new Response("product rating was not added for some reason", false)
+            }
+
+            catch (Sadna17BException ex)
+            {
+                error_logger.Log("Store Service", "error, rating was not added");
+                return Response.GetErrorResponse(ex);
+            }
+
         }
 
-        public Response AddProductRating(int storeID, int productID, int rating)
+        public Response add_product_review(int storeID,int productID, string review) // --> bool
         {
-            bool result = _storeController.add_product_rating(storeID, productID, rating);
+            try
+            {
+                bool result = _storeController.add_product_review(storeID, productID, review);
 
-            return new Response(result, result ? "Rating Added.\n" : "Rating not added.\n");
+                info_logger.Log("Store Service", "product review added");
+
+                if (result)
+                    return new Response("product review added", true)
+                else
+                    return new Response("product review was not added for some reason", false)
+            }
+
+            catch (Sadna17BException ex)
+            {
+                error_logger.Log("Store Service", "error, review was not added");
+                return Response.GetErrorResponse(ex);
+            }
+
         }
 
-        public Response SendComplaintToStore(int storeID, string complaint)
+        public Response edit_product_review(int storeID, int productID, string old_review, string new_review) // bool 
         {
-            bool result = _storeController.add_store_complaints(storeID, complaint);
 
-            return new Response(result, result ? "Review Sent.\n" : "complaint not sent.\n");
+            try
+            {
+                bool result = _storeController.edit_product_review(storeID, productID, old_review, new_review);
+
+                info_logger.Log("Store Service", "product review edited");
+
+                if (result)
+                    return new Response("product review edited", true)
+                else
+                    return new Response("product review was not edited for some reason", false)
+            }
+
+            catch (Sadna17BException ex)
+            {
+                error_logger.Log("Store Service", "error, review was not edited");
+                return Response.GetErrorResponse(ex);
+            }
+
         }
 
 
@@ -291,47 +398,153 @@ namespace Sadna_17_B.ServiceLayer.Services
 
         // ---------------- search stores options -------------------------------------------------------------------------------------------
 
-        public Response all_stores()
+        public Response all_products()              //  --> List < store , product, amount > 
         {
-            List<Store> AllStores = _storeController.all_stores();
-            string message = AllStores.IsNullOrEmpty() ? "failed to find stores\n" : "stores found successfully\n";
+
+            try
+            {
+                List<Tuple<Store, Product, int>> products = _storeController.all_products();
+
+                return new Response(true, products);
+            }
+            catch (Sadna17BException ex)
+            {
+                error_logger.Log("Store Service", "error during fetching all stores data");
+                return Response.GetErrorResponse(ex);
+            }
+
+            
+            string message = result.IsNullOrEmpty() ? "No products found.\n" : "Products found.\n";
+
             info_logger.Log("Store", message);
 
-            return new Response(message, !AllStores.IsNullOrEmpty(), AllStores);
+            return new Response(message, !result.IsNullOrEmpty(), result);
+        }
+
+        public Response all_stores()                //  --> List < store > 
+        {
+            try
+            {
+                List<Store> stores = _storeController.all_stores();
+                return new Response(true, stores);
+            }
+            catch (Sadna17BException ex)
+            {
+                error_logger.Log("Store Service", "error during fetching all stores data");
+                return Response.GetErrorResponse(ex);
+            }
 
         }
 
-        public Response store_by_name(string name)
+        public Response store_by_name(string name)  //  --> store 
         {
-            Store store = _storeController.store_by_name(name);
-            string message = store != null ? "store found successfully\n" : "failed to find store\n";
-            info_logger.Log("Store", message);
+            try
+            {
+                Store store = _storeController.store_by_name(name);
+                return new Response(true, store);
+            }
+            catch (Sadna17BException ex)
+            {
+                error_logger.Log("Store Service", "error during fetching store data");
+                return Response.GetErrorResponse(ex);
+            }
 
-            return new Response(message, store != null, store);
         }
 
+        public Response store_by_id(int storeID)    //  --> store 
+        {
+
+            try
+            {
+                Store store = _storeController.store_by_id(storeID);
+                return new Response(true, store);
+            }
+            catch (Sadna17BException ex)
+            {
+                error_logger.Log("Store Service", "error during fetching store data");
+                return Response.GetErrorResponse(ex);
+            }
+
+        }
 
 
         // ---------------- search / filter products options -------------------------------------------------------------------------------------------
-
-
-        public Response products_by_category(string category)
+        
+        private bool filter_apply(string[] filter)
         {
-            Dictionary<Product, int> output = _storeController.filter_products_by_category(category);
-            string message = (!output.IsNullOrEmpty()) ? "products found successfully\n" : "failed to find products\n";
-            info_logger.Log("Store", message);
-
-            return new Response(message, (!output.IsNullOrEmpty()), output);
+            return filter[0] != "none"
         }
 
-        public Response products_by_keyWord(string keyWord)
+        public Response search_product_by(Dictionary<string,string> doc)
         {
-            Dictionary<Product, int> output = _storeController.filter_products_by_keyword(keyWord);
-            string message = (output.IsNullOrEmpty()) ? "products found successfully\n" : "failed to find products\n";
-            info_logger.Log("Store", message);
+            try
+            {
+                Dictionary<Product, int> products;
 
-            return new Response(message, output != null, output);
+                string[] filter_category = Parser.parse_string_array(doc["category"]);
+                string[] filter_keyword = Parser.parse_string_array(doc["keyword"]);
+                string[] filter_store = Parser.parse_string_array(doc["store"]);
+                string[] filter_product_rating = Parser.parse_string_array(doc["product rating"]);
+                string[] filter_product_price = Parser.parse_string_array(doc["product price"]);
+                string[] filter_store_rating = Parser.parse_string_array(doc["store rating"]);
+                
+
+                if ( filter_apply(filter_keyword))
+                    products = _storeController.search_products_by_keyword(filter_keyword)
+                else
+                    products = _storeController.all_products();
+
+
+
+                switch (search_type)
+                {
+                    case "category":
+
+                        string category = Parser.parse_string(factors[0]);
+
+                        products = _storeController.search_products_by_category(category);
+                        break;
+
+                    case "keyword":
+
+                        string keyword = Parser.parse_string(factors[0]);
+
+                        products = _storeController.search_products_by_keyword(keyword);
+                        break;
+
+                    case "category":
+
+                        string category = Parser.parse_string(factors[0]);
+
+                        products = _storeController.filter_products_by_category(fac);
+                        break;
+
+                    case "category":
+
+                        string category = Parser.parse_string(factors[0]);
+
+                        products = _storeController.filter_products_by_category(fac);
+                        break;
+
+                    case "category":
+
+                        string category = Parser.parse_string(factors[0]);
+
+                        products = _storeController.filter_products_by_category(fac);
+                        break;
+
+                }
+
+                return new Response(true, products);
+            }
+            catch (Sadna17BException ex)
+            {
+                error_logger.Log("Store Service", "error during fetching products data");
+                return Response.GetErrorResponse(ex);
+            }
         }
+        
+ 
 
         public Response filter_search_by_product_rating(Dictionary<Product, int> searchResult, int low)
         {
@@ -364,7 +577,6 @@ namespace Sadna_17_B.ServiceLayer.Services
 
             return new Response("", (!output.IsNullOrEmpty()), output);
         }
-
 
 /*
         public Response products_by_name(string name)

@@ -255,7 +255,7 @@ namespace Sadna_17_B_Frontend.Controllers
 
         public Store GetStoreDetailsById(int storeId)
         {
-            Response response =  storeService.GetStoreById(storeId);
+            Response response =  storeService.store_by_id(storeId);
             if (response.Success)
             {
                 return response.Data as Store;
@@ -292,6 +292,11 @@ namespace Sadna_17_B_Frontend.Controllers
             }
             return 0;
         }
+    
+        
+        
+
+
     }
 
 
