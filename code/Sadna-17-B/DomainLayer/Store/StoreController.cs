@@ -316,9 +316,9 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         {
             // doc[0] : change type (add,remove)
             // doc[1] : discount id
-            // doc[2] : discount start
+            // doc[2] : discount start 
             // doc[3] : discount end 
-            // doc[4] : discount strategy ()
+            // doc[4] : discount strategy 
             
 
             foreach (Store store in active_stores)
@@ -331,16 +331,15 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                     {
                         case "add":
                             
-                            string dtype = policy_doc[1];
+                            string dtype = Parser.parse_string(policy_doc[1]);
                             DateTime start = Parser.parse_date(policy_doc[2]);
                             DateTime end = Parser.parse_date(policy_doc[3]);
                             Discount_Strategy strategy = parse_discount_strategy(policy_doc);
                             Func<Cart, double> relevant_product_lambda = parse_relevant_lambdas(policy_doc);
                             List<Func<Cart, bool>> condition_lambdas = parse_condition_lambdas(policy_doc);
 
-                            return store.add_discount(dtype,start,end, strategy, relevant_product_lambda, condition_lambdas);
+                            return store.add_discount(dtype, start, end, strategy, relevant_product_lambda, condition_lambdas);
 
-                             
 
                         case "remove":
 
@@ -597,9 +596,10 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             throw new Sadna17BException("store controller : illegal strategy detected");
         }
 
-        public List<Func<Cart, double>> parse_relevant_lambdas(string[] s)
+        public Func<Cart, double> parse_relevant_lambdas(string[] s)
         {
             string type = s[6];
+            
 
             switch (type)
             {
@@ -613,39 +613,72 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                     string category = Parser.parse_string(s[7]);
                     return Discount_relevant_products_lambdas.category(category);
 
-            }
+                case "products":
 
-            throw new Sadna17BException("store controller : illegal relevant product search functionality detected");
+                    List<int> products = Parser.parse_int_list(s);
+                    return Discount_relevant_products_lambdas.products(products);
+
+                case "categories":
+
+                    List<string> categories = Parser.parse_string_list(s);
+                    return Discount_relevant_products_lambdas.categories(categories);
+
+                default:
+
+                    throw new Sadna17BException("store controller : illegal relevant product search functionality detected");
+
+            }           
 
         }
 
         public List<Func<Cart, bool>> parse_condition_lambdas(string[] s)
         {
-            string type = s[8];
-            double factor = Parser.parse_double(s[9]);
+            // support only one condition
+            
+            string type = Parser.parse_string(s[8]);
+            
+            string op = Parser.parse_string(s[10]);
+            double factor = Parser.parse_double(s[11]);
+            int product;
+            string category;
+
+            List<Func<Cart, bool>> lambdas = new List<Func<Cart, bool>>();
 
             switch (type)
             {
                 case "product amount":
-                    
-                    return Discount_condition_lambdas.condition_product_amount(factor);
+
+                    product = Parser.parse_int(s[9]);
+                    lambdas.Add(Discount_condition_lambdas.condition_product_amount(product, op, factor));
+                    break;
 
                 case "product price":
-                    
-                    return Discount_condition_lambdas.condition_product_price(factor);
+
+                    product = Parser.parse_int(s[9]);
+                    lambdas.Add(Discount_condition_lambdas.condition_product_price(product, op, factor));
+                    break;
 
                 case "category amount":
 
-                    return Discount_condition_lambdas.condition_category_amount(factor);
+                    category = Parser.parse_string(s[9]);
+                    lambdas.Add(Discount_condition_lambdas.condition_category_amount(category, op, factor));
+                    break;
 
                 case "category price":
 
-                    return Discount_condition_lambdas.condition_product_price(factor);
+                    category = Parser.parse_string(s[9]);
+                    lambdas.Add(Discount_condition_lambdas.condition_category_price(category, op, factor));
+                    break;
 
+                default:
+
+                    throw new Sadna17BException("store controller : illegal condition functionality detected");
 
             }
 
-            throw new Sadna17BException("store controller : illegal condition functionality detected");
+            return lambdas;
+
+            
         }
     }
 }

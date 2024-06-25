@@ -49,7 +49,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         // --------------------------- conditions ------------------------------
 
 
-        public static Func<Cart, bool> condition_product_amount(Product product, string op, int factor) // condition on cart based on product amount
+        public static Func<Cart, bool> condition_product_amount(int product, string op, double factor) // condition on cart based on product amount
         {
             return (Cart cart) =>
 
@@ -61,7 +61,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             };
         }
 
-        public static Func<Cart, bool> condition_product_price(Product product, string op, int factor) // condition on cart based on category products amount
+        public static Func<Cart, bool> condition_product_price(int product, string op, double factor) // condition on cart based on category products amount
         {
             return (Cart cart) =>
 
@@ -74,7 +74,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         }
 
 
-        public static Func<Cart, bool> condition_category_amount(string category, string op, int factor) // condition on cart based on product price
+        public static Func<Cart, bool> condition_category_amount(string category, string op, double factor) // condition on cart based on product price
         {
             return (Cart cart) =>
 
@@ -87,7 +87,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             };
         }
 
-        public static Func<Cart, bool> condition_category_price(string category, string op, int factor) // condition on cart based on category products price
+        public static Func<Cart, bool> condition_category_price(string category, string op, double factor) // condition on cart based on category products price
         {
             return (Cart cart) =>
 
@@ -129,25 +129,25 @@ namespace Sadna_17_B.DomainLayer.StoreDom
     public class Discount_relevant_products_lambdas
     {
 
-        public static Func<Cart, double> product(Product product) // relevant product price
+        public static Func<Cart, double> product(int pid) // relevant product price
         {
             return (Cart cart) =>
 
             {
-                return cart.find_product_price(product);
+                return cart.find_product_price(pid);
             };
         }
 
-        public static Func<Cart, double> products(List<Product> products) // relevant products price
+        public static Func<Cart, double> products(List<int> products) // relevant products price
         {
             return (Cart cart) =>
 
             {
                 double price = 0;
 
-                foreach (Product product in products)
+                foreach (int pid in products)
                 {
-                    price += cart.find_product_price(product);
+                    price += cart.find_product_price(pid);
                 }
 
                 return price;
@@ -266,7 +266,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         // --------------------------- product conditions ------------------------------
 
 
-        public static Func<Cart, bool> condition_product_amount(Product product, string op, int factor) // condition on cart based on product amount
+        public static Func<Cart, bool> condition_product_amount(int product, string op, int factor) // condition on cart based on product amount
         {
             return (Cart cart) =>
 
@@ -278,7 +278,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             };
         }
 
-        public static Func<Cart, bool> condition_product_price(Product product, string op, int factor) // condition on cart based on category products amount
+        public static Func<Cart, bool> condition_product_price(int product, string op, int factor) // condition on cart based on category products amount
         {
             return (Cart cart) =>
 

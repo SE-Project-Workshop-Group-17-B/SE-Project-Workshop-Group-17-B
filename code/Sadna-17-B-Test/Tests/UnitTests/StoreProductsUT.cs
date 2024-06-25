@@ -67,14 +67,14 @@ namespace Sadna_17_B_Test.Tests.UnitTests
 
             _relevant_price_by_category = Discount_relevant_products_lambdas.category(_product.category);
 
-            _relevant_price_by_product = Discount_relevant_products_lambdas.product(_product);
+            _relevant_price_by_product = Discount_relevant_products_lambdas.product(_product.ID);
 
             _relevant_price_by_all = Discount_relevant_products_lambdas.cart();
 
 
             // -------- conditions functions -------------------------------
 
-            _condition_product = Discount_condition_lambdas.condition_product_amount(_product, "<", 5);
+            _condition_product = Discount_condition_lambdas.condition_product_amount(_product.ID, "<", 5);
 
             _condition_category = Discount_condition_lambdas.condition_category_amount(_product.category, "!=", 0);
 

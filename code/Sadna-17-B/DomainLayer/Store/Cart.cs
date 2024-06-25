@@ -1,4 +1,5 @@
 using Sadna_17_B.DomainLayer.Utils;
+using Sadna_17_B.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -55,6 +56,13 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return product_TO_amount_Bprice[product];
         }
 
+        public Tuple<int, double> relevant_product(int pid)
+        {
+            Product product = product_by_id(pid);
+
+            return product_TO_amount_Bprice[product];
+        }
+
         public Dictionary<Product, Tuple<int, double>> relevant_category(string category)
         {
             if (!category_TO_products.ContainsKey(category))
@@ -74,9 +82,22 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         // -------------- cart specific values retrieval ------------------------------------------------------------------------------------
 
 
-        public bool contains(Product p)
+        public bool contains(int pid)
         {
-            return product_TO_amount_Bprice.Keys.Contains(p);
+            foreach (Product p in product_TO_amount_Bprice.Keys)
+                if (p.ID == pid)
+                    return true;
+
+            return false;
+        }
+
+        public Product product_by_id(int pid)
+        {
+            foreach (Product p in product_TO_amount_Bprice.Keys)
+                if (p.ID == pid)
+                    return p;
+
+            throw new Sadna17BException("Cart : no product was found");
         }
 
         public bool contains(string category)
@@ -123,6 +144,24 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         {
 
             Tuple<int, double> relevant = relevant_product(product);
+
+            return relevant.Item2;
+
+        }
+
+        public int find_product_amount(int pid)
+        {
+
+            Tuple<int, double> relevant = relevant_product(pid);
+
+            return relevant.Item1;
+
+        }
+
+        public double find_product_price(int pid)
+        {
+
+            Tuple<int, double> relevant = relevant_product(pid);
 
             return relevant.Item2;
 

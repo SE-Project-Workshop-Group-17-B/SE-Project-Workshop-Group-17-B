@@ -69,7 +69,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
 
             _relevant_price_by_category = Discount_relevant_products_lambdas.category(_product.category);
 
-            _relevant_price_by_product = Discount_relevant_products_lambdas.product(_product);
+            _relevant_price_by_product = Discount_relevant_products_lambdas.product(_product.ID);
            
             _relevant_price_by_all = Discount_relevant_products_lambdas.cart();
             
@@ -80,7 +80,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
 
             
 
-            _condition_product = Discount_condition_lambdas.condition_product_amount(_product, "<", 5);
+            _condition_product = Discount_condition_lambdas.condition_product_amount(_product.ID, "<", 5);
 
             _condition_category = Discount_condition_lambdas.condition_category_amount(_product.category, "!=", 0);
 
@@ -215,10 +215,10 @@ namespace Sadna_17_B_Test.Tests.UnitTests
             cart.add_product(p3, 231, 231 * p3.price);
 
             Func<Cart, double>  relevant_price_by_category = Discount_relevant_products_lambdas.category(p1.category);
-            Func<Cart, double>  relevant_price_by_product = Discount_relevant_products_lambdas.product(p2);
+            Func<Cart, double>  relevant_price_by_product = Discount_relevant_products_lambdas.product(p2.ID);
             Func<Cart, double>  relevant_price_by_all = Discount_relevant_products_lambdas.cart();
 
-            Func<Cart, bool> condition_product = Discount_condition_lambdas.condition_product_amount(p1, ">", 50); ;
+            Func<Cart, bool> condition_product = Discount_condition_lambdas.condition_product_amount(p1.ID, ">", 50); ;
             Func<Cart, bool> condition_category = Discount_condition_lambdas.condition_category_amount(p2.category, "!=", 0); ;
             Func<Cart, bool> condition_all = Discount_condition_lambdas.condition_cart_price(">", 25000); ;
 

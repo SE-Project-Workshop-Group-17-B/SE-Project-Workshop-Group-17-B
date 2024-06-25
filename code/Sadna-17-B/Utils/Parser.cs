@@ -10,6 +10,36 @@ using Sadna_17_B.DomainLayer.StoreDom;
 
 namespace Sadna_17_B.Utils
 {
+
+
+    /*
+     * 
+     * 
+     * 
+     * 
+     * 
+     * 
+     * 
+     * 
+     * 
+     * 
+     * 
+     * 
+     * 
+     * 
+     * 
+     * 
+     * 
+     * 
+     */
+
+
+
+
+
+
+
+
     public class Parser
     {
 
@@ -57,5 +87,36 @@ namespace Sadna_17_B.Utils
 
         // ------------------- non - primitive ---------------------------------------------------------------------------------
 
-     
+        public static List<int> parse_int_list(string[] a)
+        {
+            List<int> parsed = new List<int>();
+
+            foreach (string s in a)
+            {
+                if (s == "]")
+                    break;
+
+                parsed.Add(parse_int(s));
+            }
+
+            return parsed;
+        }
+
+        public static List<string> parse_string_list(string[] a)
+        {
+            List<string> parsed = new List<string>();
+
+            foreach (string s in a)
+            {
+                if (s == "]")
+                    break;
+
+                parsed.Add(s);
+            }
+
+            return parsed;
+        }
+
+
     }
+}

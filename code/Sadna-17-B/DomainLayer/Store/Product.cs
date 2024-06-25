@@ -33,7 +33,9 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         public Product(string name, double price, string category, string description = "")
         {
-            ID = idCounter++;
+            idCounter += 1;
+            ID = idCounter;
+
             this.name = name.ToLower().Trim();
 
             rating = 0;
