@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System.Data.Entity;
+using System.Data.Entity.ModelConfiguration.Conventions;
+using System.Collections.Generic;
 using Sadna_17_B.DomainLayer.Entities;
 
 namespace Sadna_17_B.Data
