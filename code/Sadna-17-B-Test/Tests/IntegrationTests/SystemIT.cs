@@ -68,8 +68,8 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
             // init store
 
             Response store_response = storeService.create_store(userDTO.AccessToken, storeName, email, phoneNum, descr, addr);
-            int sid = (int)store_response.Data;
-            Store store = (Store)storeService.store_by_id(sid).Data;
+            sid = (int)store_response.Data;
+            store = (Store)storeService.store_by_id(sid).Data;
 
             // init product
 

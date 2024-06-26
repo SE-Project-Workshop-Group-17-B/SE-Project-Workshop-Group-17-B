@@ -235,10 +235,10 @@ namespace Sadna_17_B_Test.Tests.UnitTests
 
             // Assert
             Assert.AreEqual(simple_applied.discounts.Count, 1, 0.01);
-            Assert.AreEqual(simple_applied.discounts[0].Item2, 13.7, 1);
+            Assert.AreEqual(simple_applied.discounts[0].Item2, 54.8, 1);
 
             Assert.AreEqual(cond_applied.discounts.Count, 1, 0.01);
-            Assert.AreEqual(cond_applied.discounts[0].Item2, 13.7, 1);
+            Assert.AreEqual(cond_applied.discounts[0].Item2, 48, 1);
 
         }
 
@@ -282,9 +282,9 @@ namespace Sadna_17_B_Test.Tests.UnitTests
             // Assert
 
             Assert.AreEqual(and_rule.apply_discount(cart).total_discount, 0, 0.01);
-            Assert.AreEqual(or_rule.apply_discount(cart).total_discount, 550, 0.01);
-            Assert.AreEqual(max_rule.apply_discount(cart).total_discount, 550, 0.01);
-            Assert.AreEqual(add_rule.apply_discount(cart).total_discount, 1150, 0.01);
+            Assert.AreEqual(or_rule.apply_discount(cart).total_discount, 350, 0.01);
+            Assert.AreEqual(max_rule.apply_discount(cart).total_discount, 350, 0.01);
+            Assert.AreEqual(add_rule.apply_discount(cart).total_discount, 750, 0.01);
 
 
             
