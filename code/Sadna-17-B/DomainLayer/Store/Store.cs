@@ -9,6 +9,7 @@ using Sadna_17_B.DomainLayer.Utils;
 using System.Diagnostics;
 using System.Xml.Linq;
 using System.Data;
+using Sadna_17_B.Utils;
 
 
 namespace Sadna_17_B.DomainLayer.StoreDom
@@ -95,13 +96,13 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         // ---------------- inventory ----------------------------------------------------------------------------------------
 
-        public Dictionary<Product, int> all_products()
+        public List<Product> all_products()
         {
-            Dictionary<Product, int> res = new Dictionary<Product, int>();
-            foreach (Product p in inventory.all_products())
-                res.Add(p, ID);
+            List<Product> products = new List<Product>();
+            foreach (Product product in inventory.all_products())
+                products.Add(product);
             
-            return res;
+            return products;
         }
         
         public int add_product(string name, double price, string category, string description, int amount)
@@ -141,6 +142,38 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return inventory.remove_product(pid);
         }
 
+        public void edit_product(Dictionary<string,string> doc)
+        {
+            int pid = Parser.parse_int(doc["product id"]);
+            string edit_type = Parser.parse_string(doc["type"]);
+            Product product = inventory.product_by_id(pid);
+
+            lock (product)
+            {
+                product.locked = true;
+
+                product.name = Parser.parse_string(doc["name"]);
+                product.category = Parser.parse_string(doc["category"]);
+                product.description = Parser.parse_string(doc["description"]);
+
+                product.locked = false;
+            }
+        }
+
+        public void restore_product_amount(int pid, int amount)
+        {
+            Product product = inventory.product_by_id(pid);
+
+            lock (product)
+            {
+                product.locked = true;
+
+                product.amount = amount;
+
+                product.locked = false;
+            }
+        }
+
         public double calculate_product_bag(int p_id, int amount)
         {
             Product product = inventory.product_by_id(p_id);
@@ -156,7 +189,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         // ---------------- policies ----------------------------------------------------------------------------------------
 
 
-        public bool edit_purchase_policy(string policy_doc) // version 3
+        public bool edit_purchase_policy(Dictionary<string,string> doc) // version 3
         {
             return true;
         }
@@ -285,7 +318,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return filtered;
         }
 
-        public List<Product> filter_price_all(int low, int high)
+        public List<Product> filter_price_all(double low, double high)
         {
             List<Product> filtered = new List<Product>();
 

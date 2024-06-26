@@ -18,7 +18,7 @@ namespace Sadna_17_B.ServiceLayer
     public class ServiceFactory
     {
         public IUserService UserService { get; set; }
-        public IStoreService StoreService { get; set; }
+        public StoreService StoreService { get; set; }
 
         private DomainFactory domainFactory;
 
@@ -55,29 +55,20 @@ namespace Sadna_17_B.ServiceLayer
                 var description = $"This is Store{i}, offering a wide variety of products.";
                 var address = $"{i} Market Street, City{i}";
 
-                var inventory = new Inventory();
-
-                StoreService.create_store((res.Data as UserDTO).AccessToken, storeName, email, phoneNumber, description, address, inventory);
+                int sid = (int) StoreService.create_store((res.Data as UserDTO).AccessToken, storeName, email, phoneNumber, description, address).Data;
+                
 
                 // Add 10 products to each store
                 for (int j = 1; j <= 10; j++)
-                {
-                    StoreService.add_product($"Product{j}", 10.99 + j, $"Category{j % 3}", $"Description for Product{j}", j * 10);
-                }
+                    ((Store) StoreService.store_by_id(sid).Data).add_product($"Product{j}", 10.99 + j, $"Category{j % 3}", $"Description for Product{j}", j * 10);
+                
 
             }
 
             for (int j = 1; j < 2; j++)
-            {
                 StoreService.add_product_review(1, j, "Very good");
-            }
+            
 
-
-            // Add 10 products to the cart
-            //for (int j = 1; j <= 10; j++)
-            //{
-            //    UserService.AddToCart((res.Data as UserDTO).AccessToken, 1, j, j*2);
-            //}
         }
 
 

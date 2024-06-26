@@ -18,7 +18,7 @@ namespace Sadna_17_B_Frontend.Controllers
 
         private ServiceFactory serviceFactory;
         private IUserService userService;
-        public IStoreService storeService;
+        public StoreService storeService;
         private UserDTO userDTO;
 
         private BackendController()
@@ -121,27 +121,27 @@ namespace Sadna_17_B_Frontend.Controllers
         {
             try
             {
-                Dictionary<Product, int> products = storeService.all_products().Data as Dictionary<Product, int>;
+                List<Product> products = storeService.all_products().Data as List<Product>;
 
                 // Determine the initial set of products based on keyword or category.
                 if (!string.IsNullOrEmpty(keyword))
                 {
-                    var response = storeService.products_by_keyWord(keyword);
+                    var response = storeService.search_product_by(new Dictionary<string, string>());
                     if (!response.Success)
                     {
-                        products = new Dictionary<Product, int>();
+                        products = new List<Product>();
                     }
 
-                    products = response.Data as Dictionary<Product, int>;
+                    products = response.Data as List<Product>;
                 }
                 else if (!string.IsNullOrEmpty(category))
                 {
-                    var response = storeService.products_by_category(category);
+                    var response = storeService.search_product_by(new Dictionary<string, string>());
                     if (!response.Success)
                     {
-                        products = new Dictionary<Product, int>();
+                        products = new List<Product>();
                     }
-                    products = response.Data as Dictionary<Product, int>;
+                    products = response.Data as List<Product>;
                 }
 
                 // Filter by Store ID if provided
@@ -155,12 +155,12 @@ namespace Sadna_17_B_Frontend.Controllers
                 // Filter by price range if valid
                 else if ((minPrice > 0 || maxPrice > 0 ) && products != null)
                 {
-                    var response = storeService.filter_search_by_price(products, minPrice, maxPrice);
+                    var response = storeService.search_product_by(new Dictionary<string, string>());
                     if (!response.Success)
                     {
-                        products = new Dictionary<Product, int>();
+                        products = new List<Product>();
                     }
-                    products = response.Data as Dictionary<Product, int>;
+                    products = response.Data as List<Product>;
                 }
 
                 //// Filter by product rating if valid

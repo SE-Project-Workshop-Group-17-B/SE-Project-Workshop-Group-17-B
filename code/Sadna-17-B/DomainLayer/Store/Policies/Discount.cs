@@ -53,8 +53,8 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         {
         }
 
+        
         // ----------- Base Functionalities --------------------------------------------------------  
-
 
         public double days_in_total()
         {
@@ -91,10 +91,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         }
         
 
-
     }
-
-
 
     // ----------- Discount simple : discount with no conditions to apply ---------------------------------------------------------------------------------------------  
 

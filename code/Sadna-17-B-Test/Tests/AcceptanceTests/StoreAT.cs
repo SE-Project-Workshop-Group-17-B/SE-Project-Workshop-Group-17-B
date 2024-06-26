@@ -17,7 +17,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
     public class StoreAT
     {
         IUserService userService;
-        IStoreService storeService;
+        StoreService storeService;
         UserDTO userDTO;
         string username1 = "test1";
         string password1 = "password1";
@@ -30,7 +30,6 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         string phonenumber = "0525381648";
         string storeDescr = "test store for testing";
         string addr = "Beer sheve BGU st.3";
-        Inventory inv = new Inventory();
         int storeId = 1;
 
         //for product related tests
@@ -53,31 +52,43 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         [TestMethod]
         public void TestStoreOpening()
         {
-            Response ignore = userService.CreateSubscriber(username1, password1);
-            ignore = userService.CreateSubscriber(username2, password2);
-            Response res = userService.Login(username1, password1);
-            userDTO = res.Data as UserDTO;
-            Response res2 = storeService.create_store(userDTO.AccessToken, name, email, phonenumber, storeDescr, addr);
+            // init user service
 
-            res = storeService.store_by_name(name);
-            Assert.IsTrue(res.Success);
-            Assert.IsTrue(res2.Success);
+            Response ignore1 = userService.CreateSubscriber(username1, password1);
+            Response ignore2 = userService.CreateSubscriber(username2, password2);
+            Response result1 = userService.Login(username1, password1);
+            UserDTO userDTO = result1.Data as UserDTO;
+
+            // init store service
+
+            Response store_response1 = storeService.create_store(userDTO.AccessToken, name, email, phonenumber, storeDescr, addr);
+            Response store_response2 = storeService.store_by_name(name);
+
+            Assert.IsTrue(store_response1.Success);
+            Assert.IsTrue(store_response2.Success);
             Assert.IsFalse(storeService.store_by_name(email).Success);
         }
 
         [TestMethod]
         public void TestStoreClose()
         {
-            Response ignore = userService.CreateSubscriber(username1, password1);
-            ignore = userService.CreateSubscriber(username2, password2);
-            Response res = userService.Login(username1, password1);
-            userDTO = res.Data as UserDTO;
-            storeService.create_store(userDTO.AccessToken, name, email, phonenumber, storeDescr, addr);
-            Response storeRes = storeService.store_by_name(name);
-            int newStoreID = (storeRes.Data as Store).ID;
+            // init user service
 
-            Response res2 = storeService.close_store(userDTO.AccessToken, newStoreID);
-            Response res3 = storeService.close_store(userDTO.AccessToken, newStoreID + 1);
+            Response ignore1 = userService.CreateSubscriber(username1, password1);
+            Response ignore2 = userService.CreateSubscriber(username2, password2);
+            Response result1 = userService.Login(username1, password1);
+            UserDTO userDTO = result1.Data as UserDTO;
+
+            // init store service
+
+            Response store_response = storeService.create_store(userDTO.AccessToken, name, email, phonenumber, storeDescr, addr);
+            int sid = (int)store_response.Data;
+            Store store = (Store)storeService.store_by_id(sid).Data;
+
+            // rest
+
+            Response res2 = storeService.close_store(userDTO.AccessToken, sid);
+            Response res3 = storeService.close_store(userDTO.AccessToken, sid + 1);
 
             Assert.IsTrue(res2.Success);
             Assert.IsFalse(res3.Success);
@@ -86,35 +97,46 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         [TestMethod]
         public void TestClosedStoreClosing()
         {
-            Response ignore = userService.CreateSubscriber(username1, password1);
-            ignore = userService.CreateSubscriber(username2, password2);
-            Response res = userService.Login(username1, password1);
-            userDTO = res.Data as UserDTO;
-          
-            storeService.create_store(userDTO.AccessToken, name, email, phonenumber, storeDescr, addr);
+            // init user service
 
-            Response storeRes = storeService.store_by_name(name);
-            int newStoreID = (storeRes.Data as Store).ID; // Note: may change if the response returns StoreDTO
+            Response ignore1 = userService.CreateSubscriber(username1, password1);
+            Response ignore2 = userService.CreateSubscriber(username2, password2);
+            Response result1 = userService.Login(username1, password1);
+            UserDTO userDTO = result1.Data as UserDTO;
+            
+            // init store service
 
-            Response res2 = storeService.close_store(userDTO.AccessToken, newStoreID);
-            Response res3 = storeService.close_store(userDTO.AccessToken, newStoreID);
+            Response store_response = storeService.create_store(userDTO.AccessToken, name, email, phonenumber, storeDescr, addr);
+            int sid = (int)store_response.Data;
+            Store store = (Store)storeService.store_by_id(sid).Data;
+
+            // rest
+
+            Response res2 = storeService.close_store(userDTO.AccessToken, sid);
+            Response res3 = storeService.close_store(userDTO.AccessToken, sid);
 
             Assert.IsFalse(res3.Success);
         }
 
+
         [TestMethod]
         public void TestGetStoreByName()
         {
-            Response ignore = userService.CreateSubscriber(username1, password1);
-            ignore = userService.CreateSubscriber(username2, password2);
-            Response res = userService.Login(username1, password1);
-            userDTO = res.Data as UserDTO;
+            // init user service
 
-            storeService.create_store(userDTO.AccessToken, name, email, phonenumber, storeDescr, addr);
-          
-            Response storeRes = storeService.store_by_name(name);
-            Assert.AreEqual((storeRes.Data as Store).name, name);
+            Response ignore1 = userService.CreateSubscriber(username1, password1);
+            Response result1 = userService.Login(username1, password1);
+            UserDTO userDTO = result1.Data as UserDTO;
+
+            // init store service
+
+            Response store_response = storeService.create_store(userDTO.AccessToken, name, email, phonenumber, storeDescr, addr);
+            Response store_name_response = storeService.store_by_name(name);
+            Console.WriteLine($"{store_name_response.Success}");
+            Store store = (store_name_response.Data as List<Store>)[0];
+            Assert.AreEqual(store.name, name);
         }
+
 
         [TestMethod]
         public void TestCreateStoreFounder()

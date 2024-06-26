@@ -123,6 +123,16 @@ namespace Sadna_17_B.Utils
             return parsed;
         }
 
+        public static T[] parse_array<T>(string[] array)
+        {
+            T[] parsed = new T[array.Length];
+
+            for (int i = 0; i < array.Length; i++)
+                parsed[i] = parse_the_string<T>(array[i]);
+
+            return parsed;
+        }
+
 
     }
 }

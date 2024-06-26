@@ -110,8 +110,8 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         {
             if (id_to_product.ContainsKey(id))
                 return id_to_product[id];
-                
-            throw new Sadna17BException("Inventory : product id not found");
+
+            throw new Sadna17BException($"Inventory : product id ({id}) not found");
         }
 
         public List<Product> products_by_name(string name)
@@ -145,7 +145,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                                             .Select(product => new
                                             {
                                                 Product = product,
-                                                MatchCount = keywordsArray.Count(keyword => product.description.Contains(keyword))
+                                                MatchCount = keywordsArray.Count(keyword => (product.description.Contains(keyword) || product.name.Contains(keyword) || product.category.Contains(keyword)))
                                             })
                                             .Where(x => x.MatchCount > 0)
                                             .OrderByDescending(x => x.MatchCount)

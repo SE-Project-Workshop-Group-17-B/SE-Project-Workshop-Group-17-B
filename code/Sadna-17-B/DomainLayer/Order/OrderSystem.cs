@@ -114,11 +114,7 @@ namespace Sadna_17_B.DomainLayer.Order
             foreach (var quantitiesOfStore in quantities)
             {
                 int storeID = quantitiesOfStore.Key;
-                string result_message = storeController.decrease_products_amount(storeID, quantitiesOfStore.Value);
-                if (result_message.Length != 0 && !result_message.StartsWith("Line")) // Assumes a valid message is empty or starts with Line ...
-                {
-                    throw new Sadna17BException("System failure: could not complete the order, invalid shopping basket for storeID " + storeID + ". Message: " + result_message);
-                }
+                storeController.decrease_products_amount(storeID, quantitiesOfStore.Value);
             }
 
             // Execute Order by PaymentSystem external service:

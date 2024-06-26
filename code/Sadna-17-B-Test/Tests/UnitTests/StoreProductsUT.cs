@@ -44,9 +44,8 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         public void SetUp()
         {
             _storeController = new StoreController();
-            _inventory = new Inventory();
 
-            _product = new Product("Test Product", 100, "Category", "Good product");
+            _product = new Product("Test Product", 100, "Category", 10);
             _product.add_rating(5);
             _inventory.add_product("Test Product", 100, "Category", "Good Product", 25);
 
@@ -173,7 +172,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         public void TestReduceProductAmount_Synchronization()
         {
             // Arrange
-            var storeBuilder = _storeController.store_builder()
+            var storeBuilder = _storeController.create_store_builder()
                                     .SetName("Test Store")
                                     .SetInventory(_inventory);
             var store = storeBuilder.Build();
@@ -203,7 +202,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         [TestMethod]
         public void TestRemoveMoreProductsThenAvailbleConcurrent()
         {
-            var storeBuilder = _storeController.store_builder()
+            var storeBuilder = _storeController.create_store_builder()
                                     .SetName("Test Store")
                                     .SetInventory(_inventory);
             var store = storeBuilder.Build();
@@ -234,7 +233,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         public void TestAddingProductsConcurrently()
         {
 
-            var storeBuilder = _storeController.store_builder()
+            var storeBuilder = _storeController.create_store_builder()
                                     .SetName("Test Store")
                                     .SetInventory(_inventory);
             var store = storeBuilder.Build();

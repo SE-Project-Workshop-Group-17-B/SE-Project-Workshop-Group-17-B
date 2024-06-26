@@ -12,7 +12,6 @@ namespace Sadna_17_B.ServiceLayer.Services
         // ---------------- adjust store options -------------------------------------------------------------------------------------------
 
         Response create_store(string token, string name, string email, string phoneNumber, string storeDescription, string address);
-        Response create_store(string token, string name, string email, string phoneNumber, string storeDescription, string address, Inventory inv);
         Response close_store(string token, int storeID);
         Response valid_order(int storeId, Dictionary<int, int> quantities);
 
@@ -31,8 +30,6 @@ namespace Sadna_17_B.ServiceLayer.Services
         // ---------------- store management options -------------------------------------------------------------------------------------------
 
         Response reduce_products(string token, int storeID, Dictionary<int, int> quantities);
-        Response add_products_to_store(string token, int storeID, string name, double price, string category, string description, int amount);
-        Response edit_product_in_store(string token, int storeID, int productID);
 
         // ---------------- search store options -------------------------------------------------------------------------------------------
 
@@ -41,26 +38,16 @@ namespace Sadna_17_B.ServiceLayer.Services
 
 
         // ---------------- search / filter options -------------------------------------------------------------------------------------------
+        
         Response all_products();
-
-        Response products_by_category(string category);
-       /* Response products_by_name(string name);*/
-        Response products_by_keyWord(string keyWord);
-
-        Response filter_search_by_store_id(Dictionary<Product, int> searchResult, int storeId);
-        Response filter_search_by_price(Dictionary<Product, int> searchResult, int low, int high);
-        Response filter_search_by_product_rating(Dictionary<Product, int> searchResult, int low);
-        Response filter_search_by_store_rating(Dictionary<Product, int> searchResult, int low);
-
-
 
 
         // ---------------- adjust policy options -------------------------------------------------------------------------------------------
 
-        Response edit_discount_policy(int store_id, string policy_doc);
-        Response show_discount_policy(int store_id, string policy_doc);
-        Response edit_purchase_policy(int store_id, string policy_doc);
-        Response show_purchase_policy(int store_id, string policy_doc);
+        Response edit_discount_policy(Dictionary<string,string> doc);
+        Response show_discount_policy(Dictionary<string, string> doc);
+        Response edit_purchase_policy(Dictionary<string, string> doc);
+        Response show_purchase_policy(Dictionary<string, string> doc);
 
 
         // ---------------- Stores info -------------------------------------------------------------------------------------------

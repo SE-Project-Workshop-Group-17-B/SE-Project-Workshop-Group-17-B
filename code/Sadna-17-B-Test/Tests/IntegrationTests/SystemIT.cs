@@ -19,7 +19,7 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
     public class SystemIT
     {
         IUserService userService;
-        IStoreService storeService;
+        StoreService storeService;
         UserDTO userDTO;
 
         string username1 = "test1";
@@ -27,7 +27,8 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
         string username2 = "test2";
         string password2 = "password2";
 
-        Product p;
+        Product product;
+        int productId;
         string productName = "cheese";
         float price = 25;
         string category = "Cheese";
@@ -35,15 +36,15 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
         string customerReview = "Very good cheese";
         int quantity = 10;
 
+        Store store;
+        int storeId;
         string storeName = "test1";
         string email = "test@post.bgu.ac.il";
         string phoneNum = "0542534456";
         string descr = "test store for testing";
         string addr = "BGU Beer sheva st.3";
-        Inventory inv;
-        int storeId;
-        int productId;
 
+        
         string destAddr = "BGU Beer sheva";
         string creditCardInfo = "45805500";
         int amount2Buy = 5;
@@ -58,13 +59,13 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
             ignore = userService.Login(username1, password1);
             UserDTO temp = ignore.Data as UserDTO;
 
-            p = new Product(productName, price, category);
-            inv = new Inventory();
+            
             ignore = storeService.create_store(temp.AccessToken, storeName, email, phoneNum, descr, addr);
             storeId = ((Store)storeService.store_by_name(storeName).Data).ID;
 
-            storeService.add_products_to_store(temp.AccessToken, storeId, productName, price, category, "Description", quantity);
+            storeService.add_product_to_store(temp.AccessToken, storeId, productName, price, category, "Description", quantity);
             List<Product> products = ((Store)storeService.store_by_name(storeName).Data).filter_name(productName);
+            product = products[0];
             productId = products[0].ID;
         }
 
@@ -180,7 +181,7 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
 
             StoreController sc = new StoreController();
             sc.create_store("name", "email", "054", "desc", "addr");
-            int storeId = sc.store_by_name("name").ID;
+            int storeId = sc.store_by_name("name")[0].ID;
             int productId = sc.add_store_product(storeId, "prd", 5.0, "category", "desc", 10);
 
             ShoppingCart cart = new ShoppingCart();
@@ -208,7 +209,7 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
 
             StoreController sc = new StoreController();
             sc.create_store("name", "email", "054", "desc", "addr");
-            int storeId = sc.store_by_name("name").ID;
+            int storeId = sc.store_by_name("name")[0].ID;
             int productId = sc.add_store_product(storeId, "prd", 5.0, "category", "desc", 10);
 
             ShoppingCart cart = new ShoppingCart();
