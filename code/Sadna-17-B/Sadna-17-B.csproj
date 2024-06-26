@@ -171,7 +171,13 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataAccess\TradingSystemContext.cs" />
     <Compile Include="DomainLayer\DomainFactory.cs" />
+    <Compile Include="DomainLayer\Entities\Order.cs" />
+    <Compile Include="DomainLayer\Entities\OrderItem.cs" />
+    <Compile Include="DomainLayer\Entities\Product.cs" />
+    <Compile Include="DomainLayer\Entities\Store.cs" />
+    <Compile Include="DomainLayer\Entities\User.cs" />
     <Compile Include="DomainLayer\Order\Order.cs" />
     <Compile Include="DomainLayer\Order\OrderSystem.cs" />
     <Compile Include="DomainLayer\Order\SubOrder.cs" />
@@ -236,7 +242,10 @@
       <DependentUpon>Web.config</DependentUpon>
     </None>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="DataAccess\Configurations\" />
+    <Folder Include="DataAccess\Repositories\" />
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
