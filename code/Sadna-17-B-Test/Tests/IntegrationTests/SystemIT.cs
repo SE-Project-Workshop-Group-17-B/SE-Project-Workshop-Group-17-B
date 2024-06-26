@@ -12,6 +12,7 @@ using Sadna_17_B.ExternalServices;
 using Sadna_17_B.DomainLayer.Order;
 using Sadna_17_B.DomainLayer;
 using Sadna_17_B.DomainLayer.User;
+using System.Xml.Linq;
 
 namespace Sadna_17_B_Test.Tests.IntegrationTests
 {
@@ -28,7 +29,7 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
         string password2 = "password2";
 
         Product product;
-        int productId;
+        int pid;
         string productName = "cheese";
         float price = 25;
         string category = "Cheese";
@@ -37,7 +38,7 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
         int quantity = 10;
 
         Store store;
-        int storeId;
+        int sid;
         string storeName = "test1";
         string email = "test@post.bgu.ac.il";
         string phoneNum = "0542534456";
@@ -52,36 +53,43 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
         [TestInitialize]
         public void SetUp()
         {
+            // init services
+
             ServiceFactory serviceFactory = new ServiceFactory();
             userService = serviceFactory.UserService;
             storeService = serviceFactory.StoreService;
-            Response ignore = userService.CreateSubscriber(username1, password1);
-            ignore = userService.Login(username1, password1);
-            UserDTO temp = ignore.Data as UserDTO;
 
-            
-            ignore = storeService.create_store(temp.AccessToken, storeName, email, phoneNum, descr, addr);
-            storeId = ((Store)storeService.store_by_name(storeName).Data).ID;
+            // init user
 
-            storeService.add_product_to_store(temp.AccessToken, storeId, productName, price, category, "Description", quantity);
-            List<Product> products = ((Store)storeService.store_by_name(storeName).Data).filter_name(productName);
-            product = products[0];
-            productId = products[0].ID;
+            Response ignore1 = userService.CreateSubscriber(username1, password1);
+            Response result1 = userService.Login(username1, password1);
+            UserDTO userDTO = result1.Data as UserDTO;
+
+            // init store
+
+            Response store_response = storeService.create_store(userDTO.AccessToken, storeName, email, phoneNum, descr, addr);
+            int sid = (int)store_response.Data;
+            Store store = (Store)storeService.store_by_id(sid).Data;
+
+            // init product
+
+            Response product_response = storeService.add_product_to_store(userDTO.AccessToken, sid, productName, price, category, "Description", quantity);
+            pid = (int)product_response.Data;
+            product = store.inventory.product_by_id(pid);
         }
 
         [TestMethod]
         public void TestGoodPurchase()
         {
-            
-
             Response ignore = userService.CreateSubscriber(username2, password2);
             Response res = userService.Login(username2, password2);
             userDTO = res.Data as UserDTO;
             string token = userDTO.AccessToken;
-            ignore = userService.AddToCart(token, storeId, productId, amount2Buy);
 
+            ignore = userService.AddToCart(token, sid, pid, amount2Buy);
             Response completeRes = userService.CompletePurchase(token, destAddr, creditCardInfo);
-            int amount = ((Store)storeService.store_by_name(storeName).Data).amount_by_name(productName);
+            Console.WriteLine( completeRes.Message);
+            int amount = ((List<Store>)storeService.store_by_name(storeName).Data)[0].amount_by_name(productName);
             Assert.IsTrue(completeRes.Success);
             Assert.AreEqual(amount, quantity - amount2Buy);
         }
@@ -96,7 +104,7 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
             
 
             Response test = userService.CompletePurchase(token, destAddr, creditCardInfo);
-            int amount = ((Store)storeService.store_by_name(storeName).Data).amount_by_name(productName);
+            int amount = ((List<Store>)storeService.store_by_name(storeName).Data)[0].amount_by_name(productName);
 
             Assert.IsFalse(test.Success);
             Assert.AreEqual(amount, quantity); //meaning we havent bought the only thing by default
@@ -111,10 +119,10 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
             Response res = userService.Login(username2, password2);
             userDTO = res.Data as UserDTO;
             string token = userDTO.AccessToken;
-            ignore = userService.AddToCart(token, storeId, productId, quantity * 2);
+            ignore = userService.AddToCart(token, sid, pid, quantity * 2);
 
             Response completeRes = userService.CompletePurchase(token, destAddr, creditCardInfo);
-            int amount = ((Store)storeService.store_by_name(storeName).Data).amount_by_name(productName);
+            int amount = ((List<Store>)storeService.store_by_name(storeName).Data)[0].amount_by_name(productName);
             Assert.IsFalse(completeRes.Success);
             Assert.AreEqual(amount, quantity);
         }
@@ -126,11 +134,11 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
             Response res = userService.Login(username2, password2);
             userDTO = res.Data as UserDTO;
             string token = userDTO.AccessToken;
-            ignore = userService.AddToCart(token, storeId, productId, amount2Buy);
+            ignore = userService.AddToCart(token, sid, pid, amount2Buy);
 
             string wrongCreditCardInfo = null;
             Response completeRes = userService.CompletePurchase(token, destAddr, wrongCreditCardInfo);
-            int amount = ((Store)storeService.store_by_name(storeName).Data).amount_by_name(productName);
+            int amount = ((List<Store>)storeService.store_by_name(storeName).Data)[0].amount_by_name(productName);
             Assert.IsFalse(completeRes.Success);
             Assert.AreEqual(amount, quantity);
         }
@@ -142,11 +150,11 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
             Response res = userService.Login(username2, password2);
             userDTO = res.Data as UserDTO;
             string token = userDTO.AccessToken;
-            ignore = userService.AddToCart(token, storeId, productId, amount2Buy);
+            ignore = userService.AddToCart(token, sid, pid, amount2Buy);
 
             string wrongDestAddrInfo = null;
             Response completeRes = userService.CompletePurchase(token, wrongDestAddrInfo, creditCardInfo);
-            int amount = ((Store)storeService.store_by_name(storeName).Data).amount_by_name(productName);
+            int amount = ((List<Store>)storeService.store_by_name(storeName).Data)[0].amount_by_name(productName);
             Assert.IsFalse(completeRes.Success);
             Assert.AreEqual(amount, quantity);
         }
@@ -160,10 +168,10 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
             Response res = userService.Login(username2, password2);
             userDTO = res.Data as UserDTO;
             string token = userDTO.AccessToken;
-            ignore = userService.AddToCart(token, storeId, productId, quantity * 2);
+            ignore = userService.AddToCart(token, sid, pid, quantity * 2);
 
             Response completeRes = userService.CompletePurchase(token, destAddr, creditCardInfo);
-            int amount = ((Store)storeService.store_by_name(storeName).Data).amount_by_name(productName);
+            int amount = ((List<Store>)storeService.store_by_name(storeName).Data)[0].amount_by_name(productName);
 
             Response test = userService.GetMyOrderHistory(token);
             List<OrderDTO> listOfOrders = test.Data as List<OrderDTO>;
@@ -181,11 +189,11 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
 
             StoreController sc = new StoreController();
             sc.create_store("name", "email", "054", "desc", "addr");
-            int storeId = sc.store_by_name("name")[0].ID;
-            int productId = sc.add_store_product(storeId, "prd", 5.0, "category", "desc", 10);
+            int sid = sc.store_by_name("name")[0].ID;
+            int pid = sc.add_store_product(sid, "prd", 5.0, "category", "desc", 10);
 
             ShoppingCart cart = new ShoppingCart();
-            cart.AddToCart(storeId,productId, 2);
+            cart.AddToCart(sid,pid, 2);
 
             OrderSystem os = new OrderSystem(sc, testObject.Object);
             try
@@ -209,11 +217,11 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
 
             StoreController sc = new StoreController();
             sc.create_store("name", "email", "054", "desc", "addr");
-            int storeId = sc.store_by_name("name")[0].ID;
-            int productId = sc.add_store_product(storeId, "prd", 5.0, "category", "desc", 10);
+            int sid = sc.store_by_name("name")[0].ID;
+            int pid = sc.add_store_product(sid, "prd", 5.0, "category", "desc", 10);
 
             ShoppingCart cart = new ShoppingCart();
-            cart.AddToCart(storeId, productId, 2);
+            cart.AddToCart(sid, pid, 2);
 
             OrderSystem os = new OrderSystem(sc, testObject.Object);
             try

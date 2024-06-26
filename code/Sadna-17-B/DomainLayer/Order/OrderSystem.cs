@@ -79,12 +79,14 @@ namespace Sadna_17_B.DomainLayer.Order
             {
                 int storeID = quantitiesOfStore.Key;
                 Receipt storeModuleReceipt = storeController.calculate_products_prices(storeID, quantitiesOfStore.Value);
-                Dictionary<Product, Tuple<int, double>> storeProductsPrices = storeModuleReceipt.cart.product_TO_amount_Bprice;
+                Dictionary<int,Product> storeProductsPrices = storeModuleReceipt.cart.products;
                 Dictionary<int, Tuple<int, double>> storeProductIdsPrices = new Dictionary<int, Tuple<int, double>>();
-                foreach (var product in storeProductsPrices)
+
+                foreach (Product product in storeProductsPrices.Values)
                 {
-                    storeProductIdsPrices[product.Key.ID] = product.Value;
+                    storeProductIdsPrices[product.ID] = Tuple.Create(product.amount,product.price);
                 }
+
                 products[storeID] = storeProductIdsPrices;
                 orderPrice += storeModuleReceipt.TotalPrice();
             }

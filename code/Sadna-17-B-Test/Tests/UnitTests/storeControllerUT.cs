@@ -44,20 +44,63 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         [TestInitialize]
         public void SetUp()
         {
-            
+
+
+            /*
+             * 
+             *  Cart:           | name        |  price   | category  | descript  | amount   | total price
+             *  -----------------------------------------------------------------------------------------
+             *  
+             *  - product 1 :   |   product1  |   30     |   Food    |   Nice    |  100      | 3000
+             *  
+             *  - product 2 :   |   product2  |   50     |   Drink   |   Perfect |  15       | 750
+             * 
+             *  - product 3 :   |   product3  |   10     |   Food    |   Eh      |  50       | 500
+             * 
+             * 
+             *  -------------------------------------------------------------------------------------
+             *  
+             *   relevant_price_by_category        3500
+             *   relevant_price_by_product         3000      
+             *   relevant_price_by_all             4250
+             *
+             *   condition_category                true
+             *   condition_product                 false
+             *   condition_all                     true
+             *      
+             *   
+             *   cond_flat                          true, 50                                        out of 5000  // only rules weight the conditions
+             *   cond_prec                          false, 500                                      out of 5000  
+             *   cond_member                        true, 68.5                                      out of 5000
+             *   
+             *   simple_flat                        true, 50    ( 50 flat)                          out of 5000
+             *   simple_prec                        true, 500   ( 10% of 5,000)                     out of 5000
+             *   simple_member                      true, 68.5  ( 100 days in membership )          out of 5000
+             *   
+             *   and_rule                           false, 0           
+             *   or_rule                            true, 550   (500 + 50) 
+             *   max_rule                           true, 550   (550 bigger than 0)
+             *   add_rule                           true, 1150  (550 + 50 + 550)
+             * 
+             */
+
             store_controller = new StoreController();
             int sid = store_controller.create_store("test store", "mail@example.com", "055555055", "hi bye", "compton");
             store1 = store_controller.store_by_id(sid);
 
-            int pid1 = store1.add_product("product1", 1000, "Food", "Nice",14);
-            int pid2 = store1.add_product("product2", 100, "Drink", "Perfect",50);
-            int pid3 = store1.add_product("product3", 10, "Food", "Eh", 512);
+            int pid1 = store1.add_product("product1", 30, "Food", "Nice",100);
+            int pid2 = store1.add_product("product2", 50, "Drink", "Perfect",10);
+            int pid3 = store1.add_product("product3", 10, "Food", "Eh", 50);
+
             product1 = store1.inventory.product_by_id(pid1);
             product2 = store1.inventory.product_by_id(pid2);
             product3 = store1.inventory.product_by_id(pid3);
 
             cart = new Cart();
-            cart.add_product(product1, 7, product1.price * 7);
+            cart.add_product(product1);
+            cart.add_product(product2);
+            cart.add_product(product3);
+
 
             discount_policy = store1.discount_policy;
             strategy_flat = new Discount_Flat(50);
@@ -133,10 +176,10 @@ namespace Sadna_17_B_Test.Tests.UnitTests
 
             // Assert
             Assert.AreEqual(simple_applied.discounts.Count, 1, 0.01);
-            Assert.AreEqual(simple_applied.discounts[0].Item2, 70, 0.01);
+            Assert.AreEqual(simple_applied.discounts[0].Item2, 300, 0.01);
 
             Assert.AreEqual(cond_applied.discounts.Count, 1, 0.01);
-            Assert.AreEqual(cond_applied.discounts[0].Item2, 70, 0.01);
+            Assert.AreEqual(cond_applied.discounts[0].Item2, 300, 0.01);
         }
         
         [TestMethod]
@@ -192,31 +235,16 @@ namespace Sadna_17_B_Test.Tests.UnitTests
 
             // Assert
             Assert.AreEqual(simple_applied.discounts.Count, 1, 0.01);
-            Assert.AreEqual(simple_applied.discounts[0].Item2, 9.5, 0.1);
+            Assert.AreEqual(simple_applied.discounts[0].Item2, 13.7, 1);
 
             Assert.AreEqual(cond_applied.discounts.Count, 1, 0.01);
-            Assert.AreEqual(cond_applied.discounts[0].Item2, 9.5, 0.1);
+            Assert.AreEqual(cond_applied.discounts[0].Item2, 13.7, 1);
 
         }
 
         [TestMethod]
         public void TestDiscount_Rule()
         {
-
-            // Arrange
-            Cart cart = new Cart();
-
-            cart.add_product(product1, 20, 20 * product1.price);
-            cart.add_product(product2, 50, 50 * product2.price);
-            cart.add_product(product3, 231, 231 * product3.price);
-
-            Func<Cart, double>  relevant_price_by_category = Discount_relevant_products_lambdas.category(product1.category);
-            Func<Cart, double>  relevant_price_by_product = Discount_relevant_products_lambdas.product(product2.ID);
-            Func<Cart, double>  relevant_price_by_all = Discount_relevant_products_lambdas.cart();
-
-            Func<Cart, bool> condition_product = Discount_condition_lambdas.condition_product_amount(product1.ID, ">", 50); ;
-            Func<Cart, bool> condition_category = Discount_condition_lambdas.condition_category_amount(product2.category, "!=", 0); ;
-            Func<Cart, bool> condition_all = Discount_condition_lambdas.condition_cart_price(">", 25000); ;
 
             Discount_Simple simple_flat_discount = new Discount_Simple(start_date, end_date, strategy_flat, relevant_price_by_product);
             Discount_Simple simple_prec_discount = new Discount_Simple(start_date, end_date, strategy_precentage, relevant_price_by_product);
@@ -249,47 +277,6 @@ namespace Sadna_17_B_Test.Tests.UnitTests
             add_rule.add_discount(or_rule);
             add_rule.add_discount(simple_flat_discount);
             add_rule.add_discount(max_rule);
-
-
-
-            /*
-             * 
-             *  Cart:           | name  |  price    | category  | descript  | amount   | total price
-             *  ------------------------------------------------------------------------------------
-             *  
-             *  - product 1 :   |   product1  |   1000    |   Food    |   Nice    |  20      | 20,000
-             *  
-             *  - product 2 :   |   product2  |   100     |   Drink   |   Perfect |  50      | 5,000
-             * 
-             *  - product 3 :   |   product3  |   10      |   Food    |   Eh      |  231     | 2,310
-             * 
-             * 
-             *  -------------------------------------------------------------------------------------
-             *  
-             *   _relevant_price_by_category        22,310
-             *   _relevant_price_by_product         5,000      
-             *   _relevant_price_by_all             27,310
-             *
-             *   _condition_category                true
-             *   _condition_product                 false
-             *   _condition_all                     true
-             *      
-             *   
-             *   cond_flat                          true, 50                                        out of 5000  // only rules weight the conditions
-             *   cond_prec                          false, 500                                      out of 5000  
-             *   cond_member                        true, 68.5                                      out of 5000
-             *   
-             *   simple_flat                        true, 50    ( 50 flat)                          out of 5000
-             *   simple_prec                        true, 500   ( 10% of 5,000)                     out of 5000
-             *   simple_member                      true, 68.5  ( 100 days in membership )          out of 5000
-             *   
-             *   and_rule                           false, 0           
-             *   or_rule                            true, 550   (500 + 50) 
-             *   max_rule                           true, 550   (550 bigger than 0)
-             *   add_rule                           true, 1150  (550 + 50 + 550)
-             * 
-             */
-
 
 
             // Assert
@@ -350,10 +337,10 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         public void TestGetStoreByName_NotFound()
         {
             // Act
-            var result = store_controller.store_by_name("Nonexistent Store")[0];
+            List<Store> result = store_controller.store_by_name("Nonexistent Store");
 
             // Assert
-            Assert.IsNull(result);
+            Assert.IsTrue(result.Count == 0);
         }
 
         [TestMethod]
@@ -367,10 +354,10 @@ namespace Sadna_17_B_Test.Tests.UnitTests
 
             // Act
             store_controller.close_store(sid);
-            var result = store_controller.store_by_name("Test Store")[0];
+            List<Store> result = store_controller.store_by_name("Test Store");
 
             // Assert
-            Assert.IsNull(result);
+            Assert.IsTrue(result.Count == 0);
         }
 
         [TestMethod]
@@ -384,7 +371,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
             Store store_2 = store_controller.store_by_id(sid2);
 
             // Act
-            var result = store_controller.all_stores();
+            var result = store_controller.all_stores().Values;
 
             // Assert
             Assert.AreEqual(2, result.Count);

@@ -132,7 +132,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
 
             Response store_response = storeService.create_store(userDTO.AccessToken, name, email, phonenumber, storeDescr, addr);
             Response store_name_response = storeService.store_by_name(name);
-            Console.WriteLine($"{store_name_response.Success}");
+            
             Store store = (store_name_response.Data as List<Store>)[0];
             Assert.AreEqual(store.name, name);
         }

@@ -1,3 +1,4 @@
+using Microsoft.IdentityModel.Tokens;
 using Sadna_17_B.DomainLayer.Utils;
 using Sadna_17_B.Utils;
 using System;
@@ -15,164 +16,101 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         // -------------- cart dictionaries + init functions ------------------------------------------------------------------------------------
 
 
-        public Dictionary<string, HashSet<Product>> category_TO_products = new Dictionary<string, HashSet<Product>>();
+        public Dictionary<string, List<Product>> category_TO_products = new Dictionary<string, List<Product>>();
 
-        public Dictionary<Product, Tuple<int, double>> product_TO_amount_Bprice = new Dictionary<Product, Tuple<int, double>>();
+        public Dictionary<int,Product> products = new Dictionary<int, Product>();
 
 
-        public bool add_product(Product product, int amount, double bag_price)
+        public void add_product(Product product)
         {
 
             // add to product list
 
-            if (product_TO_amount_Bprice.ContainsKey(product))
-            {
-                var tuple = product_TO_amount_Bprice[product];
-                product_TO_amount_Bprice[product] = Tuple.Create(tuple.Item1 + amount, tuple.Item2 + bag_price);
-            }
+            if (products.Keys.Contains(product.ID))
+                products[product.ID].amount += product.amount;
             else
-                product_TO_amount_Bprice[product] = Tuple.Create(amount, bag_price);
+                products.Add(product.ID,product);
 
             // add to category list
 
-            if (category_TO_products.ContainsKey(product.category))
-                return category_TO_products[product.category].Add(product);
-
-            category_TO_products[product.category] = new HashSet<Product>();
-            return category_TO_products[product.category].Add(product);
+            if (!category_TO_products.ContainsKey(product.category))
+                category_TO_products[product.category] = new List<Product>();
+          
+            category_TO_products[product.category].Add(product);
+           
 
         }
 
 
 
-        // -------------- cart relevant product / category data ------------------------------------------------------------------------------------
-
-
-        public Tuple<int, double> relevant_product(Product product)
-        {
-            if (!product_TO_amount_Bprice.ContainsKey(product))
-                return null;
-
-            return product_TO_amount_Bprice[product];
-        }
-
-        public Tuple<int, double> relevant_product(int pid)
-        {
-            Product product = product_by_id(pid);
-
-            return product_TO_amount_Bprice[product];
-        }
-
-        public Dictionary<Product, Tuple<int, double>> relevant_category(string category)
-        {
-            if (!category_TO_products.ContainsKey(category))
-                return null;
-
-            Dictionary<Product, Tuple<int, double>> relevant = new Dictionary<Product, Tuple<int, double>>();
-            foreach (Product product in category_TO_products[category])
-            {
-                relevant[product] = product_TO_amount_Bprice[product];
-            }
-
-            return relevant;
-        }
-
-
-
-        // -------------- cart specific values retrieval ------------------------------------------------------------------------------------
-
-
-        public bool contains(int pid)
-        {
-            foreach (Product p in product_TO_amount_Bprice.Keys)
-                if (p.ID == pid)
-                    return true;
-
-            return false;
-        }
-
-        public Product product_by_id(int pid)
-        {
-            foreach (Product p in product_TO_amount_Bprice.Keys)
-                if (p.ID == pid)
-                    return p;
-
-            throw new Sadna17BException("Cart : no product was found");
-        }
+        // -------------- fetch data from cart ------------------------------------------------------------------------------------
 
         public bool contains(string category)
         {
             return category_TO_products.Keys.Contains(category);
         }
+        
+        public bool contains(int pid)
+        {
+            return products.ContainsKey(pid);
+        }
+
+        public Product product_by_id(int pid)
+        {
+            if (products.ContainsKey(pid))
+                return products[pid];
+
+            throw new Sadna17BException("Cart : no product was found");
+        }
+
+
+
 
         public int find_category_amount(string category)
         {
             int amount = 0;
-            Dictionary<Product, Tuple<int, double>> relevant = relevant_category(category);
 
+            if (!category_TO_products.ContainsKey(category))
+                return amount;
 
-            foreach (var item in relevant)
-                amount += item.Value.Item1;
+            foreach (Product product in category_TO_products[category])
+                amount += product.amount;
 
             return amount;
-           
+
         }
 
         public double find_category_price(string category)
         {
-            double amount = 0;
-            Dictionary<Product, Tuple<int, double>> relevant = relevant_category(category);
+            double price = 0;
 
+            if (!category_TO_products.ContainsKey(category))
+                return price;
 
-            foreach (var item in relevant)
-                amount += item.Value.Item2;
+            foreach (Product product in category_TO_products[category])
+                price += product.price * product.amount;
 
-            return amount;
-
-        }
-
-        public int find_product_amount(Product product)
-        {
-  
-            Tuple<int, double> relevant = relevant_product(product);
-
-            return relevant.Item1;
-
-        }
-
-        public double find_product_price(Product product)
-        {
-
-            Tuple<int, double> relevant = relevant_product(product);
-
-            return relevant.Item2;
+            return price;
 
         }
 
         public int find_product_amount(int pid)
         {
-
-            Tuple<int, double> relevant = relevant_product(pid);
-
-            return relevant.Item1;
-
+            return product_by_id(pid).amount;
         }
 
         public double find_product_price(int pid)
         {
-
-            Tuple<int, double> relevant = relevant_product(pid);
-
-            return relevant.Item2;
-
+            Product product = product_by_id(pid);
+            return product.price * product.amount;
         }
 
         public double price_all()
         {
             double sum = 0;
 
-            foreach (var item in product_TO_amount_Bprice)
-                sum += item.Value.Item2;
+            foreach (Product product in products.Values)
+                sum += product.price * product.amount;
 
             return sum;
         }
@@ -181,8 +119,8 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         {
             int sum = 0;
 
-            foreach (var item in product_TO_amount_Bprice)
-                sum += item.Value.Item1;
+            foreach (Product product in products.Values)
+                sum += product.amount;
 
             return sum;
         }

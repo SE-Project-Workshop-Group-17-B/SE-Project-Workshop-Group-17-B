@@ -233,7 +233,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                 double p_bag_price = calculate_product_bag(p_id, p_amount);
                 Product product = filter_id(p_id);
 
-                cart.add_product(product, p_amount, p_bag_price);
+                cart.add_product(product);
             }
 
             return discount_policy.calculate_discount(cart); 

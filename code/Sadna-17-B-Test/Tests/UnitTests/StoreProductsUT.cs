@@ -14,90 +14,140 @@ namespace Sadna_17_B_Test.Tests.UnitTests
     [TestClass]
     public class StoreProductsUT
     {
-        private StoreController _storeController;
-        private Product _product;
-        private Inventory _inventory;
-        private Subscriber _owner;
-        private Cart _cart;
+        private StoreController store_controller;
+        private Store store1;
+        private Product product1;
+        private Product product2;
+        private Product product3;
+        private Subscriber subscriber;
+        private Cart cart;
 
-        private DateTime _discount_start;
-        private DateTime _discount_end;
+        private DateTime start_date;
+        private DateTime end_date;
 
-        private DiscountPolicy _discountPolicy;
-        private Discount_Flat _strategy_flat;
-        private Discount_Percentage _strategy_percentage;
-        private Discount_Membership _strategy_membership;
+        private DiscountPolicy discount_policy;
 
-        Func<Cart, double> _relevant_price_by_category;
-        Func<Cart, double> _relevant_price_by_product;
-        Func<Cart, double> _relevant_price_by_all;
+        private Discount_Flat strategy_flat;
+        private Discount_Percentage strategy_precentage;
+        private Discount_Membership strategy_membership;
 
-        Func<Cart, bool> _condition_category;
-        Func<Cart, bool> _condition_product;
-        Func<Cart, bool> _condition_all;
+        Func<Cart, double> relevant_price_by_category;
+        Func<Cart, double> relevant_price_by_product;
+        Func<Cart, double> relevant_price_by_all;
 
-        Discount_condition_lambdas conditions_generator = new Discount_condition_lambdas();
-        Discount_relevant_products_lambdas relevant_prices_generator = new Discount_relevant_products_lambdas();
+        Func<Cart, bool> condition_category;
+        Func<Cart, bool> condition_product;
+        Func<Cart, bool> condition_all;
 
 
         [TestInitialize]
         public void SetUp()
         {
-            _storeController = new StoreController();
+            /*
+           * 
+           *  Cart:           | name        |  price   | category  | descript  | amount   | total price
+           *  -----------------------------------------------------------------------------------------
+           *  
+           *  - product 1 :   |   product1  |   30     |   Food    |   Nice    |  100      | 3000
+           *  
+           *  - product 2 :   |   product2  |   50     |   Drink   |   Perfect |  15       | 750
+           * 
+           *  - product 3 :   |   product3  |   10     |   Food    |   Eh      |  50       | 500
+           * 
+           * 
+           *  -------------------------------------------------------------------------------------
+           *  
+           *   relevant_price_by_category        3500
+           *   relevant_price_by_product         3000      
+           *   relevant_price_by_all             4250
+           *
+           *   condition_category                true
+           *   condition_product                 false
+           *   condition_all                     true
+           *      
+           *   
+           *   cond_flat                          true, 50                                        out of 5000  // only rules weight the conditions
+           *   cond_prec                          false, 500                                      out of 5000  
+           *   cond_member                        true, 68.5                                      out of 5000
+           *   
+           *   simple_flat                        true, 50    ( 50 flat)                          out of 5000
+           *   simple_prec                        true, 500   ( 10% of 5,000)                     out of 5000
+           *   simple_member                      true, 68.5  ( 100 days in membership )          out of 5000
+           *   
+           *   and_rule                           false, 0           
+           *   or_rule                            true, 550   (500 + 50) 
+           *   max_rule                           true, 550   (550 bigger than 0)
+           *   add_rule                           true, 1150  (550 + 50 + 550)
+           * 
+           */
 
-            _product = new Product("Test Product", 100, "Category", 10);
-            _product.add_rating(5);
-            _inventory.add_product("Test Product", 100, "Category", "Good Product", 25);
+            store_controller = new StoreController();
+            int sid = store_controller.create_store("test store", "mail@example.com", "055555055", "hi bye", "compton");
+            store1 = store_controller.store_by_id(sid);
 
-            _cart = new Cart();
-            _cart.add_product(_product, 7, _product.price * 7);
+            int pid1 = store1.add_product("product1", 30, "Food", "Nice", 100);
+            int pid2 = store1.add_product("product2", 50, "Drink", "Perfect", 10);
+            int pid3 = store1.add_product("product3", 10, "Food", "Eh", 50);
 
-            _discountPolicy = new DiscountPolicy("Test Policy");
-            _strategy_flat = new Discount_Flat(50);
-            _strategy_percentage = new Discount_Percentage(10);
-            _strategy_membership = new Discount_Membership();
-            _strategy_membership.member_start_date(DateTime.Now.AddDays(-100));
+            product1 = store1.inventory.product_by_id(pid1);
+            product2 = store1.inventory.product_by_id(pid2);
+            product3 = store1.inventory.product_by_id(pid3);
 
-            _discount_start = DateTime.Now;
-            _discount_end = DateTime.Now.AddDays(14);
+            cart = new Cart();
+            cart.add_product(product1);
+            cart.add_product(product2);
+            cart.add_product(product3);
+
+
+            discount_policy = store1.discount_policy;
+            strategy_flat = new Discount_Flat(50);
+            strategy_precentage = new Discount_Percentage(10);
+            strategy_membership = new Discount_Membership();
+            strategy_membership.member_start_date(DateTime.Now.AddDays(-100));
+
+            start_date = DateTime.Now;
+            end_date = DateTime.Now.AddDays(14);
 
 
             // -------- relevant functions -------------------------------
 
-            _relevant_price_by_category = Discount_relevant_products_lambdas.category(_product.category);
+            relevant_price_by_category = Discount_relevant_products_lambdas.category(product1.category);
 
-            _relevant_price_by_product = Discount_relevant_products_lambdas.product(_product.ID);
+            relevant_price_by_product = Discount_relevant_products_lambdas.product(product1.ID);
 
-            _relevant_price_by_all = Discount_relevant_products_lambdas.cart();
+            relevant_price_by_all = Discount_relevant_products_lambdas.cart();
+
 
 
             // -------- conditions functions -------------------------------
 
-            _condition_product = Discount_condition_lambdas.condition_product_amount(_product.ID, "<", 5);
+            condition_product = Discount_condition_lambdas.condition_product_amount(product1.ID, "<", 5);
 
-            _condition_category = Discount_condition_lambdas.condition_category_amount(_product.category, "!=", 0);
+            condition_category = Discount_condition_lambdas.condition_category_amount(product1.category, "!=", 0);
 
-            _condition_all = Discount_condition_lambdas.condition_cart_price(">", 200);
+            condition_all = Discount_condition_lambdas.condition_cart_price(">", 200);
+
+
         }
 
         //[TestMethod]
         //public void TestAddingProductsConcurrently()
         //{
         //
-        //    var storeBuilder = _storeController.store_builder()
+        //    var storeBuilder = store_controller.store_builder()
         //                            .SetName("Test Store")
         //                            .SetInventory(_inventory);
         //    var store = storeBuilder.Build();
         //    int initialAmount = 10;
         //
-        //    _storeController.open_store(store);
+        //    store_controller.open_store(store);
         //
-        //    Task task1 = Task.Run(() => _storeController.add_store_product(store.ID, "Test Product", 100, "Category", "Good product", initialAmount));
-        //    Task task2 = Task.Run(() => _storeController.add_store_product(store.ID, "Test Product", 100, "Category", "Good product", initialAmount));
-        //    Task task3 = Task.Run(() => _storeController.add_store_product(store.ID, "Test Product", 100, "Category", "Good product", initialAmount));
-        //    Task task4 = Task.Run(() => _storeController.add_store_product(store.ID, "Test Product", 100, "Category", "Good product", initialAmount));
-        //    Task task5 = Task.Run(() => _storeController.add_store_product(store.ID, "Test Product", 100, "Category", "Good product", initialAmount));
-        //    Task task6 = Task.Run(() => _storeController.add_store_product(store.ID, "Test Product", 100, "Category", "Good product", initialAmount));
+        //    Task task1 = Task.Run(() => store_controller.add_store_product(store.ID, "Test Product", 100, "Category", "Good product", initialAmount));
+        //    Task task2 = Task.Run(() => store_controller.add_store_product(store.ID, "Test Product", 100, "Category", "Good product", initialAmount));
+        //    Task task3 = Task.Run(() => store_controller.add_store_product(store.ID, "Test Product", 100, "Category", "Good product", initialAmount));
+        //    Task task4 = Task.Run(() => store_controller.add_store_product(store.ID, "Test Product", 100, "Category", "Good product", initialAmount));
+        //    Task task5 = Task.Run(() => store_controller.add_store_product(store.ID, "Test Product", 100, "Category", "Good product", initialAmount));
+        //    Task task6 = Task.Run(() => store_controller.add_store_product(store.ID, "Test Product", 100, "Category", "Good product", initialAmount));
         //
         //    Task.WaitAll(task1, task2, task3, task4, task5, task6);
         //
@@ -109,25 +159,25 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         //[TestMethod]
         //public void TestRemoveMoreProductsThenAvailbleConcurrent()
         //{
-        //    var storeBuilder = _storeController.store_builder()
+        //    var storeBuilder = store_controller.store_builder()
         //                            .SetName("Test Store")
         //                            .SetInventory(_inventory);
         //    var store = storeBuilder.Build();
         //    int initialAmount = 10;
         //
-        //    _storeController.open_store(store);
+        //    store_controller.open_store(store);
         //
-        //    var productId = _storeController.add_store_product(store.ID, "Test Product", 100, "Category", "Good product", initialAmount);
+        //    var productId = store_controller.add_store_product(store.ID, "Test Product", 100, "Category", "Good product", initialAmount);
         //
         //    Dictionary<int, int> order = new Dictionary<int, int>();
         //    order[productId] = 5;
         //
-        //    Task task1 = Task.Run(() => _storeController.decrease_products_amount(store.ID, order));
-        //    Task task2 = Task.Run(() => _storeController.decrease_products_amount(store.ID, order));
-        //    Task task3 = Task.Run(() => _storeController.decrease_products_amount(store.ID, order));
-        //    Task task4 = Task.Run(() => _storeController.decrease_products_amount(store.ID, order));
-        //    Task task5 = Task.Run(() => _storeController.decrease_products_amount(store.ID, order));
-        //    Task task6 = Task.Run(() => _storeController.decrease_products_amount(store.ID, order));
+        //    Task task1 = Task.Run(() => store_controller.decrease_products_amount(store.ID, order));
+        //    Task task2 = Task.Run(() => store_controller.decrease_products_amount(store.ID, order));
+        //    Task task3 = Task.Run(() => store_controller.decrease_products_amount(store.ID, order));
+        //    Task task4 = Task.Run(() => store_controller.decrease_products_amount(store.ID, order));
+        //    Task task5 = Task.Run(() => store_controller.decrease_products_amount(store.ID, order));
+        //    Task task6 = Task.Run(() => store_controller.decrease_products_amount(store.ID, order));
         //
         //    Task.WaitAll(task1, task2, task3, task4, task5, task6);
         //
@@ -140,25 +190,25 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         //public void TestReduceProductAmount_Synchronization()
         //{
         //    // Arrange
-        //    var storeBuilder = _storeController.store_builder()
+        //    var storeBuilder = store_controller.store_builder()
         //                            .SetName("Test Store")
         //                            .SetInventory(_inventory);
         //    var store = storeBuilder.Build();
         //    int initialAmount = 100;
         //
-        //    _storeController.open_store(store);
+        //    store_controller.open_store(store);
         //
-        //    var productId = _storeController.add_store_product(store.ID, "Test Product other", 100, "Category", "Good product", initialAmount);
+        //    var productId = store_controller.add_store_product(store.ID, "Test Product other", 100, "Category", "Good product", initialAmount);
         //
         //    Dictionary<int, int> order = new Dictionary<int, int>();
         //    order[productId] = 5;
         //
-        //    Task task1 = Task.Run(() => _storeController.decrease_products_amount(store.ID, order));
-        //    Task task2 = Task.Run(() => _storeController.decrease_products_amount(store.ID, order));
-        //    Task task3 = Task.Run(() => _storeController.decrease_products_amount(store.ID, order));
-        //    Task task4 = Task.Run(() => _storeController.decrease_products_amount(store.ID, order));
-        //    Task task5 = Task.Run(() => _storeController.decrease_products_amount(store.ID, order));
-        //    Task task6 = Task.Run(() => _storeController.decrease_products_amount(store.ID, order));
+        //    Task task1 = Task.Run(() => store_controller.decrease_products_amount(store.ID, order));
+        //    Task task2 = Task.Run(() => store_controller.decrease_products_amount(store.ID, order));
+        //    Task task3 = Task.Run(() => store_controller.decrease_products_amount(store.ID, order));
+        //    Task task4 = Task.Run(() => store_controller.decrease_products_amount(store.ID, order));
+        //    Task task5 = Task.Run(() => store_controller.decrease_products_amount(store.ID, order));
+        //    Task task6 = Task.Run(() => store_controller.decrease_products_amount(store.ID, order));
         //
         //    Task.WaitAll(task1, task2, task3, task4, task5, task6);
         //
@@ -172,25 +222,25 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         public void TestReduceProductAmount_Synchronization()
         {
             // Arrange
-            var storeBuilder = _storeController.create_store_builder()
-                                    .SetName("Test Store")
-                                    .SetInventory(_inventory);
+            var storeBuilder = store_controller.create_store_builder()
+                                    .SetName("Test Store");
+
             var store = storeBuilder.Build();
             int initialAmount = 100;
 
-            _storeController.open_store(store);
+            store_controller.open_store(store);
 
-            var productId = _storeController.add_store_product(store.ID, "Test Product other", 100, "Category", "Good product", initialAmount);
+            var productId = store_controller.add_store_product(store.ID, "Test Product other", 100, "Category", "Good product", initialAmount);
 
             Dictionary<int, int> order = new Dictionary<int, int>();
             order[productId] = 5;
 
-            Task task1 = Task.Run(() => _storeController.decrease_products_amount(store.ID, order));
-            Task task2 = Task.Run(() => _storeController.decrease_products_amount(store.ID, order));
-            Task task3 = Task.Run(() => _storeController.decrease_products_amount(store.ID, order));
-            Task task4 = Task.Run(() => _storeController.decrease_products_amount(store.ID, order));
-            Task task5 = Task.Run(() => _storeController.decrease_products_amount(store.ID, order));
-            Task task6 = Task.Run(() => _storeController.decrease_products_amount(store.ID, order));
+            Task task1 = Task.Run(() => store_controller.decrease_products_amount(store.ID, order));
+            Task task2 = Task.Run(() => store_controller.decrease_products_amount(store.ID, order));
+            Task task3 = Task.Run(() => store_controller.decrease_products_amount(store.ID, order));
+            Task task4 = Task.Run(() => store_controller.decrease_products_amount(store.ID, order));
+            Task task5 = Task.Run(() => store_controller.decrease_products_amount(store.ID, order));
+            Task task6 = Task.Run(() => store_controller.decrease_products_amount(store.ID, order));
 
             Task.WaitAll(task1, task2, task3, task4, task5, task6);
 
@@ -202,25 +252,25 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         [TestMethod]
         public void TestRemoveMoreProductsThenAvailbleConcurrent()
         {
-            var storeBuilder = _storeController.create_store_builder()
-                                    .SetName("Test Store")
-                                    .SetInventory(_inventory);
+            var storeBuilder = store_controller.create_store_builder()
+                                    .SetName("Test Store");
+
             var store = storeBuilder.Build();
             int initialAmount = 30;
 
-            _storeController.open_store(store);
+            store_controller.open_store(store);
 
-            var productId = _storeController.add_store_product(store.ID, "Test Product 2", 100, "Category", "Good product", initialAmount);
+            var productId = store_controller.add_store_product(store.ID, "Test Product 2", 100, "Category", "Good product", initialAmount);
 
             Dictionary<int, int> order = new Dictionary<int, int>();
             order[productId] = 5;
 
-            Task task1 = Task.Run(() => _storeController.decrease_products_amount(store.ID, order));
-            Task task2 = Task.Run(() => _storeController.decrease_products_amount(store.ID, order));
-            Task task3 = Task.Run(() => _storeController.decrease_products_amount(store.ID, order));
-            Task task4 = Task.Run(() => _storeController.decrease_products_amount(store.ID, order));
-            Task task5 = Task.Run(() => _storeController.decrease_products_amount(store.ID, order));
-            Task task6 = Task.Run(() => _storeController.decrease_products_amount(store.ID, order));
+            Task task1 = Task.Run(() => store_controller.decrease_products_amount(store.ID, order));
+            Task task2 = Task.Run(() => store_controller.decrease_products_amount(store.ID, order));
+            Task task3 = Task.Run(() => store_controller.decrease_products_amount(store.ID, order));
+            Task task4 = Task.Run(() => store_controller.decrease_products_amount(store.ID, order));
+            Task task5 = Task.Run(() => store_controller.decrease_products_amount(store.ID, order));
+            Task task6 = Task.Run(() => store_controller.decrease_products_amount(store.ID, order));
 
             Task.WaitAll(task1, task2, task3, task4, task5, task6);
 
@@ -233,21 +283,21 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         public void TestAddingProductsConcurrently()
         {
 
-            var storeBuilder = _storeController.create_store_builder()
-                                    .SetName("Test Store")
-                                    .SetInventory(_inventory);
+            var storeBuilder = store_controller.create_store_builder()
+                                    .SetName("Test Store");
+
             var store = storeBuilder.Build();
             int initialAmount = 10;
-            _storeController.open_store(store);
+            store_controller.open_store(store);
 
 
-            int pid = _storeController.add_store_product(store.ID, "Test Product 3", 100, "Category", "Good product", initialAmount);
+            int pid = store_controller.add_store_product(store.ID, "Test Product 3", 100, "Category", "Good product", initialAmount);
 
-            Task task1 = Task.Run(() => _storeController.add_store_product(store.ID, pid, initialAmount));
-            Task task2 = Task.Run(() => _storeController.add_store_product(store.ID, pid, initialAmount));
-            Task task3 = Task.Run(() => _storeController.add_store_product(store.ID, pid, initialAmount));
-            Task task4 = Task.Run(() => _storeController.add_store_product(store.ID, pid, initialAmount));
-            Task task5 = Task.Run(() => _storeController.add_store_product(store.ID, pid, initialAmount));
+            Task task1 = Task.Run(() => store_controller.add_store_product(store.ID, pid, initialAmount));
+            Task task2 = Task.Run(() => store_controller.add_store_product(store.ID, pid, initialAmount));
+            Task task3 = Task.Run(() => store_controller.add_store_product(store.ID, pid, initialAmount));
+            Task task4 = Task.Run(() => store_controller.add_store_product(store.ID, pid, initialAmount));
+            Task task5 = Task.Run(() => store_controller.add_store_product(store.ID, pid, initialAmount));
 
 
             Task.WaitAll(task1, task2, task3, task4, task5);
