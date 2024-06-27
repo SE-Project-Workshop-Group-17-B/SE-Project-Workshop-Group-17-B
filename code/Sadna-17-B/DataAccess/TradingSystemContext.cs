@@ -9,6 +9,7 @@ namespace Sadna_17_B.Data
     {
         public TradingSystemContext() : base("name=TradingSystemDB")
         {
+            Database.SetInitializer<TradingSystemContext>(null);
         }
 
         public DbSet<Store> Stores { get; set; }
