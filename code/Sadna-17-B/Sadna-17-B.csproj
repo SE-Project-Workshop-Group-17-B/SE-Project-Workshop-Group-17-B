@@ -182,10 +182,12 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Configuration.cs" />
     <Compile Include="DataAccess\Repositories\IStoreRepository.cs" />
     <Compile Include="DataAccess\Repositories\StoreRepository.cs" />
     <Compile Include="DataAccess\TradingSystemContext.cs" />
     <Compile Include="DomainLayer\DomainFactory.cs" />
+    <Compile Include="DomainLayer\Entities\Migrations.cs" />
     <Compile Include="DomainLayer\Entities\Order.cs" />
     <Compile Include="DomainLayer\Entities\OrderItem.cs" />
     <Compile Include="DomainLayer\Entities\Product.cs" />

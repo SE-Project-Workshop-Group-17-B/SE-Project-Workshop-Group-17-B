@@ -14,7 +14,6 @@ namespace Sadna_17_B.DomainLayer.Entities
         public string Name { get; set; }
 
         [Required]
-        [Column(TypeName = "decimal(18,2)")]
         public decimal Price { get; set; }
 
         [StringLength(255)]
