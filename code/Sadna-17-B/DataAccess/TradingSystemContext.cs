@@ -1,6 +1,5 @@
 ﻿using System.Data.Entity;
 using System.Data.Entity.ModelConfiguration.Conventions;
-using System.Collections.Generic;
 using Sadna_17_B.DomainLayer.Entities;
 
 namespace Sadna_17_B.Data
@@ -20,6 +19,17 @@ namespace Sadna_17_B.Data
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
+            // Remove the pluralizing table name convention
+            modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
+
+            // Add specific configurations for entities
+            modelBuilder.Entity<Product>()
+                .Property(p => p.Price)
+                .HasPrecision(18, 2);
+
+           
+
+
             // Additional configurations can be added here if needed
         }
     }
