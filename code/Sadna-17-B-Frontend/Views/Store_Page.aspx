@@ -118,17 +118,36 @@
         </div>
     </div>
 
-    <script>
-        document.getElementById('ratingContainer').addEventListener('click', function (event) {
-            var rect = this.getBoundingClientRect();
-            var x = event.clientX - rect.left; // x position within the element.
-            var width = rect.width;
-            var rating = (x / width) * 5; // Calculate rating out of 5
-            var cropWidth = x; // Use the x position directly for cropping width
+      <script>
+          var ratingContainer = document.getElementById('ratingContainer');
+          var fiveStarsImg = document.getElementById('fiveStarsImg');
+          var zeroStarsImg = document.getElementById('zeroStarsImg');
+          var ratingValueHidden = document.getElementById('<%= ratingValueHidden.ClientID %>');
+          var clickCounter = 0;
 
-            document.getElementById('fiveStarsImg').style.clip = 'rect(0px, ' + cropWidth + 'px, 40px, 0px)'; // Adjust the height accordingly if different
-            document.getElementById('<%= ratingValueHidden.ClientID %>').value = rating; // Set the rating value in the hidden field
-            console.log('Rating:', rating); // You can send this rating value to the server if needed
-        });
+          function setRating(event) {
+              var rect = ratingContainer.getBoundingClientRect();
+              var x = event.clientX - rect.left; // x position within the element.
+              var width = rect.width;
+              var rating = (x / width) * 5; // Calculate rating out of 5
+              var cropWidth = x; // Use the x position directly for cropping width
+
+              fiveStarsImg.style.clip = 'rect(0px, ' + cropWidth + 'px, 40px, 0px)'; // Adjust the height accordingly if different
+              ratingValueHidden.value = rating; // Set the rating value in the hidden field
+              console.log('Rating:', rating); // You can send this rating value to the server if needed
+          }
+
+          function toggleMouseMoveListener() {
+              clickCounter++;
+              if (clickCounter % 2 === 1) {
+                  ratingContainer.removeEventListener('mousemove', setRating);
+              } else {
+                  ratingContainer.addEventListener('mousemove', setRating);
+              }
+          }
+
+          ratingContainer.addEventListener('mousemove', setRating);
+          ratingContainer.addEventListener('click', toggleMouseMoveListener);
     </script>
+
 </asp:Content>
