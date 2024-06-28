@@ -64,20 +64,84 @@ namespace Sadna_17_B_Frontend.Views
             Response.Write(@"<script language='javascript'>alert('" + message + "')</script>");
         }
 
-        protected void btnsave_Click(object sender, EventArgs e)
+        protected void btnsave_Click_rating(object sender, EventArgs e)
         {
-            // Implement
-            MessageBox("Test");
-            
-            //IStoreService storeService = backendController.storeService;
-            //storeService.add_store_rating(storeId);
+            // Retrieve the rating value from the hidden field
+            double rating = Convert.ToDouble(ratingValueHidden.Value);
+
+            // Retrieve the complaint value from the hidden field
+
+            IStoreService storeService = backendController.storeService;
+
+            // Add store rating
+            Response ratingResponse = storeService.add_store_rating(storeId, rating);
+
+            if (ratingResponse.Success)
+            {
+                MessageBox("Rating submitted successfully!");
+            }
+            else
+            {
+                MessageBox("Failed to submit rating: " + ratingResponse.Message);
+            }
+        }
+
+        protected void btnsave_Click_complaint(object sender, EventArgs e)
+        {
+            // Retrieve the rating value from the hidden field
+            string complaint = Convert.ToString(complaintValueHidden.Value);
+
+            // Retrieve the complaint value from the hidden field
+
+            IStoreService storeService = backendController.storeService;
+
+            // Add store rating
+            Response complaintResponse = storeService.add_store_complaint(storeId, complaint);
+
+            if (complaintResponse.Success)
+            {
+                MessageBox("complaint submitted successfully!");
+            }
+            else
+            {
+                MessageBox("Failed to submit complaint: " + complaintResponse.Message);
+            }
+        }
+
+        protected void btnsave_Click_postReview(object sender, EventArgs e)
+        {
+            // Retrieve the rating value from the hidden field
+            string review = Convert.ToString(postReviewValueHidden.Value);
+
+            // Retrieve the complaint value from the hidden field
+
+            IStoreService storeService = backendController.storeService;
+
+            // Add store rating
+            Response reviewResponse = storeService.add_store_review(storeId, review);
+
+            if (reviewResponse.Success)
+            {
+                MessageBox("Review submitted successfully!");
+            }
+            else
+            {
+                MessageBox("Failed to submit Review: " + reviewResponse.Message);
+            }
         }
 
         protected void sendComplaintBtn_Click(object sender, EventArgs e)
         {
+            string script = "$('#mymodal-complaint').modal('show')";
+            ClientScript.RegisterStartupScript(this.GetType(), "Popup", script, true);
 
         }
+        protected void postReviewBtn_Click(object sender, EventArgs e)
+        {
+            string script = "$('#mymodal-send-review').modal('show')";
+            ClientScript.RegisterStartupScript(this.GetType(), "Popup", script, true);
 
+        }
         protected void toStoreInventory_Click(object sender, EventArgs e)
         {
 
