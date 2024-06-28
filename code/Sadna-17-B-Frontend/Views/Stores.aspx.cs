@@ -9,7 +9,7 @@ namespace Sadna_17_B_Frontend.Views
 {
     public partial class Stores : System.Web.UI.Page
     {
-        BackendController backendController = BackendController.GetInstance();
+        BackendController backendController = BackendController.get_instance();
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -21,7 +21,7 @@ namespace Sadna_17_B_Frontend.Views
 
         private void LoadStores()
         {
-            var response = backendController.GetStores(); // Assume this method gets the list of stores
+            var response = backendController.get_stores(); // Assume this method gets the list of stores
             if (response.Success)
             {
                 // Add ImageName to each store dynamically

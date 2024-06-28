@@ -42,7 +42,7 @@ namespace Sadna_17_B_Frontend.Views
             int.TryParse(minRatingText, out minRating);
             int.TryParse(minStoreRatingText, out minStoreRating);
 
-            BackendController backendController = BackendController.GetInstance();
+            BackendController backendController = BackendController.get_instance();
             IStoreService storeService = backendController.storeService;
             Response response = storeService.all_products();
             Dictionary<Product, int> products = new Dictionary<Product, int>();
@@ -51,7 +51,7 @@ namespace Sadna_17_B_Frontend.Views
                 products = (Dictionary<Product, int>)response.Data;
 
                 // Apply the filters using the SearchProducts method
-                Response searchResponse = backendController.SearchProducts(keyword, category, minPrice, maxPrice, minRating, minStoreRating, storeId);
+                Response searchResponse = backendController.search_products(keyword, category, minPrice, maxPrice, minRating, minStoreRating, storeId);
                 if (searchResponse.Success)
                 {
                     products = (Dictionary<Product, int>)searchResponse.Data;

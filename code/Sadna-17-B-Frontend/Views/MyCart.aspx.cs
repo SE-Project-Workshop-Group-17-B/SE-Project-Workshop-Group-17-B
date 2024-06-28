@@ -17,8 +17,8 @@ namespace Sadna_17_B_Frontend.Views
 
         private void LoadCart()
         {
-            BackendController backendController = BackendController.GetInstance();
-            ShoppingCartDTO cart = backendController.GetShoppingCart();
+            BackendController backendController = BackendController.get_instance();
+            ShoppingCartDTO cart = backendController.get_shoping_cart();
 
             if (cart != null)
             {

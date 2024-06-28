@@ -14,7 +14,7 @@ namespace Sadna_17_B_Frontend.Views
 {
     public partial class SearchProduct : System.Web.UI.Page
     {
-        BackendController backendController = BackendController.GetInstance();
+        BackendController backendController = BackendController.get_instance();
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -34,7 +34,7 @@ namespace Sadna_17_B_Frontend.Views
             string minStoreRatingText = txtMinStoreRating.Value.Trim();
             string storeIdText = txtStoreID.Value.Trim();
 
-            BackendController backendController = BackendController.GetInstance();
+            BackendController backendController = BackendController.get_instance();
             IStoreService storeService = backendController.storeService;
             Response response;
 
@@ -54,7 +54,7 @@ namespace Sadna_17_B_Frontend.Views
                 int.TryParse(minStoreRatingText, out minStoreRating);
 
 
-                response = backendController.SearchProducts(keyword, category, minPrice, maxPrice, minRating, minStoreRating, storeId);
+                response = backendController.search_products(keyword, category, minPrice, maxPrice, minRating, minStoreRating, storeId);
             }
             if (response.Success)
             {

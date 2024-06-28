@@ -6,7 +6,7 @@ namespace Sadna_17_B_Frontend.Views
 {
     public partial class FounderStorePage : System.Web.UI.Page
     {
-        BackendController backendController = BackendController.GetInstance();
+        BackendController backendController = BackendController.get_instance();
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -26,7 +26,7 @@ namespace Sadna_17_B_Frontend.Views
 
         private void LoadStoreData(int storeId)
         {
-            var store = backendController.GetStoreDetailsById(storeId);
+            var store = backendController.get_store_details_by_id(storeId);
             if (store != null)
             {
                 storeNameLiteral.Text = store.name;

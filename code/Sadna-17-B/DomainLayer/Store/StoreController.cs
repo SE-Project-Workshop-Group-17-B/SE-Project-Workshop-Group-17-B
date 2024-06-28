@@ -122,9 +122,38 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return store.ID;
         }
 
-        public void open_store(Store store)
+        public int create_store(Dictionary<string,string> doc) // doc_doc abstraction implementation
         {
-            
+
+            string name = Parser.parse_string(doc["name"]);
+            string email = Parser.parse_string(doc["email"]);
+            string phone = Parser.parse_string(doc["phone"]);
+            string descr = Parser.parse_string(doc["descr"]);
+            string addr = Parser.parse_string(doc["addr"]);
+
+            StoreBuilder builder = new StoreBuilder();
+
+            Store store = builder.SetName(name)
+                                   .SetEmail(email)
+                                   .SetPhoneNumber(phone)
+                                   .SetStoreDescription(descr)
+                                   .SetAddress(addr)
+                                   .Build();
+
+            active_stores.Add(store.ID, store);
+
+            return store.ID;
+        }
+
+        public void open_store(int storeID)
+        {
+            Store store = store_by_id(storeID);
+
+            if (store == null)
+                throw new Sadna17BException("The store with storeID " + storeID + " is already closed.");
+
+            temporary_closed_stores.Remove(store.ID);
+            active_stores.Add(store.ID, store);
         }
 
         public void close_store(int storeID)
@@ -138,20 +167,11 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             active_stores.Remove(store.ID);
         }
 
-        public void re_open_store(int storeID)
-        {
-            Store store = store_by_id(storeID);
-
-            if (store == null)
-                return;
-
-            temporary_closed_stores.Remove(store.ID);
-            active_stores.Add(store.ID,store);
-        }
-
         public void clear_stores()
         {
             active_stores.Clear();
+            temporary_closed_stores.Clear();
+            permanently_closed_stores.Clear();
         }
 
 
@@ -343,11 +363,12 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
 
         // ---------------- store discount policy -------------------------------------------------------------------------------------------
+   
 
         public bool edit_discount_policy(Dictionary<string,string> doc)
         {
 
-            int store_id = Parser.parse_int(doc["store_id"]);
+            int store_id = Parser.parse_int(doc["store id"]);
 
             foreach (Store store in active_stores.Values)
             {
@@ -370,7 +391,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
                         case "remove":
 
-                            int id = Parser.parse_int(doc["id"]);
+                            int id = Parser.parse_int(doc["discount id"]);
 
                             return store.remove_discount(id);
 
@@ -390,6 +411,22 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return active_stores[0].edit_purchase_policy(doc);
         }
 
+        public DiscountPolicy show_discount_policy(Dictionary<string, string> doc)
+        {
+            int store_id = Parser.parse_int(doc["store id"]);
+            Store store = store_by_id(store_id);
+
+            return store.discount_policy;
+
+        }
+
+        public PurchasePolicy show_purchase_policy(Dictionary<string, string> doc)
+        {
+            int store_id = Parser.parse_int(doc["store id"]);
+            Store store = store_by_id(store_id);
+
+            return store.purchase_policy;
+        }
 
         // ---------------- store filters -------------------------------------------------------------------------------------------
 
@@ -527,9 +564,9 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return new Discount_Simple(start,end,strategy,(c) => 0);
         }
 
-        public Discount_Strategy parse_discount_strategy(Dictionary<string,string> doc)
+        public Discount_Strategy parse_discount_strategy(Dictionary<string,string> doc) // doc explained on doc_doc.cs 
         {
-            string type = Parser.parse_string(doc["type"]);
+            string type = Parser.parse_string(doc["strategy"]);
 
             switch (type)
             {
@@ -551,13 +588,13 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             throw new Sadna17BException("store controller : illegal strategy detected");
         }
 
-        public Func<Cart, double> parse_relevant_lambdas(Dictionary<string, string> doc)
+        public Func<Cart, double> parse_relevant_lambdas(Dictionary<string, string> doc) // doc explained on doc_doc.cs 
         {
-            string relevant_type = Parser.parse_string(doc["relevant products function type"]);
-            string relevant_factor = Parser.parse_string(doc["relevant products function factors"]);
-            string type = Parser.parse_string(doc["type"]);
+            string relevant_type = Parser.parse_string(doc["relevant type"]);
+            string relevant_factor = Parser.parse_string(doc["relevant factors"]);
 
-            switch (type)
+
+            switch (relevant_type)
             {
                 case "product":
 
@@ -587,15 +624,15 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         }
 
-        public List<Func<Cart, bool>> parse_condition_lambdas(Dictionary<string, string> doc)
+        public List<Func<Cart, bool>> parse_condition_lambdas(Dictionary<string, string> doc) // doc explained on doc_doc.cs 
         {
             
-            string[] types = Parser.parse_array<string>(doc["type"]);
+            string[] types = Parser.parse_array<string>(doc["cond type"]);
             
-            string op = Parser.parse_string(doc["op"]);
-            double factor = Parser.parse_double(doc["factor"]);
-            int product = Parser.parse_int(doc["product"]); ;
-            string category = Parser.parse_string(doc["category"]); ;
+            string op = Parser.parse_string(doc["cond op"]);
+            double factor = Parser.parse_double(doc["cond factor"]);
+            int product = Parser.parse_int(doc["cond product"]); ;
+            string category = Parser.parse_string(doc["cond category"]); ;
 
             List<Func<Cart, bool>> lambdas = new List<Func<Cart, bool>>();
 
@@ -603,22 +640,22 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             {
                 switch (type)
                 {
-                    case "product amount":
+                    case "p amount":
 
                         lambdas.Add(Discount_condition_lambdas.condition_product_amount(product, op, factor));
                         break;
 
-                    case "product price":
+                    case "p price":
 
                         lambdas.Add(Discount_condition_lambdas.condition_product_price(product, op, factor));
                         break;
 
-                    case "category amount":
+                    case "c amount":
 
                         lambdas.Add(Discount_condition_lambdas.condition_category_amount(category, op, factor));
                         break;
 
-                    case "category price":
+                    case "c price":
 
                         lambdas.Add(Discount_condition_lambdas.condition_category_price(category, op, factor));
                         break;
