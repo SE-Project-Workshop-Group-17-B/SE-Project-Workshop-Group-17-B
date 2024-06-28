@@ -12,7 +12,6 @@ namespace Sadna_17_B.DomainLayer.Entities
 
         public int Quantity { get; set; }
 
-        [Column(TypeName = "decimal(18,2)")]
         public decimal UnitPrice { get; set; }
 
         // Foreign keys

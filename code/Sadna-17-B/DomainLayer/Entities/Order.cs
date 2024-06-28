@@ -13,7 +13,7 @@ namespace Sadna_17_B.DomainLayer.Entities
 
         public DateTime OrderDate { get; set; }
 
-        [Column(TypeName = "decimal(18,2)")]
+      
         public decimal TotalAmount { get; set; }
 
         public string Status { get; set; }

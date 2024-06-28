@@ -187,7 +187,6 @@
     <Compile Include="DataAccess\Repositories\StoreRepository.cs" />
     <Compile Include="DataAccess\TradingSystemContext.cs" />
     <Compile Include="DomainLayer\DomainFactory.cs" />
-    <Compile Include="DomainLayer\Entities\Migrations.cs" />
     <Compile Include="DomainLayer\Entities\Order.cs" />
     <Compile Include="DomainLayer\Entities\OrderItem.cs" />
     <Compile Include="DomainLayer\Entities\Product.cs" />
@@ -228,6 +227,11 @@
     <Compile Include="ExternalServices\IPaymentSystem.cs" />
     <Compile Include="ExternalServices\PaymentSystemProxy.cs" />
     <Compile Include="ExternalServices\SupplySystemProxy.cs" />
+    <Compile Include="Migrations\202406281624226_InitialCreate.cs" />
+    <Compile Include="Migrations\202406281624226_InitialCreate.Designer.cs">
+      <DependentUpon>202406281624226_InitialCreate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServiceLayer\ServiceDTOs\OrderDTO.cs" />
@@ -261,6 +265,11 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="DataAccess\Configurations\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\202406281624226_InitialCreate.resx">
+      <DependentUpon>202406281624226_InitialCreate.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
