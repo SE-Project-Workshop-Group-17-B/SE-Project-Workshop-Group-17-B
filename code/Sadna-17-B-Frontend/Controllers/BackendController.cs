@@ -55,15 +55,15 @@ namespace Sadna_17_B_Frontend.Controllers
         
         public Response roles(Dictionary<string,string> doc)    // user roles status abstract doc_doc 
         {
-            string token = Parser.parse_string(doc["token"]);
+            //string token = Parser.parse_string(doc["token"]); // token is stored in userDTO of BackendController
             int store_id = Parser.parse_int(doc["store id"]);
 
-            string s =     (founder(token, store_id)   ? "| founder "      : "") +
-                            (owner(token, store_id)     ? "| owner "        : "") +
-                            (manager(token, store_id)   ? "| manager "      : "") +
-                            (guest(token)               ? "| guest "        : "") +
-                            (subscriber(token)          ? "| subscriber "   : "") +
-                            (admin(token)               ? "| admin "        : "") ;
+            string s =     (founder(store_id)   ? "| founder "      : "") +
+                            (owner(store_id)     ? "| owner "        : "") +
+                            (manager(store_id)   ? "| manager "      : "") +
+                            (guest()               ? "| guest "        : "") +
+                            (subscriber()          ? "| subscriber "   : "") +
+                            (admin()               ? "| admin "        : "") ;
 
             if (s == "")
                 return new Response(false,"");
@@ -73,34 +73,34 @@ namespace Sadna_17_B_Frontend.Controllers
 
         }
 
-        private bool founder(string token, int store_id) 
+        public bool founder(int store_id) 
         {
-            return userService.IsFounder(token,store_id).Success;
+            return userService.IsFounder(userDTO.AccessToken,store_id).Success;
         }
 
-        private bool owner(string token, int store_id) 
+        private bool owner(int store_id) 
         {
-            return userService.IsOwner(token, store_id).Success;
+            return userService.IsOwner(userDTO.AccessToken, store_id).Success;
         }
 
-        private bool manager(string token, int store_id) 
+        private bool manager(int store_id) 
         {
-            return userService.IsManager(token, store_id).Success;
+            return userService.IsManager(userDTO.AccessToken, store_id).Success;
         }
 
-        private bool guest(string token)
+        private bool guest()
         {
-            return userService.IsGuest(token).Success;
+            return userService.IsGuest(userDTO.AccessToken).Success;
         }
 
-        private bool subscriber(string token)
+        private bool subscriber()
         {
-            return userService.IsSubscriber(token).Success;
+            return userService.IsSubscriber(userDTO.AccessToken).Success;
         }
 
-        private bool admin(string token)
+        private bool admin()
         {
-            return userService.IsAdmin(token).Success;
+            return userService.IsAdmin(userDTO.AccessToken).Success;
         }
 
 
@@ -278,7 +278,7 @@ namespace Sadna_17_B_Frontend.Controllers
             return storeService.create_store(doc);
         }
 
-        public Response open_store(int store_id) // not implemented
+        public Response reopen_store(int store_id) // not implemented
         {
             return new Response("", true);
         }

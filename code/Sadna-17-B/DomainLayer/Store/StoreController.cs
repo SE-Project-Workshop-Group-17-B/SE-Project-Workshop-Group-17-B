@@ -145,7 +145,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return store.ID;
         }
 
-        public void open_store(int storeID)
+        public void reopen_store(int storeID)
         {
             Store store = store_by_id(storeID);
 

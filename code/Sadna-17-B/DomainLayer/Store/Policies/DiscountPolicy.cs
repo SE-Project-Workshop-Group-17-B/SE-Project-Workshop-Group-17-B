@@ -23,12 +23,12 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         public static int policy_id;
         public string policy_name { get; set; }
 
-        private Dictionary<int, Discount> id_to_discount;
-        private Dictionary<Discount, HashSet<int>> discount_to_products;
-        private Dictionary<Discount, HashSet<int>> discount_to_categories;
-        private Dictionary<Discount, HashSet<int>> discount_to_member;
+        public Dictionary<int, Discount> id_to_discount;
+        public Dictionary<Discount, HashSet<int>> discount_to_products;
+        public Dictionary<Discount, HashSet<int>> discount_to_categories;
+        public Dictionary<Discount, HashSet<int>> discount_to_member;
 
-        private List<DiscountRule> discount_rules;
+        public List<DiscountRule> discount_rules;
 
 
         // ----------- constructor -----------------------------------------------------------

@@ -443,7 +443,9 @@ namespace Sadna_17_B.ServiceLayer.Services
             try
             {
                 Dictionary<int,Store> stores = _storeController.all_stores();
-                return new Response(true, stores);
+                List<Store> storesList = new List<Store>();
+                storesList.AddRange(stores.Values);
+                return new Response(true, storesList);
             }
             catch (Sadna17BException ex)
             {
