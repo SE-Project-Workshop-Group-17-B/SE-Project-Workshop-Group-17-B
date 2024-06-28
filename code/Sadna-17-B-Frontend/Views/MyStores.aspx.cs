@@ -6,7 +6,7 @@ namespace Sadna_17_B_Frontend.Views
 {
     public partial class MyStores : System.Web.UI.Page
     {
-        BackendController backendController = BackendController.GetInstance();
+        BackendController backendController = BackendController.get_instance();
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -18,8 +18,8 @@ namespace Sadna_17_B_Frontend.Views
 
         private void LoadStores()
         {
-            var managedStoresResponse = backendController.GetMyManagedStores(); // Assume this method gets the list of managed stores
-            var ownedStoresResponse = backendController.GetMyOwnedStores(); // Assume this method gets the list of owned stores
+            var managedStoresResponse = backendController.get_managed_store(); // Assume this method gets the list of managed stores
+            var ownedStoresResponse = backendController.got_owned_stores(); // Assume this method gets the list of owned stores
 
             if (managedStoresResponse != null && managedStoresResponse.Count > 0)
             {
@@ -56,7 +56,7 @@ namespace Sadna_17_B_Frontend.Views
         {
             var button = (Button)sender;
             int storeId = int.Parse(button.CommandArgument);
-            bool isFounder = backendController.IsFounder(storeId); // Assume this method checks if the current user is the founder
+            bool isFounder = backendController.founder(storeId); // Assume this method checks if the current user is the founder
 
             if (isFounder)
             {

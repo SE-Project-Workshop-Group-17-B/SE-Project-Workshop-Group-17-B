@@ -11,7 +11,7 @@ namespace Sadna_17_B_Frontend
 {
     public partial class HomePage : Page
     {
-        private BackendController backendController = BackendController.GetInstance();
+        private BackendController backendController = BackendController.get_instance();
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -21,14 +21,14 @@ namespace Sadna_17_B_Frontend
             //{
             //    MessageBox(message);
             //}
-/*
-            List<Store> stores = backendController.GetStores().Data as List<Store>;
+
+            List<Store> stores = backendController.get_stores().Data as List<Store>;
             store1Name.Text = stores[0].name;
             store1Description.Text = stores[0].description;
             store2Name.Text = stores[1].name;
             store2Description.Text = stores[1].description;
             store3Name.Text = stores[2].name;
-            store3Description.Text = stores[2].description;*/
+            store3Description.Text = stores[2].description;
         }
 
         private void MessageBox(string message)

@@ -35,8 +35,8 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         public Inventory inventory { get; set; }
 
 
-        public DiscountPolicy discount_policy { get; set; }
-        public PurchasePolicy purchase_policy { get; set; }
+        public  DiscountPolicy discount_policy { get; private set; }
+        public  PurchasePolicy purchase_policy { get; private set; }
 
 
         public int rating { get;  set; }
@@ -142,10 +142,10 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return inventory.remove_product(pid);
         }
 
-        public void edit_product(Dictionary<string,string> doc)
+        public void edit_product(Dictionary<string,string> doc) // doc explained on doc_doc.cs
         {
             int pid = Parser.parse_int(doc["product id"]);
-            string edit_type = Parser.parse_string(doc["type"]);
+            string edit_type = Parser.parse_string(doc["edit type"]);
             Product product = inventory.product_by_id(pid);
 
             lock (product)

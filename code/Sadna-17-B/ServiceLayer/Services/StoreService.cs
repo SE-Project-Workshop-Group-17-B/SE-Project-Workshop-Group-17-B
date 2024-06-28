@@ -94,6 +94,42 @@ namespace Sadna_17_B.ServiceLayer.Services
 
         }
 
+        public Response create_store(Dictionary<string,string> doc)// --> store_id // doc_doc abstract implementation 
+        {
+
+            string token = Parser.parse_string(doc["token"]);
+
+            // ---------- subscriber authentication ---------------
+
+            if (!_userService.IsSubscriberBool(token))
+            {
+                error_logger.Log("Store Service", " authentication error, user should be subscriber to create store");
+                return new Response("store creation : user should be subscriber to create store", false);
+            }
+
+            // ---------- store controller action ---------------
+
+            try
+            {
+                int store_id = _storeController.create_store(doc);
+                _userService.CreateStoreFounder(token, store_id);
+
+                info_logger.Log("Store service", "new store was added : \n\n" + _storeController.get_store_info(store_id));
+                info_logger.Log("Store service", "user is now founder of store" + store_id);
+
+                return new Response("New store was created successfully !!!", true, store_id);
+            }
+
+            catch (Sadna17BException ex)
+            {
+                error_logger.Log("Store Service", "store could not be created");
+                return Response.GetErrorResponse(ex);
+            }
+
+
+
+        }
+
         public Response close_store(string token, int storeID)// --> bool
         {
 
@@ -350,7 +386,7 @@ namespace Sadna_17_B.ServiceLayer.Services
             }
         }
 
-        public Response edit_product_in_store(Dictionary<string,string> doc) // --> bool
+        public Response edit_product_in_store(Dictionary<string,string> doc) // --> bool // doc explained on doc_doc.cs
         {
             string token = Parser.parse_string(doc["token"]);
             int storeID = Parser.parse_int(doc["store id"]);
@@ -407,7 +443,9 @@ namespace Sadna_17_B.ServiceLayer.Services
             try
             {
                 Dictionary<int,Store> stores = _storeController.all_stores();
-                return new Response(true, stores);
+                List<Store> storesList = new List<Store>();
+                storesList.AddRange(stores.Values);
+                return new Response(true, storesList);
             }
             catch (Sadna17BException ex)
             {
@@ -455,7 +493,7 @@ namespace Sadna_17_B.ServiceLayer.Services
             return filter[0] != "none";
         }
 
-        public Response search_product_by(Dictionary<string,string> doc) // --> List < product >
+        public Response search_product_by(Dictionary<string,string> doc) // --> List < product > // doc explained on doc_doc.cs 
         {
             try
             {
@@ -513,11 +551,8 @@ namespace Sadna_17_B.ServiceLayer.Services
 
         // ---------------- Policy Requirements -------------------------------------------------------------------------------------------
 
-
-        public Response edit_discount_policy(Dictionary<string, string> doc)
+        public Response edit_discount_policy(Dictionary<string, string> doc) // doc explained on doc_doc.cs
         {
-            string message = "";
-
             try
             {
                 _storeController.edit_discount_policy(doc);
@@ -533,12 +568,23 @@ namespace Sadna_17_B.ServiceLayer.Services
             }
         }
 
-        public Response show_discount_policy(Dictionary<string, string> doc) // version 3
+        public Response show_discount_policy(Dictionary<string, string> doc) // doc explained on doc_doc.cs
         {
-            return new Response("",false);
+            try
+            {
+                DiscountPolicy discount_policy = _storeController.show_discount_policy(doc);
+
+                return new Response(true,discount_policy);
+            }
+            catch (Sadna17BException e)
+            {
+                error_logger.Log(e.Message);
+
+                return Response.GetErrorResponse(e);
+            }
         }
         
-        public Response edit_purchase_policy(Dictionary<string, string> doc) // version 3
+        public Response edit_purchase_policy(Dictionary<string, string> doc) // doc explained on doc_doc.cs 
         {
             string message = "";
 
@@ -560,9 +606,20 @@ namespace Sadna_17_B.ServiceLayer.Services
 
         }
 
-        public Response show_purchase_policy(Dictionary<string, string> doc) // version 3
+        public Response show_purchase_policy(Dictionary<string, string> doc) // doc explained on doc_doc.cs 
         {
-            return new Response("", false);
+            try
+            {
+                PurchasePolicy purchase_policy = _storeController.show_purchase_policy(doc);
+
+                return new Response(true, purchase_policy);
+            }
+            catch (Sadna17BException e)
+            {
+                error_logger.Log(e.Message);
+
+                return Response.GetErrorResponse(e);
+            }
         }
         
         

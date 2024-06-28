@@ -12,11 +12,13 @@ namespace Sadna_17_B_Frontend.Views
 {
     public partial class StorePage : System.Web.UI.Page
     {
+        BackendController backendController = BackendController.get_instance();
+        int storeId;
+
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
             {
-                int storeId;
                 if (int.TryParse(Request.QueryString["storeId"], out storeId))
                 {
                     LoadStoreData(storeId);
@@ -33,7 +35,6 @@ namespace Sadna_17_B_Frontend.Views
         {
             try
             {
-                BackendController backendController = BackendController.GetInstance();
                 IStoreService storeService = backendController.storeService;
 
                 // Load store info
@@ -52,29 +53,44 @@ namespace Sadna_17_B_Frontend.Views
             }
         }
 
-        protected void viewReviews()
+        protected void rateStoreBtn_Click(object sender, EventArgs e)
         {
-            // Logic to view store reviews
+            string script = "$('#mymodal').modal('show')";
+            ClientScript.RegisterStartupScript(this.GetType(), "Popup", script, true);
         }
 
-        protected void viewComplaints()
+        private void MessageBox(string message)
         {
-            // Logic to view store complaints
+            Response.Write(@"<script language='javascript'>alert('" + message + "')</script>");
         }
 
-        protected void toStoreInventory()
+        protected void btnsave_Click(object sender, EventArgs e)
         {
-            // Logic to navigate to store inventory
+            // Implement
+            MessageBox("Test");
+            
+            //IStoreService storeService = backendController.storeService;
+            //storeService.add_store_rating(storeId);
         }
 
-        protected void sendComplaint()
+        protected void sendComplaintBtn_Click(object sender, EventArgs e)
         {
-            // Logic to send complaint
+
         }
 
-        protected void rateStore()
+        protected void toStoreInventory_Click(object sender, EventArgs e)
         {
-            // Logic to rate the store
+
+        }
+
+        protected void viewComplaintsBtn_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        protected void viewReviewsBtn_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
