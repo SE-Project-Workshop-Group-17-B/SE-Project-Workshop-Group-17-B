@@ -149,5 +149,4 @@
           ratingContainer.addEventListener('mousemove', setRating);
           ratingContainer.addEventListener('click', toggleMouseMoveListener);
     </script>
-
 </asp:Content>
