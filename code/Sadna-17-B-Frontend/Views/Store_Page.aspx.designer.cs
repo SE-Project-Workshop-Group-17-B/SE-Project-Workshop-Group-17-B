@@ -24,13 +24,13 @@ namespace Sadna_17_B_Frontend.Views
         protected global::System.Web.UI.WebControls.Label lblmsg;
 
         /// <summary>
-        /// rating control.
+        /// ratingValueHidden control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox rating;
+        protected global::System.Web.UI.WebControls.HiddenField ratingValueHidden;
 
         /// <summary>
         /// btnsave control.

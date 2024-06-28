@@ -66,12 +66,23 @@ namespace Sadna_17_B_Frontend.Views
 
         protected void btnsave_Click(object sender, EventArgs e)
         {
-            // Implement
-            MessageBox("Test");
-            
-            //IStoreService storeService = backendController.storeService;
-            //storeService.add_store_rating(storeId);
+            // Retrieve the rating value from the hidden field
+            double rating = Convert.ToDouble(ratingValueHidden.Value);
+
+            // Use the retrieved rating value in the add_store_rating method
+            IStoreService storeService = backendController.storeService;
+            Response response = storeService.add_store_rating(storeId, rating);
+
+            if (response.Success)
+            {
+                MessageBox("Rating submitted successfully!");
+            }
+            else
+            {
+                MessageBox("Failed to submit rating: " + response.Message);
+            }
         }
+
 
         protected void sendComplaintBtn_Click(object sender, EventArgs e)
         {

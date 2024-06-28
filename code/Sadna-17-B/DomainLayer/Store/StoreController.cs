@@ -309,7 +309,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return true;
         }
 
-        public bool add_store_rating(int storeID, int rating)
+        public bool add_store_rating(int storeID, double rating)
         {
             Store store = store_by_id(storeID);
             store.add_rating(rating);
@@ -526,7 +526,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
             foreach (Product product in searchResult)
             {
-                int store_rating = store_by_id(product.store_ID).rating;
+                double store_rating = store_by_id(product.store_ID).rating;
                 if (low < store_rating)
                     filtered.Add(product);
             }

@@ -172,6 +172,7 @@
   <ItemGroup>
     <Content Include="Content\cart-inverted.png" />
     <Content Include="Content\cart.png" />
+    <Content Include="Content\five_stars_rating.png" />
     <Content Include="Content\stars.png" />
     <Content Include="Content\store-image.png" />
     <Content Include="Content\store-inverted.png" />
@@ -181,6 +182,7 @@
     <Content Include="Content\store3.png" />
     <Content Include="Content\store4.png" />
     <Content Include="Content\store5.png" />
+    <Content Include="Content\zero_stars_rating.png" />
     <Content Include="Views\About.aspx" />
     <Content Include="Views\all_product_page.aspx" />
     <Content Include="Views\Contact.aspx" />

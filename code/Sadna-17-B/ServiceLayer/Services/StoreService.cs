@@ -208,7 +208,7 @@ namespace Sadna_17_B.ServiceLayer.Services
 
         }
 
-        public Response add_store_rating(int storeID, int rating) // --> bool 
+        public Response add_store_rating(int storeID, double rating) // --> bool 
         {
             try
             {

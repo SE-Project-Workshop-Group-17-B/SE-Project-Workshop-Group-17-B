@@ -17,7 +17,7 @@ namespace Sadna_17_B.ServiceLayer.Services
 
         // ---------------- rating options -------------------------------------------------------------------------------------------
 
-        Response add_store_rating(int storeID, int rating);
+        Response add_store_rating(int storeID, double rating);
         Response add_product_rating(int storeID, int productID, int rating);
         Response add_store_complaint(int storeID, string complaint);
 

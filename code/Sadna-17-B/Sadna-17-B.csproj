@@ -168,6 +168,7 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Utils\zero_stars_rating.png" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
