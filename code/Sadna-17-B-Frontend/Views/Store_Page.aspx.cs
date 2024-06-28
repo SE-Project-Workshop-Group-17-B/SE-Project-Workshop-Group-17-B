@@ -33,7 +33,7 @@ namespace Sadna_17_B_Frontend.Views
         {
             try
             {
-                BackendController backendController = BackendController.GetInstance();
+                BackendController backendController = BackendController.get_instance();
                 IStoreService storeService = backendController.storeService;
 
                 // Load store info

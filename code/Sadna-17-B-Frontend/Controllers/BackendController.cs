@@ -1,4 +1,5 @@
-﻿using Sadna_17_B.DomainLayer.StoreDom;
+﻿using Microsoft.Ajax.Utilities;
+using Sadna_17_B.DomainLayer.StoreDom;
 using Sadna_17_B.ServiceLayer;
 using Sadna_17_B.ServiceLayer.ServiceDTOs;
 using Sadna_17_B.ServiceLayer.Services;
@@ -9,17 +10,26 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using System.Web.WebPages;
 
 namespace Sadna_17_B_Frontend.Controllers
 {
     public class BackendController : ApiController
     {
+        
+        // ----------------------------------- class initials -----------------------------------------------------------------------
+
+
         private static BackendController instance = null;
 
         private ServiceFactory serviceFactory;
+
         private IUserService userService;
-        public IStoreService storeService;
+
+        public StoreService storeService;
+        
         private UserDTO userDTO;
+
 
         private BackendController()
         {
@@ -27,10 +37,76 @@ namespace Sadna_17_B_Frontend.Controllers
             userService = serviceFactory.UserService;
             storeService = serviceFactory.StoreService;
 
-            Entry();
+            entry();
         }
 
-        public ShoppingCartDTO GetShoppingCart()
+        public static BackendController get_instance()
+        {
+            if (instance == null)
+            {
+                instance = new BackendController();
+            }
+            return instance;
+        }
+
+
+
+        // ----------------------------------- user classifications -----------------------------------------------------------------------
+        
+        public Response roles(Dictionary<string,string> doc)    // user roles status abstract doc_doc 
+        {
+            //string token = Parser.parse_string(doc["token"]); // token is stored in userDTO of BackendController
+            int store_id = Parser.parse_int(doc["store id"]);
+
+            string s =     (founder(store_id)   ? "| founder "      : "") +
+                            (owner(store_id)     ? "| owner "        : "") +
+                            (manager(store_id)   ? "| manager "      : "") +
+                            (guest()               ? "| guest "        : "") +
+                            (subscriber()          ? "| subscriber "   : "") +
+                            (admin()               ? "| admin "        : "") ;
+
+            if (s == "")
+                return new Response(false,"");
+
+            return new Response(true,s.Substring(1,s.Length));
+
+
+        }
+
+        public bool founder(int store_id) 
+        {
+            return userService.IsFounder(userDTO.AccessToken,store_id).Success;
+        }
+
+        private bool owner(int store_id) 
+        {
+            return userService.IsOwner(userDTO.AccessToken, store_id).Success;
+        }
+
+        private bool manager(int store_id) 
+        {
+            return userService.IsManager(userDTO.AccessToken, store_id).Success;
+        }
+
+        private bool guest()
+        {
+            return userService.IsGuest(userDTO.AccessToken).Success;
+        }
+
+        private bool subscriber()
+        {
+            return userService.IsSubscriber(userDTO.AccessToken).Success;
+        }
+
+        private bool admin()
+        {
+            return userService.IsAdmin(userDTO.AccessToken).Success;
+        }
+
+
+        // ----------------------------------- store information -----------------------------------------------------------------------
+
+        public ShoppingCartDTO get_shoping_cart()
         {
             Response response = userService.GetShoppingCart(userDTO.AccessToken);
             if (response.Success)
@@ -40,22 +116,85 @@ namespace Sadna_17_B_Frontend.Controllers
             return null;
         }
 
-        public static BackendController GetInstance()
+        public Response get_stores()
         {
-            if (instance == null)
+            try
             {
-                instance = new BackendController();
+                var response = storeService.all_stores();
+                if (!response.Success) return response;
+
+                var stores = response.Data as List<Store>;
+                if (stores == null || stores.Count == 0)
+                {
+                    return new Response("No stores found.", false, null);
+                }
+
+                return new Response("Stores found successfully.", true, stores);
             }
-            return instance;
+            catch (Exception ex)
+            {
+                // Log exception details here to diagnose issues.
+                return new Response("An error occurred while retrieving stores: " + ex.Message, false, null);
+            }
         }
 
-        private void Entry()
+        public List<Store> got_owned_stores()
+        {
+            Response response = userService.GetMyOwnedStores(userDTO.AccessToken);
+            if (response.Success)
+            {
+                List<int> storeIds = response.Data as List<int>;
+                return get_store_details(storeIds);
+            }
+            return new List<Store>();
+        }
+
+        public List<Store> get_managed_store()
+        {
+            Response response = userService.GetMyManagedStores(userDTO.AccessToken);
+            if (response.Success)
+            {
+                List<int> storeIds = response.Data as List<int>;
+                return get_store_details(storeIds);
+            }
+            return new List<Store>();
+        }
+
+        private List<Store> get_store_details(List<int> storeIds)
+        {
+            List<Store> storeDetailsList = new List<Store>();
+            foreach (int storeId in storeIds)
+            {
+                var storeDetails = get_store_details_by_id(storeId);
+                if (storeDetails != null)
+                {
+                    storeDetailsList.Add(storeDetails);
+                }
+            }
+            return storeDetailsList;
+        }
+
+        public Store get_store_details_by_id(int storeId)
+        {
+            Response response = storeService.store_by_id(storeId);
+            if (response.Success)
+            {
+                return response.Data as Store;
+            }
+            return null;
+        }
+
+
+
+        // ----------------------------------- authentication system -----------------------------------------------------------------------
+
+        private void entry()
         {
             Response response = userService.GuestEntry();
             userDTO = response.Data as UserDTO;
         }
 
-        public string Login(string username, string password)
+        public string login(string username, string password)
         {
             Response response = userService.Login(username, password);
             if (!response.Success)
@@ -67,7 +206,7 @@ namespace Sadna_17_B_Frontend.Controllers
             return null;
         }
 
-        public string SignUp(string username, string password)
+        public string sign_up(string username, string password)
         {
             Response response = userService.CreateSubscriber(username, password);
             if (!response.Success)
@@ -77,7 +216,7 @@ namespace Sadna_17_B_Frontend.Controllers
             return null;
         }
 
-        public string Logout()
+        public string logout()
         {
             Response response = userService.Logout(userDTO.AccessToken);
             if (!response.Success)
@@ -89,16 +228,7 @@ namespace Sadna_17_B_Frontend.Controllers
             return null;
         }
 
-        public string GetUsername()
-        {
-            if (userDTO == null)
-            {
-                return null;
-            }
-            return userDTO.Username;
-        }
-
-        public bool IsLoggedIn()
+        public bool logged_in()
         {
             if (userDTO == null || userDTO.Username == null)
             {
@@ -107,7 +237,33 @@ namespace Sadna_17_B_Frontend.Controllers
             return true;
         }
 
-        public Tuple<string, int> CreateStore(string name, string email, string phoneNumber, string storeDescription, string address)
+        public string get_username()
+        {
+            if (userDTO == null)
+            {
+                return null;
+            }
+            return userDTO.Username;
+        }
+
+
+
+        // ----------------------------------- store management -----------------------------------------------------------------------
+
+        public Response add_store_product(Dictionary<string,string> doc) // not implemented
+        {
+            return new Response(false, "");
+        }
+
+        public Response edit_store_product(Dictionary<string, string> doc) // not implemented
+        {
+            return new Response(false, "");
+        }
+
+
+        // ---------- status -----------------------------------
+
+        public Tuple<string, int> create_store(string name, string email, string phoneNumber, string storeDescription, string address) // upgrade to create_store by doc_doc
         {
             Response response = storeService.create_store(userDTO.AccessToken, name, email, phoneNumber, storeDescription, address);
             if (!response.Success)
@@ -117,31 +273,49 @@ namespace Sadna_17_B_Frontend.Controllers
             return new Tuple<string, int>(null, (int)(response.Data));
         }
 
-        public Response SearchProducts(string keyword, string category, int minPrice, int maxPrice, int minRating, int minStoreRating, int storeId)
+        public Response create_store(Dictionary<string, string> doc) // implement with doc_doc documentation
+        {
+            return storeService.create_store(doc);
+        }
+
+        public Response reopen_store(int store_id) // not implemented
+        {
+            return new Response("", true);
+        }
+
+        public Response close_store(int store_id) // not implemented
+        {
+            return new Response("", true);
+        }
+
+
+        // ---------- order -----------------------------------
+
+        public Response search_products(string keyword, string category, int minPrice, int maxPrice, int minRating, int minStoreRating, int storeId) // upgrade to search_products_by doc_doc
         {
             try
             {
-                Dictionary<Product, int> products = storeService.all_products().Data as Dictionary<Product, int>;
+                List<Product> products = storeService.all_products().Data as List<Product>;
 
                 // Determine the initial set of products based on keyword or category.
                 if (!string.IsNullOrEmpty(keyword))
                 {
-                    var response = storeService.products_by_keyWord(keyword);
+                    var response = storeService.search_product_by(new Dictionary<string, string>());
                     if (!response.Success)
                     {
-                        products = new Dictionary<Product, int>();
+                        products = new List<Product>();
                     }
 
-                    products = response.Data as Dictionary<Product, int>;
+                    products = response.Data as List<Product>;
                 }
                 else if (!string.IsNullOrEmpty(category))
                 {
-                    var response = storeService.products_by_category(category);
+                    var response = storeService.search_product_by(new Dictionary<string, string>());
                     if (!response.Success)
                     {
-                        products = new Dictionary<Product, int>();
+                        products = new List<Product>();
                     }
-                    products = response.Data as Dictionary<Product, int>;
+                    products = response.Data as List<Product>;
                 }
 
                 // Filter by Store ID if provided
@@ -153,14 +327,14 @@ namespace Sadna_17_B_Frontend.Controllers
                 //}
 
                 // Filter by price range if valid
-                else if ((minPrice > 0 || maxPrice > 0 ) && products != null)
+                else if ((minPrice > 0 || maxPrice > 0) && products != null)
                 {
-                    var response = storeService.filter_search_by_price(products, minPrice, maxPrice);
+                    var response = storeService.search_product_by(new Dictionary<string, string>());
                     if (!response.Success)
                     {
-                        products = new Dictionary<Product, int>();
+                        products = new List<Product>();
                     }
-                    products = response.Data as Dictionary<Product, int>;
+                    products = response.Data as List<Product>;
                 }
 
                 //// Filter by product rating if valid
@@ -194,96 +368,20 @@ namespace Sadna_17_B_Frontend.Controllers
             }
         }
 
-
-        public Response GetStores()
+        public Response search_products_by(Dictionary<string, string> doc) // implement with doc_doc documentation
         {
-            try
-            {
-                var response = storeService.all_stores();
-                if (!response.Success) return response;
-
-                var stores = response.Data as List<Store>;
-                if (stores == null || stores.Count == 0)
-                {
-                    return new Response("No stores found.", false, null);
-                }
-
-                return new Response("Stores found successfully.", true, stores);
-            }
-            catch (Exception ex)
-            {
-                // Log exception details here to diagnose issues.
-                return new Response("An error occurred while retrieving stores: " + ex.Message, false, null);
-            }
+            return storeService.search_product_by(doc);
         }
 
-        public List<Store> GetMyOwnedStores()
+        public Response show_cart(Dictionary<string, string> doc) // not implemented 
         {
-            Response response = userService.GetMyOwnedStores(userDTO.AccessToken);
-            if (response.Success)
-            {
-                List<int> storeIds = response.Data as List<int>;
-                return GetStoresDetails(storeIds);
-            }
-            return new List<Store>();
+            return new Response(true, "");
         }
 
-        public List<Store> GetMyManagedStores()
-        {
-            Response response = userService.GetMyManagedStores(userDTO.AccessToken);
-            if (response.Success)
-            {
-                List<int> storeIds = response.Data as List<int>;
-                return GetStoresDetails(storeIds);
-            }
-            return new List<Store>();
-        }
 
-        private List<Store> GetStoresDetails(List<int> storeIds)
-        {
-            List<Store> storeDetailsList = new List<Store>();
-            foreach (int storeId in storeIds)
-            {
-                var storeDetails = GetStoreDetailsById(storeId);
-                if (storeDetails != null)
-                {
-                    storeDetailsList.Add(storeDetails);
-                }
-            }
-            return storeDetailsList;
-        }
+        // ---------- checkout -----------------------------------
 
-        public Store GetStoreDetailsById(int storeId)
-        {
-            Response response =  storeService.GetStoreById(storeId);
-            if (response.Success)
-            {
-                return response.Data as Store;
-            }
-            return null;
-        }
-
-        public bool IsFounder(int storeID)
-        {
-            Response response = userService.IsFounder(userDTO.AccessToken, storeID);
-            if (response.Success)
-            {
-                return (bool)response.Data;
-            }
-            return false;
-        }
-
-        public Receipt GetReceipt(int storeID, Dictionary<int, int> quantities)
-        {
-            Response response = storeService.calculate_products_prices(storeID, quantities);
-            if (response.Success)
-            {
-                return (response.Data as Receipt);
-            }
-            return null;
-        }
-
-        public double GetCartTotalPrice(int storeID, Dictionary<int, int> quantities)
+        public double process_store_order(int storeID, Dictionary<int, int> quantities)
         {
             Response response = storeService.calculate_products_prices(storeID, quantities);
             if (response.Success)
@@ -292,6 +390,39 @@ namespace Sadna_17_B_Frontend.Controllers
             }
             return 0;
         }
+
+        public Response cart_checkout() // not implemented
+        {
+            // --- retrieve cart check from DataBase --- //
+
+            int storeID = 0;
+            Dictionary<int,int> quantities = new Dictionary<int,int>();
+
+            // --- retrieve cart check from DataBase --- //
+
+            Response response = storeService.calculate_products_prices(storeID, quantities);
+            if (response.Success)
+            {
+                return response;
+            }
+            return null;
+        }
+
+        public Response cart_purchase()  // not implemented
+        {
+            return new Response(true);
+        }
+
+
+
+        
+        
+        
+    
+        
+        
+
+
     }
 
 

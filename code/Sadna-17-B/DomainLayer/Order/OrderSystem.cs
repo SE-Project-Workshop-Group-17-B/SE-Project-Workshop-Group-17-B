@@ -79,12 +79,14 @@ namespace Sadna_17_B.DomainLayer.Order
             {
                 int storeID = quantitiesOfStore.Key;
                 Receipt storeModuleReceipt = storeController.calculate_products_prices(storeID, quantitiesOfStore.Value);
-                Dictionary<Product, Tuple<int, double>> storeProductsPrices = storeModuleReceipt.cart.product_TO_amount_Bprice;
+                Dictionary<int,Product> storeProductsPrices = storeModuleReceipt.cart.products;
                 Dictionary<int, Tuple<int, double>> storeProductIdsPrices = new Dictionary<int, Tuple<int, double>>();
-                foreach (var product in storeProductsPrices)
+
+                foreach (Product product in storeProductsPrices.Values)
                 {
-                    storeProductIdsPrices[product.Key.ID] = product.Value;
+                    storeProductIdsPrices[product.ID] = Tuple.Create(product.amount,product.price);
                 }
+
                 products[storeID] = storeProductIdsPrices;
                 orderPrice += storeModuleReceipt.TotalPrice();
             }
@@ -114,11 +116,7 @@ namespace Sadna_17_B.DomainLayer.Order
             foreach (var quantitiesOfStore in quantities)
             {
                 int storeID = quantitiesOfStore.Key;
-                string result_message = storeController.decrease_products_amount(storeID, quantitiesOfStore.Value);
-                if (result_message.Length != 0 && !result_message.StartsWith("Line")) // Assumes a valid message is empty or starts with Line ...
-                {
-                    throw new Sadna17BException("System failure: could not complete the order, invalid shopping basket for storeID " + storeID + ". Message: " + result_message);
-                }
+                storeController.decrease_products_amount(storeID, quantitiesOfStore.Value);
             }
 
             // Execute Order by PaymentSystem external service:

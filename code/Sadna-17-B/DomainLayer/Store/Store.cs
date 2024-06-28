@@ -8,6 +8,8 @@ using Microsoft.IdentityModel.Tokens;
 using Sadna_17_B.DomainLayer.Utils;
 using System.Diagnostics;
 using System.Xml.Linq;
+using System.Data;
+using Sadna_17_B.Utils;
 
 
 namespace Sadna_17_B.DomainLayer.StoreDom
@@ -33,8 +35,8 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         public Inventory inventory { get; set; }
 
 
-        public DiscountPolicy discount_policy { get; set; }
-        public PurchasePolicy purchase_policy { get; set; }
+        public  DiscountPolicy discount_policy { get; private set; }
+        public  PurchasePolicy purchase_policy { get; private set; }
 
 
         public int rating { get;  set; }
@@ -47,7 +49,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         // ---------------- Constructor & store management -------------------------------------------------------------------------------------------
 
 
-        public Store(string name, string email, string phone_number, string store_description, string address, Inventory inventory)
+        public Store(string name, string email, string phone_number, string store_description, string address)
         {
             this.ID = idCounter++;
             
@@ -58,6 +60,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             this.address = address;
             this.inventory = inventory;
 
+            this.inventory = new Inventory(ID);
             this.discount_policy = new DiscountPolicy("default policy");
             this.purchase_policy = new PurchasePolicy();
 
@@ -93,42 +96,30 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         // ---------------- inventory ----------------------------------------------------------------------------------------
 
-        public Dictionary<Product, int> all_products()
+        public List<Product> all_products()
         {
-            Dictionary<Product, int> res = new Dictionary<Product, int>();
-            foreach (Product p in inventory.all_products())
-                res.Add(p, ID);
+            List<Product> products = new List<Product>();
+            foreach (Product product in inventory.all_products())
+                products.Add(product);
             
-            return res;
+            return products;
         }
+        
         public int add_product(string name, double price, string category, string description, int amount)
         {
             return inventory.add_product(name, price, category, description, amount);
         }
 
-        public string increase_product_amount(int id, int amount)
+        public void increase_product_amount(int id, int amount)
         {
-            return inventory.increase_product_amount(id, amount);
+            inventory.increase_product_amount(id, amount);
         }
 
-        public string decrease_product_amount(int p_id, int amount)
+        public void decrease_product_amount(int p_id, int amount)
         {
-            string purchase_result = "something wrong";
-            purchase_result = inventory.decrease_product_amount(p_id, amount); 
-            return purchase_result;
-        }
-
-        public bool edit_product_amount(int p_id, int amount)
-        {
-            Product product_to_reduce = inventory.product_by_id(p_id);
-
-            if (product_to_reduce == null)
-                return false;
-
-            try { inventory.edit_product_amount(p_id, amount); }
-            catch (Exception e) { return false; }
-
-            return true;
+            
+           inventory.decrease_product_amount(p_id, amount); 
+            
         }
 
 
@@ -141,54 +132,46 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                 return false;
 
             foreach (Product product in products_to_remove)
-                result = result && inventory.remove_product(product);
+                result = result && inventory.remove_product(product.ID);
             
             return result;
         }
 
-        public bool remove_product_by_id(int p_id)
+        public bool remove_product_by_id(int pid)
         {
-            Product product_to_remove = inventory.product_by_id(p_id);
-
-            if (product_to_remove == null)
-                return false;
-
-            return inventory.remove_product(product_to_remove);
-
+            return inventory.remove_product(pid);
         }
 
-        public bool edit_product(int productId)
+        public void edit_product(Dictionary<string,string> doc) // doc explained on doc_doc.cs
         {
-            Product productEdit = inventory.product_by_id(productId);
-            if (productEdit == null)
-                return false;
+            int pid = Parser.parse_int(doc["product id"]);
+            string edit_type = Parser.parse_string(doc["edit type"]);
+            Product product = inventory.product_by_id(pid);
 
-            Console.WriteLine("Edit Product Name: ( -1 to continue ...)");
-            string new_name = Console.ReadLine();
-            if (!new_name.Equals("-1"))
-                inventory.edit_product_name(productId, new_name);
+            lock (product)
+            {
+                product.locked = true;
 
-            Console.WriteLine("Edit Product Price: ( -1 to continue ...)");
-            int new_price = Convert.ToInt32(Console.ReadLine());
-            if(new_price > 0)
-                inventory.edit_product_price(productId, new_price);
+                product.name = Parser.parse_string(doc["name"]);
+                product.category = Parser.parse_string(doc["category"]);
+                product.description = Parser.parse_string(doc["description"]);
 
-            Console.WriteLine("Edit Product Category: ( -1 to continue ...)");
-            string new_Category = Console.ReadLine();
-            if (!new_Category.Equals("-1"))
-                inventory.edit_product_category(productId, new_Category);
+                product.locked = false;
+            }
+        }
 
-            Console.WriteLine("Edit Product Amount: ( -1 to continue ...)");
-            int new_amount = Convert.ToInt32(Console.ReadLine());
-            if (new_amount > 0)
-                inventory.edit_product_amount(productId, new_amount);
+        public void restore_product_amount(int pid, int amount)
+        {
+            Product product = inventory.product_by_id(pid);
 
-            Console.WriteLine("Edit Product Description: ( -1 to continue ...)");
-            string new_Description = Console.ReadLine();
-            if (!new_Description.Equals("-1"))
-                inventory.edit_product_description(productId, new_Description);
+            lock (product)
+            {
+                product.locked = true;
 
-            return true;
+                product.amount = amount;
+
+                product.locked = false;
+            }
         }
 
         public double calculate_product_bag(int p_id, int amount)
@@ -203,51 +186,36 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         }
 
 
-        // ---------------- discount policy ----------------------------------------------------------------------------------------
+        // ---------------- policies ----------------------------------------------------------------------------------------
 
 
-        public bool add_discount_policy(string policy_doc)
+        public bool edit_purchase_policy(Dictionary<string,string> doc) // version 3
         {
-            string[] components = policy_doc.Split(',');
-            discount_policy = new DiscountPolicy(components[0]);
-
             return true;
         }
 
-        public bool remove_discount_policy(int policy_id)
-        {
-            if (policy_id == discount_policy.get_id())
-                discount_policy = null;
-
-            return true;
-        }
-
-        public bool edit_discount_policy(string edit_type, Discount discount)
+        public bool edit_discount_policy(Discount discount)
         {
 
-            switch (edit_type)
-            {
-                case ("add discount"):
-
-                    add_discount(discount);
-                    return true;
-
-                case ("remove discount"):
-
-                    remove_discount(discount);
-                    return true;
-            }
+            discount_policy.add_discount(discount);
 
             return false;
         }
 
-
-        public bool add_discount(Discount discount)
+        public bool add_discount(DateTime start, DateTime end, Discount_Strategy strategy, Func<Cart, double> relevant_product_lambda, List<Func<Cart, bool>> condition_lambdas = null)
         {
+
+            Discount discount;
+
+            if (condition_lambdas.IsNullOrEmpty())
+                discount = new Discount_Simple(start, end, strategy, relevant_product_lambda);
+            else
+                discount = new Discount_Conditional(start, end, strategy, relevant_product_lambda, condition_lambdas);
+
             return discount_policy.add_discount(discount);
         }
 
-        public bool remove_discount(Discount discount)
+        public bool remove_discount(int discount)
         {
             return discount_policy.remove_discount(discount);
         }
@@ -265,7 +233,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                 double p_bag_price = calculate_product_bag(p_id, p_amount);
                 Product product = filter_id(p_id);
 
-                cart.add_product(product, p_amount, p_bag_price);
+                cart.add_product(product);
             }
 
             return discount_policy.calculate_discount(cart); 
@@ -310,9 +278,9 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return result.Any() ? result : null;
         }
 
-        public List<Product> filter_keyword(string keyWord)
+        public List<Product> filter_keyword(string[] keyword)
         {
-            List<Product> result = inventory.products_by_keyword(keyWord);
+            List<Product> result = inventory.products_by_keyword(keyword);
             if (result == null)
                 return new List<Product>();
 
@@ -350,7 +318,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return filtered;
         }
 
-        public List<Product> filter_price_all(int low, int high)
+        public List<Product> filter_price_all(double low, double high)
         {
             List<Product> filtered = new List<Product>();
 

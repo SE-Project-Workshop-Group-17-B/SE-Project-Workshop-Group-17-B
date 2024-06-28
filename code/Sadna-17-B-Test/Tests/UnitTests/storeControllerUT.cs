@@ -14,77 +14,121 @@ namespace Sadna_17_B_Test.Tests.UnitTests
     [TestClass]
     public class StoreControllerTests
     {
-        private StoreController _storeController;
-        private Product _product;
-        private Inventory _inventory;
-        private Subscriber _owner;
-        private Cart _cart;
+        private StoreController store_controller;
+        private Store store1;
+        private Product product1;
+        private Product product2;
+        private Product product3;
+        private Subscriber subscriber;
+        private Cart cart;
 
-        private DateTime _discount_start;
-        private DateTime _discount_end;
+        private DateTime start_date;
+        private DateTime end_date;
 
-        private DiscountPolicy _discountPolicy;
-        private Discount_Flat _strategy_flat;
-        private Discount_Percentage _strategy_percentage;
-        private Discount_Membership _strategy_membership;
+        private DiscountPolicy discount_policy;
 
-        Func<Cart, double> _relevant_price_by_category;
-        Func<Cart, double> _relevant_price_by_product;
-        Func<Cart, double> _relevant_price_by_all;
+        private Discount_Flat strategy_flat;
+        private Discount_Percentage strategy_precentage;
+        private Discount_Membership strategy_membership;
 
-        Func<Cart, bool> _condition_category;
-        Func<Cart, bool> _condition_product;
-        Func<Cart, bool> _condition_all;
+        Func<Cart, double> relevant_price_by_category;
+        Func<Cart, double> relevant_price_by_product;
+        Func<Cart, double> relevant_price_by_all;
 
-        Condition_Lambdas conditions_generator = new Condition_Lambdas();
-        Relevant_product_Lambdas relevant_prices_generator = new Relevant_product_Lambdas();
+        Func<Cart, bool> condition_category;
+        Func<Cart, bool> condition_product;
+        Func<Cart, bool> condition_all;
+
 
 
         [TestInitialize]
         public void SetUp()
         {
-            _storeController = new StoreController();
-            _inventory = new Inventory();
 
-            _product = new Product("Test Product", 100, "Category", "Good product");
-            _product.add_rating(5);
-            _inventory.add_product("Test Product", 100, "Category", "Good Product", 25);
 
-            _cart = new Cart();
-            _cart.add_product(_product, 7, _product.price * 7);
+            /*
+             * 
+             *  Cart:           | name        |  price   | category  | descript  | amount   | total price
+             *  -----------------------------------------------------------------------------------------
+             *  
+             *  - product 1 :   |   product1  |   30     |   Food    |   Nice    |  100      | 3000
+             *  
+             *  - product 2 :   |   product2  |   50     |   Drink   |   Perfect |  15       | 750
+             * 
+             *  - product 3 :   |   product3  |   10     |   Food    |   Eh      |  50       | 500
+             * 
+             * 
+             *  -------------------------------------------------------------------------------------
+             *  
+             *   relevant_price_by_category        3500
+             *   relevant_price_by_product         3000      
+             *   relevant_price_by_all             4250
+             *
+             *   condition_category                true
+             *   condition_product                 false
+             *   condition_all                     true
+             *      
+             *   
+             *   cond_flat                          true, 50                                        out of 5000  // only rules weight the conditions
+             *   cond_prec                          false, 500                                      out of 5000  
+             *   cond_member                        true, 68.5                                      out of 5000
+             *   
+             *   simple_flat                        true, 50    ( 50 flat)                          out of 5000
+             *   simple_prec                        true, 500   ( 10% of 5,000)                     out of 5000
+             *   simple_member                      true, 68.5  ( 100 days in membership )          out of 5000
+             *   
+             *   and_rule                           false, 0           
+             *   or_rule                            true, 550   (500 + 50) 
+             *   max_rule                           true, 550   (550 bigger than 0)
+             *   add_rule                           true, 1150  (550 + 50 + 550)
+             * 
+             */
 
-            _discountPolicy = new DiscountPolicy("Test Policy");
-            _strategy_flat = new Discount_Flat(50);
-            _strategy_percentage = new Discount_Percentage(10);
-            _strategy_membership = new Discount_Membership();
-            _strategy_membership.member_start_date(DateTime.Now.AddDays(-100));
+            store_controller = new StoreController();
+            int sid = store_controller.create_store("test store", "mail@example.com", "055555055", "hi bye", "compton");
+            store1 = store_controller.store_by_id(sid);
 
-            _discount_start = DateTime.Now;
-            _discount_end = DateTime.Now.AddDays(14);
+            int pid1 = store1.add_product("product1", 30, "Food", "Nice",100);
+            int pid2 = store1.add_product("product2", 50, "Drink", "Perfect",10);
+            int pid3 = store1.add_product("product3", 10, "Food", "Eh", 50);
+
+            product1 = store1.inventory.product_by_id(pid1);
+            product2 = store1.inventory.product_by_id(pid2);
+            product3 = store1.inventory.product_by_id(pid3);
+
+            cart = new Cart();
+            cart.add_product(product1);
+            cart.add_product(product2);
+            cart.add_product(product3);
+
+
+            discount_policy = store1.discount_policy;
+            strategy_flat = new Discount_Flat(50);
+            strategy_precentage = new Discount_Percentage(10);
+            strategy_membership = new Discount_Membership();
+            strategy_membership.member_start_date(DateTime.Now.AddDays(-100));
+
+            start_date = DateTime.Now;
+            end_date = DateTime.Now.AddDays(14);
 
 
             // -------- relevant functions -------------------------------
 
+            relevant_price_by_category = Discount_relevant_products_lambdas.category(product1.category);
 
-
-            _relevant_price_by_category = relevant_prices_generator.category(_product.category);
-
-            _relevant_price_by_product = relevant_prices_generator.product(_product);
+            relevant_price_by_product = Discount_relevant_products_lambdas.product(product1.ID);
            
-            _relevant_price_by_all = relevant_prices_generator.cart();
+            relevant_price_by_all = Discount_relevant_products_lambdas.cart();
             
             
-
 
             // -------- conditions functions -------------------------------
 
-            
+            condition_product = Discount_condition_lambdas.condition_product_amount(product1.ID, "<", 5);
 
-            _condition_product = conditions_generator.condition_product_amount(_product, "<", 5);
+            condition_category = Discount_condition_lambdas.condition_category_amount(product1.category, "!=", 0);
 
-            _condition_category = conditions_generator.condition_category_amount(_product.category, "!=", 0);
-
-            _condition_all = conditions_generator.condition_cart_price(">", 200);
+            condition_all = Discount_condition_lambdas.condition_cart_price(">", 200);
 
 
 
@@ -97,65 +141,67 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         public void TestAddAndRemoveDiscount()
         {
             
-            Discount_Simple discount = new Discount_Simple( _discount_start,
-                                                            _discount_end,
-                                                            _strategy_flat,
-                                                            _relevant_price_by_product);
+            Discount_Simple discount = new Discount_Simple( start_date,
+                                                            end_date,
+                                                            strategy_flat,
+                                                            relevant_price_by_product);
 
 
-            _discountPolicy.add_discount(discount);
-            Assert.AreEqual(_discountPolicy.discount_to_products.Count, 1, 0.01);
+            discount_policy.add_discount(discount);
+            Assert.AreEqual(discount_policy.discount_to_products.Count, 1, 0.01);
 
-            _discountPolicy.remove_discount(discount);
-            Assert.AreEqual(_discountPolicy.discount_to_products.Count, 0, 0.01);
+            discount_policy.remove_discount(discount.ID);
+            Assert.AreEqual(discount_policy.discount_to_products.Count, 0, 0.01);
         }
 
         [TestMethod]
         public void TestDiscount_Percentage()
         {
             // Arrange
-            Discount_Simple simple_discount = new Discount_Simple(_discount_start,
-                                                             _discount_end,
-                                                             _strategy_percentage,
-                                                             _relevant_price_by_product);
+            Discount_Simple simple_discount = new Discount_Simple(start_date,
+                                                             end_date,
+                                                             strategy_precentage,
+                                                             relevant_price_by_product);
 
-            Discount_Conditional cond_discount = new Discount_Conditional(_discount_start,
-                                                             _discount_end,
-                                                             _strategy_percentage,
-                                                             _condition_product,
-                                                             _relevant_price_by_product);
+            Discount_Conditional cond_discount = new Discount_Conditional(start_date,
+                                                             end_date,
+                                                             strategy_precentage,
+                                                             relevant_price_by_product,
+                                                             condition_product
+                                                             );
 
             // Act
-            Mini_Receipt simple_applied = simple_discount.apply_discount(_cart);
-            Mini_Receipt cond_applied = cond_discount.apply_discount(_cart);
+            Mini_Receipt simple_applied = simple_discount.apply_discount(cart);
+            Mini_Receipt cond_applied = cond_discount.apply_discount(cart);
 
             // Assert
             Assert.AreEqual(simple_applied.discounts.Count, 1, 0.01);
-            Assert.AreEqual(simple_applied.discounts[0].Item2, 70, 0.01);
+            Assert.AreEqual(simple_applied.discounts[0].Item2, 300, 0.01);
 
             Assert.AreEqual(cond_applied.discounts.Count, 1, 0.01);
-            Assert.AreEqual(cond_applied.discounts[0].Item2, 70, 0.01);
+            Assert.AreEqual(cond_applied.discounts[0].Item2, 300, 0.01);
         }
-        /*
+        
         [TestMethod]
         public void TestDiscount_Flat()
         {
 
             // Arrange
-            Discount_Simple simple_discount = new Discount_Simple(_discount_start,
-                                                             _discount_end,
-                                                             _strategy_flat,
-                                                             _relevant_price_by_category);
+            Discount_Simple simple_discount = new Discount_Simple(start_date,
+                                                             end_date,
+                                                             strategy_flat,
+                                                             relevant_price_by_category);
 
-            Discount_Conditional cond_discount = new Discount_Conditional(_discount_start,
-                                                             _discount_end,
-                                                             _strategy_flat,
-                                                             _condition_category,
-                                                             _relevant_price_by_category);
+            Discount_Conditional cond_discount = new Discount_Conditional(start_date,
+                                                             end_date,
+                                                             strategy_flat,
+                                                             relevant_price_by_category,
+                                                             condition_category
+                                                             );
 
             // Act
-            Mini_Receipt simple_applied = simple_discount.apply_discount(_cart);
-            Mini_Receipt cond_applied = cond_discount.apply_discount(_cart);
+            Mini_Receipt simple_applied = simple_discount.apply_discount(cart);
+            Mini_Receipt cond_applied = cond_discount.apply_discount(cart);
 
             // Assert
             Assert.AreEqual(simple_applied.discounts.Count, 1, 0.01);
@@ -165,34 +211,34 @@ namespace Sadna_17_B_Test.Tests.UnitTests
             Assert.AreEqual(cond_applied.discounts[0].Item2, 50, 0.01);
 
         }
-        */
+        
         [TestMethod]
         public void TesDiscount_Membership()
         {
 
             // Arrange
-            Discount_Simple simple_discount = new Discount_Simple(_discount_start,
-                                                             _discount_end,
-                                                             _strategy_membership,
-                                                             _relevant_price_by_all);
+            Discount_Simple simple_discount = new Discount_Simple(start_date,
+                                                             end_date,
+                                                             strategy_membership,
+                                                             relevant_price_by_all);
 
-            Discount_Conditional cond_discount = new Discount_Conditional(_discount_start,
-                                                             _discount_end,
-                                                             _strategy_membership,
-                                                             _condition_all,
-                                                             _relevant_price_by_all);
+            Discount_Conditional cond_discount = new Discount_Conditional(start_date,
+                                                             end_date,
+                                                             strategy_membership,
+                                                             relevant_price_by_category,
+                                                             condition_all);
 
             // Act
-            _strategy_membership.member_start_date(DateTime.Now.AddDays(-100));
-            Mini_Receipt simple_applied = simple_discount.apply_discount(_cart);
-            Mini_Receipt cond_applied = cond_discount.apply_discount(_cart);
+            strategy_membership.member_start_date(DateTime.Now.AddDays(-100));
+            Mini_Receipt simple_applied = simple_discount.apply_discount(cart);
+            Mini_Receipt cond_applied = cond_discount.apply_discount(cart);
 
             // Assert
             Assert.AreEqual(simple_applied.discounts.Count, 1, 0.01);
-            Assert.AreEqual(simple_applied.discounts[0].Item2, 9.5, 0.1);
+            Assert.AreEqual(simple_applied.discounts[0].Item2, 54.8, 1);
 
             Assert.AreEqual(cond_applied.discounts.Count, 1, 0.01);
-            Assert.AreEqual(cond_applied.discounts[0].Item2, 9.5, 0.1);
+            Assert.AreEqual(cond_applied.discounts[0].Item2, 48, 1);
 
         }
 
@@ -200,33 +246,13 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         public void TestDiscount_Rule()
         {
 
-            // Arrange
-            Cart cart = new Cart();
-            Inventory inventory = new Inventory();
+            Discount_Simple simple_flat_discount = new Discount_Simple(start_date, end_date, strategy_flat, relevant_price_by_product);
+            Discount_Simple simple_prec_discount = new Discount_Simple(start_date, end_date, strategy_precentage, relevant_price_by_product);
+            Discount_Simple simple_memb_discount = new Discount_Simple(start_date, end_date, strategy_membership, relevant_price_by_product);
 
-            Product p1 = new Product("p1", 1000, "Food", "Nice");
-            Product p2 = new Product("p2", 100, "Drink", "Perfect");
-            Product p3 = new Product("p3", 10, "Food", "Eh");
-
-            cart.add_product(p1, 20, 20 * p1.price);
-            cart.add_product(p2, 50, 50 * p2.price);
-            cart.add_product(p3, 231, 231 * p3.price);
-
-            Func<Cart, double>  relevant_price_by_category = relevant_prices_generator.category(p1.category);
-            Func<Cart, double>  relevant_price_by_product = relevant_prices_generator.product(p2);
-            Func<Cart, double>  relevant_price_by_all = relevant_prices_generator.cart();
-
-            Func<Cart, bool> condition_product = conditions_generator.condition_product_amount(p1, ">", 50); ;
-            Func<Cart, bool> condition_category = conditions_generator.condition_category_amount(p2.category, "!=", 0); ;
-            Func<Cart, bool> condition_all = conditions_generator.condition_cart_price(">", 25000); ;
-
-            Discount_Simple simple_flat_discount = new Discount_Simple(_discount_start, _discount_end, _strategy_flat, relevant_price_by_product);
-            Discount_Simple simple_prec_discount = new Discount_Simple(_discount_start, _discount_end, _strategy_percentage, relevant_price_by_product);
-            Discount_Simple simple_memb_discount = new Discount_Simple(_discount_start, _discount_end, _strategy_membership, relevant_price_by_product);
-
-            Discount_Conditional cond_flat_discount = new Discount_Conditional(_discount_start, _discount_end, _strategy_flat, condition_product, relevant_price_by_product); // 
-            Discount_Conditional cond_prec_discount = new Discount_Conditional(_discount_start, _discount_end, _strategy_percentage, condition_category, relevant_price_by_product);
-            Discount_Conditional cond_memb_discount = new Discount_Conditional(_discount_start, _discount_end, _strategy_membership, condition_all, relevant_price_by_product);
+            Discount_Conditional cond_flat_discount = new Discount_Conditional(start_date, end_date, strategy_flat, relevant_price_by_product, condition_product); // 
+            Discount_Conditional cond_prec_discount = new Discount_Conditional(start_date, end_date, strategy_precentage, relevant_price_by_product, condition_category );
+            Discount_Conditional cond_memb_discount = new Discount_Conditional(start_date, end_date, strategy_membership, relevant_price_by_product, condition_all);
 
             Rule_Logic logic_rules = new Rule_Logic();
             Rule_Numeric numeric_rules = new Rule_Numeric();
@@ -253,53 +279,12 @@ namespace Sadna_17_B_Test.Tests.UnitTests
             add_rule.add_discount(max_rule);
 
 
-
-            /*
-             * 
-             *  Cart:           | name  |  price    | category  | descript  | amount   | total price
-             *  ------------------------------------------------------------------------------------
-             *  
-             *  - product 1 :   |   p1  |   1000    |   Food    |   Nice    |  20      | 20,000
-             *  
-             *  - product 2 :   |   p2  |   100     |   Drink   |   Perfect |  50      | 5,000
-             * 
-             *  - product 3 :   |   p3  |   10      |   Food    |   Eh      |  231     | 2,310
-             * 
-             * 
-             *  -------------------------------------------------------------------------------------
-             *  
-             *   _relevant_price_by_category        22,310
-             *   _relevant_price_by_product         5,000      
-             *   _relevant_price_by_all             27,310
-             *
-             *   _condition_category                false
-             *   _condition_product                 true
-             *   _condition_all                     true
-             *      
-             *   
-             *   cond_flat                          true, 50                                        out of 5000
-             *   cond_prec                          false, 500                                      out of 5000  // only rules weight the conditions
-             *   cond_member                        true, 68.5                                      out of 5000
-             *   
-             *   simple_flat                        true, 50    ( 50 flat)                          out of 5000
-             *   simple_prec                        true, 500   ( 10% of 5,000)                     out of 5000
-             *   simple_member                      true, 68.5  ( 100 days in membership )          out of 5000
-             *   
-             *   and_rule                           false, 0           
-             *   or_rule                            true, 550   (500 + 50) 
-             *   max_rule                           true, 550   (550 bigger than 0)
-             *   add_rule                           true, 1150  (550 + 50 + 550)
-             * 
-             */
-
-
-
             // Assert
 
             Assert.AreEqual(and_rule.apply_discount(cart).total_discount, 0, 0.01);
-            Assert.AreEqual(or_rule.apply_discount(cart).total_discount, 550, 0.01);
-            Assert.AreEqual(max_rule.apply_discount(cart).total_discount, 550, 0.01);
-            Assert.AreEqual(add_rule.apply_discount(cart).total_discount, 1150, 0.01);
+            Assert.AreEqual(or_rule.apply_discount(cart).total_discount, 350, 0.01);
+            Assert.AreEqual(max_rule.apply_discount(cart).total_discount, 350, 0.01);
+            Assert.AreEqual(add_rule.apply_discount(cart).total_discount, 750, 0.01);
 
 
             
@@ -314,15 +299,8 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         public void TestCreateStore()
         {
             // Act
-            var storeBuilder = _storeController.store_builder()
-                                .SetName("Test Store")
-                                .SetEmail("testemail@example.com")
-                                .SetPhoneNumber("1234567890")
-                                .SetStoreDescription("Test Store Description")
-                                .SetAddress("Test Address")
-                                .SetInventory(_inventory);
-            var store = storeBuilder.Build();
-            _storeController.open_store(store);
+            int store_id = store_controller.create_store("Test Store", "testemail@example.com", "1234567890", "Test Store Description", "Test Address");
+            Store store = store_controller.store_by_id(store_id);
 
             // Assert
             Assert.IsNotNull(store);
@@ -331,35 +309,20 @@ namespace Sadna_17_B_Test.Tests.UnitTests
             Assert.AreEqual("1234567890", store.phone_number);
             Assert.AreEqual("Test Store Description", store.description);
             Assert.AreEqual("Test Address", store.address);
-            Assert.AreEqual(_inventory, store.inventory);
         }
 
         [TestMethod]
         public void TestGetStoreByName()
         {
             // Arrange
-            var storeBuilder1 = _storeController.store_builder()
-                                .SetName("Test Store 1")
-                                .SetEmail("email1@example.com")
-                                .SetPhoneNumber("1111111111")
-                                .SetStoreDescription("Description 1")
-                                .SetAddress("Address 1")
-                                .SetInventory(_inventory);
-            var store1 = storeBuilder1.Build();
-            _storeController.open_store(store1);
 
-            var storeBuilder2 = _storeController.store_builder()
-                                .SetName("Test Store 2")
-                                .SetEmail("email2@example.com")
-                                .SetPhoneNumber("2222222222")
-                                .SetStoreDescription("Description 2")
-                                .SetAddress("Address 2")
-                                .SetInventory(_inventory);
-            var store2 = storeBuilder2.Build();
-            _storeController.open_store(store2);
+            store_controller.create_store("Test Store 1", "email1@example.com", "1111111111", "Description 1", "Address 1");
+            store_controller.create_store("Test Store 2", "email2@example.com", "2222222222", "Description 2", "Address 2");
+
+           
 
             // Act
-            var result = _storeController.store_by_name("Test Store 2");
+            Store result = store_controller.store_by_name("Test Store 2")[0];
 
             // Assert
             Assert.IsNotNull(result);
@@ -374,67 +337,46 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         public void TestGetStoreByName_NotFound()
         {
             // Act
-            var result = _storeController.store_by_name("Nonexistent Store");
+            List<Store> result = store_controller.store_by_name("Nonexistent Store");
 
             // Assert
-            Assert.IsNull(result);
+            Assert.IsTrue(result.Count == 0);
         }
 
         [TestMethod]
         public void TestRemoveStore()
         {
-            _storeController.clear_stores();
+
             // Arrange
-            var storeBuilder = _storeController.store_builder()
-                                .SetName("Test Store")
-                                .SetEmail("testemail@example.com")
-                                .SetPhoneNumber("1234567890")
-                                .SetStoreDescription("Test Store Description")
-                                .SetAddress("Test Address")
-                                .SetInventory(_inventory);
-            var store = storeBuilder.Build();
-            _storeController.open_store(store);
+            store_controller.clear_stores();
+            int sid = store_controller.create_store("Test Store", "testemail@example.com", "1234567890", "Test Store Description", "Test Address");
+            Store store = store_controller.store_by_id(sid);
 
             // Act
-            _storeController.close_store(store.ID);
-            var result = _storeController.store_by_name("Test Store");
+            store_controller.close_store(sid);
+            List<Store> result = store_controller.store_by_name("Test Store");
 
             // Assert
-            //Assert.AreNotEqual(result._name, "Test Store");
-            Assert.IsNull(result);
+            Assert.IsTrue(result.Count == 0);
         }
 
         [TestMethod]
         public void TestGetAllStores()
         {
             // Arrange
-            var storeBuilder1 = _storeController.store_builder()
-                                .SetName("Test Store 1")
-                                .SetEmail("email1@example.com")
-                                .SetPhoneNumber("1111111111")
-                                .SetStoreDescription("Description 1")
-                                .SetAddress("Address 1")
-                                .SetInventory(_inventory);
-            var store1 = storeBuilder1.Build();
-            _storeController.open_store(store1);
-
-            var storeBuilder2 = _storeController.store_builder()
-                                .SetName("Test Store 2")
-                                .SetEmail("email2@example.com")
-                                .SetPhoneNumber("2222222222")
-                                .SetStoreDescription("Description 2")
-                                .SetAddress("Address 2")
-                                .SetInventory(_inventory);
-            var store2 = storeBuilder2.Build();
-            _storeController.open_store(store2);
+            store_controller.clear_stores();
+            int sid1 = store_controller.create_store("Test Store 1", "testemail@example.com", "1234567890", "Test Store Description1", "Test Address1");
+            int sid2 = store_controller.create_store("Test Store 2", "testemail@example.com", "1234567890", "Test Store Description2", "Test Address2");
+            Store store_1 = store_controller.store_by_id(sid1); 
+            Store store_2 = store_controller.store_by_id(sid2);
 
             // Act
-            var result = _storeController.all_stores();
+            var result = store_controller.all_stores().Values;
 
             // Assert
             Assert.AreEqual(2, result.Count);
-            CollectionAssert.Contains(result, _storeController.store_by_name("Test Store 1"));
-            CollectionAssert.Contains(result, _storeController.store_by_name("Test Store 2"));
+            CollectionAssert.Contains(result, store_controller.store_by_name("Test Store 1")[0]);
+            CollectionAssert.Contains(result, store_controller.store_by_name("Test Store 2")[0]);
         }
     }
 }

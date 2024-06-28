@@ -10,7 +10,7 @@ namespace Sadna_17_B_Frontend.Views
 {
     public partial class Login : System.Web.UI.Page
     {
-        BackendController backendController = BackendController.GetInstance();
+        BackendController backendController = BackendController.get_instance();
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -40,7 +40,7 @@ namespace Sadna_17_B_Frontend.Views
             }
             else
             {
-                message = backendController.Login(txtUsername.Text, txtPassword.Text);
+                message = backendController.login(txtUsername.Text, txtPassword.Text);
                 if (message != null)
                 {
                     //MessageBox(message);

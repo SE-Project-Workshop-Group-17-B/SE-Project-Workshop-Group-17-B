@@ -18,12 +18,14 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         public static int ratingOverAllScore = 0;
 
         public int ID { get; private set; }
+        public int store_ID { get; private set; }
+        public int amount { get; set; }
         public string name { get; set; }
         public double price { get; set; }
-        public string category { get; set; }
         public double rating { get; set; }
-        public List<string> reviews { get; set; } // up to 75 char
+        public string category { get; set; }
         public string description { get; set; } // up to 100 char
+        public List<string> reviews { get; set; } // up to 75 char
 
 
         public bool locked { get; set; }
@@ -31,19 +33,22 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         // ---------------- Constructor -------------------------------------------------------------------------------------------
 
-        public Product(string name, double price, string category, string description = "")
+        public Product(string name, double price, string category, int store_id, string description = "", int amount = 0)
         {
             ID = idCounter++;
+            store_ID = store_id;
+
             this.name = name.ToLower().Trim();
 
             rating = 0;
             this.price = price;
+            this.amount = amount;
             this.category = category;
-            reviews = new List<string>();
+            this.reviews = new List<string>();
             this.description = description.Length <= 100 ? description : description.Substring(0, 100);
-            locked = false;
+            this.locked = false;
+            this.amount = amount;
         }
-
 
 
         // ---------------- adjust product -------------------------------------------------------------------------------------------
@@ -91,16 +96,6 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return found;
         }
 
-
-
-        // ----------------
-        //
-        //
-        //
-        //
-        //
-        //
-        // -------------------------------------------------------------------------------------------
 
 
         public string info_to_print()

@@ -1,4 +1,5 @@
 ﻿using Sadna_17_B.DomainLayer.Utils;
+using Sadna_17_B.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,193 +13,94 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         // ---------------- Variables -------------------------------------------------------------------------------------------
 
+        public int store_id { get; private set; }
 
-        private Dictionary<Product, int> product_to_amount = new Dictionary<Product, int>();
-
+        private Dictionary<int, Product> id_to_product = new Dictionary<int, Product>();
 
 
         // ---------------- Adjust product -------------------------------------------------------------------------------------------
 
 
-        public int add_product( string name, double price, string category,string description, int amount)
+        public Inventory(int store_id)
         {
-            Product product = new Product(name, price, category,description);
-            
-            if (product_to_amount.ContainsKey(product))
-                product_to_amount[product] += amount; 
-            else
-                product_to_amount[product] = amount;
+            this.store_id = store_id;
+        }
+
+        public int add_product(string name, double price, string category,string description, int amount)
+        {
+            Product product = new Product(name, price, category, store_id, description, amount);
+
+            id_to_product[product.ID] = product;
             
             return product.ID;
+        }
+
+        public bool remove_product(int pid)
+        {
+            Product product = product_by_id(pid);
+            bool removed = true;
+
+            lock (product)
+            {
+                product.locked = true;
+
+                removed = id_to_product.Remove(product.ID);
+
+                product.locked = false;
+            }
+
+            return removed;
         }
 
         public bool add_product_review(int product_id, string review)
         {
             Product product = product_by_id(product_id);
-            product.add_review(review);
-            return true;
-        }
-
-        public bool remove_product(Product product)
-        {
             lock (product)
             {
                 product.locked = true;
 
-                if (product_to_amount.ContainsKey(product))
-                {
-                    product_to_amount.Remove(product);
-                }
+                product.add_review(review);
 
                 product.locked = false;
-
             }
-
-            return !product_to_amount.ContainsKey(product);
+            return true;
         }
 
-
-        public string decrease_product_amount(int product_id, int amount)
+      
+        public void decrease_product_amount(int product_id, int decrease_amount)
 
         {
             string purchase_result = "";
             Product product = product_by_id(product_id);
-            try
+          
+            lock (product)
             {
-                lock (product)
-                {
-                    product.locked = true;
-                    if (product_to_amount.ContainsKey(product) && amount <= product_to_amount[product])
-                    {
-                        product_to_amount[product] -= amount;
-                        purchase_result = "Reduced " + amount + " items from " + product.name + "\n" +
-                            "Current amount is:\t" + product_to_amount[product];
-                    }
-                    else if (!product_to_amount.ContainsKey(product))
-                    {
-                        purchase_result = "Could not find " + product.name + " in the inventory";
-                    }
-                    else
-                    {
-                        purchase_result = "Current " + product.name + "'s amount is " + product_to_amount[product] +
-                            ", you cannot reduce " + amount;
-                    }
-                    product.locked = false;
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Failed to access a product, error message below:\n" +
-                ex.ToString());
-            }
+                product.locked = true;
 
-            return purchase_result;
-        }
+                if (product.amount >= decrease_amount)
+                    product.amount -= decrease_amount;
 
-        public string increase_product_amount(int p_id, int p_amount) // called in case of failure
-        {
-            
-            if (product_by_id(p_id) == null || !product_to_amount.ContainsKey(product_by_id(p_id)))
-                return "no such product";
-            else
-            {
-                product_to_amount[product_by_id(p_id)] += p_amount;
-                return "product: " + product_by_id(p_id).name + " increased by: " + p_amount + " \tCurrent amount restored to:" + product_to_amount[product_by_id(p_id)];
-            }
-        }
-            
-        
-        public void edit_product_amount(int p_id, int p_amount)
-        {
-
-            Product product = product_by_id(p_id);
-
-            try
-            {
-                lock (product)
-                {
-                    product.locked = true;
-
-                    // product exists
-                    if (product_to_amount.ContainsKey(product))
-                    {
-                        // valid amount to reduce
-                        if (p_amount <= product_to_amount[product])
-                        {
-                            product_to_amount[product] += p_amount;
-                            Console.WriteLine("Reduced " + p_amount + " items from " + product.name + "\n" + "Current amount is:\t" + product_to_amount[product]);
-                        }
-
-                        // invalid amount to reduce
-                        else
-                            Console.WriteLine("Current " + product.name + "'s amount is " + product_to_amount[product] +  ", you cannot reduce " + p_amount);    
-                    }
-
-                    // product not exist
-                    else
-                        Console.WriteLine("Could not find " + product.name + " in the inventory");
+                else
+                    throw new Sadna17BException("Current " + product.name + "'s amount is " + product.amount + ", you cannot reduce " + decrease_amount);
                     
-                    
-                    product.locked = false;
-                }
-            }
-
-            // failure
-            catch (Exception ex)
-            {
-                Console.WriteLine("Failed to access a product, error message below:\n" + ex.ToString());
+                product.locked = false;
             }
         }
 
-
-
-        public void edit_product_price(int p_id, int price)
+        public void increase_product_amount(int p_id, int increase_amount) 
         {
             Product product = product_by_id(p_id);
 
-            if (!product_to_amount.ContainsKey(product))
-                throw new Exception("no such product");
-
-            product.price = price;
-        }
-
-        public void edit_product_name(int product_id, string newName)
-        {
-            Product product = product_by_id(product_id);
-
-            if (product_to_amount.ContainsKey(product))
+            lock (product)
             {
-                product.name = newName;
-            }
-        }
-
-        public void edit_product_description(int product_id, string new_description)
-        {
-            Product product = product_by_id(product_id);
-
-            if (product_to_amount.ContainsKey(product))
-            {
-                product.description = new_description;
-            }
-        }
-
-        public void set_product_amount(int product_id, int amount)
-        {
-            if (product_by_id(product_id) == null)
+                product.locked = true;
                 
-            product_to_amount[product_by_id(product_id)] = amount; 
-        }
+                product.amount += increase_amount;
 
-        public void edit_product_category(int product_id, string new_Category)
-        {
-            Product product = product_by_id(product_id);
-
-            if (product_to_amount.ContainsKey(product))
-            {
-                product.category = new_Category;
+                product.locked = false;
             }
         }
-        
+            
 
 
         // ---------------- Search by -------------------------------------------------------------------------------------------
@@ -206,86 +108,79 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         public Product product_by_id(int id)
         {
-            foreach (var product in product_to_amount.Keys)
-            {
-                if (product.ID == id)
-                {
-                    return product;
-                }
-            }
-            return null;
+            if (id_to_product.ContainsKey(id))
+                return id_to_product[id];
+
+            throw new Sadna17BException($"Inventory : product id ({id}) not found");
         }
 
         public List<Product> products_by_name(string name)
         {
-            var result = product_to_amount.Keys
-                .Where(product => product.name.Equals(name))
-                .ToList();
+            List<Product> products = new List<Product>();
 
-            return result.Any() ? result : null; // if empty return null
+            products.AddRange(id_to_product.Values.Where(product => product.name.Equals(name)).ToList());
+
+            return products;
         }
 
         public List<Product> products_by_category(string category)
         {
-            var result = product_to_amount.Keys
-                .Where(product => product.category.Equals(category))
-                .ToList();
+            List<Product> products = new List<Product>();
 
-            return result.Any() ? result : null; // if empty return null
+            products.AddRange(id_to_product.Values
+                .Where(product => product.category.Equals(category))
+                .ToList());
+
+            return products;
         }
 
-        public List<Product> products_by_keyword(string keyWords)
+        public List<Product> products_by_keyword(string[] keyWords)
         {
             // Split the keywords by comma and trim any extra spaces
-            string[] keywordsArray = keyWords.Split(',').Select(k => k.Trim()).ToArray();
+            string[] keywordsArray = keyWords.Select(k => k.Trim()).ToArray();
+            List<Product> products = new List<Product>();
 
             // Dictionary to keep track of products and their matching keyword count
-            var productKeywordCount =   product_to_amount.Keys
-                                                    .Select(product => new
-                                                    {
-                                                        Product = product,
-                                                        MatchCount = keywordsArray.Count(keyword => product.description.Contains(keyword))
-                                                    })
-                                                    .Where(x => x.MatchCount > 0)
-                                                    .OrderByDescending(x => x.MatchCount)
-                                                    .Select(x => x.Product)
-                                                    .ToList();
+            products.AddRange(id_to_product.Values
+                                            .Select(product => new
+                                            {
+                                                Product = product,
+                                                MatchCount = keywordsArray.Count(keyword => (product.description.Contains(keyword) || product.name.Contains(keyword) || product.category.Contains(keyword)))
+                                            })
+                                            .Where(x => x.MatchCount > 0)
+                                            .OrderByDescending(x => x.MatchCount)
+                                            .Select(x => x.Product)
+                                            .ToList());
 
             // Return the sorted list or null if no products matched
-            return productKeywordCount.Any() ? productKeywordCount : null;
+            return products;
         }
 
         public List<Product> all_products()
         {
-            return product_to_amount.Keys.ToList();
+            return id_to_product.Values.ToList();
         }
 
      
 
         public int amount_by_id(int p_id)
-        {
-            foreach (var product in product_to_amount.Keys)
+        {   
+            if (!id_to_product.Keys.Contains(p_id))
+                return 0;
 
-                if (product.ID == p_id)
-                    return product_to_amount[product];
-                
-            return 0; // Or throw an exception if product not found, based on your requirements
+            return product_by_id(p_id).amount; 
         }
 
         public int amount_by_name(string p_name)
         {
-            foreach (var product in product_to_amount.Keys)
-
+            foreach (Product product in id_to_product.Values)
                 if (product.name.Equals(p_name, StringComparison.OrdinalIgnoreCase))
-                    return product_to_amount[product];
+                    return product.amount;
                 
-            return 0; // Or throw an exception if product not found, based on your requirements
+            return 0; 
         }
 
-        public int amount_by_product(Product lookup_product)
-        {
-            return product_to_amount.ContainsKey(lookup_product) ? product_to_amount[lookup_product] : 0;
-        }
+      
 
 
 
@@ -296,7 +191,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         {
             string s = string.Empty;
 
-            foreach (Product product in product_to_amount.Keys)
+            foreach (Product product in id_to_product.Values)
             {
                 s += product.info_to_print() + "\n";
             }

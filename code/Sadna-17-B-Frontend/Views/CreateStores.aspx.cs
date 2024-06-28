@@ -6,7 +6,7 @@ namespace Sadna_17_B_Frontend.Views
 {
     public partial class CreateStore : Page
     {
-        BackendController backendController = BackendController.GetInstance();
+        BackendController backendController = BackendController.get_instance();
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -81,7 +81,7 @@ namespace Sadna_17_B_Frontend.Views
             // Proceed if no errors
             if (!hasErrors)
             {
-                Tuple<string, int> response = backendController.CreateStore(txtStoreName.Text, txtEmail.Text, txtPhoneNumber.Text, txtStoreDescription.Text, txtAddress.Text);
+                Tuple<string, int> response = backendController.create_store(txtStoreName.Text, txtEmail.Text, txtPhoneNumber.Text, txtStoreDescription.Text, txtAddress.Text);
 
                 if (response.Item1 == null)
                 {

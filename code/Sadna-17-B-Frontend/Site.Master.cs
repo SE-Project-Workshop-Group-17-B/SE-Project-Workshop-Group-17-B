@@ -10,17 +10,17 @@ namespace Sadna_17_B_Frontend
 {
     public partial class SiteMaster : MasterPage
     {
-        BackendController backendController = BackendController.GetInstance();
+        BackendController backendController = BackendController.get_instance();
 
         protected string _loginLogoutButtons;
         protected void Page_Load(object sender, EventArgs e)
         {
             MyCartBtn.Visible = true;
-            if (backendController.IsLoggedIn())
+            if (backendController.logged_in())
             {
                 MyStoresBtn.Visible = true;
                 LogoutBtn.Visible = true;
-                LblHello.Text = "Hello " + backendController.GetUsername() + "!";
+                LblHello.Text = "Hello " + backendController.get_username() + "!";
                 LblHello.Visible = true;
                 LoginBtn.Visible = false;
                 SignUpBtn.Visible = false;
@@ -51,7 +51,7 @@ namespace Sadna_17_B_Frontend
 
         protected void Logout_Click(object sender, EventArgs e)
         {
-            string message = backendController.Logout();
+            string message = backendController.logout();
             if (message != null)
             {
                 MessageBox(message);

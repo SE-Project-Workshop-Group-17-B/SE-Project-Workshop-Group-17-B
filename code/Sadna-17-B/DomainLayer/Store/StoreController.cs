@@ -1,9 +1,12 @@
 ﻿using Microsoft.IdentityModel.Tokens;
+using Microsoft.SqlServer.Server;
+using Microsoft.Win32;
 using Sadna_17_B.DomainLayer.User;
 using Sadna_17_B.DomainLayer.Utils;
 using Sadna_17_B.Utils;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Web;
 using System.Web.UI.WebControls;
@@ -17,14 +20,15 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         // ---------------- Variables -------------------------------------------------------------------------------------------
 
 
-        private List<Store> active_stores;
-        private List<Store> temporary_closed_stores;
-        private List<Store> permanently_closed_stores;
+        private Dictionary<int,Store> active_stores;
+        private Dictionary<int, Store> temporary_closed_stores;
+        private Dictionary<int, Store> permanently_closed_stores;
+        private StoreBuilder store_builder;
 
         public StoreController() {
-            active_stores = new List<Store>(); 
-            temporary_closed_stores = new List<Store>();
-            permanently_closed_stores = new List<Store>();
+            active_stores = new Dictionary<int,Store>(); 
+            temporary_closed_stores = new Dictionary<int,Store>();
+            permanently_closed_stores = new Dictionary<int,Store>();
         }
 
 
@@ -33,6 +37,8 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         public class StoreBuilder
         {
+            
+
             private string name;
             private string email;
             private string phone_number;
@@ -85,7 +91,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                     throw new InvalidOperationException("Store must have a name");
                 }
 
-                return new Store(name, email, phone_number, description, address, _inventory);
+                return new Store(name, email, phone_number, description, address);
             }
         
         
@@ -94,10 +100,60 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         // ---------------- store init -------------------------------------------------------------------------------------------
 
-
-        public void open_store(Store store)
+        public StoreBuilder create_store_builder()
         {
-            active_stores.Add(store);
+            return new StoreBuilder();
+        }
+
+        public int create_store(string name, string email, string phoneNumber, string storeDescription, string address)
+        {
+
+            StoreBuilder builder = new StoreBuilder();
+
+            Store store = builder.SetName(name)
+                                   .SetEmail(email) 
+                                   .SetPhoneNumber(phoneNumber)
+                                   .SetStoreDescription(storeDescription)
+                                   .SetAddress(address)
+                                   .Build();
+
+            active_stores.Add(store.ID,store);
+
+            return store.ID;
+        }
+
+        public int create_store(Dictionary<string,string> doc) // doc_doc abstraction implementation
+        {
+
+            string name = Parser.parse_string(doc["name"]);
+            string email = Parser.parse_string(doc["email"]);
+            string phone = Parser.parse_string(doc["phone"]);
+            string descr = Parser.parse_string(doc["descr"]);
+            string addr = Parser.parse_string(doc["addr"]);
+
+            StoreBuilder builder = new StoreBuilder();
+
+            Store store = builder.SetName(name)
+                                   .SetEmail(email)
+                                   .SetPhoneNumber(phone)
+                                   .SetStoreDescription(descr)
+                                   .SetAddress(addr)
+                                   .Build();
+
+            active_stores.Add(store.ID, store);
+
+            return store.ID;
+        }
+
+        public void reopen_store(int storeID)
+        {
+            Store store = store_by_id(storeID);
+
+            if (store == null)
+                throw new Sadna17BException("The store with storeID " + storeID + " is already closed.");
+
+            temporary_closed_stores.Remove(store.ID);
+            active_stores.Add(store.ID, store);
         }
 
         public void close_store(int storeID)
@@ -107,44 +163,38 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             if (store == null)
                 throw new Sadna17BException("The store with storeID " + storeID + " is already closed.");
 
-            temporary_closed_stores.Add(store);
-            active_stores.Remove(store);
+            temporary_closed_stores.Add(store.ID,store);
+            active_stores.Remove(store.ID);
         }
 
-        public void re_open_store(int storeID)
+        public void clear_stores()
         {
-            Store store = store_by_id(storeID);
-
-            if (store == null)
-                return;
-
-            temporary_closed_stores.Remove(store);
-            active_stores.Add(store);
+            active_stores.Clear();
+            temporary_closed_stores.Clear();
+            permanently_closed_stores.Clear();
         }
 
 
 
         // ---------------- store inventory -------------------------------------------------------------------------------------------
 
-        public Dictionary<Product, int> all_products()
+        public List<Product> all_products()
         {
-            Dictionary<Product, int> res = new Dictionary<Product, int>();
-            foreach(Store s in active_stores)
-            {
-                foreach (var v in s.all_products())
-                    res.Add(v.Key, v.Value);
-            }
-            return res;
+            List<Product> products = new List<Product>();
+
+            foreach(Store store in active_stores.Values)
+                foreach (Product product in store.all_products())
+                    products.Add(product);
+                
+            return products;
         }
 
-        public bool edit_store_product(int storeID, int productId)
+        public void edit_store_product(Dictionary<string,string> doc)
         {
-            Store store = store_by_id(storeID);
+            int store_ID = Parser.parse_int(doc["store id"]);
 
-            if (store == null)
-                return false;
-
-            return store.edit_product(productId);
+            Store store = store_by_id(store_ID);
+            store.edit_product(doc);
         }
 
         public int add_store_product(int storeID, string name, double price, string category, string description, int amount)
@@ -171,6 +221,8 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         }
 
 
+        // ---------------- order related functions ---------------------------------------------------------------------------------
+
         public bool valid_order(int storeId, Dictionary<int, int> quantities)
         {
 
@@ -188,7 +240,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                 if (store.filter_id(item.Key) == null)
                     return false;
                 int requiredAmount = item.Value;
-                int availableAmount = store.inventory.amount_by_product(store.filter_id(item.Key));
+                int availableAmount = store.inventory.amount_by_id(item.Key);
 
                 if (availableAmount < requiredAmount)
                     return false;
@@ -197,31 +249,29 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return true;
         }
 
-        public string decrease_products_amount(int storeID, Dictionary<int, int> quantities)
+        public void decrease_products_amount(int storeID, Dictionary<int, int> quantities)
         {
-            // in Case of Exception, Atomic action will restore previously 
-            // reduced products.
-            string purchase_result = "";
             int i = 1;
-            string restore_message = ""; // in case of failure
+            string purchase_result = "";
+            string restore_message = ""; 
 
             Dictionary<int, int> to_retrieve = new Dictionary<int, int>();
 
             Store store = store_by_id(storeID);
 
             if (!valid_order(storeID, quantities))
-                return "Order is invalid."; // todo: add which purchase policy was not fulfilled.
+                throw new Sadna17BException("Order is invalid");
 
             foreach (var item in quantities)
             {
                 int p_id = item.Key;
                 int p_amount = item.Value;
+                int p_before_amount = store.inventory.amount_by_id(p_id);
 
                 try
                 {
-                    purchase_result += "Line "+ i++ +":\t" + store.decrease_product_amount(p_id, p_amount) + "\n";
-                    if(Last_addition_failed(purchase_result));
-                        to_retrieve.Add(p_id, p_amount);
+                    to_retrieve.Add(p_id, p_before_amount);
+                    store.decrease_product_amount(p_id, p_amount);
                 }
                 catch (Exception e)
                 {
@@ -230,14 +280,12 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                     {
                         int p_id2 = item2.Key;
                         int p_amount2 = item2.Value;
-                        restore_message += store.increase_product_amount(p_id2, p_amount2);
+                        store.restore_product_amount(p_id2, p_amount2);
                     }
-                    Console.WriteLine(e.Message);
-                    return restore_message;
+
+                    throw new Sadna17BException("order failed, all product amount restored !");
                 }
             }
-
-            return purchase_result;
         }
 
         public Receipt calculate_products_prices(int storeID, Dictionary<int, int> quantities)
@@ -250,10 +298,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return store.calculate_product_prices(quantities); // !!!!! Fixed by Gal (maybe)
         }
 
-        public bool Last_addition_failed(string line_in_purchase_result)
-        {
-            return line_in_purchase_result.EndsWith("something wrong");
-        }
+
 
         // ---------------- store customer management ---------------------------------------------------------------------------------
 
@@ -283,7 +328,11 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         public bool add_product_review(int storeID, int productID, string review)
         {
             Store store = store_by_id(storeID);
+
             Product product = store.filter_id(productID);
+            if (product == null)
+                return false;
+
             product.add_review(review);
             return true;
         }
@@ -292,6 +341,9 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         {
             Store store = store_by_id(storeID);
             Product product = store.filter_id(productID);
+            if (product == null)
+                return false; 
+
             product.edit_review(old_review, new_review);
             return true;
         }
@@ -299,7 +351,11 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         public bool add_product_rating(int storeID, int productID, int rating)
         {
             Store store = store_by_id(storeID);
+
             Product product = store.filter_id(productID);
+            if (product == null)
+                return false;
+
             product.add_rating(rating);
             return true;
         }
@@ -307,69 +363,40 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
 
         // ---------------- store discount policy -------------------------------------------------------------------------------------------
+   
 
-
-        public bool add_discount_policy(int store_id, string policy_doc)
+        public bool edit_discount_policy(Dictionary<string,string> doc)
         {
-            foreach (Store store in active_stores)
-            {
-                if (store.ID == store_id)
-                {
-                    store.add_discount_policy(policy_doc);
-                    return true;
-                }
-            }
 
-            return false; 
-        }
+            int store_id = Parser.parse_int(doc["store id"]);
 
-        public bool remove_discount_policy(int store_id, int policy_id)
-        {
-            foreach (Store store in active_stores)
-            {
-                if (store.ID == store_id)
-                {
-                    store.remove_discount_policy(policy_id);
-                    return true;
-                }
-            }
-
-            return false; ;
-        }
-
-        public bool edit_discount_policy(int store_id, string edit_type, string policy_doc)
-        {
-            foreach (Store store in active_stores)
+            foreach (Store store in active_stores.Values)
             {
                 if (store_id == store.ID)
                 {
-                    string[] components = policy_doc.Split(',');
+                    string type = Parser.parse_string(doc["discount type"]);
 
-                    DateTime start = DateTime.Parse(components[0]);
-                    DateTime end = DateTime.Parse(components[1]);
-                    Discount_Strategy strategy = null;
-
-                    switch (components[2])
+                    switch (type)
                     {
-                        case "membership":
+                        case "add":
+                            
+                            DateTime start = Parser.parse_date(doc["start date"]);
+                            DateTime end = Parser.parse_date(doc["end date"]);
+                            Discount_Strategy strategy = parse_discount_strategy(doc);
+                            Func<Cart, double> relevant_product_lambda = parse_relevant_lambdas(doc);
+                            List<Func<Cart, bool>> condition_lambdas = parse_condition_lambdas(doc);
 
-                            strategy = new Discount_Membership();
-                            break;
+                            return store.add_discount(start, end, strategy, relevant_product_lambda, condition_lambdas);
 
-                        case "percentage":
 
-                            strategy = new Discount_Percentage(Double.Parse(components[3]));
-                            break;
+                        case "remove":
 
-                        case "flat":
+                            int id = Parser.parse_int(doc["discount id"]);
 
-                            strategy = new Discount_Flat(Double.Parse(components[3]));
-                            break;
+                            return store.remove_discount(id);
+
                     }
 
-                    Discount discount = new Discount_Simple(start, end, strategy, null);
-
-                    store.edit_discount_policy(edit_type, discount);
                     return true;
                 }
 
@@ -378,35 +405,50 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return false;
         }
 
+        public bool edit_purchase_policy(Dictionary<string, string> doc) // version 3
+        {
+
+            return active_stores[0].edit_purchase_policy(doc);
+        }
+
+        public DiscountPolicy show_discount_policy(Dictionary<string, string> doc)
+        {
+            int store_id = Parser.parse_int(doc["store id"]);
+            Store store = store_by_id(store_id);
+
+            return store.discount_policy;
+
+        }
+
+        public PurchasePolicy show_purchase_policy(Dictionary<string, string> doc)
+        {
+            int store_id = Parser.parse_int(doc["store id"]);
+            Store store = store_by_id(store_id);
+
+            return store.purchase_policy;
+        }
 
         // ---------------- store filters -------------------------------------------------------------------------------------------
 
 
-        public Store store_by_name(string name)
+        public List<Store> store_by_name(string name)
         {
-            return active_stores.FirstOrDefault(store => store.name == name);
+            return active_stores.Values.Where(s => (s.name == name)).ToList();
         }
 
         public Store store_by_id(int id)
         {
             
-            return active_stores.FirstOrDefault(store => store.ID == id);
-        }
+            if (active_stores.Keys.Contains(id))
+                return active_stores[id];
 
-        public List<Store> all_stores()
+            string[] ids = active_stores.Values.Select(s => $"{s.ID}").ToArray();
+            throw new Sadna17BException("no store found by that id : " + id + $"\nvalid ids :{string.Join(", ", ids)}");
+        }
+        
+        public Dictionary<int, Store> all_stores()
         {
             return active_stores;
-        }
-
-
-        public StoreBuilder store_builder()
-        {
-            return new StoreBuilder();
-        }
-
-        public void clear_stores()
-        {
-            active_stores.Clear();
         }
 
 
@@ -414,151 +456,86 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         // ----------------  product filters  -------------------------------------------------------------------------------------------
 
 
-        public Dictionary<Product, int> filter_products_by_name(string productName)
+        public List<Product> search_products_by_keyword(string[] keywords)
         {
-            Dictionary<Product, int> result = new Dictionary<Product, int>();
+            List<Product> result = new List<Product>();
 
-            foreach (Store store in active_stores)
+            foreach (Store store in active_stores.Values)
             {
-                List<Product> products = store.filter_name(productName);
+                List<Product> store_products = store.filter_keyword(keywords);
 
-                if (products != null)
-                    foreach (Product product in products)
-                        result.Add(product, store.ID);
-            }
-
-            return result.Any() ? result : null;
-        }
-
-        public Dictionary<Product, int> filter_products_by_category(string category) 
-        {
-            Dictionary<Product, int> result = new Dictionary<Product, int>();
-
-            foreach (Store store in active_stores)
-            {
-                List<Product> products = store.filter_category(category);
-
-                if (products != null)
-                    foreach (Product product in products)
-                        result.Add(product,store.ID);
-            }
-
-            return result.Any() ? result : null;
-        }
-
-        public Dictionary<Product, int> filter_products_by_keyword(string keyWord)
-        {
-            Dictionary<Product, int> result = new Dictionary<Product, int>();
-
-            foreach (Store store in active_stores)
-            {
-                List<Product> products = store.filter_keyword(keyWord);
-
-                if (products != null)
-                    foreach (Product product in products)
-                        result.Add(product, store.ID);
+                result.AddRange(store_products);
+                        
             }
 
             return result;
         }
 
-        public Dictionary <Product, int> filter_products_by_store_id(Dictionary<Product, int> searchReesult, int storeID)
+        public List<Product> filter_products_by_category(List<Product> searchReesult, string[] categories)
         {
-            Dictionary<Product, int> result = new Dictionary<Product, int>();
+            List<Product> filtered = new List<Product>();
 
-            foreach (var pair in searchReesult)
-            {
-                if (pair.Value == storeID)
-                    result.Add(pair.Key, pair.Value);
-            }
-
-            return result.Any() ? result : null;
+            foreach (string category in categories)
+                foreach (Product product in searchReesult)
+                    if (product.category == category)
+                       filtered.Add(product);
+           
+            return filtered;
         }
 
-        public Dictionary<Product, int> filter_products_by_price(Dictionary<Product, int> searchResult, int low, int high)
+        public List<Product> filter_products_by_price(List<Product> searchResult, double low, double high)
         {
-            Dictionary<Product, int> result = new Dictionary<Product, int>();
+            List<Product> filtered = new List<Product>();
 
-            foreach (Store store in active_stores)
-            {
-                List<Product> producs_of_current_store = new List<Product>();
+            foreach (Product product in searchResult)
+               if (low <= product.price && product.price <= high)
+                filtered.Add(product);
 
-                foreach (var pair in searchResult)
-                {
-                    if (pair.Value == store.ID)
-                        producs_of_current_store.Add(pair.Key);
-                }
-
-                List<Product> filtered = store.filter_price(producs_of_current_store, low, high);
-
-                foreach (Product product in filtered)
-                {
-                    result.Add(product, searchResult[product]); // Add the product along with its quantity
-                }
-            }
-
-            return result.Any() ? result : null;
+            return filtered;
         }
 
-        public Dictionary<Product, int> filter_products_by_rating(Dictionary<Product, int> searchResult, int low)
+        public List<Product> filter_products_by_product_rating(List<Product> searchResult, double low)
         {
-            Dictionary<Product, int> result = new Dictionary<Product, int>();
+            List<Product> filtered = new List<Product>();
 
-            foreach (Store store in active_stores)
+            foreach (Product product in searchResult)
             {
-                List<Product> producs_of_current_store = new List<Product>();
-
-                foreach (var pair in searchResult)
-                {
-                    if (pair.Value == store.ID)
-                        producs_of_current_store.Add(pair.Key);
-                }
-
-                List<Product> filtered = store.filter_rating(producs_of_current_store, low);
-
-                foreach (Product product in filtered)
-                {
-                    result.Add(product, searchResult[product]); // Add the product along with its quantity
-                }
+                if (low < product.rating)
+                    filtered.Add(product);
             }
 
-            return result.Any() ? result : null;
+            return filtered;
         }
 
-
-
-        public Dictionary<Product, int> filter_store_products_by_rating(Dictionary<Product, int> searchResult, int low)
+        public List<Product> filter_products_by_store_id(List<Product> searchReesult, int storeID)
         {
-            Dictionary<Product, int> result = new Dictionary<Product, int>();
+            List<Product> filtered = new List<Product>();
 
-            foreach (var pair in searchResult)
+            foreach (Product product in searchReesult)
             {
-                int store_rating = store_by_id(pair.Value).rating;
+                if (product.store_ID == storeID)
+                    filtered.Add(product);
+            }
+
+            return filtered;
+        }
+
+        public List<Product> filter_products_by_store_rating(List<Product> searchResult, double low)
+        {
+            List<Product> filtered = new List<Product>();
+
+            foreach (Product product in searchResult)
+            {
+                int store_rating = store_by_id(product.store_ID).rating;
                 if (low < store_rating)
-                    result.Add(pair.Key,pair.Value);
+                    filtered.Add(product);
             }
 
-            return result.Any() ? result : null;
+            return filtered;
         }
 
-        public Dictionary<Product, int> filter_store_products_by_price(int storeID, int low, int high)
-        {
-            Store store = store_by_id(storeID);
-            List<Product> output = store.filter_price_all(low, high);
-            
-            Dictionary<Product, int> result = new Dictionary<Product, int>();
-            
-            foreach (Product product in output)
-            {
-                result.Add(product, storeID);
-            }
-            
-            return result.Any() ? result : null;
-        }
 
-        
-        
-        
+
         // ----------------  info printing  -------------------------------------------------------------------------------------------
 
         public string get_store_info(int storeID)
@@ -574,6 +551,123 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         public string get_store_name(int storeID)
         {
             return (store_by_id(storeID)).name;
+        }
+
+
+        // ----------------  parsing  -------------------------------------------------------------------------------------------------
+
+
+        public Discount parse_discount(string type, DateTime start, DateTime end, Discount_Strategy strategy)
+        {
+            // TODO
+
+            return new Discount_Simple(start,end,strategy,(c) => 0);
+        }
+
+        public Discount_Strategy parse_discount_strategy(Dictionary<string,string> doc) // doc explained on doc_doc.cs 
+        {
+            string type = Parser.parse_string(doc["strategy"]);
+
+            switch (type)
+            {
+                case "flat":
+
+                    double factor = Parser.parse_double(doc["flat"]);
+                    return new Discount_Flat(factor);
+
+                case "precentage":
+
+                    factor = Parser.parse_double(doc["percentage"]);
+                    return new Discount_Percentage(factor);
+
+                case "membership":
+
+                    return new Discount_Membership();
+            }
+
+            throw new Sadna17BException("store controller : illegal strategy detected");
+        }
+
+        public Func<Cart, double> parse_relevant_lambdas(Dictionary<string, string> doc) // doc explained on doc_doc.cs 
+        {
+            string relevant_type = Parser.parse_string(doc["relevant type"]);
+            string relevant_factor = Parser.parse_string(doc["relevant factors"]);
+
+
+            switch (relevant_type)
+            {
+                case "product":
+
+                    int product = Parser.parse_int(relevant_factor);
+                    return Discount_relevant_products_lambdas.product(product);
+
+                case "category":
+
+                    string category = Parser.parse_string(relevant_factor);
+                    return Discount_relevant_products_lambdas.category(category);
+
+                case "products":
+
+                    int[] products = Parser.parse_array<int>(relevant_factor);
+                    return Discount_relevant_products_lambdas.products(products);
+
+                case "categories":
+
+                    string[] categories = Parser.parse_array<string>(relevant_factor);
+                    return Discount_relevant_products_lambdas.categories(categories);
+
+                default:
+
+                    throw new Sadna17BException("store controller : illegal relevant product search functionality detected");
+
+            }           
+
+        }
+
+        public List<Func<Cart, bool>> parse_condition_lambdas(Dictionary<string, string> doc) // doc explained on doc_doc.cs 
+        {
+            
+            string[] types = Parser.parse_array<string>(doc["cond type"]);
+            
+            string op = Parser.parse_string(doc["cond op"]);
+            double factor = Parser.parse_double(doc["cond factor"]);
+            int product = Parser.parse_int(doc["cond product"]); ;
+            string category = Parser.parse_string(doc["cond category"]); ;
+
+            List<Func<Cart, bool>> lambdas = new List<Func<Cart, bool>>();
+
+            foreach (string type in types)
+            {
+                switch (type)
+                {
+                    case "p amount":
+
+                        lambdas.Add(Discount_condition_lambdas.condition_product_amount(product, op, factor));
+                        break;
+
+                    case "p price":
+
+                        lambdas.Add(Discount_condition_lambdas.condition_product_price(product, op, factor));
+                        break;
+
+                    case "c amount":
+
+                        lambdas.Add(Discount_condition_lambdas.condition_category_amount(category, op, factor));
+                        break;
+
+                    case "c price":
+
+                        lambdas.Add(Discount_condition_lambdas.condition_category_price(category, op, factor));
+                        break;
+
+                    default:
+
+                        throw new Sadna17BException("store controller : illegal condition functionality detected");
+
+                }
+            }
+
+            return lambdas;
         }
     }
 }
