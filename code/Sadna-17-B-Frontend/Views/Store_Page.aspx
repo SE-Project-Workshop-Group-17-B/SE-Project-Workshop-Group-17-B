@@ -345,10 +345,19 @@
 
         function setInitialRating(rating) {
             var starWidth = fiveStarsImgBottom.width;
-            var cropWidth = (rating / 5) * starWidth; // Calculate crop width based on rating
+            var cropWidth = ((rating / 5) * starWidth); // Calculate crop width based on rating
+
+            if (cropWidth > 180 && cropWidth < 240) {
+                cropWidth += 10;
+            }
+            else if (cropWidth > 240) {
+                cropWidth += 5;
+
+            }
+
             fiveStarsImgBottom.style.clip = 'rect(0px, ' + cropWidth + 'px, 60px, 0px)';
             var ratingText = document.getElementById('ratingText');
-            ratingText.textContent = rating.toFixed(2) + '/5'; // Set the rating text
+            ratingText.textContent = rating.toFixed(1) + '/5'; // Set the rating text
         }
 
     </script>
