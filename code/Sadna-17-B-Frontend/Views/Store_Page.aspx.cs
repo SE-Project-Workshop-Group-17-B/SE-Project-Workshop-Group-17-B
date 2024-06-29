@@ -101,7 +101,7 @@ namespace Sadna_17_B_Frontend.Views
         protected void btnsave_Click_complaint(object sender, EventArgs e)
         {
             // Retrieve the rating value from the hidden field
-            string complaint = Convert.ToString(complaintValueHidden.Value);
+            string complaint = Convert.ToString(complaintTextBox.Text);
 
             // Retrieve the complaint value from the hidden field
 
@@ -123,7 +123,7 @@ namespace Sadna_17_B_Frontend.Views
         protected void btnsave_Click_postReview(object sender, EventArgs e)
         {
             // Retrieve the rating value from the hidden field
-            string review = Convert.ToString(postReviewValueHidden.Value);
+            string review = reviewTextBox.Text;
 
             // Retrieve the complaint value from the hidden field
 

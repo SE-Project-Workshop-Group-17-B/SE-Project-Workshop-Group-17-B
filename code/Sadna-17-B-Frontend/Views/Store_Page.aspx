@@ -95,7 +95,7 @@
         }
         .storepage-rating-container {
             position: relative;
-            width: 300px; /* Adjusted width for bigger stars */
+            width: 300px; /* needs to corelate with img size - for now its a patching */
             height: 60px; /* Adjusted height for bigger stars */
             margin: 0 auto; /* Center the container */
             cursor: pointer;
@@ -132,7 +132,14 @@
         }
         .all-review-container {
             display: flex;
+            flex-direction: column; /* Ensure reviews are displayed vertically */
             margin-bottom: 15px;
+        }
+        .all-review-container .review-item {
+            display: flex;
+            flex-direction: row; /* username and review are side by side */
+            margin-bottom: 10px;
+            align-items: center; /* Align items vertically in the center */
         }
         .all-review-container img {
             width: 50px;
@@ -147,11 +154,8 @@
         .all-review-container .user-review {
             font-style: italic;
         }
-        .modal-body .reviews {
-            display: flex;
-            flex-direction: column;
-        }
     </style>
+
     <!-- Fading messages (is not) implemented rn -->
     <div id="ratingMessage" class="fade-message">Rating submitted successfully!</div>
     <div id="complaintMessage" class="fade-message">Complaint submitted successfully!</div> 
@@ -286,7 +290,7 @@
         var ratingValueHidden = document.getElementById('<%= ratingValueHidden.ClientID %>');
         var complaintValueHidden = document.getElementById('<%= complaintValueHidden.ClientID %>');
         var postReviewValueHidden = document.getElementById('<%= postReviewValueHidden.ClientID %>');
-
+        
         var clickCounter = 0;
 
         function setRating(event) {
@@ -318,17 +322,17 @@
 
             reviews.forEach(function (review) {
                 var reviewDiv = document.createElement('div');
-                reviewDiv.classList.add('all-review-container');
+                reviewDiv.classList.add('review-item'); // Add review-item class to each review
 
                 reviewDiv.innerHTML = `
-                    <img src="/Content/emptyProfilePic.png" alt="User Photo">
-                    <div class="user-details">
-                        <p>Username</p>
-                    </div>
-                    <div class="user-review">
-                        <p>${review}</p>
-                    </div>
-                `;
+            <div class="user-details">
+                <img src="/Content/emptyProfilePic.png" alt="User Photo">
+                <p>Username</p>
+            </div>
+            <div class="user-review">
+                <p>${review}</p>
+            </div>
+        `;
 
                 reviewsContainer.appendChild(reviewDiv);
             });
@@ -342,7 +346,6 @@
         function setInitialRating(rating) {
             var starWidth = fiveStarsImgBottom.width;
             var cropWidth = (rating / 5) * starWidth; // Calculate crop width based on rating
-            //dynamicStarsDiv.style.clip = 'rect(0px, ' + cropWidth + 'px, 40px, 0px)'; // Adjust the height accordingly if different
             fiveStarsImgBottom.style.clip = 'rect(0px, ' + cropWidth + 'px, 60px, 0px)';
             var ratingText = document.getElementById('ratingText');
             ratingText.textContent = rating.toFixed(2) + '/5'; // Set the rating text
