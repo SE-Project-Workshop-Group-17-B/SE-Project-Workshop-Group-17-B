@@ -1,41 +1,19 @@
 ﻿// DomainLayer/Repositories/StoreRepository.cs
+using System.Collections.Generic;
 using System.Data.Entity;
+using System.Linq;
 using Sadna_17_B.Data;
 using Sadna_17_B.DomainLayer.Entities;
 
 namespace Sadna_17_B.DomainLayer.Repositories
 {
-    public class StoreRepository : IStoreRepository
+    public class StoreRepository : GenericRepository<Store>, IStoreRepository
     {
-        private readonly TradingSystemContext _context;
+        public StoreRepository(TradingSystemContext context) : base(context) { }
 
-        public StoreRepository(TradingSystemContext context)
+        public IEnumerable<Store> GetByName(string name)
         {
-            _context = context;
-        }
-
-        public Store GetById(int id)
-        {
-            return _context.Stores.Find(id);
-        }
-
-        public void Add(Store store)
-        {
-            _context.Stores.Add(store);
-        }
-
-        public void Update(Store store)
-        {
-            _context.Entry(store).State = EntityState.Modified;
-        }
-
-        public void Delete(int id)
-        {
-            var store = _context.Stores.Find(id);
-            if (store != null)
-            {
-                _context.Stores.Remove(store);
-            }
+            return _dbSet.Where(s => s.Name.Contains(name)).ToList();
         }
     }
 }
