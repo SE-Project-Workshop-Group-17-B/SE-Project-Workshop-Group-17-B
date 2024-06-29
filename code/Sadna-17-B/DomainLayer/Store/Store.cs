@@ -23,7 +23,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         public static int idCounter = 1;
         public static int ratingCounter = 0;
-        public static int ratingOverAllScore = 0;
+        public static double ratingOverAllScore = 0;
 
 
         public int ID { get; private set; }
@@ -39,7 +39,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         public  PurchasePolicy purchase_policy { get; private set; }
 
 
-        public int rating { get;  set; }
+        public double rating { get;  set; }
         public List<string> reviews { get; set; }
         public List<string> complaints { get; set; }
 
@@ -69,12 +69,12 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             this.complaints = new List<string>();
         }
 
-        public bool add_rating(int rating)
+        public bool add_rating(double ratingInput)
         {
-            if (rating < 0 || rating > 10)
+            if (ratingInput < 0 || ratingInput > 10)
                 return false;
             ratingCounter++;
-            ratingOverAllScore += rating;
+            ratingOverAllScore += ratingInput;
             this.rating = ratingOverAllScore / ratingCounter;
 
             return true;
