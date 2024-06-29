@@ -69,12 +69,12 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             this.complaints = new List<string>();
         }
 
-        public bool add_rating(double rating)
+        public bool add_rating(double ratingInput)
         {
-            if (rating < 0 || rating > 10)
+            if (ratingInput < 0 || ratingInput > 10)
                 return false;
             ratingCounter++;
-            ratingOverAllScore += rating;
+            ratingOverAllScore += ratingInput;
             this.rating = ratingOverAllScore / ratingCounter;
 
             return true;

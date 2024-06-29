@@ -185,6 +185,20 @@ namespace Sadna_17_B.ServiceLayer.Services
 
         // ---------------- store feedbacks -------------------------------------------------------------------------------------------
 
+        public Response get_store_rating(int storeID)
+        {
+            double rating = 0;
+            try
+            {
+                rating = _storeController.get_store_rating(storeID);
+                return new Response("" + rating, true);
+            }
+            catch (Sadna17BException ex)
+            {
+                return new Response("" + rating, false);
+
+            }
+        }
 
         public Response add_store_review(int storeID, string review) // --> bool
         {
@@ -206,6 +220,17 @@ namespace Sadna_17_B.ServiceLayer.Services
                 return Response.GetErrorResponse(ex);
             }
 
+        }
+
+        public Response get_store_reviews_by_ID(int storeID)
+        {
+            List<string> reviews = new List<string>();
+            reviews = _storeController.get_store_reviews_by_ID(storeID);
+            if (reviews.IsNullOrEmpty() || reviews[0].StartsWith("Fail"))
+            {
+                return new Response("store reviews failed, check storeID", false, reviews);
+            }
+            return new Response("Store Reviews:", true, reviews);
         }
 
         public Response add_store_rating(int storeID, double rating) // --> bool 

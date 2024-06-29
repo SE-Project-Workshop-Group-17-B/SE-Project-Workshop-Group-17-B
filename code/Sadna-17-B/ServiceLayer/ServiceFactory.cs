@@ -61,7 +61,9 @@ namespace Sadna_17_B.ServiceLayer
                 // Add 10 products to each store
                 for (int j = 1; j <= 10; j++)
                     ((Store) StoreService.store_by_id(sid).Data).add_product($"Product{j}", 10.99 + j, $"Category{j % 3}", $"Description for Product{j}", j * 10);
-                
+
+
+                ((Store)StoreService.store_by_id(sid).Data).add_rating(4.5);
 
             }
 

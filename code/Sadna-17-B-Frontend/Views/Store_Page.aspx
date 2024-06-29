@@ -93,15 +93,32 @@
             max-width: 400px;
             left: 0;
         }
-        .storepage-rating {
-            display: flex;
+        .storepage-rating-container {
+            position: relative;
+            width: 300px; /* Adjusted width for bigger stars */
+            height: 60px; /* Adjusted height for bigger stars */
+            margin: 0 auto; /* Center the container */
+            cursor: pointer;
             justify-content: center;
-            margin: 20px 0;
         }
-        .storepage-rating img {
-            width: 200px;
-            height: 100px;
-            margin: 0 5px;
+        .storepage-rating-container img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        .storepage-rating-container .five-stars-bottom {
+            z-index: 2;
+            clip: rect(0, 0, auto, 0); /* Start with no clipping */
+        }
+        .storepage-rating-container .zero-stars-bottom {
+            z-index: 1;
+        }
+        .rating-text {
+            text-align: center;
+            font-size: 20px;
+            margin-top: 10px;
         }
         .fade-message {
             display: none;
@@ -113,43 +130,64 @@
             border-radius: 5px;
             text-align: center;
         }
+        .all-review-container {
+            display: flex;
+            margin-bottom: 15px;
+        }
+        .all-review-container img {
+            width: 50px;
+            height: 50px;
+            margin-right: 15px;
+            border-radius: 50%;
+        }
+        .all-review-container .user-details {
+            text-align: center;
+            margin-right: 15px;
+        }
+        .all-review-container .user-review {
+            font-style: italic;
+        }
+        .modal-body .reviews {
+            display: flex;
+            flex-direction: column;
+        }
     </style>
-
+    <!-- Fading messages (is not) implemented rn -->
     <div id="ratingMessage" class="fade-message">Rating submitted successfully!</div>
-    <div id="complaintMessage" class="fade-message">Complaint submitted successfully!</div>
+    <div id="complaintMessage" class="fade-message">Complaint submitted successfully!</div> 
 
-    <div class="big_rating_container">
+    <div class="big_rating_container">                                         <!-- Add store rating pop-up option Starts here -->
         <div class="modal fade" id="mymodal" data-backdrop="false" role="dialog">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h4 class="modal-title">Add store review</h4>
-                        <asp:Label ID="lblmsg" Text="" runat="server" />
-                        <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    </div>
-                    <div class="modal-body">
-                        <label>Rating</label>
-                        <div class="rating-container" id="ratingContainer">
+            <div class="modal-dialog modal-dialog-centered">                                    
+                <div class="modal-content">                                                                 
+                    <div class="modal-header">                                                                  
+                        <h4 class="modal-title">Rate Store</h4>                         
+                        <asp:Label ID="lblmsg" Text="" runat="server" />            
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>   
+                    </div>                                                                                          
+                    <div class="modal-body">                                                                        
+                        <label>Rating</label>                                                       
+                        <div class="rating-container" id="ratingContainer">                             
                             <img src="/Content/zero_stars_rating.png" alt="Zero Stars" class="zero-stars" id="zeroStarsImg" />
                             <img src="/Content/five_stars_rating.png" alt="Five Stars" class="five-stars" id="fiveStarsImg" />
-                        </div>
-                        <asp:HiddenField ID="ratingValueHidden" runat="server" />
-                    </div>
-                    <div class="modal-footer">
+                        </div>                                                                                      
+                        <asp:HiddenField ID="ratingValueHidden" runat="server" />   
+                    </div>                                                                                      
+                    <div class="modal-footer">                                                              
                         <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
                         <asp:Button ID="btnsave" CssClass="btn btn-primary" OnClick="btnsave_Click_rating" Text="Save" runat="server" />
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="big_complaint_container">
-        <div class="modal fade" id="mymodal-post-review" data-backdrop="false" role="dialog">
+                    </div>                                                                          
+                </div>                                                                                  
+            </div>                                                                          
+        </div>                                                                                      
+    </div>                                                                     <!-- Add store rating pop-up option ENDS here -->
+    <div class="big_complaint_container">                                      <!-- submit complaint pop-up option Starts here -->
+        <div class="modal fade" id="mymodal-complaint" data-backdrop="false" role="dialog">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content"> <!-- changed here -->
                     <div class="modal-header"> <!-- changed here -->
-                        <h4 class="modal-title">Share your experience with others</h4> <!-- changed here -->
-                        <asp:Label ID="LabelPostReview" Text="" runat="server" />
+                        <h4 class="modal-title-complaint">Whats on your mind?</h4> <!-- changed here -->
+                        <asp:Label ID="LabelComplaint" Text="" runat="server" />
                         <button type="button" class="close" data-dismiss="modal">&times;</button>
                     </div>
                     <div class="modal-body">
@@ -166,33 +204,54 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-    <div class="send_review_container">
-    <div class="modal fade" id="mymodal-send-review" data-backdrop="false" role="dialog">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content"> <!-- changed here -->
-                <div class="modal-header"> <!-- changed here -->
-                    <h4 class="modal-title">Whats on your mind?</h4> <!-- changed here -->
-                    <asp:Label ID="Label1" Text="" runat="server" />
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                </div>
-                <div class="modal-body">
-                    <div class="post-review-container" id="postReviewContainer">
-                        <label for="reviewTextBox">Your Review</label>
-                        <asp:TextBox ID="reviewTextBox" CssClass="form-control" TextMode="MultiLine" Rows="3" runat="server" /> 
+        </div>                                                                  
+    </div>                                                                      <!-- send complaint pop-up option ENDS here -->
+    <div class="send_review_container">                                         <!-- send review pop-up option Starts here -->
+        <div class="modal fade" id="mymodal-send-review" data-backdrop="false" role="dialog">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content"> <!-- changed here -->
+                    <div class="modal-header"> <!-- changed here -->
+                        <h4 class="modal-title">Share your experience with Others</h4> <!-- changed here -->
+                        <asp:Label ID="Label1" Text="" runat="server" />
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
                     </div>
-                    <asp:HiddenField ID="postReviewValueHidden" runat="server" />
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-danger-review" data-dismiss="modal">Close</button>
-                    <asp:Button ID="Button2" CssClass="btn btn-primary" OnClick="btnsave_Click_postReview" Text="Save" runat="server" />
+                    <div class="modal-body">
+                        <div class="post-review-container" id="postReviewContainer">
+                            <label for="reviewTextBox">Your Review</label>
+                            <asp:TextBox ID="reviewTextBox" CssClass="form-control" TextMode="MultiLine" Rows="3" runat="server" /> 
+                        </div>
+                        <asp:HiddenField ID="postReviewValueHidden" runat="server" />
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger-review" data-dismiss="modal">Close</button>
+                        <asp:Button ID="Button2" CssClass="btn btn-primary" OnClick="btnsave_Click_postReview" Text="Save" runat="server" />
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</div>
-    <div class="storepage-container">
+     </div>                                                                     <!-- send review pop-up option ENDS here -->
+     <div class="all_review_container">                                         <!-- all reviews pop-up option starts here -->
+        <div class="modal fade" id="mymodal-all-reviews" data-backdrop="false" role="dialog">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Our Customers Say</h4>
+                        <asp:Label ID="lblReviews" Text="" runat="server" />
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="all-review-container" id="allReviewsContainer">
+                            <!-- Reviews will be inserted here dynamically -->
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>                                                                      <!-- all reviews pop-up option starts here -->
+    <div class="storepage-container">                                           <!-- actual store page starts here -->
         <header class="storepage-header">
             <h1>Welcome to Store: <asp:Literal ID="storeNameLiteral" runat="server"></asp:Literal></h1>
             <p><asp:Literal ID="storeDescriptionLiteral" runat="server"></asp:Literal></p>
@@ -203,19 +262,27 @@
                 <asp:Button CssClass="storepage-actions-btn" ID="viewReviewsBtn" OnClick="viewReviewsBtn_Click" runat="server" Text="Our Reviews"></asp:Button>
                 <asp:Button CssClass="storepage-actions-btn" ID="postReviewBtn" OnClick="postReviewBtn_Click" runat="server" Text="Post a Review"></asp:Button>
                 <asp:Button CssClass="storepage-actions-btn" ID="toStoreInventory" OnClick="toStoreInventory_Click" runat="server" Text="Go to Store Inventory"></asp:Button>
-                <asp:Button CssClass="storepage-actions-btn" ID="sendComplaintBtn" OnClick="sendComplaintBtn_Click" runat="server" Text="Send Complaint"></asp:Button>
+                <asp:Button CssClass="storepage-actions-btn" ID="sendComplaintBtn" OnClick="sendComplaintBtn_Click" runat="server" Text="Submit Complaint"></asp:Button>
                 <asp:Button CssClass="storepage-actions-btn" ID="rateStoreBtn" OnClick="rateStoreBtn_Click" runat="server" Text="Rate the Store"></asp:Button>
             </div>
-            <div class="storepage-rating">
-                <img src="/Content/stars.png" alt="Stars" />
+            <div class="storepage-rating-container" id="overAllRatingContainer">
+                <img src="/Content/zero_stars_rating.png" class="zero-stars-bottom" id="zeroStarsImg2"/>
+                <img src="/Content/five_stars_rating.png" class="five-stars-bottom" id="fiveStarsImg2" />
             </div>
+            <div class="rating-text" id="ratingText"></div> <!-- displays the rating text -->
+
         </div>
-    </div>
+    </div>                                                                      <!-- actual store page ends here -->
 
     <script>
         var ratingContainer = document.getElementById('ratingContainer');
         var fiveStarsImg = document.getElementById('fiveStarsImg');
         var zeroStarsImg = document.getElementById('zeroStarsImg');
+
+        var overAllRatingContainer = document.getElementById('overAllRatingContainer');
+        var fiveStarsImgBottom = document.getElementById('fiveStarsImg2');
+        var zeroStarsImgBottom = document.getElementById('zeroStarsImg2');
+
         var ratingValueHidden = document.getElementById('<%= ratingValueHidden.ClientID %>');
         var complaintValueHidden = document.getElementById('<%= complaintValueHidden.ClientID %>');
         var postReviewValueHidden = document.getElementById('<%= postReviewValueHidden.ClientID %>');
@@ -231,7 +298,6 @@
 
             fiveStarsImg.style.clip = 'rect(0px, ' + cropWidth + 'px, 40px, 0px)'; // Adjust the height accordingly if different
             ratingValueHidden.value = rating; // Set the rating value in the hidden field
-            console.log('Rating:', rating); // You can send this rating value to the server if needed
         }
 
         function toggleMouseMoveListener() {
@@ -245,5 +311,42 @@
 
         ratingContainer.addEventListener('mousemove', setRating);
         ratingContainer.addEventListener('click', toggleMouseMoveListener);
+
+        function displayReviews(reviews) {
+            var reviewsContainer = document.getElementById('allReviewsContainer');
+            reviewsContainer.innerHTML = ''; // Clear previous reviews
+
+            reviews.forEach(function (review) {
+                var reviewDiv = document.createElement('div');
+                reviewDiv.classList.add('all-review-container');
+
+                reviewDiv.innerHTML = `
+                    <img src="/Content/emptyProfilePic.png" alt="User Photo">
+                    <div class="user-details">
+                        <p>Username</p>
+                    </div>
+                    <div class="user-review">
+                        <p>${review}</p>
+                    </div>
+                `;
+
+                reviewsContainer.appendChild(reviewDiv);
+            });
+        }
+
+        function openReviewsModal() {
+            var script = "$('#mymodal-all-reviews').modal('show')";
+            eval(script);
+        }
+
+        function setInitialRating(rating) {
+            var starWidth = fiveStarsImgBottom.width;
+            var cropWidth = (rating / 5) * starWidth; // Calculate crop width based on rating
+            //dynamicStarsDiv.style.clip = 'rect(0px, ' + cropWidth + 'px, 40px, 0px)'; // Adjust the height accordingly if different
+            fiveStarsImgBottom.style.clip = 'rect(0px, ' + cropWidth + 'px, 60px, 0px)';
+            var ratingText = document.getElementById('ratingText');
+            ratingText.textContent = rating.toFixed(2) + '/5'; // Set the rating text
+        }
+
     </script>
 </asp:Content>

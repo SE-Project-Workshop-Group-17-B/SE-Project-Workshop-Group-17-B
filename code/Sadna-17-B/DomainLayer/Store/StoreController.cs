@@ -309,12 +309,34 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return true;
         }
 
+        public List<string> get_store_reviews_by_ID(int storeID)
+        {
+            List<string> result = new List<string>();
+            
+            try{
+                result = store_by_id(storeID).reviews;
+            }
+            catch (Exception e) {
+                result.Add("Failed to retrieve store " + storeID + "reviews...");
+                result.Add(e.Message);
+            }
+
+            return result;
+        }
+
         public bool add_store_rating(int storeID, double rating)
         {
             Store store = store_by_id(storeID);
             store.add_rating(rating);
             return true;
         }
+
+        public double get_store_rating(int storeID)
+        {
+            Store store = store_by_id(storeID);
+            return store.rating;
+        }
+
 
         public bool add_store_complaints(int storeID, string complaint)
         {
