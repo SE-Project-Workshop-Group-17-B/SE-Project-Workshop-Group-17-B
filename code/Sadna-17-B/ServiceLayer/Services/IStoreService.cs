@@ -24,6 +24,8 @@ namespace Sadna_17_B.ServiceLayer.Services
         // ---------------- review options -------------------------------------------------------------------------------------------
 
         Response add_store_review(int storeID, string review);
+        Response get_store_reviews_by_ID(int storeID);
+        Response get_store_rating(int storeID);
         Response add_product_review(int storeID, int productID, string review);
         Response edit_product_review(int storeID, int productID, string old_review, string new_review);
 

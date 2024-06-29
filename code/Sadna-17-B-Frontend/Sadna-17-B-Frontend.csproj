@@ -172,6 +172,7 @@
   <ItemGroup>
     <Content Include="Content\cart-inverted.png" />
     <Content Include="Content\cart.png" />
+    <Content Include="Content\emptyProfilePic.png" />
     <Content Include="Content\five_stars_rating.png" />
     <Content Include="Content\stars.png" />
     <Content Include="Content\store-image.png" />
