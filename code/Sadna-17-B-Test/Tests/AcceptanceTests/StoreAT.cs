@@ -50,7 +50,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         }
 
         [TestMethod]
-        public void TestStoreOpening()
+        public void TestSuccessfullStoreOpening()
         {
             // init user service
 
@@ -70,7 +70,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         }
 
         [TestMethod]
-        public void TestStoreClose()
+        public void TestSuccezsfullStoreClose()
         {
             // init user service
 
@@ -95,7 +95,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         }
 
         [TestMethod]
-        public void TestClosedStoreClosing()
+        public void TestClosedStoreClosing_BadCase()
         {
             // init user service
 
@@ -120,7 +120,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
 
 
         [TestMethod]
-        public void TestGetStoreByName()
+        public void TestSuccessfullGetStoreByName()
         {
             // init user service
 
@@ -134,12 +134,30 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
             Response store_name_response = storeService.store_by_name(name);
             
             Store store = (store_name_response.Data as List<Store>)[0];
+            Assert.IsTrue(store_name_response.Success);
             Assert.AreEqual(store.name, name);
+        }
+
+        [TestMethod]
+        public void TestFailedGetStoreByName()
+        {
+            // init user service
+
+            Response ignore1 = userService.CreateSubscriber(username1, password1);
+            Response result1 = userService.Login(username1, password1);
+            UserDTO userDTO = result1.Data as UserDTO;
+
+            // init store service
+
+            Response store_response = storeService.create_store(userDTO.AccessToken, name, email, phonenumber, storeDescr, addr);
+            Response store_name_response = storeService.store_by_name("not existing store");
+
+            Assert.IsFalse(store_name_response.Success);
         }
 
 
         [TestMethod]
-        public void TestCreateStoreFounder()
+        public void TestSuccessfullCreateStoreFounder()
         {
             Response ignore = userService.CreateSubscriber(username1, password1);
             Response ignore2 = userService.CreateSubscriber(username2, password2);

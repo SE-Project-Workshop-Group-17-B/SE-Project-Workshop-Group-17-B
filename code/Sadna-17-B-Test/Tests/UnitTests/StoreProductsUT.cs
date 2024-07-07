@@ -132,94 +132,6 @@ namespace Sadna_17_B_Test.Tests.UnitTests
 
         }
 
-        //[TestMethod]
-        //public void TestAddingProductsConcurrently()
-        //{
-        //
-        //    var storeBuilder = store_controller.store_builder()
-        //                            .SetName("Test Store")
-        //                            .SetInventory(_inventory);
-        //    var store = storeBuilder.Build();
-        //    int initialAmount = 10;
-        //
-        //    store_controller.open_store(store);
-        //
-        //    Task task1 = Task.Run(() => store_controller.add_store_product(store.ID, "Test Product", 100, "Category", "Good product", initialAmount));
-        //    Task task2 = Task.Run(() => store_controller.add_store_product(store.ID, "Test Product", 100, "Category", "Good product", initialAmount));
-        //    Task task3 = Task.Run(() => store_controller.add_store_product(store.ID, "Test Product", 100, "Category", "Good product", initialAmount));
-        //    Task task4 = Task.Run(() => store_controller.add_store_product(store.ID, "Test Product", 100, "Category", "Good product", initialAmount));
-        //    Task task5 = Task.Run(() => store_controller.add_store_product(store.ID, "Test Product", 100, "Category", "Good product", initialAmount));
-        //    Task task6 = Task.Run(() => store_controller.add_store_product(store.ID, "Test Product", 100, "Category", "Good product", initialAmount));
-        //
-        //    Task.WaitAll(task1, task2, task3, task4, task5, task6);
-        //
-        //    int finalAmount = store.amount_by_name("Test Product");
-        //
-        //    Assert.AreEqual(initialAmount * 6, finalAmount);
-        //}
-        //
-        //[TestMethod]
-        //public void TestRemoveMoreProductsThenAvailbleConcurrent()
-        //{
-        //    var storeBuilder = store_controller.store_builder()
-        //                            .SetName("Test Store")
-        //                            .SetInventory(_inventory);
-        //    var store = storeBuilder.Build();
-        //    int initialAmount = 10;
-        //
-        //    store_controller.open_store(store);
-        //
-        //    var productId = store_controller.add_store_product(store.ID, "Test Product", 100, "Category", "Good product", initialAmount);
-        //
-        //    Dictionary<int, int> order = new Dictionary<int, int>();
-        //    order[productId] = 5;
-        //
-        //    Task task1 = Task.Run(() => store_controller.decrease_products_amount(store.ID, order));
-        //    Task task2 = Task.Run(() => store_controller.decrease_products_amount(store.ID, order));
-        //    Task task3 = Task.Run(() => store_controller.decrease_products_amount(store.ID, order));
-        //    Task task4 = Task.Run(() => store_controller.decrease_products_amount(store.ID, order));
-        //    Task task5 = Task.Run(() => store_controller.decrease_products_amount(store.ID, order));
-        //    Task task6 = Task.Run(() => store_controller.decrease_products_amount(store.ID, order));
-        //
-        //    Task.WaitAll(task1, task2, task3, task4, task5, task6);
-        //
-        //    int finalAmount = store.amount_by_name("Test Product");
-        //
-        //    Assert.AreEqual(0, finalAmount);
-        //}
-        //
-        //[TestMethod]
-        //public void TestReduceProductAmount_Synchronization()
-        //{
-        //    // Arrange
-        //    var storeBuilder = store_controller.store_builder()
-        //                            .SetName("Test Store")
-        //                            .SetInventory(_inventory);
-        //    var store = storeBuilder.Build();
-        //    int initialAmount = 100;
-        //
-        //    store_controller.open_store(store);
-        //
-        //    var productId = store_controller.add_store_product(store.ID, "Test Product other", 100, "Category", "Good product", initialAmount);
-        //
-        //    Dictionary<int, int> order = new Dictionary<int, int>();
-        //    order[productId] = 5;
-        //
-        //    Task task1 = Task.Run(() => store_controller.decrease_products_amount(store.ID, order));
-        //    Task task2 = Task.Run(() => store_controller.decrease_products_amount(store.ID, order));
-        //    Task task3 = Task.Run(() => store_controller.decrease_products_amount(store.ID, order));
-        //    Task task4 = Task.Run(() => store_controller.decrease_products_amount(store.ID, order));
-        //    Task task5 = Task.Run(() => store_controller.decrease_products_amount(store.ID, order));
-        //    Task task6 = Task.Run(() => store_controller.decrease_products_amount(store.ID, order));
-        //
-        //    Task.WaitAll(task1, task2, task3, task4, task5, task6);
-        //
-        //    int finalAmount = store.amount_by_name("Test Product other");
-        //
-        //    Assert.AreEqual(initialAmount - 30, finalAmount);
-        //}
-
-
         [TestMethod]
         public void TestReduceProductAmount_Synchronization()
         {
@@ -268,9 +180,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
                 int finalAmount = store1.amount_by_name("Test Product 2");
                // Assert.AreEqual(finalAmount, 15);
             }
-            
-
-            
+           
         }
 
         [TestMethod]

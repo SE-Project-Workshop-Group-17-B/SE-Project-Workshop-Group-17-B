@@ -39,13 +39,9 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         Func<Cart, bool> condition_product;
         Func<Cart, bool> condition_all;
 
-
-
         [TestInitialize]
         public void SetUp()
         {
-
-
             /*
              * 
              *  Cart:           | name        |  price   | category  | descript  | amount   | total price
@@ -121,7 +117,6 @@ namespace Sadna_17_B_Test.Tests.UnitTests
             relevant_price_by_all = Discount_relevant_products_lambdas.cart();
             
             
-
             // -------- conditions functions -------------------------------
 
             condition_product = Discount_condition_lambdas.condition_product_amount(product1.ID, "<", 5);
@@ -129,16 +124,12 @@ namespace Sadna_17_B_Test.Tests.UnitTests
             condition_category = Discount_condition_lambdas.condition_category_amount(product1.category, "!=", 0);
 
             condition_all = Discount_condition_lambdas.condition_cart_price(">", 200);
-
-
-
         }
-
 
         // ----------------------------------------------------------------------- Discount Policy related ---------------------------------------------------------------------------------------
 
         [TestMethod]
-        public void TestAddAndRemoveDiscount()
+        public void TestSuccesfullAddAndRemoveDiscount()
         {
             
             Discount_Simple discount = new Discount_Simple( start_date,
@@ -155,7 +146,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         }
 
         [TestMethod]
-        public void TestDiscount_Percentage()
+        public void TestSuccessfullDiscountPercentage()
         {
             // Arrange
             Discount_Simple simple_discount = new Discount_Simple(start_date,
@@ -183,7 +174,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         }
         
         [TestMethod]
-        public void TestDiscount_Flat()
+        public void TestSuccessfullDiscountFlat()
         {
 
             // Arrange
@@ -213,7 +204,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         }
         
         [TestMethod]
-        public void TesDiscount_Membership()
+        public void TestSuccessfullDiscount_Membership()
         {
 
             // Arrange
@@ -245,7 +236,6 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         [TestMethod]
         public void TestDiscount_Rule()
         {
-
             Discount_Simple simple_flat_discount = new Discount_Simple(start_date, end_date, strategy_flat, relevant_price_by_product);
             Discount_Simple simple_prec_discount = new Discount_Simple(start_date, end_date, strategy_precentage, relevant_price_by_product);
             Discount_Simple simple_memb_discount = new Discount_Simple(start_date, end_date, strategy_membership, relevant_price_by_product);
@@ -285,10 +275,6 @@ namespace Sadna_17_B_Test.Tests.UnitTests
             Assert.AreEqual(or_rule.apply_discount(cart).total_discount, 350, 0.01);
             Assert.AreEqual(max_rule.apply_discount(cart).total_discount, 350, 0.01);
             Assert.AreEqual(add_rule.apply_discount(cart).total_discount, 750, 0.01);
-
-
-            
-
         }
 
 
@@ -296,7 +282,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
 
 
         [TestMethod]
-        public void TestCreateStore()
+        public void TestSuccessfullCreateStore()
         {
             // Act
             int store_id = store_controller.create_store("Test Store", "testemail@example.com", "1234567890", "Test Store Description", "Test Address");
@@ -318,8 +304,6 @@ namespace Sadna_17_B_Test.Tests.UnitTests
 
             store_controller.create_store("Test Store 1", "email1@example.com", "1111111111", "Description 1", "Address 1");
             store_controller.create_store("Test Store 2", "email2@example.com", "2222222222", "Description 2", "Address 2");
-
-           
 
             // Act
             Store result = store_controller.store_by_name("Test Store 2")[0];
@@ -344,9 +328,8 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         }
 
         [TestMethod]
-        public void TestRemoveStore()
+        public void TestSuccesfullRemoveStore()
         {
-
             // Arrange
             store_controller.clear_stores();
             int sid = store_controller.create_store("Test Store", "testemail@example.com", "1234567890", "Test Store Description", "Test Address");
@@ -361,7 +344,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         }
 
         [TestMethod]
-        public void TestGetAllStores()
+        public void TestSuccesfullGetAllStores()
         {
             // Arrange
             store_controller.clear_stores();
