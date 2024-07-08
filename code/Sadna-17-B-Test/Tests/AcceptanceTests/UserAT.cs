@@ -10,6 +10,8 @@ using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 using System.Diagnostics;
 using System.Security.Cryptography.X509Certificates;
+using System.Threading.Tasks;
+
 
 namespace Sadna_17_B_Test.Tests.AcceptanceTests
 {
@@ -23,6 +25,8 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         string password1 = "password1";
         string username2 = "test2";
         string password2 = "password2";
+        string username3 = "test3";
+        string password3 = "password";
 
         //for store test purposes
         string name = "testStore";
@@ -50,7 +54,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         }
 
         [TestMethod]
-        public void TestLogin()
+        public void TestSuccessfullLogin()
         {
             Response res = userService.Login(username1, password1);
             Assert.IsTrue(res.Success);
@@ -60,7 +64,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         }
 
         [TestMethod]
-        public void TestLogout()
+        public void TestSuccessfullLogout()
         {
             Response res = userService.Login(username1, password1);
             userDTO = res.Data as UserDTO;
@@ -69,7 +73,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         }
 
         [TestMethod]
-        public void TestGuestEntry()
+        public void TestSuccessfullGuestEntry()
         {
             Response res1 = userService.GuestEntry();
             Assert.IsTrue(res1.Success);
@@ -77,7 +81,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         }
 
         [TestMethod]
-        public void TestGuestLogout()
+        public void TestSuccessfullGuestLogout()
         {
             Response res1 = userService.GuestEntry();
             userDTO = res1.Data as UserDTO;
@@ -87,7 +91,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         }
 
         [TestMethod]
-        public void TestGuestLogoutFail()
+        public void TestFailedGuestLogout()
         {
             Response res = userService.GuestExit("");
 
@@ -95,7 +99,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         }
 
         [TestMethod]
-        public void TestCreateAdmin()
+        public void TestSuccessfullCreateAdmin()
         {
             username1 = "username1";
             password1 = "password1";
@@ -105,7 +109,18 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         }
 
         [TestMethod]
-        public void TestCreateStoreFounder()
+        public void TestFailedCreateAdmin()
+        {
+            username1 = "username1";
+            password1 = "password1";
+            Response ignore = userService.CreateAdmin(username1, password1);
+            Response res = userService.CreateAdmin(username1, password1);
+
+            Assert.IsFalse(res.Success);
+        }
+
+        [TestMethod]
+        public void TestSuccessfullCreateStoreFounder()
         {
             Response ignore = userService.CreateSubscriber(username1, password1);
             Response ignore2 = userService.CreateSubscriber(username2, password2);
@@ -123,10 +138,8 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         }
 
         [TestMethod]
-        public void TestStoreOwnerAppoitmentAccept()
+        public void TestSuccessfullStoreOwnerAppoitmentAccept()
         {
-           
-
             Response ignore = userService.CreateSubscriber(username1, password1);
             Response ignore2 = userService.CreateSubscriber(username2, password2);
             Response res1 = userService.Login(username1, password1);
@@ -144,9 +157,28 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         }
 
         [TestMethod]
-        public void TestStoreOwnerAppoitmentDecline()
+        public void TestFailedStoreOwnerAppoitmentAccept()
         {
+            Response ignore = userService.CreateSubscriber(username1, password1);
+            Response ignore2 = userService.CreateSubscriber(username2, password2);
+            Response res1 = userService.Login(username1, password1);
+            Response res2 = userService.Login(username2, password2);
 
+            string token1 = (res1.Data as UserDTO).AccessToken;
+            string token2 = (res2.Data as UserDTO).AccessToken;
+            ((UserService)userService).CreateStoreFounder(token1, sid);
+
+            Response res = userService.RespondToOwnerAppointmentOffer(token2, sid, true);
+
+            Response isOwner = userService.IsOwner(token2, sid);
+
+            Assert.IsFalse(res.Success);
+            Assert.IsFalse(isOwner.Success);
+        }
+
+        [TestMethod]
+        public void TestSuccessfullStoreOwnerAppoitmentDecline()
+        {
             Response ignore = userService.CreateSubscriber(username1, password1);
             Response ignore2 = userService.CreateSubscriber(username2, password2);
             Response res1 = userService.Login(username1, password1);
@@ -164,9 +196,8 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         }
 
         [TestMethod]
-        public void TestStoreManagerAppoitmentAccept()
+        public void TestSuccessfullStoreManagerAppoitmentAccept()
         {
-
             Response ignore = userService.CreateSubscriber(username1, password1);
             Response ignore2 = userService.CreateSubscriber(username2, password2);
             Response res1 = userService.Login(username1, password1);
@@ -187,9 +218,28 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         }
 
         [TestMethod]
-        public void TestStoreManagerAppoitmentDecline()
+        public void TestFailedStoreManagerAppoitmentAccept()
         {
+            Response ignore = userService.CreateSubscriber(username1, password1);
+            Response ignore2 = userService.CreateSubscriber(username2, password2);
+            Response res1 = userService.Login(username1, password1);
+            Response res2 = userService.Login(username2, password2);
 
+            string token1 = (res1.Data as UserDTO).AccessToken;
+            string token2 = (res2.Data as UserDTO).AccessToken;
+            ((UserService)userService).CreateStoreFounder(token1, sid);
+
+            Response res = userService.RespondToManagerAppointmentOffer(token2, sid, true);
+
+            Response checkNotApp = userService.IsManager(token2, sid);
+
+            Assert.IsFalse(res.Success);
+            Assert.IsFalse(checkNotApp.Success);
+        }
+
+        [TestMethod]
+        public void TestSuccessfullStoreManagerAppoitmentDecline()
+        {
             Response ignore = userService.CreateSubscriber(username1, password1);
             Response ignore2 = userService.CreateSubscriber(username2, password2);
             Response res1 = userService.Login(username1, password1);
@@ -207,10 +257,8 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         }
 
         [TestMethod]
-        public void TestStoreManagerAppoitmentWrongUser()
-        {
-           
-
+        public void TestSuccessfullStoreManagerAppoitmentWrongUser()
+        {         
             Response ignore = userService.CreateSubscriber(username1, password1);
             Response res1 = userService.Login(username1, password1);
 
@@ -223,7 +271,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         }
 
         [TestMethod]
-        public void TestStoreOwnerAppoitmentWrongUser()
+        public void TestSuccessfullStoreOwnerAppoitmentWrongUser()
         {
 
             Response ignore = userService.CreateSubscriber(username1, password1);
@@ -238,10 +286,49 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         }
 
         [TestMethod]
-        public void TestUpdateStoreManagerAuthorization()
+        public void TestSuccessfullRevokeOwnership()
         {
-            
+            Response ignore = userService.CreateSubscriber(username1, password1);
+            Response ignore2 = userService.CreateSubscriber(username2, password2);
+            Response res1 = userService.Login(username1, password1);
+            Response res2 = userService.Login(username2, password2);
 
+            string token1 = (res1.Data as UserDTO).AccessToken;
+            string token2 = (res2.Data as UserDTO).AccessToken;
+            ((UserService)userService).CreateStoreFounder(token1, sid);
+
+            ignore = userService.OfferOwnerAppointment(token1, sid, username2);
+            ignore = userService.RespondToOwnerAppointmentOffer(token2, sid, true);
+
+            Response res = userService.RevokeOwnership(token1, sid, username2);
+            Response res3 = userService.IsOwner(token2, sid);
+
+            Assert.IsTrue(res.Success);
+            Assert.IsFalse(res3.Success);
+        }
+
+        [TestMethod]
+        public void TestFailedRevokeOwnership()
+        {
+            Response ignore = userService.CreateSubscriber(username1, password1);
+            Response ignore2 = userService.CreateSubscriber(username2, password2);
+            Response res1 = userService.Login(username1, password1);
+            Response res2 = userService.Login(username2, password2);
+
+            string token1 = (res1.Data as UserDTO).AccessToken;
+            string token2 = (res2.Data as UserDTO).AccessToken;
+            ((UserService)userService).CreateStoreFounder(token1, sid);
+
+            Response res = userService.RevokeOwnership(token1, sid, username2);
+            Response res3 = userService.IsOwner(token2, sid);
+
+            Assert.IsFalse(res.Success); //username2 was never owner so we cannot take it from him
+            Assert.IsFalse(res3.Success);
+        }
+
+        [TestMethod]
+        public void TestSuccessfullUpdateStoreManagerAuthorization()
+        {
             Response ignore = userService.CreateSubscriber(username1, password1);
             Response ignore2 = userService.CreateSubscriber(username2, password2);
             Response res1 = userService.Login(username1, password1);
@@ -268,65 +355,8 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         }
 
         [TestMethod]
-        public void TestRevokeOwnership()
-        {
-            
-
-            Response ignore = userService.CreateSubscriber(username1, password1);
-            Response ignore2 = userService.CreateSubscriber(username2, password2);
-            Response res1 = userService.Login(username1, password1);
-            Response res2 = userService.Login(username2, password2);
-
-            string token1 = (res1.Data as UserDTO).AccessToken;
-            string token2 = (res2.Data as UserDTO).AccessToken;
-            ((UserService)userService).CreateStoreFounder(token1, sid);
-
-            ignore = userService.OfferOwnerAppointment(token1, sid, username2);
-            ignore = userService.RespondToOwnerAppointmentOffer(token2, sid, true);
-
-            Response res = userService.RevokeOwnership(token1, sid, username2);
-            Response res3 = userService.IsOwner(token2, sid);
-
-            Assert.IsTrue(res.Success);
-            Assert.IsFalse(res3.Success);
-        }
-
-        [TestMethod]
-        public void TestStoreRoles()
-        {
-            
-
-            Response ignore = userService.CreateSubscriber(username1, password1);
-            ignore = userService.CreateSubscriber(username2, password2);
-            Response res1 = userService.Login(username1, password1);
-            Response res2 = userService.Login(username2, password2);
-
-            string token1 = (res1.Data as UserDTO).AccessToken;
-            string token2 = (res2.Data as UserDTO).AccessToken;
-            ((UserService)userService).CreateStoreFounder(token1, sid);
-
-            ignore = userService.OfferManagerAppointment(token1, sid, username2);
-            ignore = userService.RespondToManagerAppointmentOffer(token2, sid, true);
-
-            HashSet<Manager.ManagerAuthorization> auth = new HashSet<Manager.ManagerAuthorization>();
-            auth.Add(Manager.ManagerAuthorization.View);
-            auth.Add(Manager.ManagerAuthorization.UpdateDiscountPolicy);
-
-            ignore = userService.UpdateManagerAuthorizations(token1, sid, username2, auth);
-            Response res = userService.GetStoreRoles(token1, sid);
-            Tuple<HashSet<string>, Dictionary<string, HashSet<Manager.ManagerAuthorization>>> data = res.Data as Tuple<HashSet<string>, Dictionary<string, HashSet<Manager.ManagerAuthorization>>>;
-            //data is hash set of owners as key, and dict of manager and authorization as value
-
-            Assert.IsTrue(res.Success);
-            Assert.IsTrue(data.Item1.Contains(username1));
-            Assert.IsTrue(data.Item2[username2].SetEquals(auth));
-        }
-
-        [TestMethod]
-        public void TestRegisterSameUserTwice()
-        {
-            
-
+        public void TestBadCaseRegisterSameUserTwice()
+        {          
             Response ignore = userService.CreateSubscriber(username1, password1);
             Response res = userService.CreateSubscriber(username1, password1);
             Assert.IsFalse(res.Success);
@@ -335,8 +365,6 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         [TestMethod]
         public void TestSuccesfullAddToCart()
         {
-
-
             // init user service
 
             int quantity = 10;
@@ -372,10 +400,8 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         }
 
         [TestMethod]
-        public void TestAddToCartWrongProduct()
-        {
-            
-
+        public void TestBadCaseAddToCartWrongProduct()
+        {          
             Response ignore = userService.CreateSubscriber(username1, password1);
             ignore = userService.Login(username1, password1);
             UserDTO temp = ignore.Data as UserDTO;
@@ -392,7 +418,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         }
 
         [TestMethod]
-        public void TestAddToMuchProductsToCart()
+        public void TestBadCaseAddTooMuchProductsToCart()
         {
             // init user service
 
@@ -422,7 +448,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         }
 
         [TestMethod]
-        public void TestGoodPurchaseHistory()
+        public void TestSuccesfullGetPurchaseHistory()
         {
 
             // init user service
@@ -461,7 +487,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         }
 
         [TestMethod]
-        public void TestBadPurchaseHistory()
+        public void TestBadCaseGetPurchaseHistory()
         {
 
             // init user service
@@ -500,7 +526,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         }
 
         [TestMethod]
-        public void TestGettingDataOfStoreByAdmin()
+        public void TestSuccesfullGettingDataOfStoreByAdmin()
         {
 
             // init user service
@@ -539,7 +565,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         }
 
         [TestMethod]
-        public void TestGettingDataOfStoreByRandomUser()
+        public void TestBadCaseGettingDataOfStoreByRandomUser()
         {
 
             // init user service
@@ -573,6 +599,84 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
             Response test = userService.GetStoreOrderHistory(token, sid);
 
             Assert.IsFalse(test.Success);
+        }
+
+        [TestMethod]
+        public void TestTwoPeopleUpdateSameUserAuthorizationsConccurency_Success()
+        {
+            Response ignore = userService.CreateSubscriber(username1, password1);
+            ignore = userService.CreateSubscriber(username2, password2);
+            ignore = userService.CreateSubscriber(username3, password3);
+            Response res1 = userService.Login(username1, password1);
+            Response res2 = userService.Login(username2, password2);
+            Response res3 = userService.Login(username3, password3);
+
+            string token1 = (res1.Data as UserDTO).AccessToken;
+            string token2 = (res2.Data as UserDTO).AccessToken;
+            string token3 = (res3.Data as UserDTO).AccessToken;
+            ((UserService)userService).CreateStoreFounder(token1, sid);
+
+            ignore = userService.OfferOwnerAppointment(token1, sid, username2);
+            ignore = userService.RespondToOwnerAppointmentOffer(token2, sid, true);
+            ignore = userService.OfferManagerAppointment(token1, sid, username3);
+            ignore = userService.RespondToManagerAppointmentOffer(token3, sid, true);
+
+            HashSet<Manager.ManagerAuthorization> auth = new HashSet<Manager.ManagerAuthorization>();
+            auth.Add(Manager.ManagerAuthorization.View);
+            auth.Add(Manager.ManagerAuthorization.UpdateDiscountPolicy);
+
+            //both users try to give the third user the same authorizations
+            Task task1 = Task.Run(() => userService.UpdateManagerAuthorizations(token1, sid, username3, auth));
+            Task task2 = Task.Run(() => userService.UpdateManagerAuthorizations(token2, sid, username3, auth));
+
+            Task.WaitAll(task1, task2);
+
+            Response res = userService.GetStoreRoles(token1, sid);
+            Tuple<HashSet<string>, Dictionary<string, HashSet<Manager.ManagerAuthorization>>> data = res.Data as Tuple<HashSet<string>, Dictionary<string, HashSet<Manager.ManagerAuthorization>>>;
+
+            Assert.IsTrue(res.Success);
+            Assert.IsTrue(data.Item1.Contains(username1));
+            Assert.IsTrue(data.Item2[username3].SetEquals(auth));
+        }
+
+        [TestMethod]
+        public void TestTwoPeopleUpdateSameUserDifferentAuthorizationsConccurency_Success()
+        {
+            //need to understande what should happend, easy fix
+            Assert.IsFalse(true);
+            Response ignore = userService.CreateSubscriber(username1, password1);
+            ignore = userService.CreateSubscriber(username2, password2);
+            ignore = userService.CreateSubscriber(username3, password3);
+            Response res1 = userService.Login(username1, password1);
+            Response res2 = userService.Login(username2, password2);
+            Response res3 = userService.Login(username3, password3);
+
+            string token1 = (res1.Data as UserDTO).AccessToken;
+            string token2 = (res2.Data as UserDTO).AccessToken;
+            string token3 = (res3.Data as UserDTO).AccessToken;
+            ((UserService)userService).CreateStoreFounder(token1, sid);
+
+            ignore = userService.OfferOwnerAppointment(token1, sid, username2);
+            ignore = userService.RespondToOwnerAppointmentOffer(token2, sid, true);
+            ignore = userService.OfferManagerAppointment(token1, sid, username3);
+            ignore = userService.RespondToManagerAppointmentOffer(token3, sid, true);
+
+            HashSet<Manager.ManagerAuthorization> auth = new HashSet<Manager.ManagerAuthorization>();
+            auth.Add(Manager.ManagerAuthorization.View);
+            auth.Add(Manager.ManagerAuthorization.UpdateDiscountPolicy);
+
+            //both users try to give the third user the same authorizations
+            Task task1 = Task.Run(() => userService.UpdateManagerAuthorizations(token1, sid, username3, auth));
+            Task task2 = Task.Run(() => userService.UpdateManagerAuthorizations(token2, sid, username3, auth));
+
+            Task.WaitAll(task1, task2);
+
+            Response res = userService.GetStoreRoles(token1, sid);
+            Tuple<HashSet<string>, Dictionary<string, HashSet<Manager.ManagerAuthorization>>> data = res.Data as Tuple<HashSet<string>, Dictionary<string, HashSet<Manager.ManagerAuthorization>>>;
+
+            Assert.IsTrue(res.Success);
+            Assert.IsTrue(data.Item1.Contains(username1));
+            Assert.IsTrue(data.Item2[username3].SetEquals(auth));
         }
     }
 }

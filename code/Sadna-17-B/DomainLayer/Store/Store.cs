@@ -23,9 +23,9 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
 
         public static int idCounter = 1;
-        public static int ratingCounter = 0;
-        public static double ratingOverAllScore = 0;
-
+        private int ratingCounter { get; set; }
+        private double ratingOverAllScore { get; set; }
+        
 
         public int ID { get; private set; }
         public string name { get; set; }
@@ -66,16 +66,21 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             this.purchase_policy = new PurchasePolicy();
 
             this.rating = 0;
+            this.ratingOverAllScore = 0;
             this.reviews = new List<string>();
             this.complaints = new List<string>();
+
+
+            this.ratingCounter = 0;
         }
 
         public bool add_rating(double ratingInput)
         {
-            if (ratingInput < 0 || ratingInput > 10)
-                return false;
-            ratingCounter++;
-            ratingOverAllScore += ratingInput;
+            if (ratingInput < 0) ratingInput = 0;
+            if (ratingInput > 5) ratingInput = 5;
+
+            this.ratingCounter++;
+            this.ratingOverAllScore += ratingInput;
             this.rating = ratingOverAllScore / ratingCounter;
 
             return true;

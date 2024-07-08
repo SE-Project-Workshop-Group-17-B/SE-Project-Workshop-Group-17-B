@@ -9,7 +9,7 @@ namespace Sadna_17_B.ServiceLayer.Services
     public interface IStoreService
     {
 
-        // ---------------- adjust store options -------------------------------------------------------------------------------------------
+        // ---------------- adjust store options -------------------------------------------------------------------------------------
 
         Response create_store(string token, string name, string email, string phoneNumber, string storeDescription, string address);
         Response close_store(string token, int storeID);
