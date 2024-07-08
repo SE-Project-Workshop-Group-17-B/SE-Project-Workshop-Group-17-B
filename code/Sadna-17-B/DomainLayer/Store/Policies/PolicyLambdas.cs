@@ -13,120 +13,12 @@ using System.Threading.Tasks;
 namespace Sadna_17_B.DomainLayer.StoreDom
 {
 
-    public class Comparator
-    {
-        public static Dictionary<string, Func<double, double, bool>> ops = new Dictionary<string, Func<double, double, bool>>
-            {
-                { ">", (x, y) => x > y },
-                { "<", (x, y) => x < y },
-                { "==", (x, y) => x == y },
-                { "!=", (x, y) => x != y },
-                { ">=", (x, y) => x >= y },
-                { "<=", (x, y) => x <= y }
-            };
-
-        public static bool compare(double a, string operation, double b)
-        {
-            if (ops.ContainsKey(operation))
-                return ops[operation](a, b);
-
-            else
-                throw new ArgumentException("Invalid comparison operation");
-
-        }
-
-    }
-
-    public class Discount_condition_lambdas
-    {
-
-        // --------------------------- abstract comparison ------------------------------
 
 
-        
+    // ------------------- cart pricing abstract maker -----------------------------------------------------------------------------------------
 
 
-        // --------------------------- conditions ------------------------------
-
-
-        public static Func<Cart, bool> condition_product_amount(int product, string op, double factor) // condition on cart based on product amount
-        {
-            return (Cart cart) =>
-
-            {
-                if (!cart.contains(product))
-                    return false;
-
-                return Comparator.compare(cart.find_product_amount(product), op, factor);
-            };
-        }
-
-        public static Func<Cart, bool> condition_product_price(int product, string op, double factor) // condition on cart based on category products amount
-        {
-            return (Cart cart) =>
-
-            {
-                if (!cart.contains(product))
-                    return false;
-
-                return Comparator.compare(cart.find_product_price(product), op, factor);
-            };
-        }
-
-
-        public static Func<Cart, bool> condition_category_amount(string category, string op, double factor) // condition on cart based on product price
-        {
-            return (Cart cart) =>
-
-            {
-                if (!cart.contains(category))
-                    return false;
-
-                return Comparator.compare(cart.find_category_amount(category), op, factor);
-
-            };
-        }
-
-        public static Func<Cart, bool> condition_category_price(string category, string op, double factor) // condition on cart based on category products price
-        {
-            return (Cart cart) =>
-
-            {
-                if (!cart.contains(category))
-                    return false;
-
-                return Comparator.compare(cart.find_category_price(category), op, factor);
-
-            };
-        }
-
-
-        public static Func<Cart, bool> condition_cart_amount(string op, int factor) // condition on cart based on category products price
-        {
-            return (Cart cart) =>
-
-            {
-                return Comparator.compare(cart.amount_all(), op, factor);
-
-            };
-        }
-
-        public static Func<Cart, bool> condition_cart_price(string op, int factor) // condition on cart based on category products amount
-        {
-            return (Cart cart) =>
-
-            {
-                return Comparator.compare(cart.price_all(), op, factor);
-            };
-        }
-
-    }
-
-
-    // ------------------- Discount_relevant_product_Lambdas : generator of relevand price gathering function -----------------------------------------------------------------------------------------
-
-
-    public class Discount_relevant_products_lambdas
+    public static class lambda_cart_pricing
     {
 
         public static Func<Cart, double> product(int pid) // relevant product price
@@ -190,27 +82,17 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
     }
 
-    // ------------------- Purchase_rule_Lambdas : generator of discount conditions -----------------------------------------------------------------------------------------
+    // ------------------- purchase rules specific maker  -----------------------------------------------------------------------------------------
 
 
-
-    public class Purchase_Rule_Lambdas
+    public static class lambda_purchase_rule
     {
 
-
-        public static Func<Cart, List<Func<Cart, bool>>, bool> and { get; set; }
-
-        public static Func<Cart, List<Func<Cart, bool>>, bool> or { get; set; }
-
-        public static Func<Cart, List<Func<Cart, bool>>, bool> conditional { get; set; }
-
-
-
-        public Purchase_Rule_Lambdas()
+        public static Func<Cart, List<Func<Cart, bool>>, bool> or() // at least one condition applies on cart
         {
 
 
-            or = (Cart cart, List<Func<Cart, bool>> conditions) =>  // at least one condition applies on cart
+            return (Cart cart, List<Func<Cart, bool>> conditions) =>  
             {
                 foreach (var condition in conditions)
                 {
@@ -221,27 +103,169 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                 return false;
             };
 
-            conditional = (Cart cart, List<Func<Cart, bool>> conditions) =>
-            {
-                return (conditions[0](cart) & !conditions[1](cart)) | (!conditions[0](cart) & !conditions[1](cart));
-            };
+        }
 
+        public static Func<Cart, List<Func<Cart, bool>>, bool> and() // all conditions must apply
+        {
+            return (Cart cart, List<Func<Cart, bool>> conditions) =>  
+            {
+                foreach (var condition in conditions)
+                {
+                    if (!condition(cart))
+                        return false;
+                }
+
+                return true;
+            };
 
         }
 
+        public static Func<Cart, List<Func<Cart, bool>>, bool> conditional()  // all conditions must drag the others
+        {
+
+            return (Cart cart, List<Func<Cart, bool>> conditions) => 
+            {
+                bool last_condition = true;
+
+                foreach (var condition in conditions)
+                {
+                    bool both_true = (last_condition && condition(cart));
+                    bool both_false = (!last_condition) && (!condition(cart));
+
+                    if (!(both_true | both_false))
+                        return false;
+
+                    last_condition = condition(cart);
+                }
+
+                return true;
+            };
+
+        }
+        
+
+    }
+
+    // ------------------- Rule lambdas : base rules between discount conditions -----------------------------------------------------------------------------------------
+
+    public static class lambda_discount_rule
+    {
+
+        public static class logic
+        {
+            public static Func<Cart, List<Discount>, Mini_Checkout> and() // add all discounts (all conditions satisfied)
+            {
+                return (Cart cart, List<Discount> discounts) =>
+
+                {
+                    Mini_Checkout checkout = new Mini_Checkout();
+
+                    foreach (var discount in discounts)
+                    {
+                        if (!discount.check_conditions(cart))
+                            return new Mini_Checkout();
+
+                        checkout.merge_checkout(discount.apply_discount(cart));
+                    }
+
+                    return checkout;
+                };
+
+            }
+
+            public static Func<Cart, List<Discount>, Mini_Checkout> or() // add all discounts (at least one condition satisfied)
+            {
+                return (Cart cart, List<Discount> discounts) =>
+
+                {
+                    Mini_Checkout checkout = new Mini_Checkout();
+                    bool true_flag = false;
+
+                    foreach (var discount in discounts)
+                    {
+                        if (discount.check_conditions(cart))
+                            true_flag = true;
+
+                        checkout.merge_checkout(discount.apply_discount(cart));
+                    }
+
+                    return true_flag ? checkout : new Mini_Checkout();
+                };
+
+            }
+
+            public static Func<Cart, List<Discount>, Mini_Checkout> xor() // add all discounts (at least one condition satisfied)
+            {
+                return (Cart cart, List<Discount> discounts) =>
+
+                {
+                    List<Mini_Checkout> checkouts = new List<Mini_Checkout>();
+
+                    foreach (var discount in discounts)
+                        if (discount.check_conditions(cart))
+                            checkouts.Add(discount.apply_discount(cart));
+
+                    return Mini_Checkout.choose_cheap_checkout(checkouts);
+                };
+            }
+
+        }
+
+
+        public static class numeric
+        {
+
+            public static Func<Cart, List<Discount>, Mini_Checkout> maximum() // prefer the maximal discount price
+            {
+                return (Cart cart, List<Discount> discounts) =>
+
+                {
+                    Mini_Checkout checkout = new Mini_Checkout();
+                    int maximum_discount = 0;
+
+                    foreach (var discount in discounts)
+                    {
+                        Mini_Checkout curr_checkout = discount.apply_discount(cart);
+
+                        if (curr_checkout.total_discount > maximum_discount)
+                            checkout.replace_checkout(curr_checkout);
+
+                    }
+
+                    return checkout;
+                };
+
+            }
+
+            public static Func<Cart, List<Discount>, Mini_Checkout> addition() // add all discounts with no conditions
+            {
+                return (Cart cart, List<Discount> discounts) =>
+
+                {
+                    Mini_Checkout checkout = new Mini_Checkout();
+                    int maximum_discount = 0;
+
+                    foreach (var discount in discounts)
+                        checkout.merge_checkout(discount.apply_discount(cart));
+
+                    return checkout;
+                };
+            }
+
+        }
     }
 
 
-    // ------------------- Purchase_Condition_Lambdas : generator of discount conditions -----------------------------------------------------------------------------------------
+    // ------------------- conditions maker -----------------------------------------------------------------------------------------
 
 
-    public class Purchase_Conditions_Lambdas
+    public static class lambda_condition
     {
 
         // --------------------------- abstract comparison ------------------------------
 
 
-        Dictionary<string, Func<double, double, bool>> ops = new Dictionary<string, Func<double, double, bool>>
+        private static Dictionary<string, Func<double, double, bool>> ops = new Dictionary<string, Func<double, double, bool>>
             {
                 { ">", (x, y) => x > y },
                 { "<", (x, y) => x < y },
@@ -251,7 +275,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                 { "<=", (x, y) => x <= y }
             };
 
-        bool compare(double a, string operation, double b)
+        private static bool compare(double a, string operation, double b)
         {
             if (ops.ContainsKey(operation))
                 return ops[operation](a, b);
@@ -266,7 +290,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         // --------------------------- product conditions ------------------------------
 
 
-        public static Func<Cart, bool> condition_product_amount(int product, string op, int factor) // condition on cart based on product amount
+        public static Func<Cart, bool> condition_product_amount(int product, string op, int amount) // condition on cart based on product amount
         {
             return (Cart cart) =>
 
@@ -274,11 +298,11 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                 if (!cart.contains(product))
                     return false;
 
-                return Comparator.compare(cart.find_product_amount(product), op, factor);
+                return compare(cart.find_product_amount(product), op, amount);
             };
         }
 
-        public static Func<Cart, bool> condition_product_price(int product, string op, int factor) // condition on cart based on category products amount
+        public static Func<Cart, bool> condition_product_price(int product, string op, double price) // condition on cart based on category products amount
         {
             return (Cart cart) =>
 
@@ -286,7 +310,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                 if (!cart.contains(product))
                     return false;
 
-                return Comparator.compare(cart.find_product_price(product), op, factor);
+                return compare(cart.find_product_price(product), op, price);
             };
         }
 
@@ -294,7 +318,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         // --------------------------- category conditions ------------------------------
 
 
-        public static Func<Cart, bool> condition_category_amount(string category, string op, int factor)
+        public static Func<Cart, bool> condition_category_amount(string category, string op, int amount)
         {
             return (Cart cart) =>
 
@@ -302,12 +326,12 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                 if (!cart.contains(category))
                     return false;
 
-                return Comparator.compare(cart.find_category_amount(category), op, factor);
+                return compare(cart.find_category_amount(category), op, amount);
 
             };
         }
 
-        public static Func<Cart, bool> condition_category_price(string category, string op, int factor)
+        public static Func<Cart, bool> condition_category_price(string category, string op, double price)
         {
             return (Cart cart) =>
 
@@ -315,7 +339,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                 if (!cart.contains(category))
                     return false;
 
-                return Comparator.compare(cart.find_category_price(category), op, factor);
+                return compare(cart.find_category_price(category), op, price);
 
             };
         }
@@ -324,29 +348,29 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         // --------------------------- cart conditions ------------------------------
 
 
-        public static Func<Cart, bool> condition_cart_amount(string op, int factor)
+        public static Func<Cart, bool> condition_cart_amount(string op, int amount)
         {
             return (Cart cart) =>
 
             {
-                return Comparator.compare(cart.amount_all(), op, factor);
+                return compare(cart.amount_all(), op, amount);
 
             };
         }
 
-        public static Func<Cart, bool> condition_cart_price(string op, int factor)
+        public static Func<Cart, bool> condition_cart_price(string op, double price)
         {
             return (Cart cart) =>
 
             {
-                return Comparator.compare(cart.price_all(), op, factor);
+                return compare(cart.price_all(), op, price);
             };
         }
 
 
         // --------------------------- user conditions ------------------------------
 
-        public static Func<Cart, bool> condition_alcohol_hour(string op, int factor)
+        public static Func<Cart, bool> condition_alcohol_hour(string op, DateTime hour)
         {
             return (Cart cart) =>
 
@@ -366,7 +390,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             };
         }
 
-        public static Func<Cart, bool> condition_alcohol_age(string op, int factor)
+        public static Func<Cart, bool> condition_alcohol_age(string op, double age)
         {
             return (Cart cart) =>
 
@@ -376,6 +400,14 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             };
         }
 
+        public static Func<Cart, bool> condition_true()
+        {
+            return (Cart cart) =>
+
+            {
+                return true;
+            };
+        }
 
     }
 }

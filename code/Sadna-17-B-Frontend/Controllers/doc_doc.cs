@@ -22,7 +22,7 @@
  *      
  *      "store id"          :       int
  *      "discount id"       :       int
- *      "discount type"     :       ( add / remove )
+ *      "discount type"     :       ( add composite / add rule / remove composite / remove rule )
  *      "start date"        :       dd/mm/yyyy
  *      "end date"          :       dd/mm/yyyy
  *      
@@ -30,15 +30,51 @@
  *      "flat"              :       double
  *      "precentage"        :       double
  *      
- *      "relevant type"     :       ( product / category / products / categories )
+ *      "relevant type"     :       ( product / category / products / categories / cart)
  *      "relevant factores" :       ( string / int ) | ...                                // for product id, for category string
  *      
  *      "cond type"         :       ( p amount / p price / c amount / c price )
  *      "cond product"      :       int
- *      "cond op"                   ( == / != / < / > / <= / >= )
- *      "cond factor"       :       double
+ *      "cond op"           :       ( == / != / < / > / <= / >= )
+ *      "cond price"        :       double
+ *      "cond amount"       :       int
+ *      "cond date"         :       dd/mm/yyyy
+ * 
+ * 
+ *      ------------------------------------------------------------------------------
+ *      
+ * * * show-discount-policy()   -       abstract discount policy edit
+ *      
+ *      "store id"          :       int
+ *      "discount id"       :       int
+ * 
+ * 
+ *      ------------------------------------------------------------------------------
+ *      
+ * * * edit-purchase-policy()   -       abstract discount policy edit
+ *      
+ *      "store id"          :       int
+ *      "edit type"         :       ( add / remove )
+ *      "ancestor id"       :       int
+ *      "name"              :       string
+ *      "rule type"         :       ( and / or / conditional )                              // for product id, for category string
+ *      
+ *      "cond type"         :       ( p amount / p price / c amount / c price )
+ *      "cond product"      :       int
+ *      "cond op"           :       ( == / != / < / > / <= / >= )
+ *      "cond price"        :       double
+ *      "cond amount"       :       int
+ *      "cond date"         :       dd/mm/yyyy
  *      
  *      -------------------------------------------------------------------------------
+ *      
+ * * * * show-purchase-policy()   -       abstract discount policy edit
+ *      
+ *      "store id"          :       int
+ *      "purchase rule id"  :       int
+ * 
+ * 
+ *      ------------------------------------------------------------------------------
  *      
  * * *  edit-product-in-store() -       abstract product editing
  *      
@@ -51,10 +87,10 @@
  *      
  *      ------------------------------------------------------------------------------
  * 
- * * *  roles()                 -       abstract user roles gathering
+ * * *  has-roles() / roles()   -       abstract user roles gathering
  *      
- *      "token"             :       string
- *      "store id"          :       int
+ *      "store id"          :       int 
+ *      "roles to check"     :      (founder / owner / manager / guest / subscriber / admin) | ... 
  *      
  *      ------------------------------------------------------------------------------
  * 

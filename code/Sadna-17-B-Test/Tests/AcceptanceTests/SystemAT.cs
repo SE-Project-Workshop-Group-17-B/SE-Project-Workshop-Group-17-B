@@ -29,7 +29,6 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         string phonenumber = "0525381648";
         string storeDescr = "test store for testing";
         string addr = "Beer sheve BGU st.3";
-        Inventory inv = new Inventory();
         int storeId = 1;
 
         //for product related tests
@@ -124,7 +123,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
             ignore = userService.CreateSubscriber(username2, password2);
             Response res = userService.Login(username1, password1);
             userDTO = res.Data as UserDTO;
-            Response res2 = storeService.create_store(userDTO.AccessToken,name, email, phonenumber, storeDescr, addr, inv);
+            Response res2 = storeService.create_store(userDTO.AccessToken,name, email, phonenumber, storeDescr, addr);
 
             res = storeService.store_by_name(name);
             Assert.IsTrue(res.Success);
@@ -141,7 +140,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
             ignore = userService.CreateSubscriber(username2, password2);
             Response res = userService.Login(username1, password1);
             userDTO = res.Data as UserDTO;
-            storeService.create_store(userDTO.AccessToken, name, email, phonenumber, storeDescr, addr, inv);
+            storeService.create_store(userDTO.AccessToken, name, email, phonenumber, storeDescr, addr);
             Response storeRes = storeService.store_by_name(name);
             int newStoreID = (storeRes.Data as Store).ID;
 
@@ -161,7 +160,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
             ignore = userService.CreateSubscriber(username2, password2);
             Response res = userService.Login(username1, password1);
             userDTO = res.Data as UserDTO;
-            storeService.create_store(userDTO.AccessToken, name, email, phonenumber, storeDescr, addr, inv);
+            storeService.create_store(userDTO.AccessToken, name, email, phonenumber, storeDescr, addr);
             Response storeRes = storeService.store_by_name(name);
             int newStoreID = (storeRes.Data as Store).ID; // Note: may change if the response returns StoreDTO
 
@@ -179,7 +178,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
             ignore = userService.CreateSubscriber(username2, password2);
             Response res = userService.Login(username1, password1);
             userDTO = res.Data as UserDTO;
-            storeService.create_store(userDTO.AccessToken, name, email, phonenumber, storeDescr, addr, inv);
+            storeService.create_store(userDTO.AccessToken, name, email, phonenumber, storeDescr, addr);
             Response storeRes = storeService.store_by_name(name);
             Assert.AreEqual((storeRes.Data as Store).name, name);
         }

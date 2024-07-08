@@ -78,8 +78,8 @@ namespace Sadna_17_B.DomainLayer.Order
             foreach (var quantitiesOfStore in quantities)
             {
                 int storeID = quantitiesOfStore.Key;
-                Receipt storeModuleReceipt = storeController.calculate_products_prices(storeID, quantitiesOfStore.Value);
-                Dictionary<int,Product> storeProductsPrices = storeModuleReceipt.cart.products;
+                Checkout store_checkout = storeController.calculate_products_prices(storeID, quantitiesOfStore.Value);
+                Dictionary<int,Product> storeProductsPrices = store_checkout.cart.products;
                 Dictionary<int, Tuple<int, double>> storeProductIdsPrices = new Dictionary<int, Tuple<int, double>>();
 
                 foreach (Product product in storeProductsPrices.Values)
@@ -88,7 +88,7 @@ namespace Sadna_17_B.DomainLayer.Order
                 }
 
                 products[storeID] = storeProductIdsPrices;
-                orderPrice += storeModuleReceipt.TotalPrice();
+                orderPrice += store_checkout.total_price_with_discount;
             }
             Order order = new Order(orderCount, userID, isGuest, products, destinationAddress, creditCardInfo, orderPrice);
             // Check validity of total price

@@ -10,6 +10,7 @@ using System.Diagnostics;
 using System.Xml.Linq;
 using System.Data;
 using Sadna_17_B.Utils;
+using System.Web.UI.WebControls;
 
 
 namespace Sadna_17_B.DomainLayer.StoreDom
@@ -35,11 +36,11 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         public Inventory inventory { get; set; }
 
 
-        public  DiscountPolicy discount_policy { get; private set; }
-        public  PurchasePolicy purchase_policy { get; private set; }
+        public DiscountPolicy discount_policy { get; private set; }
+        public PurchasePolicy purchase_policy { get; private set; }
 
 
-        public double rating { get;  set; }
+        public double rating { get; set; }
         public List<string> reviews { get; set; }
         public List<string> complaints { get; set; }
 
@@ -52,7 +53,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         public Store(string name, string email, string phone_number, string store_description, string address)
         {
             this.ID = idCounter++;
-            
+
             this.name = name;
             this.email = email;
             this.phone_number = phone_number;
@@ -101,10 +102,10 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             List<Product> products = new List<Product>();
             foreach (Product product in inventory.all_products())
                 products.Add(product);
-            
+
             return products;
         }
-        
+
         public int add_product(string name, double price, string category, string description, int amount)
         {
             return inventory.add_product(name, price, category, description, amount);
@@ -117,9 +118,9 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         public void decrease_product_amount(int p_id, int amount)
         {
-            
-           inventory.decrease_product_amount(p_id, amount); 
-            
+
+            inventory.decrease_product_amount(p_id, amount);
+
         }
 
 
@@ -133,7 +134,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
             foreach (Product product in products_to_remove)
                 result = result && inventory.remove_product(product.ID);
-            
+
             return result;
         }
 
@@ -142,7 +143,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return inventory.remove_product(pid);
         }
 
-        public void edit_product(Dictionary<string,string> doc) // doc explained on doc_doc.cs
+        public void edit_product(Dictionary<string, string> doc) // doc explained on doc_doc.cs
         {
             int pid = Parser.parse_int(doc["product id"]);
             string edit_type = Parser.parse_string(doc["edit type"]);
@@ -178,31 +179,82 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         {
             Product product = inventory.product_by_id(p_id);
 
-            if (product == null) 
+            if (product == null)
                 return 0;
 
             return product.price * amount;
-            
+
         }
 
 
         // ---------------- policies ----------------------------------------------------------------------------------------
 
 
-        public bool edit_purchase_policy(Dictionary<string,string> doc) // version 3
+        public int edit_discount_policy(Dictionary<string, string> doc)
         {
-            return true;
+            string type = Parser.parse_string(doc["edit type"]);
+
+            switch (type)
+            {
+                case "add":
+
+                    int ancestor_id = Parser.parse_int(doc["ancestor id"]);
+                    DateTime start = Parser.parse_date(doc["start date"]);
+                    DateTime end = Parser.parse_date(doc["end date"]);
+                    Discount_Strategy strategy = parse_discount_strategy(doc);
+                    Func<Cart, double> relevant_product_lambda = parse_relevant_lambdas(doc);
+                    List<Func<Cart, bool>> condition_lambdas = parse_condition_lambdas(doc);
+
+                    return add_discount(ancestor_id, start, end, strategy, relevant_product_lambda, condition_lambdas);
+
+
+                case "remove":
+
+                    int id = Parser.parse_int(doc["discount id"]);
+
+                    return remove_discount(id) ? 0 : -1;
+
+                default:
+
+                    throw new Sadna17BException("Store : illegal edit type");
+
+            }
         }
 
-        public bool edit_discount_policy(Discount discount)
+        public int edit_purchase_policy(Dictionary<string, string> doc)
         {
+            string type = Parser.parse_string(doc["edit type"]);
 
-            discount_policy.add_discount(discount);
+            switch (type)
+            {
+                case "add":
 
-            return false;
+                    int ancestor_id = Parser.parse_int(doc["ancestor id"]);
+                    ancestor_id = (ancestor_id == -1) ? purchase_policy.purchase_tree.ID : ancestor_id;
+
+                    string name = Parser.parse_string(doc["name"]);
+                    List<Func<Cart, bool>> cond_lambdas = parse_condition_lambdas(doc);
+                    Func<Cart,List<Func<Cart, bool>>, bool> rule_lambda = parse_purchase_rule_lambdas(doc);
+
+                    Purchase purchase = new Purchase(rule_lambda, cond_lambdas ,name);
+
+                    return purchase_policy.add_rule(ancestor_id,purchase);
+
+
+                case "remove":
+
+                    int purchase_id = Parser.parse_int(doc["purchase rule id"]);
+
+                    return purchase_policy.remove_rule(purchase_id) ? 0 : -1;
+
+                default:
+
+                    throw new Sadna17BException("Store : illegal edit type");
+
+            }
         }
 
-        public bool add_discount(DateTime start, DateTime end, Discount_Strategy strategy, Func<Cart, double> relevant_product_lambda, List<Func<Cart, bool>> condition_lambdas = null)
+        public int add_discount(int ancestor_id, DateTime start, DateTime end, Discount_Strategy strategy, Func<Cart, double> relevant_product_lambda, List<Func<Cart, bool>> condition_lambdas = null)
         {
 
             Discount discount;
@@ -212,7 +264,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             else
                 discount = new Discount_Conditional(start, end, strategy, relevant_product_lambda, condition_lambdas);
 
-            return discount_policy.add_discount(discount);
+            return discount_policy.add_discount(discount, ancestor_id);
         }
 
         public bool remove_discount(int discount)
@@ -221,7 +273,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         }
 
 
-        public Receipt calculate_product_prices(Dictionary<int, int> quantities)
+        public Checkout calculate_product_prices(Dictionary<int, int> quantities)
         {
 
             Cart cart = new Cart();
@@ -236,7 +288,10 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                 cart.add_product(product);
             }
 
-            return discount_policy.calculate_discount(cart); 
+            Mini_Checkout mini_check = discount_policy.calculate_discount(cart);
+            Checkout check = new Checkout(cart, mini_check);
+
+            return check;  
         }
 
       
@@ -355,6 +410,224 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return s;
         }
 
+        public string show_discount_policy()
+        {
+            return discount_policy.show_policy();
+        }
 
+        public string show_purchase_policy()
+        {
+            return purchase_policy.show_policy();
+        }
+
+
+        // ---------------- parse ----------------------------------------------------------------------------------------
+
+
+        public Discount_Strategy parse_discount_strategy(Dictionary<string, string> doc) // doc explained on doc_doc.cs 
+        {
+            string type = Parser.parse_string(doc["strategy"]);
+
+            switch (type)
+            {
+                case "flat":
+
+                    double factor = Parser.parse_double(doc["flat"]);
+                    return new Discount_Flat(factor);
+
+                case "precentage":
+
+                    factor = Parser.parse_double(doc["percentage"]);
+                    return new Discount_Percentage(factor);
+
+                case "membership":
+
+                    return new Discount_Membership();
+            }
+
+            throw new Sadna17BException("store controller : illegal strategy detected");
+        }
+
+        public Func<Cart, double> parse_relevant_lambdas(Dictionary<string, string> doc) // doc explained on doc_doc.cs 
+        {
+            string relevant_type = Parser.parse_string(doc["relevant type"]);
+            string relevant_factor = Parser.parse_string(doc["relevant factors"]);
+
+
+            switch (relevant_type)
+            {
+                case "product":
+
+                    int product = Parser.parse_int(relevant_factor);
+                    return lambda_cart_pricing.product(product);
+
+                case "category":
+
+                    string category = Parser.parse_string(relevant_factor);
+                    return lambda_cart_pricing.category(category);
+
+                case "products":
+
+                    int[] products = Parser.parse_array<int>(relevant_factor);
+                    return lambda_cart_pricing.products(products);
+
+                case "categories":
+
+                    string[] categories = Parser.parse_array<string>(relevant_factor);
+                    return lambda_cart_pricing.categories(categories);
+
+                case "cart":
+
+                    return lambda_cart_pricing.cart();
+
+                default:
+
+                    throw new Sadna17BException("store controller : illegal relevant product search functionality detected");
+
+            }
+
+        }
+
+        public List<Func<Cart, bool>> parse_purchase_condition_lambdas(Dictionary<string, string> doc) // doc explained on doc_doc.cs 
+        {
+
+            string[] types = Parser.parse_array<string>(doc["cond type"]);
+
+            string op = Parser.parse_string(doc["cond op"]);
+            double price = Parser.parse_double(doc["cond price"]);
+            int amount = Parser.parse_int(doc["cond amount"]);
+            DateTime date = Parser.parse_date(doc["cond date"]);
+            int product = Parser.parse_int(doc["cond product"]); ;
+            string category = Parser.parse_string(doc["cond category"]);
+            int age = Parser.parse_int(doc["cond age"]);
+            DateTime time = Parser.parse_date(doc["cond time"]);
+
+            List<Func<Cart, bool>> lambdas = new List<Func<Cart, bool>>();
+
+            foreach (string type in types)
+            {
+                switch (type)
+                {
+                    case "p amount":
+
+                        lambdas.Add(lambda_condition.condition_product_amount(product, op, amount));
+                        break;
+
+                    case "p price":
+
+                        lambdas.Add(lambda_condition.condition_product_price(product, op, price));
+                        break;
+
+                    case "c amount":
+
+                        lambdas.Add(lambda_condition.condition_category_amount(category, op, amount));
+                        break;
+
+                    case "c price":
+
+                        lambdas.Add(lambda_condition.condition_category_price(category, op, price));
+                        break;
+
+                    case "u age":
+
+                        lambdas.Add(lambda_condition.condition_alcohol_age(op,age));
+                        break;
+
+                    case "time":
+
+                        lambdas.Add(lambda_condition.condition_alcohol_hour(op, time));
+                        break;
+
+                    default:
+
+                        throw new Sadna17BException("store controller : illegal condition functionality detected");
+
+                }
+            }
+
+            return lambdas;
+        }
+
+        public List<Func<Cart, bool>> parse_condition_lambdas(Dictionary<string, string> doc) // doc explained on doc_doc.cs 
+        {
+
+            string[] types = Parser.parse_array<string>(doc["cond type"]);
+
+            string op = Parser.parse_string(doc["cond op"]);
+            double price = Parser.parse_double(doc["cond price"]);
+            int amount = Parser.parse_int(doc["cond amount"]);
+            DateTime date = Parser.parse_date(doc["cond date"]);
+            int product = Parser.parse_int(doc["cond product"]); ;
+            string category = Parser.parse_string(doc["cond category"]); ;
+
+            List<Func<Cart, bool>> lambdas = new List<Func<Cart, bool>>();
+
+            foreach (string type in types)
+            {
+                switch (type)
+                {
+                    case "p amount":
+
+                        lambdas.Add(lambda_condition.condition_product_amount(product, op, amount));
+                        break;
+
+                    case "p price":
+
+                        lambdas.Add(lambda_condition.condition_product_price(product, op, price));
+                        break;
+
+                    case "c amount":
+
+                        lambdas.Add(lambda_condition.condition_category_amount(category, op, amount));
+                        break;
+
+                    case "c price":
+
+                        lambdas.Add(lambda_condition.condition_category_price(category, op, price));
+                        break;
+
+                    case "":
+
+                        lambdas.Add(lambda_condition.condition_true());
+                        break;
+
+                    default:
+
+                        throw new Sadna17BException("store controller : illegal condition functionality detected");
+
+                }
+            }
+
+            return lambdas;
+        }
+
+        public Func<Cart,List<Func<Cart, bool>>,bool> parse_purchase_rule_lambdas(Dictionary<string, string> doc) // doc explained on doc_doc.cs 
+        {
+
+            string type = Parser.parse_string(doc["rule type"]);
+
+          
+            switch (type)
+            {
+                case "and":
+
+                    return lambda_purchase_rule.and();
+                    
+
+                case "or":
+
+                    return lambda_purchase_rule.or();
+
+                case "conditional":
+
+                    return lambda_purchase_rule.conditional();
+                   
+
+                default:
+
+                    throw new Sadna17BException("store : illegal purchase rule detected");
+
+            }
+        }
     }
 }

@@ -1,25 +1,93 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Sadna_17_B.DomainLayer.StoreDom;
+using Sadna_17_B.DomainLayer.Order;
 using Sadna_17_B.DomainLayer.User;
 using Sadna_17_B.DomainLayer.Utils;
+using Sadna_17_B.ServiceLayer.ServiceDTOs;
+using Sadna_17_B.ServiceLayer.Services;
+using Sadna_17_B.Utils;
+using Sadna_17_B.ServiceLayer;
+using Newtonsoft.Json.Linq;
 
 namespace Sadna_17_B_Test.Tests.UnitTests
 {
+
+    /*
+     *     
+     *      -------------------- Front : ----------------------------
+     *      
+     *      1. add Checkout Page for the user's Cart
+     *      
+     *          - products ( name | amount | price )
+     *          - discounts
+     *          - final price
+     *      
+     *      2. add Product mini page
+     *      
+     *      3. edit store page
+     *          
+     *          - add button for discount policy and purchase policy in store page
+     *          - connect store inventory to store products
+     *      
+     *      4. edit search page
+     *      
+     *          - add to cart button
+     *          - view product button
+     *      
+     *      4. discount policy mini page
+     *      
+     *          - show all available discounts
+     *          
+     *      
+     *      5. purchase policy mini page
+     *      
+     *          - show all purchase rules
+     *      
+     *      
+     *      -------------------- Backend : ----------------------------
+     *      
+     *      
+     *      1. make search product work
+     *      
+     *      2. add product info functionality
+     *      
+     *      3. make purchase policy informative for ui
+     *      
+     *      4. make discount policy informative for ui
+     *      
+     *      5. add Data Base
+     *      
+     * 
+     * 
+     * 
+     * 
+     */
+
+
     [TestClass]
     public class StoreControllerTests
     {
+        private Doc_generator doc_generator; 
+        private Subscriber subscriber;
+        private StoreService store_service;
+        private UserService user_service;
         private StoreController store_controller;
+
         private Store store1;
+        private int sid;
+        private int sid2;
+
         private Product product1;
         private Product product2;
         private Product product3;
-        private Subscriber subscriber;
+        
         private Cart cart;
 
         private DateTime start_date;
@@ -35,9 +103,12 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         Func<Cart, double> relevant_price_by_product;
         Func<Cart, double> relevant_price_by_all;
 
-        Func<Cart, bool> condition_category;
-        Func<Cart, bool> condition_product;
-        Func<Cart, bool> condition_all;
+        Func<Cart, bool> cond_all_true;
+        Func<Cart, bool> cond_all_false;
+
+        Func<Cart, bool> cond_category;
+        Func<Cart, bool> cond_product;
+        Func<Cart, bool> cond_all;
 
 
 
@@ -84,8 +155,16 @@ namespace Sadna_17_B_Test.Tests.UnitTests
              * 
              */
 
+            doc_generator = new Doc_generator();
+            ServiceFactory serviceFactory = new ServiceFactory();
+
+            user_service = (UserService) serviceFactory.UserService;
+            store_service = (StoreService) serviceFactory.StoreService;
             store_controller = new StoreController();
-            int sid = store_controller.create_store("test store", "mail@example.com", "055555055", "hi bye", "compton");
+
+            Response ignore = user_service.CreateSubscriber("hihihi", "byebyebye");
+
+            sid = store_controller.create_store("test store", "mail@example.com", "055555055", "hi bye", "compton");
             store1 = store_controller.store_by_id(sid);
 
             int pid1 = store1.add_product("product1", 30, "Food", "Nice",100);
@@ -112,24 +191,33 @@ namespace Sadna_17_B_Test.Tests.UnitTests
             end_date = DateTime.Now.AddDays(14);
 
 
-            // -------- relevant functions -------------------------------
+            // -------- discount relevant functions -------------------------------
 
-            relevant_price_by_category = Discount_relevant_products_lambdas.category(product1.category);
+            relevant_price_by_category = lambda_cart_pricing.category(product1.category);
 
-            relevant_price_by_product = Discount_relevant_products_lambdas.product(product1.ID);
+            relevant_price_by_product = lambda_cart_pricing.product(product1.ID);
            
-            relevant_price_by_all = Discount_relevant_products_lambdas.cart();
+            relevant_price_by_all = lambda_cart_pricing.cart();
             
             
 
-            // -------- conditions functions -------------------------------
+            // -------- discount conditions functions -------------------------------
 
-            condition_product = Discount_condition_lambdas.condition_product_amount(product1.ID, "<", 5);
+            cond_product = lambda_condition.condition_product_amount(product1.ID, "<", 5);
 
-            condition_category = Discount_condition_lambdas.condition_category_amount(product1.category, "!=", 0);
+            cond_category = lambda_condition.condition_category_amount(product1.category, "!=", 0);
 
-            condition_all = Discount_condition_lambdas.condition_cart_price(">", 200);
+            cond_all = lambda_condition.condition_cart_price(">", 200);
 
+
+            // -------- purchase conditions functions -------------------------------
+
+            cond_all_true = lambda_condition.condition_cart_price(">", 20);
+            
+            cond_all_false = lambda_condition.condition_cart_price("<", 20);
+
+
+           
 
 
         }
@@ -148,10 +236,10 @@ namespace Sadna_17_B_Test.Tests.UnitTests
 
 
             discount_policy.add_discount(discount);
-            Assert.AreEqual(discount_policy.discount_to_products.Count, 1, 0.01);
+            Assert.AreEqual(discount_policy.discount_tree.discounts.Count(), 1, 0.01);
 
             discount_policy.remove_discount(discount.ID);
-            Assert.AreEqual(discount_policy.discount_to_products.Count, 0, 0.01);
+            Assert.AreEqual(discount_policy.discount_tree.discounts.Count(), 0, 0.01);
         }
 
         [TestMethod]
@@ -167,12 +255,12 @@ namespace Sadna_17_B_Test.Tests.UnitTests
                                                              end_date,
                                                              strategy_precentage,
                                                              relevant_price_by_product,
-                                                             condition_product
+                                                             cond_product
                                                              );
 
             // Act
-            Mini_Receipt simple_applied = simple_discount.apply_discount(cart);
-            Mini_Receipt cond_applied = cond_discount.apply_discount(cart);
+            Mini_Checkout simple_applied = simple_discount.apply_discount(cart);
+            Mini_Checkout cond_applied = cond_discount.apply_discount(cart);
 
             // Assert
             Assert.AreEqual(simple_applied.discounts.Count, 1, 0.01);
@@ -196,12 +284,12 @@ namespace Sadna_17_B_Test.Tests.UnitTests
                                                              end_date,
                                                              strategy_flat,
                                                              relevant_price_by_category,
-                                                             condition_category
+                                                             cond_category
                                                              );
 
             // Act
-            Mini_Receipt simple_applied = simple_discount.apply_discount(cart);
-            Mini_Receipt cond_applied = cond_discount.apply_discount(cart);
+            Mini_Checkout simple_applied = simple_discount.apply_discount(cart);
+            Mini_Checkout cond_applied = cond_discount.apply_discount(cart);
 
             // Assert
             Assert.AreEqual(simple_applied.discounts.Count, 1, 0.01);
@@ -226,12 +314,12 @@ namespace Sadna_17_B_Test.Tests.UnitTests
                                                              end_date,
                                                              strategy_membership,
                                                              relevant_price_by_category,
-                                                             condition_all);
+                                                             cond_all);
 
             // Act
             strategy_membership.member_start_date(DateTime.Now.AddDays(-100));
-            Mini_Receipt simple_applied = simple_discount.apply_discount(cart);
-            Mini_Receipt cond_applied = cond_discount.apply_discount(cart);
+            Mini_Checkout simple_applied = simple_discount.apply_discount(cart);
+            Mini_Checkout cond_applied = cond_discount.apply_discount(cart);
 
             // Assert
             Assert.AreEqual(simple_applied.discounts.Count, 1, 0.01);
@@ -250,19 +338,16 @@ namespace Sadna_17_B_Test.Tests.UnitTests
             Discount_Simple simple_prec_discount = new Discount_Simple(start_date, end_date, strategy_precentage, relevant_price_by_product);
             Discount_Simple simple_memb_discount = new Discount_Simple(start_date, end_date, strategy_membership, relevant_price_by_product);
 
-            Discount_Conditional cond_flat_discount = new Discount_Conditional(start_date, end_date, strategy_flat, relevant_price_by_product, condition_product); // 
-            Discount_Conditional cond_prec_discount = new Discount_Conditional(start_date, end_date, strategy_precentage, relevant_price_by_product, condition_category );
-            Discount_Conditional cond_memb_discount = new Discount_Conditional(start_date, end_date, strategy_membership, relevant_price_by_product, condition_all);
+            Discount_Conditional cond_flat_discount = new Discount_Conditional(start_date, end_date, strategy_flat, relevant_price_by_product, cond_product); // 
+            Discount_Conditional cond_prec_discount = new Discount_Conditional(start_date, end_date, strategy_precentage, relevant_price_by_product, cond_category );
+            Discount_Conditional cond_memb_discount = new Discount_Conditional(start_date, end_date, strategy_membership, relevant_price_by_product, cond_all);
 
-            Rule_Logic logic_rules = new Rule_Logic();
-            Rule_Numeric numeric_rules = new Rule_Numeric();
+            Discount_Composite and_rule = new Discount_Composite(lambda_discount_rule.logic.and(),"and");
+            Discount_Composite or_rule = new Discount_Composite(lambda_discount_rule.logic.or(), "or");
+            Discount_Composite xor_rule = new Discount_Composite(lambda_discount_rule.logic.xor(), "xor");
 
-            DiscountRule_Logic and_rule = new DiscountRule_Logic(logic_rules.and());
-            DiscountRule_Logic or_rule = new DiscountRule_Logic(logic_rules.or());
-            DiscountRule_Logic xor_rule = new DiscountRule_Logic(logic_rules.xor());
-
-            DiscountRule_Numeric add_rule = new DiscountRule_Numeric(numeric_rules.addition());
-            DiscountRule_Numeric max_rule = new DiscountRule_Numeric(numeric_rules.maximum());
+            Discount_Composite add_rule = new Discount_Composite(lambda_discount_rule.numeric.addition(), "addition");
+            Discount_Composite max_rule = new Discount_Composite(lambda_discount_rule.numeric.maximum(), "maximum");
 
 
             and_rule.add_discount(cond_prec_discount);
@@ -286,8 +371,129 @@ namespace Sadna_17_B_Test.Tests.UnitTests
             Assert.AreEqual(max_rule.apply_discount(cart).total_discount, 350, 0.01);
             Assert.AreEqual(add_rule.apply_discount(cart).total_discount, 750, 0.01);
 
+        }
 
+        [TestMethod]
+        public void TestPurchase_Rule()
+        {
+
+            Purchase p_or = new Purchase(lambda_purchase_rule.or());
+            Purchase p_and = new Purchase(lambda_purchase_rule.and());
+            Purchase p_conditional = new Purchase(lambda_purchase_rule.conditional());
+
+            p_or.add_condition(cond_all_true);
+            p_or.add_condition(cond_all_false);
             
+            p_and.add_condition(cond_all_false);
+            p_and.add_condition(cond_all_true);
+
+            p_conditional.add_condition(cond_all_false);
+            p_conditional.add_condition(cond_all_true);
+
+            bool result_or = p_or.apply_purchase(cart);
+            bool result_and = p_and.apply_purchase(cart);
+            bool result_conditional = p_conditional.apply_purchase(cart);
+
+            Assert.IsTrue(result_or);
+            Assert.IsFalse(result_and);
+            Assert.IsFalse(result_conditional);
+
+
+        }
+
+        [TestMethod]
+        public void Test_edit_discount_policy()
+        {
+            // ---------- init data
+
+            Response res = user_service.Login("hihihi", "byebyebye");
+            string token = (res.Data as UserDTO).AccessToken;
+            int sid = (int)store_service.create_store(token, "test store now", "mail@example.com", "055555055", "hi bye", "compton").Data;
+
+
+            // ---------- empty policy
+
+            Dictionary<string, string> show_doc = new Doc_generator.discount_policy_doc_builder()
+                                                        .set_show_policy(sid.ToString())
+                                                        .Build();
+
+            string policy = store_service.show_discount_policy(show_doc).Data as string;
+            Console.WriteLine(policy);
+
+
+            // ----------  flat added
+
+            Dictionary<string, string> add_flat_doc = new Doc_generator.discount_policy_doc_builder()
+                                                                       .set_base_add($"{sid}", "06/07/2024", "10/07/2024", "flat", flat: "50")
+                                                                       .Build();
+
+
+            int aid  = (int) store_service.edit_discount_policy(add_flat_doc).Data;
+            policy = store_service.show_discount_policy(show_doc).Data as string;
+            Console.WriteLine(policy);
+
+            Assert.IsTrue(policy.Contains($"{aid};flat;50"));
+
+
+            // ----------  flat removed
+
+            Dictionary<string, string> remove_flat_doc = new Doc_generator.discount_policy_doc_builder()
+                                                                       .set_remove($"{sid}", $"{aid}")
+                                                                       .Build();
+
+            store_service.edit_discount_policy(remove_flat_doc);
+            policy = store_service.show_discount_policy(show_doc).Data as string;
+            Console.WriteLine(policy);
+
+            Assert.IsTrue(!policy.Contains($"{aid};flat;50"));
+        }
+
+        [TestMethod]
+        public void Test_edit_purchase_policy()
+        {
+            
+            // ---------- init data
+
+            Response res = user_service.Login("hihihi", "byebyebye");
+            string token = (res.Data as UserDTO).AccessToken;
+            int sid = (int)store_service.create_store(token, "test store right now", "mail@example.com", "055555055", "hi bye", "compton").Data;
+
+
+            // ---------- empty policy
+
+            Dictionary<string, string> show_doc = new Doc_generator.purchase_policy_doc_builder()
+                                                        .set_show_policy(sid.ToString())
+                                                        .Build();
+
+            string policy = store_service.show_purchase_policy(show_doc).Data as string;
+            Console.WriteLine(policy);
+
+
+
+            // ----------  flat added
+
+            Dictionary<string, string> add_or_doc = new Doc_generator.purchase_policy_doc_builder()
+                                                                       .set_base_add($"{sid}","or","or")
+                                                                       .Build();
+
+
+            int aid = (int)store_service.edit_purchase_policy(add_or_doc).Data;
+            policy = store_service.show_purchase_policy(show_doc).Data as string;
+            Console.WriteLine(policy);
+            Assert.IsTrue(policy.Contains($"{aid};or"));
+
+
+            // ----------  flat removed
+
+            Dictionary<string, string> remove_or_doc = new Doc_generator.purchase_policy_doc_builder()
+                                                                       .set_remove($"{sid}", $"{aid}")
+                                                                       .Build();
+
+            store_service.edit_purchase_policy(remove_or_doc);
+            policy = store_service.show_purchase_policy(show_doc).Data as string;
+            Console.WriteLine(policy);
+
+            Assert.IsTrue(!policy.Contains($"{aid};or"));
 
         }
 

@@ -11,60 +11,49 @@ using Sadna_17_B.DomainLayer.StoreDom;
 namespace Sadna_17_B.Utils
 {
 
-
-    /*
-     * 
-     * 
-     * 
-     * 
-     * 
-     * 
-     * 
-     * 
-     * 
-     * 
-     * 
-     * 
-     * 
-     * 
-     * 
-     * 
-     * 
-     * 
-     */
-
-
-
-
-
-
-
-
     public class Parser
     {
 
         // ------------------- primitive ---------------------------------------------------------------------------------
 
+        public static bool is_none(string s)
+        {
+            return s == "";
+        }
+
         public static int parse_int(string s)
         {
+            if (is_none(s))
+                return -1;
+
             int parsed = int.Parse(s);
             return parsed;
         }
 
         public static bool parse_boolean(string s)
         {
+            if (is_none(s))
+                return false;
+
             bool parsed = bool.Parse(s);
             return parsed;
         }
 
         public static double parse_double(string s)
         {
+            if (is_none(s))
+                return 0;
+
             double parsed = double.Parse(s, CultureInfo.InvariantCulture);
             return parsed;
         }
 
         public static char parse_char(string s)
         {
+
+            if (is_none(s))
+                return '0';
+
             if (s.Length != 1)
                 throw new ArgumentException("Input string must be exactly one character long.");
             char parsed = char.Parse(s);
@@ -72,14 +61,21 @@ namespace Sadna_17_B.Utils
         }
 
         public static string parse_string(string s)
-        {
+        { 
+            if (is_none(s))
+                return "";
+            
             string parsed = s;
             return parsed;
         }
 
         public static DateTime parse_date(string s)
         {
-            DateTime parsed = DateTime.ParseExact(s, "dd/MM/yyyy", CultureInfo.InvariantCulture);
+
+        if (is_none(s))
+            return DateTime.Now;
+
+        DateTime parsed = DateTime.ParseExact(s, "dd/MM/yyyy", CultureInfo.InvariantCulture);
             return parsed;
         }
 

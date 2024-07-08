@@ -181,13 +181,11 @@
     <Compile Include="DomainLayer\Store\Policies\Discount.cs" />
     <Compile Include="DomainLayer\Store\Policies\DiscountPolicy.cs" />
     <Compile Include="DomainLayer\Store\Inventory.cs" />
-    <Compile Include="DomainLayer\Store\Policies\DiscountRule.cs" />
     <Compile Include="DomainLayer\Store\Policies\DiscountStrategy.cs" />
     <Compile Include="DomainLayer\Store\Policies\Purchase.cs" />
-    <Compile Include="DomainLayer\Store\Policies\PurchaseRule.cs" />
     <Compile Include="DomainLayer\Store\Product.cs" />
     <Compile Include="DomainLayer\Store\Policies\PurchasePolicy.cs" />
-    <Compile Include="DomainLayer\Store\Reciept.cs" />
+    <Compile Include="DomainLayer\Store\Checkout.cs" />
     <Compile Include="DomainLayer\Store\Store.cs" />
     <Compile Include="DomainLayer\Store\StoreController.cs" />
     <Compile Include="DomainLayer\User\Admin.cs" />
@@ -221,6 +219,7 @@
     <Compile Include="ServiceLayer\Services\IUserService.cs" />
     <Compile Include="ServiceLayer\Services\StoreService.cs" />
     <Compile Include="ServiceLayer\Services\UserService.cs" />
+    <Compile Include="Utils\Doc_Generator.cs" />
     <Compile Include="Utils\Parser.cs" />
     <Compile Include="Utils\Cryptography.cs" />
     <Compile Include="Utils\Interfaces.cs" />

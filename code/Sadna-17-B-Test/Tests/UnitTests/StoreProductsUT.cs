@@ -113,21 +113,21 @@ namespace Sadna_17_B_Test.Tests.UnitTests
 
             // -------- relevant functions -------------------------------
 
-            relevant_price_by_category = Discount_relevant_products_lambdas.category(product1.category);
+            relevant_price_by_category = lambda_cart_pricing.category(product1.category);
 
-            relevant_price_by_product = Discount_relevant_products_lambdas.product(product1.ID);
+            relevant_price_by_product = lambda_cart_pricing.product(product1.ID);
 
-            relevant_price_by_all = Discount_relevant_products_lambdas.cart();
+            relevant_price_by_all = lambda_cart_pricing.cart();
 
 
 
             // -------- conditions functions -------------------------------
 
-            condition_product = Discount_condition_lambdas.condition_product_amount(product1.ID, "<", 5);
+            condition_product = lambda_condition.condition_product_amount(product1.ID, "<", 5);
 
-            condition_category = Discount_condition_lambdas.condition_category_amount(product1.category, "!=", 0);
+            condition_category = lambda_condition.condition_category_amount(product1.category, "!=", 0);
 
-            condition_all = Discount_condition_lambdas.condition_cart_price(">", 200);
+            condition_all = lambda_condition.condition_cart_price(">", 200);
 
 
         }
