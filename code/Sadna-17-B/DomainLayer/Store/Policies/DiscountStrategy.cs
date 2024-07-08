@@ -17,7 +17,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
 
 
-    public abstract class Discount_Strategy : I_strategy, I_informative_class
+    public abstract class Discount_Strategy : I_strategy
     {
 
         public double factor { get; set; }
@@ -28,16 +28,9 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         public abstract double apply_discount_strategy(double price);
 
-        public string info_to_print()
+        public string info()
         {
-            // TODO
-            return strategy_type;
-        }
-
-        public string info_to_UI()
-        {
-            // TODO
-            return strategy_type;
+            return $"{strategy_type};{factor}" ;
         }
     
     }

@@ -29,7 +29,7 @@ namespace Sadna_17_B.DomainLayer.Utils
 
     public interface I_discount
     {
-        Mini_Receipt apply_discount(Cart cart); // apply discount on a cart member based on a discount rule  
+        Mini_Checkout apply_discount(Cart cart); // apply discount on a cart member based on a discount rule  
 
     }
 

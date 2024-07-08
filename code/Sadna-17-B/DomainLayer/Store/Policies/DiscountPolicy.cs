@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace Sadna_17_B.DomainLayer.StoreDom
 {
@@ -28,7 +29,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         public Dictionary<Discount, HashSet<int>> discount_to_categories;
         public Dictionary<Discount, HashSet<int>> discount_to_member;
 
-        public List<DiscountRule> discount_rules;
+        public Discount_Composite discount_tree;
 
 
         // ----------- constructor -----------------------------------------------------------
@@ -43,7 +44,8 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             this.discount_to_products = new Dictionary<Discount, HashSet<int>>();
             this.discount_to_categories = new Dictionary<Discount, HashSet<int>>();
             this.discount_to_member = new Dictionary<Discount, HashSet<int>>();
-            this.discount_rules = new List<DiscountRule>();
+            this.discount_tree = new Discount_Composite(lambda_discount_rule.numeric.addition(), "addition");
+            
         }
 
 
@@ -92,31 +94,18 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         // ----------- other -----------------------------------------------------------
 
 
-        public bool add_discount(Discount discount)
+        public int add_discount(Discount discount, int ancestor_id = -1)
         {
-            if (!discount_to_products.ContainsKey(discount))
-            {
-                discount_to_products.Add(discount, new HashSet<int>());
-                id_to_discount.Add(discount.ID, discount);
+             id_to_discount.Add(discount.ID, discount);
 
-                return true;
-            }
+             return discount_tree.add_discount(discount, ancestor_id);
 
-            return false;
         }
 
         public bool remove_discount(int id)
         {
             
-            if (id_to_discount.ContainsKey(id))
-            {
-                discount_to_products.Remove(id_to_discount[id]);
-                id_to_discount.Remove(id);
-
-                return true;
-            }
-
-            return false;
+            return id_to_discount.Remove(id) && discount_tree.remove_discount(id);
         }
 
         public bool add_product(int did, int pid)
@@ -135,16 +124,9 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return false;
         }
 
-        public Receipt calculate_discount(Cart cart)
+        public Mini_Checkout calculate_discount(Cart cart)
         {
-             Receipt Receipt = new Receipt(cart);
-
-            foreach (DiscountRule discount_rule in discount_rules)
-            {
-                Receipt.add_discounts(discount_rule.apply_discount(cart));
-            }
-                
-            return Receipt;
+            return discount_tree.apply_discount(cart);
         }
 
         public int get_id()
@@ -152,6 +134,13 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return policy_id;
         }
     
+
+        public string show_policy()
+        {
+            return discount_tree.info();
+        }
+
+        
     }
 
 

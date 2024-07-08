@@ -53,27 +53,37 @@ namespace Sadna_17_B_Frontend.Controllers
 
         // ----------------------------------- user classifications -----------------------------------------------------------------------
         
-        public Response roles(Dictionary<string,string> doc)    // user roles status abstract doc_doc 
+        public string[] roles(Dictionary<string,string> doc)    // return all roles ( example : founder|owner|...).  - doc_doc - 
         {
-            //string token = Parser.parse_string(doc["token"]); // token is stored in userDTO of BackendController
             int store_id = Parser.parse_int(doc["store id"]);
 
-            string s =     (founder(store_id)   ? "| founder "      : "") +
-                            (owner(store_id)     ? "| owner "        : "") +
-                            (manager(store_id)   ? "| manager "      : "") +
-                            (guest()               ? "| guest "        : "") +
-                            (subscriber()          ? "| subscriber "   : "") +
-                            (admin()               ? "| admin "        : "") ;
+            string s =      (founder(store_id)   ? "|founder "      : "") +
+                            (owner(store_id)     ? "|owner "        : "") +
+                            (manager(store_id)   ? "|manager "      : "") +
+                            (guest()             ? "|guest "        : "") +
+                            (subscriber()        ? "|subscriber "   : "") +
+                            (admin()             ? "|admin "        : "") ;
 
             if (s == "")
-                return new Response(false,"");
+                return new string[0];
 
-            return new Response(true,s.Substring(1,s.Length));
+            return s.Substring(1,s.Length).Split('|');
+        }
 
+        public bool has_roles(Dictionary<string, string> doc)    // return true if given roles applied. - doc_doc - 
+        {
+            string[] check_roles = Parser.parse_array<string>(doc["roles to check"]);
+            string[] actual_roles = roles(doc);
+
+            foreach (string role in check_roles) 
+                if (!actual_roles.Contains(role))
+                    return false;
+            
+            return true;
 
         }
 
-        public bool founder(int store_id) 
+        private bool founder(int store_id)
         {
             return userService.IsFounder(userDTO.AccessToken,store_id).Success;
         }
@@ -386,7 +396,7 @@ namespace Sadna_17_B_Frontend.Controllers
             Response response = storeService.calculate_products_prices(storeID, quantities);
             if (response.Success)
             {
-                return (response.Data as Receipt).TotalPrice();
+                return (response.Data as Mini_Checkout).price_after_discount();
             }
             return 0;
         }

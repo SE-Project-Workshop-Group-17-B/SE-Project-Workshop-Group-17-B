@@ -14,66 +14,42 @@ namespace Sadna_17_B.DomainLayer.StoreDom
     // ---------------- Policy ----------------------------------------------------------------------------------------
 
 
-    public class PurchasePolicy : I_informative_class
+    public class PurchasePolicy 
     {
 
         // ---------------- variables ----------------------------------------------------
 
-        public static int ID;
-        public string PolicyName { get; set; }
+        public Purchase purchase_tree;
 
-        public List<Purchase_Rule> purchase_rules;
-
-
-        public PurchasePolicy() 
+        public PurchasePolicy()
         {
-            ID += 1;
-            this.purchase_rules = new List<Purchase_Rule>();
+            this.purchase_tree = new Purchase(lambda_purchase_rule.and(),"and");
         }
 
         // ---------------- functions -----------------------------------------------------
 
 
-        public bool add_rule(Purchase_Rule rule)
+        public int add_rule(int ancestor_id, Purchase purchase_rule)
         {
-            if (!purchase_rules.Contains(rule))
-            {
-                purchase_rules.Add(rule);
-                return true;
-            }
-
-            return false;
+            return purchase_tree.add_purchase_rule(ancestor_id, purchase_rule);
         }
 
-        public bool remove_rule(Purchase_Rule rule)
+        public bool remove_rule(int purchase_rule)
         {
-            if (purchase_rules.Contains(rule))
-            {
-                purchase_rules.Remove(rule);
-                return true;
-            }
-
-            return false;
+            return purchase_tree.remove_purchase_rule(purchase_rule);
         }
 
-        public string info_to_print()
+        public string show_policy()
         {
-            string s = string.Empty;
-
-            // version 2 ....
-
-            return s;
+            return "\n" + purchase_tree.info();
         }
 
-        public string info_to_UI()
+        public bool validate_purchase_rules(Cart cart)
         {
-            string s = string.Empty;
-
-            // version 2 ....
-
-            return s;
+            return purchase_tree.apply_purchase(cart);
         }
-
+    
+    
     }
 
 

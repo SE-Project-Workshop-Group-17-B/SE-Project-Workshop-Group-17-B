@@ -1,6 +1,8 @@
 ﻿using Sadna_17_B_Frontend.Controllers;
 using System;
+using System.Collections.Generic;
 using System.Web.UI.WebControls;
+
 
 namespace Sadna_17_B_Frontend.Views
 {
@@ -55,17 +57,22 @@ namespace Sadna_17_B_Frontend.Views
         protected void btnManage_Click(object sender, EventArgs e)
         {
             var button = (Button)sender;
-            int storeId = int.Parse(button.CommandArgument);
-            bool isFounder = backendController.founder(storeId); // Assume this method checks if the current user is the founder
+            string sid = button.CommandArgument;
 
-            if (isFounder)
+            Dictionary<string, string> doc = new Dictionary<string, string>
             {
-                Response.Redirect("~/Views/FounderStorePage.aspx?storeId=" + storeId);
-            }
+                ["store id"] = sid,
+                ["checked roles"] = "founder"
+            };
+
+            bool founder = backendController.has_roles(doc); // Assume this method checks if the current user is the founder
+
+            if (founder)
+                Response.Redirect("~/Views/FounderStorePage.aspx?storeId=" + sid);
+            
             else
-            {
-                Response.Redirect("~/Views/ManagerStorePage.aspx?storeId=" + storeId);
-            }
+                Response.Redirect("~/Views/ManagerStorePage.aspx?storeId=" + sid);
+            
         }
     }
 }

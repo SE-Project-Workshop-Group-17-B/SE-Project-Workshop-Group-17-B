@@ -580,10 +580,10 @@ namespace Sadna_17_B.ServiceLayer.Services
         {
             try
             {
-                _storeController.edit_discount_policy(doc);
+                int did = _storeController.edit_discount_policy(doc);
                 info_logger.Log("Store Service", "discount policy modification completed");
 
-                return new Response("discount policy modification completed", true);
+                return new Response("discount policy modification completed", true, did);
             }
             catch (Sadna17BException e)
             {
@@ -597,9 +597,9 @@ namespace Sadna_17_B.ServiceLayer.Services
         {
             try
             {
-                DiscountPolicy discount_policy = _storeController.show_discount_policy(doc);
+                string discount_policy = _storeController.show_discount_policy(doc);
 
-                return new Response(true,discount_policy);
+                return new Response("",true,discount_policy);
             }
             catch (Sadna17BException e)
             {
@@ -615,12 +615,12 @@ namespace Sadna_17_B.ServiceLayer.Services
 
             try
             {
-                bool result = _storeController.edit_purchase_policy(doc);
+                int result = _storeController.edit_purchase_policy(doc);
 
-                if (result)
-                    return new Response("edited policy successfully", true);
+                if (result != -1)
+                    return new Response("edited policy successfully", true, result);
                 else
-                    return new Response("did not edit policy", false);
+                    return new Response("did not edit policy", false, result);
             }
             catch (Sadna17BException e)
             {
@@ -635,7 +635,7 @@ namespace Sadna_17_B.ServiceLayer.Services
         {
             try
             {
-                PurchasePolicy purchase_policy = _storeController.show_purchase_policy(doc);
+                string purchase_policy = _storeController.show_purchase_policy(doc);
 
                 return new Response(true, purchase_policy);
             }
@@ -679,17 +679,17 @@ namespace Sadna_17_B.ServiceLayer.Services
 
 
 
-        public Response calculate_products_prices(int storeID, Dictionary<int, int> quantities) // --> reciept
+        public Response calculate_products_prices(int storeID, Dictionary<int, int> quantities) // --> checkout
         {
             try
             {
-                Receipt receipt = _storeController.calculate_products_prices(storeID, quantities);
+                Checkout checkout = _storeController.calculate_products_prices(storeID, quantities);
 
-                if (receipt == null)
+                if (checkout == null)
                     return new Response("Failed to return calculation of product prices.", false);
 
                 info_logger.Log("Store Service", "order reduction completed successfully");
-                return new Response("order reduction completed successfuly",true, receipt);
+                return new Response("order reduction completed successfuly",true, checkout);
 
             }
 

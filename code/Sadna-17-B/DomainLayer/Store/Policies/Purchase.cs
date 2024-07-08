@@ -14,111 +14,129 @@ using System.Threading.Tasks;
 namespace Sadna_17_B.DomainLayer.StoreDom
 {
 
-    // ---------------- base purchase ----------------------------------------------------------------------------------------
 
 
-    public abstract class Purchase
+
+    public class Purchase
     {
 
-        public static int ID;
+        // ------------- Variables --------------------------------------------------------------------------
+
+        public static int id_counter;
+
+        public int ID;
+        public string Name;
         protected double price;
-        public abstract bool apply_purchase(Cart cart);
+
+        protected List<Func<Cart, bool>> conditions = new List<Func<Cart, bool>>();
+
+        protected List<Purchase> purchase_rules = new List<Purchase>();
+        protected Func<Cart, List<Func<Cart, bool>>, bool> purchase_rule { get; set; }
+
+
+
+        // ------------- Constructors --------------------------------------------------------------------------
 
         public Purchase()
         {
-            ID++;
+            id_counter++;
+            ID = id_counter;
         }
-    }
-
-    // ---------------- immediate purchase ----------------------------------------------------------------------------------------
-
-
-    public class Purchase_Immediate : Purchase
-    {
-        public override bool apply_purchase(Cart cart)
+        
+        public Purchase(Func<Cart, List<Func<Cart, bool>>, bool> purchase_rule, string name = "default") : this()
         {
-            //implement purchase logic
-            return true;
+            this.purchase_rule = purchase_rule;
+            this.Name = name;
         }
-    }
 
-    
+        public Purchase(Func<Cart, List<Func<Cart, bool>>, bool> purchase_rule, List<Func<Cart, bool>> conds, string name = "default") : this(purchase_rule,name)
+        {
+            this.conditions = conds;
+        }
 
-    // ---------------- bid / auction purchase ----------------------------------------------------------------------------------------
-
-
-    public class BidPurchase : Purchase 
-    {
-        public double bid { get; set; }
         
 
-        public void submit(double bid)
+        // ------------- add / remove --------------------------------------------------------------------------
+
+
+        public void add_condition(Func<Cart, bool> cond)
         {
-            //implement bid logic
+            conditions.Add(cond);
         }
 
-        public void accept(double bid)
+        public void remove_condition(Func<Cart, bool> cond)
         {
-            //implement bid accept logic
+            conditions.Remove(cond);
         }
 
-        public void reject(double bid)
+        public int add_purchase_rule(int ancestor_id, Purchase purchase_to_add)
         {
-            //implement bid accept logic
+            if (ancestor_id == ID)
+            {
+                purchase_rules.Add(purchase_to_add);
+                return purchase_to_add.ID;
+            }
+
+            foreach (Purchase composite in purchase_rules)
+                if (composite.add_purchase_rule(ancestor_id, purchase_to_add) != -1)
+                    return purchase_to_add.ID;
+
+            return -1;
         }
 
-        public void counter(double bid)
+        public bool remove_purchase_rule(int id)
         {
-            //implement bid accept logic
-        }
+            foreach (var purchase_rule in purchase_rules)
+                if (purchase_rule.ID == id)
+                    return purchase_rules.Remove(purchase_rule);
 
+            foreach (Purchase composite in purchase_rules)
+                if (composite.remove_purchase_rule(id))
+                    return true;
 
-        public override bool apply_purchase(Cart cart)
-        {
-            //implement purchase logic
-            return true;
-        }
-
-    }
-
-
-    public class Purchase_Auction : Purchase
-    {
-        public double StartingPrice { get; set; }
-        public double HighestBid { get; set; }
-        public string HighestBidder { get; set; }
-
-        public override bool apply_purchase(Cart cart)
-        {
-            //implement purchase logic
-            return true;
-        }
-    
-    }
-
-
-    // ---------------- luttery purchase ----------------------------------------------------------------------------------------
-
-
-    public class Purchase_Luttery : Purchase
-    {
-
-        public int winner { get; set; }
-        public double total { get; set; }
-        public Dictionary<string, double> participants { get; set; }
-       
-
-        public void enter_luttery(string userName, double amount)
-        {
-            //implement luttery logic
-        }
-
-        public override bool apply_purchase(Cart cart)
-        {
-            //implement purchase logic
             return false;
         }
 
-    }
 
+        // ------------- add / remove --------------------------------------------------------------------------
+
+
+        public string info(int depth = 0, string indent = "")
+        {
+            StringBuilder sb = new StringBuilder();
+
+            string purchase_string = $"{tabs(depth)}{ID};{Name}";
+            sb.AppendLine(indent + purchase_string);
+
+            foreach (var p_rule in purchase_rules)
+                sb.Append(tabs(depth) + p_rule.info(depth + 1, indent));
+
+            return sb.ToString();
+        }
+
+        public string tabs(int depth)
+        {
+            string s = "";
+
+            for (int i = 0; i < depth; i++)
+                s += "\t";
+
+            return s;
+        }
+
+
+        // ------------- apply rules --------------------------------------------------------------------------
+
+        public bool apply_purchase(Cart cart)
+        {
+            bool valid_purchase = purchase_rule(cart, conditions);
+
+            foreach (var rule in purchase_rules)
+                valid_purchase = rule.apply_purchase(cart);
+
+            return valid_purchase;
+        }
+
+
+    }
 }
