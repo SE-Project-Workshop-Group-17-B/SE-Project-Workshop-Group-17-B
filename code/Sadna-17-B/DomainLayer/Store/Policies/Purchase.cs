@@ -58,7 +58,6 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         // ------------- add / remove --------------------------------------------------------------------------
 
-
         public void add_condition(Func<Cart, bool> cond)
         {
             conditions.Add(cond);

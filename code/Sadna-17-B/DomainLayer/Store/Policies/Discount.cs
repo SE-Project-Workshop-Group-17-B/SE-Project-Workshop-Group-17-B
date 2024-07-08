@@ -78,7 +78,6 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         // ----------- Cart --------------------------------------------------------  
 
-
         public bool check_conditions(Cart cart)
         {
             foreach( var condition in discount_condition_lambdas)
