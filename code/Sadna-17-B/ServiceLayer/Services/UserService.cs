@@ -547,7 +547,7 @@ namespace Sadna_17_B.ServiceLayer.Services
 
         // TODO: Check it is implemented correctly
         // Added in version 2, when implementing notification system, should be called by StoreService when the store closes (4.9)
-        internal void NotifyStoreClosing(string token, int storeID)
+        public void NotifyStoreClosing(string token, int storeID)
         {
             try
             {

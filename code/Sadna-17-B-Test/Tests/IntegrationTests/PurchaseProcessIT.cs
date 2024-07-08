@@ -1,4 +1,4 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using Sadna_17_B.ServiceLayer;
 using Sadna_17_B.ServiceLayer.Services;
@@ -17,7 +17,7 @@ using System.Xml.Linq;
 namespace Sadna_17_B_Test.Tests.IntegrationTests
 {
     [TestClass]
-    public class SystemIT
+    public class PurchaseProcessIT
     {
         IUserService userService;
         StoreService storeService;
@@ -45,7 +45,7 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
         string descr = "test store for testing";
         string addr = "BGU Beer sheva st.3";
 
-        
+
         string destAddr = "BGU Beer sheva";
         string creditCardInfo = "45805500";
         int amount2Buy = 5;
@@ -78,135 +78,93 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
             product = store.inventory.product_by_id(pid);
         }
 
-        
-
         [TestMethod]
-        public void TestPaymentServiceError_Fail()
+        public void TestSuccesfullPurchase()
         {
             Response ignore = userService.CreateSubscriber(username2, password2);
             Response res = userService.Login(username2, password2);
             userDTO = res.Data as UserDTO;
             string token = userDTO.AccessToken;
+
             ignore = userService.AddToCart(token, sid, pid, amount2Buy);
-
-            string wrongCreditCardInfo = null;
-            Response completeRes = userService.CompletePurchase(token, destAddr, wrongCreditCardInfo);
+            Response completeRes = userService.CompletePurchase(token, destAddr, creditCardInfo);
             int amount = ((List<Store>)storeService.store_by_name(storeName).Data)[0].amount_by_name(productName);
-            Assert.IsFalse(completeRes.Success);
-            Assert.AreEqual(amount, quantity);
+            Assert.IsTrue(completeRes.Success);
+            Assert.AreEqual(amount, quantity - amount2Buy);
         }
 
         [TestMethod]
-        public void TestSupplyMethodError_Fail()
+        public void TestPurhcaseFailWhenBuyingItemThatNotExist()
         {
             Response ignore = userService.CreateSubscriber(username2, password2);
             Response res = userService.Login(username2, password2);
             userDTO = res.Data as UserDTO;
             string token = userDTO.AccessToken;
+
+            Response test = userService.CompletePurchase(token, destAddr, creditCardInfo);
+            int amount = ((List<Store>)storeService.store_by_name(storeName).Data)[0].amount_by_name(productName);
+
+            Assert.IsFalse(test.Success);
+            Assert.AreEqual(amount, quantity); //meaning we havent bought the only thing by default
+        }
+
+        [TestMethod]
+        public void TestPurchaseFailWhenBuyingTooMuchProducts()
+        {
+            Response ignore = userService.CreateSubscriber(username2, password2);
+            Response res = userService.Login(username2, password2);
+            userDTO = res.Data as UserDTO;
+            string token = userDTO.AccessToken;
+            ignore = userService.AddToCart(token, sid, pid, quantity * 2);
+
+            Response completeRes = userService.CompletePurchase(token, destAddr, creditCardInfo);
+            Assert.IsFalse(completeRes.Success);
+        }
+
+        [TestMethod]
+        public void TestPurchaseNotEffectingDifferentCarts()
+        {
+            Response result1 = userService.Login(username1, password1);
+            UserDTO userDTO = result1.Data as UserDTO;
+            string token1 = userDTO.AccessToken;
+
+            Response ignore = userService.CreateSubscriber(username2, password2);
+            Response res = userService.Login(username2, password2);
+            userDTO = res.Data as UserDTO;
+            string token = userDTO.AccessToken;
+
             ignore = userService.AddToCart(token, sid, pid, amount2Buy);
+            ignore = userService.AddToCart(token1, sid, pid, amount2Buy); //creating second shopping cart for different user
+            
+            Response sc = userService.GetShoppingCart(token1);
+            ShoppingCartDTO shoppnigCart1 = sc.Data as ShoppingCartDTO;
 
-            string wrongDestAddrInfo = null;
-            Response completeRes = userService.CompletePurchase(token, wrongDestAddrInfo, creditCardInfo);
-            int amount = ((List<Store>)storeService.store_by_name(storeName).Data)[0].amount_by_name(productName);
-            Assert.IsFalse(completeRes.Success);
-            Assert.AreEqual(amount, quantity);
-        }       
-
-        [TestMethod]
-        public void TestSupplySystem_FailThrowException()
-        {
-            var testObject = new Mock<ISupplySystem>();
-            testObject.Setup(arg => arg.IsValidDelivery(" ", null)).Returns(false);
-            testObject.Setup(arg => arg.ExecuteDelivery(" ", null)).Returns(false);
-
-            StoreController sc = new StoreController();
-            sc.create_store("name", "email", "054", "desc", "addr");
-            int sid = sc.store_by_name("name")[0].ID;
-            int pid = sc.add_store_product(sid, "prd", 5.0, "category", "desc", 10);
-
-            ShoppingCart cart = new ShoppingCart();
-            cart.AddToCart(sid,pid, 2);
-
-            OrderSystem os = new OrderSystem(sc, testObject.Object);
-            try
-            {
-                //should throw exception
-                os.ProcessOrder(cart, "1", false, "some", "some");
-                Assert.IsTrue(false);
-            }
-            catch
-            {
-                Assert.IsTrue(true);
-            }
-        }
-
-        [TestMethod]
-        public void TestPaymentSystem_FailThrowException()
-        {
-            var testObject = new Mock<IPaymentSystem>();
-            testObject.Setup(arg => arg.IsValidPayment(" ", 0)).Returns(false);
-            testObject.Setup(arg => arg.ExecutePayment(" ", 0)).Returns(false);
-
-            StoreController sc = new StoreController();
-            sc.create_store("name", "email", "054", "desc", "addr");
-            int sid = sc.store_by_name("name")[0].ID;
-            int pid = sc.add_store_product(sid, "prd", 5.0, "category", "desc", 10);
-
-            ShoppingCart cart = new ShoppingCart();
-            cart.AddToCart(sid, pid, 2);
-
-            OrderSystem os = new OrderSystem(sc, testObject.Object);
-            try
-            {
-                //should throw exception
-                os.ProcessOrder(cart, "1", false, "some", "some");
-                Assert.IsTrue(false);
-            }
-            catch
-            {
-                Assert.IsTrue(true);
-            }
-        }
-
-        [TestMethod]
-        public void TestCartSameIfPurchaseFail_Success()
-        {
-            Response ignore = userService.CreateSubscriber(username2, password2);
-            Response res = userService.Login(username2, password2);
-            userDTO = res.Data as UserDTO;
-            string token = userDTO.AccessToken;
-            ignore = userService.AddToCart(token, sid, pid, quantity * 2); //we added too many items, so action should fail
-            Response temp = userService.GetShoppingCart(token);
-
-            ShoppingCartDTO prevCart = temp.Data as ShoppingCartDTO;
             Response completeRes = userService.CompletePurchase(token, destAddr, creditCardInfo);
 
-            temp = userService.GetShoppingCart(token);
-            ShoppingCartDTO newCart = temp.Data as ShoppingCartDTO;
+            sc = userService.GetShoppingCart(token1);
+            ShoppingCartDTO shoppingCart2 = sc.Data as ShoppingCartDTO;
 
-            Dictionary<int, ShoppingBasketDTO> prevCartInside = prevCart.ShoppingBaskets;
-            Dictionary<int, ShoppingBasketDTO> newCartInside = newCart.ShoppingBaskets;
-
-            Assert.IsFalse(completeRes.Success);
+            Assert.IsTrue(completeRes.Success);
 
             //for each shopping basket checking the basket inside out, the only way to check equality
-            foreach (KeyValuePair<int, ShoppingBasketDTO> entry in prevCartInside)
+            foreach (KeyValuePair<int, ShoppingBasketDTO> entry in shoppnigCart1.ShoppingBaskets)
             {
                 ShoppingBasketDTO prevSbd = entry.Value;
-                ShoppingBasketDTO newSbd = newCartInside[entry.Key];
+                ShoppingBasketDTO newSbd = shoppingCart2.ShoppingBaskets[entry.Key];
                 foreach (KeyValuePair<ProductDTO, int> entry2 in prevSbd.ProductQuantities)
                 {
                     foreach (KeyValuePair<ProductDTO, int> entry3 in newSbd.ProductQuantities)
                     {
                         Assert.AreEqual(entry2.Key.Id, entry3.Key.Id);
-                        Assert.AreEqual(entry2.Value,entry3.Value);
+                        Assert.AreEqual(entry2.Value, entry3.Value);
                     }
                 }
             }
+
         }
 
         [TestMethod]
-        public void TestWhenPurchaseFailSameAmountInStore_Success()
+        public void TestHistoryPurchaseSameWhenPurchaseFail()
         {
             Response ignore = userService.CreateSubscriber(username2, password2);
             Response res = userService.Login(username2, password2);
@@ -216,9 +174,12 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
 
             Response completeRes = userService.CompletePurchase(token, destAddr, creditCardInfo);
             int amount = ((List<Store>)storeService.store_by_name(storeName).Data)[0].amount_by_name(productName);
-            Assert.IsFalse(completeRes.Success);
-            Assert.AreEqual(amount, quantity);
-        }
 
+            Response test = userService.GetMyOrderHistory(token);
+            List<OrderDTO> listOfOrders = test.Data as List<OrderDTO>;
+
+            Assert.IsFalse(completeRes.Success);
+            Assert.AreEqual(0, listOfOrders.Count);
+        }
     }
 }

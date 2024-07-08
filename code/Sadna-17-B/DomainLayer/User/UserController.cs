@@ -322,7 +322,7 @@ namespace Sadna_17_B.DomainLayer.User
                 throw new Sadna17BException("The user with the given username is already a manager of the store with the given storeID.");
             }
             offerSystem.AddOwnerAppointmentOffer(storeID, newOwnerUsername, requestingSubscriber.Username);
-            notificationSystem.Notify(newOwnerUsername, "A new owner appointment offer of store " + storeID + " has been received from " + requestingSubscriber.Username); ;
+            notificationSystem.Notify(newOwnerUsername, "A new owner appointment offer of store " + storeID + " has been received from " + requestingSubscriber.Username);
         }
 
         public void OfferManagerAppointment(string token, int storeID, string newManagerUsername)
