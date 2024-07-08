@@ -39,10 +39,19 @@ namespace Sadna_17_B.Utils
             return parsed;
         }
 
-        public static double parse_double(string s)
+        public static double parse_double(string s, int range = -1)
         {
-            if (is_none(s))
-                return 0;
+            if (is_none(s) | range != -1)
+            {
+                if (range == 1)
+                    return 1000000;
+
+                if (range == 0)
+                    return 0;
+
+                return -1;
+            }
+
 
             double parsed = double.Parse(s, CultureInfo.InvariantCulture);
             return parsed;

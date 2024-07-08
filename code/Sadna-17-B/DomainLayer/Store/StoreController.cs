@@ -457,14 +457,15 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         public List<Product> search_products_by_keyword(string[] keywords)
         {
+            if (keywords.Length == 0)
+                return all_products();
+
             List<Product> result = new List<Product>();
 
             foreach (Store store in active_stores.Values)
             {
                 List<Product> store_products = store.filter_keyword(keywords);
-
                 result.AddRange(store_products);
-                        
             }
 
             return result;
@@ -472,11 +473,14 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         public List<Product> filter_products_by_category(List<Product> searchReesult, string[] categories)
         {
+            if (categories.Length == 1 && categories[0] == "")
+                return searchReesult;
+
             List<Product> filtered = new List<Product>();
 
             foreach (string category in categories)
                 foreach (Product product in searchReesult)
-                    if (product.category == category)
+                    if (product.category.ToLower().Contains(category.ToLower()))
                        filtered.Add(product);
            
             return filtered;
@@ -495,6 +499,9 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         public List<Product> filter_products_by_product_rating(List<Product> searchResult, double low)
         {
+            if (low == -1)
+                return searchResult;
+
             List<Product> filtered = new List<Product>();
 
             foreach (Product product in searchResult)
@@ -508,6 +515,9 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         public List<Product> filter_products_by_store_id(List<Product> searchReesult, int storeID)
         {
+            if (storeID == -1)
+                return searchReesult;
+
             List<Product> filtered = new List<Product>();
 
             foreach (Product product in searchReesult)
@@ -521,6 +531,9 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         public List<Product> filter_products_by_store_rating(List<Product> searchResult, double low)
         {
+            if (low == -1)
+                return searchResult;
+
             List<Product> filtered = new List<Product>();
 
             foreach (Product product in searchResult)

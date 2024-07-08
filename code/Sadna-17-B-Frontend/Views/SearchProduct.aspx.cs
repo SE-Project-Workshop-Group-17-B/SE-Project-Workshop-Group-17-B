@@ -26,36 +26,23 @@ namespace Sadna_17_B_Frontend.Views
 
         protected void btnSearch_Click(object sender, EventArgs e)
         {
+            BackendController backendController = BackendController.get_instance();
+
             string keyword = txtKeyword.Value.Trim();
             string category = txtCategory.Value.Trim();
-            string minPriceText = txtMinPrice.Value.Trim();
-            string maxPriceText = txtMaxPrice.Value.Trim();
-            string minRatingText = txtMinRating.Value.Trim();
-            string minStoreRatingText = txtMinStoreRating.Value.Trim();
-            string storeIdText = txtStoreID.Value.Trim();
+            string price_range = $"{txtMinPrice.Value.Trim()}|{txtMaxPrice.Value.Trim()}";
+            string p_rate = txtMinRating.Value.Trim();
+            string s_rate = txtMinStoreRating.Value.Trim();
+            string sid = txtStoreID.Value.Trim();
 
-            BackendController backendController = BackendController.get_instance();
-            IStoreService storeService = backendController.storeService;
-            Response response;
+            Dictionary<string,string> search_doc = new Doc_generator.search_doc_builder()
+                                                                    .set_search_options(keyword, sid, category, p_rate, price_range, s_rate)
+                                                                    .Build();
 
-            if (keyword.IsEmpty() && category.IsEmpty() && minPriceText.IsEmpty() && maxPriceText.IsEmpty() && minRatingText.IsEmpty() && minStoreRatingText.IsEmpty() && storeIdText.IsEmpty())
-            {
-                response = backendController.storeService.all_products();
-            }
-            else
-            {
-                int storeId = -1, minRating = -1, minStoreRating = -1;
-                int minPrice = -1, maxPrice = -1;
+            Response response = backendController.search_products_by(search_doc);
 
-                int.TryParse(storeIdText, out storeId);
-                int.TryParse(minPriceText, out minPrice);
-                int.TryParse(maxPriceText, out maxPrice);
-                int.TryParse(minRatingText, out minRating);
-                int.TryParse(minStoreRatingText, out minStoreRating);
+            
 
-
-                response = backendController.search_products(keyword, category, minPrice, maxPrice, minRating, minStoreRating, storeId);
-            }
             if (response.Success)
             {
                 var products = (Dictionary<Product, int>)response.Data;

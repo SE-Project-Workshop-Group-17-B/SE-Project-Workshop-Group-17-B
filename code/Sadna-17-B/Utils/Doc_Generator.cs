@@ -7,9 +7,11 @@ using System.Text;
 using System.Web.UI.HtmlControls;
 using System.Globalization;
 using Sadna_17_B.DomainLayer.StoreDom;
+using System.Diagnostics;
 
 namespace Sadna_17_B.Utils
 {
+
 
     public class Doc_generator
     {
@@ -111,7 +113,6 @@ namespace Sadna_17_B.Utils
         }
 
 
-
         public class purchase_policy_doc_builder
         {
 
@@ -184,7 +185,52 @@ namespace Sadna_17_B.Utils
                 return dict;
             }
         }
+    
+    
+
+        public class search_doc_builder
+        {
+            private Dictionary<string, string> searchDoc;
+
+            public search_doc_builder()
+            {
+                reset();
+            }
+
+            private void reset()
+            {
+                searchDoc = new Dictionary<string, string>
+                {
+                    ["keyword"] = "",
+                    ["store id"] = "",
+                    ["category"] = "",
+                    ["product rating"] = "",
+                    ["product price"] = "",
+                    ["store rating"] = ""
+                };
+            }
+
+
+            public search_doc_builder set_search_options(string keywords = "", string sid = "", string category = "", string p_rating = "", string p_price = "|", string s_rating = "")
+            {
+                searchDoc["keyword"] = keywords;
+                searchDoc["store id"] = sid;
+                searchDoc["category"] = category;
+                searchDoc["product rating"] = p_rating;
+                searchDoc["product price"] = p_price;
+                searchDoc["store rating"] = s_rating;
+                return this;
+            }
+
+            public Dictionary<string, string> Build()
+            {
+                Dictionary<string, string> dict = new Dictionary<string, string>(searchDoc);
+                reset();
+                return dict;
+            }
     }
+
+}
 }
         
     
