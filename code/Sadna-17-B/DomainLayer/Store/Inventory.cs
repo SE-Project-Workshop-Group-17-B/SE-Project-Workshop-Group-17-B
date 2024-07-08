@@ -20,7 +20,6 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         // ---------------- Adjust product -------------------------------------------------------------------------------------------
 
-
         public Inventory(int store_id)
         {
             this.store_id = store_id;
@@ -66,7 +65,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return true;
         }
 
-      
+        
         public void decrease_product_amount(int product_id, int decrease_amount)
 
         {
@@ -137,7 +136,8 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         public List<Product> products_by_keyword(string[] keyWords)
         {
             // Split the keywords by comma and trim any extra spaces
-            string[] keywordsArray = keyWords.Select(k => k.Trim()).ToArray();
+            string[] keywordsArray = keyWords.Select(k => k.Trim().ToLower()).ToArray();
+
             List<Product> products = new List<Product>();
 
             // Dictionary to keep track of products and their matching keyword count
@@ -145,7 +145,14 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                                             .Select(product => new
                                             {
                                                 Product = product,
-                                                MatchCount = keywordsArray.Count(keyword => (product.description.Contains(keyword) || product.name.Contains(keyword) || product.category.Contains(keyword)))
+                                                MatchCount = keywordsArray.Count(keyword =>
+                                                {
+                                                    string description = product.description.ToLower();
+                                                    string name = product.name.ToLower();
+                                                    string category = product.category.ToLower();
+                                                    bool ans = description.Contains(keyword) || name.Contains(keyword) || category.Contains(keyword);
+                                                    return ans;
+                                                })
                                             })
                                             .Where(x => x.MatchCount > 0)
                                             .OrderByDescending(x => x.MatchCount)
@@ -181,8 +188,6 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         }
 
       
-
-
 
         // ---------------- info -------------------------------------------------------------------------------------------
 

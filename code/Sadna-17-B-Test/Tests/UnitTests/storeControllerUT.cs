@@ -496,6 +496,44 @@ namespace Sadna_17_B_Test.Tests.UnitTests
 
         }
 
+        [TestMethod]
+        public void Test_search_products()
+        {
+            // init
+
+            Response res = user_service.Login("hihihi", "byebyebye");
+            string token = (res.Data as UserDTO).AccessToken;
+            int sid = (int)store_service.create_store(token, "test store right now", "mail@example.com", "055555055", "hi bye", "compton").Data;
+
+            store_service.add_product_to_store(token, sid, "Pizza", 15, "Food", "The pizza is bad", 50);
+            store_service.add_product_to_store(token, sid, "Laptop", 1200, "Electronics", "A high-performance laptop", 10);
+            store_service.add_product_to_store(token, sid, "Headphones", 150, "Electronics", "Noise-cancelling headphones", 25);
+            store_service.add_product_to_store(token, sid, "Coffee Maker", 85, "Appliances", "Brews great coffee", 30);
+            store_service.add_product_to_store(token, sid, "Bicycle", 300, "Sports", "Mountain bike with 21 gears", 5);
+            store_service.add_product_to_store(token, sid, "Smartphone", 800, "Electronics", "Latest model with 5G", 20);
+            store_service.add_product_to_store(token, sid, "T-Shirt", 25, "Clothing", "Cotton t-shirt with cool print", 100);
+            store_service.add_product_to_store(token, sid, "Book", 20, "Books", "Bestselling novel", 60);
+            store_service.add_product_to_store(token, sid, "Desk Chair", 150, "Furniture", "Ergonomic office chair", 15);
+            store_service.add_product_to_store(token, sid, "Blender", 50, "Appliances", "High-speed blender", 40);
+
+
+            // filter
+
+            Dictionary<string, string> search_doc = new Doc_generator.search_doc_builder().set_search_options(category:"Pizza").Build();
+
+            Response response = store_service.search_product_by(search_doc);
+            List<Product> products = response.Data as List<Product>;
+
+            foreach (Product p in products)
+            {
+                Console.WriteLine(p.ID);
+            }
+
+            Console.WriteLine("products count "+products.Count());
+
+            Assert.IsTrue(products.Count() == 3);
+
+        }
 
         // ----------------------------------------------------------------------- Store Controller related ---------------------------------------------------------------------------------------
 

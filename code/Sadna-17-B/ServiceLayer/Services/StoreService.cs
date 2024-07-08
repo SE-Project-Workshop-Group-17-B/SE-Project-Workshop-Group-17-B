@@ -515,7 +515,7 @@ namespace Sadna_17_B.ServiceLayer.Services
         
         private bool filter_apply(string[] filter) // inner function 
         {
-            return filter[0] != "none";
+            return filter[0] != "" || filter[1] != "";
         }
 
         public Response search_product_by(Dictionary<string,string> doc) // --> List < product > // doc explained on doc_doc.cs 
@@ -524,45 +524,25 @@ namespace Sadna_17_B.ServiceLayer.Services
             {
                 List<Product> products;
 
+                // -------------- parsing ----------------------------------------------
+
                 string[] filter_keyword = Parser.parse_array<string>(doc["keyword"]);
                 string[] filter_store = Parser.parse_array<string>(doc["store id"]);
                 string[] filter_category = Parser.parse_array<string>(doc["category"]);
                 string[] filter_product_rating = Parser.parse_array<string>(doc["product rating"]);
-                string[] filter_product_price = Parser.parse_array<string>(doc["product price"]);
                 string[] filter_store_rating = Parser.parse_array<string>(doc["store rating"]);
+                string[] filter_price_range = Parser.parse_array<string>(doc["product price"]);
+                
+                // -------------- filtering ----------------------------------------------
 
+                products = _storeController.search_products_by_keyword(filter_keyword);
+                products = _storeController.filter_products_by_store_id(products, Parser.parse_array<int>(filter_store)[0]);
+                products = _storeController.filter_products_by_store_rating(products, Parser.parse_array<double>(filter_store_rating)[0]);
+                products = _storeController.filter_products_by_category(products, filter_category);
+                products = _storeController.filter_products_by_price(products, Parser.parse_double(filter_price_range[0],0), Parser.parse_double(filter_price_range[1],1));
+                products = _storeController.filter_products_by_product_rating(products, Parser.parse_int(filter_product_rating[0]));
 
-                if (filter_apply(filter_keyword))
-                    products = _storeController.search_products_by_keyword(filter_keyword);
-                else
-                    products = _storeController.all_products();
-
-                // filter by store id
-
-                if (filter_apply(filter_store))
-                    products = _storeController.filter_products_by_store_id(products, Parser.parse_array<int>(filter_store)[0]);
-
-                // filter by store rating
-
-                if (filter_apply(filter_store_rating))
-                    products = _storeController.filter_products_by_store_rating(products, Parser.parse_array<double>(filter_store_rating)[0]);
-
-                // filter by product category
-
-                if (filter_apply(filter_category))
-                    products = _storeController.filter_products_by_category(products, filter_category);
-
-                // filter by product price
-
-                if (filter_apply(filter_product_price))
-                    products = _storeController.filter_products_by_price(products, Parser.parse_double(filter_product_price[0]), Parser.parse_double(filter_product_price[1]));
-
-                // filter by product rating
-
-                if (filter_apply(filter_product_rating))
-                    products = _storeController.filter_products_by_product_rating(products, Parser.parse_int(filter_product_rating[0]));
-
-                return new Response(true, products);
+                return new Response("search filter succeed !!!",true, products);
             
             }
 

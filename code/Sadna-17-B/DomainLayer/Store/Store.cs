@@ -15,7 +15,8 @@ using System.Web.UI.WebControls;
 
 namespace Sadna_17_B.DomainLayer.StoreDom
 {
-    public class Store //: informative_class
+
+    public class Store
 
     {
 
@@ -309,7 +310,6 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return inventory.amount_by_name(productName);
         }
 
-
         public Product filter_id(int productId)
         {
 
@@ -338,9 +338,9 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return result.Any() ? result : null;
         }
 
-        public List<Product> filter_keyword(string[] keyword)
+        public List<Product> filter_keyword(string[] keywords)
         {
-            List<Product> result = inventory.products_by_keyword(keyword);
+            List<Product> result = inventory.products_by_keyword(keywords);
             if (result == null)
                 return new List<Product>();
 
@@ -491,66 +491,6 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
             }
 
-        }
-
-        public List<Func<Cart, bool>> parse_purchase_condition_lambdas(Dictionary<string, string> doc) // doc explained on doc_doc.cs 
-        {
-
-            string[] types = Parser.parse_array<string>(doc["cond type"]);
-
-            string op = Parser.parse_string(doc["cond op"]);
-            double price = Parser.parse_double(doc["cond price"]);
-            int amount = Parser.parse_int(doc["cond amount"]);
-            DateTime date = Parser.parse_date(doc["cond date"]);
-            int product = Parser.parse_int(doc["cond product"]); ;
-            string category = Parser.parse_string(doc["cond category"]);
-            int age = Parser.parse_int(doc["cond age"]);
-            DateTime time = Parser.parse_date(doc["cond time"]);
-
-            List<Func<Cart, bool>> lambdas = new List<Func<Cart, bool>>();
-
-            foreach (string type in types)
-            {
-                switch (type)
-                {
-                    case "p amount":
-
-                        lambdas.Add(lambda_condition.condition_product_amount(product, op, amount));
-                        break;
-
-                    case "p price":
-
-                        lambdas.Add(lambda_condition.condition_product_price(product, op, price));
-                        break;
-
-                    case "c amount":
-
-                        lambdas.Add(lambda_condition.condition_category_amount(category, op, amount));
-                        break;
-
-                    case "c price":
-
-                        lambdas.Add(lambda_condition.condition_category_price(category, op, price));
-                        break;
-
-                    case "u age":
-
-                        lambdas.Add(lambda_condition.condition_alcohol_age(op,age));
-                        break;
-
-                    case "time":
-
-                        lambdas.Add(lambda_condition.condition_alcohol_hour(op, time));
-                        break;
-
-                    default:
-
-                        throw new Sadna17BException("store controller : illegal condition functionality detected");
-
-                }
-            }
-
-            return lambdas;
         }
 
         public List<Func<Cart, bool>> parse_condition_lambdas(Dictionary<string, string> doc) // doc explained on doc_doc.cs 
