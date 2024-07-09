@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Web.UI.WebControls;
 
-
 namespace Sadna_17_B_Frontend.Views
 {
     public partial class MyStores : System.Web.UI.Page
@@ -20,59 +19,50 @@ namespace Sadna_17_B_Frontend.Views
 
         private void LoadStores()
         {
-            var managedStoresResponse = backendController.get_managed_store(); // Assume this method gets the list of managed stores
-            var ownedStoresResponse = backendController.got_owned_stores(); // Assume this method gets the list of owned stores
+            var managedStores = backendController.get_managed_store();
+            var ownedStores = backendController.got_owned_stores();
 
-            if (managedStoresResponse != null && managedStoresResponse.Count > 0)
+            if (managedStores != null && managedStores.Count > 0)
             {
-                rptManagedStores.DataSource = managedStoresResponse;
+                rptManagedStores.DataSource = managedStores;
                 rptManagedStores.DataBind();
             }
             else
             {
-                DisplayMessage("Failed to retrieve managed stores.", false);
+                litNoManagedStores.Visible = true;
             }
 
-            if (ownedStoresResponse != null && ownedStoresResponse.Count > 0)
+            if (ownedStores != null && ownedStores.Count > 0)
             {
-                rptOwnedStores.DataSource = ownedStoresResponse;
+                rptOwnedStores.DataSource = ownedStores;
                 rptOwnedStores.DataBind();
             }
             else
             {
-                DisplayMessage("Failed to retrieve owned stores.", false);
+                litNoOwnedStores.Visible = true;
             }
-        }
-
-        private void DisplayMessage(string message, bool isSuccess)
-        {
-            // Implement a method to display messages to the user
         }
 
         protected void btnCreateStore_Click(object sender, EventArgs e)
         {
-            Response.Redirect("~/Views/CreateStores.aspx");
+            Response.Redirect("~/Views/CreateStore.aspx");
         }
 
         protected void btnManage_Click(object sender, EventArgs e)
         {
             var button = (Button)sender;
-            string sid = button.CommandArgument;
-
+            string storeId = button.CommandArgument;
             Dictionary<string, string> doc = new Dictionary<string, string>
             {
-                ["store id"] = sid,
-                ["checked roles"] = "founder"
+                ["store id"] = storeId,
+                ["roles to check"] = "founder"
             };
+            bool isFounder = backendController.has_roles(doc);
 
-            bool founder = backendController.has_roles(doc); // Assume this method checks if the current user is the founder
-
-            if (founder)
-                Response.Redirect("~/Views/FounderStorePage.aspx?storeId=" + sid);
-            
+            if (isFounder)
+                Response.Redirect($"~/Views/FounderStorePage.aspx?storeId={storeId}");
             else
-                Response.Redirect("~/Views/ManagerStorePage.aspx?storeId=" + sid);
-            
+                Response.Redirect($"~/Views/ManagerStorePage.aspx?storeId={storeId}");
         }
     }
 }

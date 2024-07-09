@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using Basket = Sadna_17_B.DomainLayer.User.Basket;
 
 namespace Sadna_17_B.DomainLayer.StoreDom
 {
@@ -53,17 +54,17 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         // ---------------- variables ----------------------------------------------------
 
-        public Purchase purchase_tree;
+        public Purchase_Rule purchase_tree;
 
         public PurchasePolicy()
         {
-            this.purchase_tree = new Purchase(lambda_purchase_rule.and(),"and");
+            this.purchase_tree = new Purchase_Rule(lambda_purchase_rule.and(),"and");
         }
 
         // ---------------- functions -----------------------------------------------------
 
 
-        public int add_rule(int ancestor_id, Purchase purchase_rule)
+        public int add_rule(int ancestor_id, Purchase_Rule purchase_rule)
         {
             return purchase_tree.add_purchase_rule(ancestor_id, purchase_rule);
         }
@@ -78,9 +79,9 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return "\n" + purchase_tree.info();
         }
 
-        public bool validate_purchase_rules(Cart cart)
+        public bool validate_purchase_rules(Basket basket)
         {
-            return purchase_tree.apply_purchase(cart);
+            return purchase_tree.apply_purchase(basket);
         }
     
     

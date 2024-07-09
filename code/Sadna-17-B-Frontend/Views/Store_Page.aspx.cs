@@ -31,7 +31,7 @@ namespace Sadna_17_B_Frontend.Views
         {
             try
             {
-                IStoreService storeService = backendController.storeService;
+                StoreService storeService = backendController.storeService;
 
                 // Load store info
                 Response storeInfoResponse = storeService.get_store_info(storeId);
@@ -82,7 +82,7 @@ namespace Sadna_17_B_Frontend.Views
 
             // Retrieve the complaint value from the hidden field
 
-            IStoreService storeService = backendController.storeService;
+            StoreService storeService = backendController.storeService;
 
             // Add store rating
             Response ratingResponse = storeService.add_store_rating(storeId, rating);
@@ -104,7 +104,7 @@ namespace Sadna_17_B_Frontend.Views
 
             // Retrieve the complaint value from the hidden field
 
-            IStoreService storeService = backendController.storeService;
+            StoreService storeService = backendController.storeService;
 
             // Add store rating
             Response complaintResponse = storeService.add_store_complaint(storeId, complaint);
@@ -126,7 +126,7 @@ namespace Sadna_17_B_Frontend.Views
 
             // Retrieve the complaint value from the hidden field
 
-            IStoreService storeService = backendController.storeService;
+            StoreService storeService = backendController.storeService;
 
             // Add store rating
             Response reviewResponse = storeService.add_store_review(storeId, review);
@@ -216,7 +216,7 @@ namespace Sadna_17_B_Frontend.Views
 
         protected void viewReviewsBtn_Click(object sender, EventArgs e)
         {
-            IStoreService storeService = backendController.storeService;
+            StoreService storeService = backendController.storeService;
 
             // Fetch store reviews
             Response reviewsResponse = storeService.get_store_reviews_by_ID(storeId);

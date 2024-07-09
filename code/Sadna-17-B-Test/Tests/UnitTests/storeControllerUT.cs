@@ -23,7 +23,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
      *     
      *      -------------------- Front : ----------------------------
      *      
-     *      1. add Checkout Page for the user's Cart
+     *      1. add Checkout Page for the user's Basket
      *      
      *          - products ( name | amount | price )
      *          - discounts
@@ -38,7 +38,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
      *      
      *      4. edit search page
      *      
-     *          - add to cart button
+     *          - add to basket button
      *          - view product button
      *      
      *      4. discount policy mini page
@@ -87,8 +87,12 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         private Product product1;
         private Product product2;
         private Product product3;
-        
-        private Cart cart;
+
+        private Cart_Product cart_product1;
+        private Cart_Product cart_product2;
+        private Cart_Product cart_product3;
+
+        private Basket basket;
 
         private DateTime start_date;
         private DateTime end_date;
@@ -99,23 +103,23 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         private Discount_Percentage strategy_precentage;
         private Discount_Membership strategy_membership;
 
-        Func<Cart, double> relevant_price_by_category;
-        Func<Cart, double> relevant_price_by_product;
-        Func<Cart, double> relevant_price_by_all;
+        Func<Basket, double> relevant_price_by_category;
+        Func<Basket, double> relevant_price_by_product;
+        Func<Basket, double> relevant_price_by_all;
 
-        Func<Cart, bool> cond_all_true;
-        Func<Cart, bool> cond_all_false;
+        Func<Basket, bool> cond_all_true;
+        Func<Basket, bool> cond_all_false;
 
-        Func<Cart, bool> cond_category;
-        Func<Cart, bool> cond_product;
-        Func<Cart, bool> cond_all;
+        Func<Basket, bool> cond_category;
+        Func<Basket, bool> cond_product;
+        Func<Basket, bool> cond_all;
 
         [TestInitialize]
         public void SetUp()
         {
             /*
              * 
-             *  Cart:           | name        |  price   | category  | descript  | amount   | total price
+             *  Basket:           | name        |  price   | category  | descript  | amount   | total price
              *  -----------------------------------------------------------------------------------------
              *  
              *  - product 1 :   |   product1  |   30     |   Food    |   Nice    |  100      | 3000
@@ -171,10 +175,16 @@ namespace Sadna_17_B_Test.Tests.UnitTests
             product2 = store1.inventory.product_by_id(pid2);
             product3 = store1.inventory.product_by_id(pid3);
 
-            cart = new Cart();
-            cart.add_product(product1);
-            cart.add_product(product2);
-            cart.add_product(product3);
+            cart_product1 = store1.inventory.product_by_id(pid1).to_cart_product();
+            cart_product2 = store1.inventory.product_by_id(pid2).to_cart_product();
+            cart_product3 = store1.inventory.product_by_id(pid3).to_cart_product();
+
+
+
+            basket = new Basket(sid);
+            basket.add_product(cart_product1);
+            basket.add_product(cart_product2);
+            basket.add_product(cart_product3);
 
 
             discount_policy = store1.discount_policy;
@@ -189,11 +199,11 @@ namespace Sadna_17_B_Test.Tests.UnitTests
 
             // -------- discount relevant functions -------------------------------
 
-            relevant_price_by_category = lambda_cart_pricing.category(product1.category);
+            relevant_price_by_category = lambda_basket_pricing.category(cart_product1.category);
 
-            relevant_price_by_product = lambda_cart_pricing.product(product1.ID);
+            relevant_price_by_product = lambda_basket_pricing.product(cart_product1.ID);
            
-            relevant_price_by_all = lambda_cart_pricing.cart();
+            relevant_price_by_all = lambda_basket_pricing.basket();
             
             
 
@@ -205,14 +215,14 @@ namespace Sadna_17_B_Test.Tests.UnitTests
             cond_category = lambda_condition.condition_category_amount(product1.category, "!=", 0);
 
 
-            cond_all = lambda_condition.condition_cart_price(">", 200);
+            cond_all = lambda_condition.condition_basket_price(">", 200);
 
 
             // -------- purchase conditions functions -------------------------------
 
-            cond_all_true = lambda_condition.condition_cart_price(">", 20);
+            cond_all_true = lambda_condition.condition_basket_price(">", 20);
             
-            cond_all_false = lambda_condition.condition_cart_price("<", 20);
+            cond_all_false = lambda_condition.condition_basket_price("<", 20);
 
 
            
@@ -257,8 +267,8 @@ namespace Sadna_17_B_Test.Tests.UnitTests
                                                              );
 
             // Act
-            Mini_Checkout simple_applied = simple_discount.apply_discount(cart);
-            Mini_Checkout cond_applied = cond_discount.apply_discount(cart);
+            Mini_Checkout simple_applied = simple_discount.apply_discount(basket);
+            Mini_Checkout cond_applied = cond_discount.apply_discount(basket);
 
             // Assert
             Assert.AreEqual(simple_applied.discounts.Count, 1, 0.01);
@@ -286,8 +296,8 @@ namespace Sadna_17_B_Test.Tests.UnitTests
                                                              );
 
             // Act
-            Mini_Checkout simple_applied = simple_discount.apply_discount(cart);
-            Mini_Checkout cond_applied = cond_discount.apply_discount(cart);
+            Mini_Checkout simple_applied = simple_discount.apply_discount(basket);
+            Mini_Checkout cond_applied = cond_discount.apply_discount(basket);
 
             // Assert
             Assert.AreEqual(simple_applied.discounts.Count, 1, 0.01);
@@ -316,8 +326,8 @@ namespace Sadna_17_B_Test.Tests.UnitTests
 
             // Act
             strategy_membership.member_start_date(DateTime.Now.AddDays(-100));
-            Mini_Checkout simple_applied = simple_discount.apply_discount(cart);
-            Mini_Checkout cond_applied = cond_discount.apply_discount(cart);
+            Mini_Checkout simple_applied = simple_discount.apply_discount(basket);
+            Mini_Checkout cond_applied = cond_discount.apply_discount(basket);
 
             // Assert
             Assert.AreEqual(simple_applied.discounts.Count, 1, 0.01);
@@ -339,12 +349,12 @@ namespace Sadna_17_B_Test.Tests.UnitTests
             Discount_Conditional cond_prec_discount = new Discount_Conditional(start_date, end_date, strategy_precentage, relevant_price_by_product, cond_category );
             Discount_Conditional cond_memb_discount = new Discount_Conditional(start_date, end_date, strategy_membership, relevant_price_by_product, cond_all);
 
-            Discount_Composite and_rule = new Discount_Composite(lambda_discount_rule.logic.and(),"and");
-            Discount_Composite or_rule = new Discount_Composite(lambda_discount_rule.logic.or(), "or");
-            Discount_Composite xor_rule = new Discount_Composite(lambda_discount_rule.logic.xor(), "xor");
+            Discount_Rule and_rule = new Discount_Rule(lambda_discount_rule.logic.and(),"and");
+            Discount_Rule or_rule = new Discount_Rule(lambda_discount_rule.logic.or(), "or");
+            Discount_Rule xor_rule = new Discount_Rule(lambda_discount_rule.logic.xor(), "xor");
 
-            Discount_Composite add_rule = new Discount_Composite(lambda_discount_rule.numeric.addition(), "addition");
-            Discount_Composite max_rule = new Discount_Composite(lambda_discount_rule.numeric.maximum(), "maximum");
+            Discount_Rule add_rule = new Discount_Rule(lambda_discount_rule.numeric.addition(), "addition");
+            Discount_Rule max_rule = new Discount_Rule(lambda_discount_rule.numeric.maximum(), "maximum");
 
 
             and_rule.add_discount(cond_prec_discount);
@@ -363,10 +373,10 @@ namespace Sadna_17_B_Test.Tests.UnitTests
 
             // Assert
 
-            Assert.AreEqual(and_rule.apply_discount(cart).total_discount, 0, 0.01);
-            Assert.AreEqual(or_rule.apply_discount(cart).total_discount, 350, 0.01);
-            Assert.AreEqual(max_rule.apply_discount(cart).total_discount, 350, 0.01);
-            Assert.AreEqual(add_rule.apply_discount(cart).total_discount, 750, 0.01);
+            Assert.AreEqual(and_rule.apply_discount(basket).total_discount, 0, 0.01);
+            Assert.AreEqual(or_rule.apply_discount(basket).total_discount, 350, 0.01);
+            Assert.AreEqual(max_rule.apply_discount(basket).total_discount, 350, 0.01);
+            Assert.AreEqual(add_rule.apply_discount(basket).total_discount, 750, 0.01);
 
 
         }
@@ -375,9 +385,9 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         public void TestPurchase_Rule()
         {
 
-            Purchase p_or = new Purchase(lambda_purchase_rule.or());
-            Purchase p_and = new Purchase(lambda_purchase_rule.and());
-            Purchase p_conditional = new Purchase(lambda_purchase_rule.conditional());
+            Purchase_Rule p_or = new Purchase_Rule(lambda_purchase_rule.or());
+            Purchase_Rule p_and = new Purchase_Rule(lambda_purchase_rule.and());
+            Purchase_Rule p_conditional = new Purchase_Rule(lambda_purchase_rule.conditional());
 
             p_or.add_condition(cond_all_true);
             p_or.add_condition(cond_all_false);
@@ -388,9 +398,9 @@ namespace Sadna_17_B_Test.Tests.UnitTests
             p_conditional.add_condition(cond_all_false);
             p_conditional.add_condition(cond_all_true);
 
-            bool result_or = p_or.apply_purchase(cart);
-            bool result_and = p_and.apply_purchase(cart);
-            bool result_conditional = p_conditional.apply_purchase(cart);
+            bool result_or = p_or.apply_purchase(basket);
+            bool result_and = p_and.apply_purchase(basket);
+            bool result_conditional = p_conditional.apply_purchase(basket);
 
             Assert.IsTrue(result_or);
             Assert.IsFalse(result_and);
@@ -425,7 +435,8 @@ namespace Sadna_17_B_Test.Tests.UnitTests
                                                                        .set_base_add($"{sid}", "06/07/2024", "10/07/2024", "flat", flat: "50")
                                                                        .Build();
 
-
+            Response response = store_service.edit_discount_policy(add_flat_doc);
+            Console.WriteLine(response.Success);
             int aid  = (int) store_service.edit_discount_policy(add_flat_doc).Data;
             policy = store_service.show_discount_policy(show_doc).Data as string;
             Console.WriteLine(policy);
@@ -519,7 +530,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
 
             // filter
 
-            Dictionary<string, string> search_doc = new Doc_generator.search_doc_builder().set_search_options(category:"Pizza").Build();
+            Dictionary<string, string> search_doc = new Doc_generator.search_doc_builder().set_search_options(category:"Electronics").Build();
 
             Response response = store_service.search_product_by(search_doc);
             List<Product> products = response.Data as List<Product>;

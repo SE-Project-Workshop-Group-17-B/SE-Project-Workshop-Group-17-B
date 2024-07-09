@@ -14,6 +14,7 @@ using System.Web;
 using System.Web.UI.WebControls;
 using System.Xml.Linq;
 using StoreDTO = Sadna_17_B.DataAccessLayer.store.StoreDTO;
+using Cart = Sadna_17_B.DomainLayer.User.Cart;
 
 namespace Sadna_17_B.DomainLayer.StoreDom
 {
@@ -250,33 +251,42 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         // ---------------- order related functions ---------------------------------------------------------------------------------
 
-        public bool valid_order(int storeId, Dictionary<int, int> quantities)
+        public bool validate_inventories(Cart cart)
         {
 
-            Store store = store_by_id(storeId);
-
-            if (store == null)
-                return false;
-
-            if (quantities.IsNullOrEmpty())
-                return false;
-
-
-            foreach (var item in quantities)
+            foreach (Basket basket in cart.sid_to_basket.Values)
             {
-                if (store.filter_id(item.Key) == null)
-                    return false;
-                int requiredAmount = item.Value;
-                int availableAmount = store.inventory.amount_by_id(item.Key);
+                Store store = store_by_id(basket.store_id);
 
-                if (availableAmount < requiredAmount)
-                    return false;
+                foreach (var item in basket.basket_store_products())
+                {
+                    int pid = item.Key;
+                    int amount_in_basket = item.Value;
+                    int amount_in_stock = store.product_by_id(pid).amount;
 
+                    if (amount_in_stock < amount_in_basket)
+                        return false;
+
+                }
             }
+           
             return true;
         }
 
-        public void decrease_products_amount(int storeID, Dictionary<int, int> quantities)
+        public bool validate_policies(Cart cart)
+        {
+            foreach (Basket basket in cart.sid_to_basket.Values)
+            {
+                Store store = store_by_id(basket.store_id);
+
+                if (!store.validate_purchase_policy(basket)) 
+                    return false;
+            }
+
+            return true;
+        }
+
+        public void decrease_products_amount(Basket basket)
         {
             int i = 1;
             string purchase_result = "";
@@ -284,45 +294,41 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
             Dictionary<int, int> to_retrieve = new Dictionary<int, int>();
 
-            Store store = store_by_id(storeID);
-
-            if (!valid_order(storeID, quantities))
-                throw new Sadna17BException("Order is invalid");
-
-            foreach (var item in quantities)
+            Store store = store_by_id(basket.store_id);
+            try
             {
-                int p_id = item.Key;
-                int p_amount = item.Value;
-                int p_before_amount = store.inventory.amount_by_id(p_id);
-
-                try
+                foreach (var item in basket.basket_store_products())
                 {
+                    int p_id = item.Key;
+                    int p_amount = item.Value;
+                    int p_before_amount = store.inventory.amount_by_id(p_id);
+
                     to_retrieve.Add(p_id, p_before_amount);
                     store.decrease_product_amount(p_id, p_amount);
                 }
-                catch (Exception e)
-                {
-                    // In case of failure to complete the function reduced products will be retored.
-                    foreach (var item2 in to_retrieve)
-                    {
-                        int p_id2 = item2.Key;
-                        int p_amount2 = item2.Value;
-                        store.restore_product_amount(p_id2, p_amount2);
-                    }
-
-                    throw new Sadna17BException("order failed, all product amount restored !");
-                }
             }
+
+            catch (Exception e)
+            {
+                // In case of failure to complete the function reduced products will be retored.
+                foreach (var item2 in to_retrieve)
+                {
+                    int p_id2 = item2.Key;
+                    int p_amount2 = item2.Value;
+                    store.restore_product_amount(p_id2, p_amount2);
+                }
+
+                throw new Sadna17BException("order failed, all product amount restored !");
+            }
+
+
         }
 
-        public Checkout calculate_products_prices(int storeID, Dictionary<int, int> quantities)
+        public Checkout calculate_products_prices(Basket basket)
         {
-            Store store = store_by_id(storeID);
+            Store store = store_by_id(basket.store_id);
 
-            if (store == null)
-                throw new Exception("Invalid Parameter : store not found");
-
-            return store.calculate_product_prices(quantities); // !!!!! Fixed by Gal (maybe)
+            return store.calculate_product_prices(basket);
         }
 
 
@@ -378,7 +384,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         {
             Store store = store_by_id(storeID);
 
-            Product product = store.filter_id(productID);
+            Product product = store.product_by_id(productID);
             if (product == null)
                 return false;
 
@@ -389,7 +395,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         public bool edit_product_review(int storeID, int productID, string old_review, string new_review)
         {
             Store store = store_by_id(storeID);
-            Product product = store.filter_id(productID);
+            Product product = store.product_by_id(productID);
             if (product == null)
                 return false; 
 
@@ -401,7 +407,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         {
             Store store = store_by_id(storeID);
 
-            Product product = store.filter_id(productID);
+            Product product = store.product_by_id(productID);
             if (product == null)
                 return false;
 

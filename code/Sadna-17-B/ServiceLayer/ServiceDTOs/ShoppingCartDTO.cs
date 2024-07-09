@@ -21,21 +21,21 @@ namespace Sadna_17_B.ServiceLayer.ServiceDTOs
             ShoppingBaskets = baskets;
         }
 
-        public ShoppingCartDTO(ShoppingCart shoppingCart)
+        public ShoppingCartDTO(DomainLayer.User.Cart shoppingCart)
         {
             ShoppingBaskets = new Dictionary<int, ShoppingBasketDTO>();
-            foreach (ShoppingBasket basket in shoppingCart.ShoppingBaskets.Values)
+            foreach (Basket basket in shoppingCart.sid_to_basket.Values)
             {
-                ShoppingBaskets[basket.StoreID] = new ShoppingBasketDTO(basket);
+                ShoppingBaskets[basket.store_id] = new ShoppingBasketDTO(basket);
             }
         }
 
-        public ShoppingCartDTO(ShoppingCart shoppingCart, Dictionary<int,Product> products)
+        public ShoppingCartDTO(DomainLayer.User.Cart shoppingCart, Dictionary<int,Product> products)
         {
             ShoppingBaskets = new Dictionary<int, ShoppingBasketDTO>();
-            foreach (ShoppingBasket basket in shoppingCart.ShoppingBaskets.Values)
+            foreach (Basket basket in shoppingCart.sid_to_basket.Values)
             {
-                ShoppingBaskets[basket.StoreID] = new ShoppingBasketDTO(basket, products);
+                ShoppingBaskets[basket.store_id] = new ShoppingBasketDTO(basket, products);
             }
         }
     }

@@ -213,7 +213,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         // ---------------- info -------------------------------------------------------------------------------------------
 
 
-        public string info_to_print()
+        public string info()
         {
             string s = string.Empty;
 
@@ -221,15 +221,6 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             {
                 s += product.info_to_print() + "\n";
             }
-
-            return s;
-        }
-
-        public string info_to_UI()
-        {
-            string s = string.Empty;
-
-            // version 2 ....
 
             return s;
         }

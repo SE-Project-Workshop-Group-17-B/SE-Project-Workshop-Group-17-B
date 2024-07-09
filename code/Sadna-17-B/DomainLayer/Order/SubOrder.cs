@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Sadna_17_B.DomainLayer.User;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -15,7 +16,7 @@ namespace Sadna_17_B.DomainLayer.Order
         public string UserID { get; } // Can be either GuestID or Username, according to the order type
         public bool IsGuestOrder { get; }
         public DateTime Timestamp { get; }
-        public Dictionary<int, Tuple<int, double>> Products { get; } // ProductID -> (quantity,unitPrice)
+        public Cart cart { get; } // ProductID -> (quantity,unitPrice)
         public string DestinationAddress { get; }
         public string CreditCardInfo { get; }
 
@@ -26,7 +27,7 @@ namespace Sadna_17_B.DomainLayer.Order
             UserID = order.UserID;
             IsGuestOrder = order.IsGuestOrder;
             Timestamp = order.Timestamp;
-            Products = order.Products[storeID];
+            cart = order.Cart;
             DestinationAddress = order.DestinationAddress;
             CreditCardInfo = order.CreditCardInfo;
         }

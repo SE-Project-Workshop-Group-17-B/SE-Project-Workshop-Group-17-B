@@ -11,6 +11,7 @@ using System.Xml.Linq;
 using System.Data;
 using Sadna_17_B.Utils;
 using System.Web.UI.WebControls;
+using Basket = Sadna_17_B.DomainLayer.User.Basket;
 
 
 namespace Sadna_17_B.DomainLayer.StoreDom
@@ -103,19 +104,6 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         // ---------------- inventory ----------------------------------------------------------------------------------------
 
-        public List<Product> all_products()
-        {
-            List<Product> products = new List<Product>();
-            foreach (Product product in inventory.all_products())
-                products.Add(product);
-
-            return products;
-        }
-
-        public int add_product(string name, double price, string category, string description, int amount)
-        {
-            return inventory.add_product(name, price, category, description, amount);
-        }
 
         public void increase_product_amount(int id, int amount)
         {
@@ -127,44 +115,6 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
             inventory.decrease_product_amount(p_id, amount);
 
-        }
-
-
-
-        public bool remove_product_by_name(string p_name)
-        {
-            List<Product> products_to_remove = inventory.products_by_name(p_name);
-            bool result = true;
-            if (products_to_remove.IsNullOrEmpty())
-                return false;
-
-            foreach (Product product in products_to_remove)
-                result = result && inventory.remove_product(product.ID);
-
-            return result;
-        }
-
-        public bool remove_product_by_id(int pid)
-        {
-            return inventory.remove_product(pid);
-        }
-
-        public void edit_product(Dictionary<string, string> doc) // doc explained on doc_doc.cs
-        {
-            int pid = Parser.parse_int(doc["product id"]);
-            string edit_type = Parser.parse_string(doc["edit type"]);
-            Product product = inventory.product_by_id(pid);
-
-            lock (product)
-            {
-                product.locked = true;
-
-                product.name = Parser.parse_string(doc["name"]);
-                product.category = Parser.parse_string(doc["category"]);
-                product.description = Parser.parse_string(doc["description"]);
-
-                product.locked = false;
-            }
         }
 
         public void restore_product_amount(int pid, int amount)
@@ -181,6 +131,8 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             }
         }
 
+
+        
         public double calculate_product_bag(int p_id, int amount)
         {
             Product product = inventory.product_by_id(p_id);
@@ -192,8 +144,22 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         }
 
+        public Checkout calculate_product_prices(Basket basket)
+        {
 
-        // ---------------- policies ----------------------------------------------------------------------------------------
+            Mini_Checkout mini_check = discount_policy.calculate_discount(basket);
+            Checkout check = new Checkout(basket, mini_check);
+
+            return check;
+        }
+        
+        public bool validate_purchase_policy(Basket basket)
+        { 
+            return purchase_policy.validate_purchase_rules(basket); 
+        }
+
+
+        // ---------------- edit ----------------------------------------------------------------------------------------
 
 
         public int edit_discount_policy(Dictionary<string, string> doc)
@@ -208,17 +174,17 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                     DateTime start = Parser.parse_date(doc["start date"]);
                     DateTime end = Parser.parse_date(doc["end date"]);
                     Discount_Strategy strategy = parse_discount_strategy(doc);
-                    Func<Cart, double> relevant_product_lambda = parse_relevant_lambdas(doc);
-                    List<Func<Cart, bool>> condition_lambdas = parse_condition_lambdas(doc);
+                    Func<Basket, double> relevant_product_lambda = parse_relevant_lambdas(doc);
+                    List<Func<Basket, bool>> condition_lambdas = parse_condition_lambdas(doc);
 
-                    return add_discount(ancestor_id, start, end, strategy, relevant_product_lambda, condition_lambdas);
+                    return discount_policy.add_discount(ancestor_id, start, end, strategy, relevant_product_lambda, condition_lambdas);
 
 
                 case "remove":
 
                     int id = Parser.parse_int(doc["discount id"]);
 
-                    return remove_discount(id) ? 0 : -1;
+                    return discount_policy.remove_discount(id) ? 0 : -1;
 
                 default:
 
@@ -239,10 +205,10 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                     ancestor_id = (ancestor_id == -1) ? purchase_policy.purchase_tree.ID : ancestor_id;
 
                     string name = Parser.parse_string(doc["name"]);
-                    List<Func<Cart, bool>> cond_lambdas = parse_condition_lambdas(doc);
-                    Func<Cart,List<Func<Cart, bool>>, bool> rule_lambda = parse_purchase_rule_lambdas(doc);
+                    List<Func<Basket, bool>> cond_lambdas = parse_condition_lambdas(doc);
+                    Func<Basket,List<Func<Basket, bool>>, bool> rule_lambda = parse_purchase_rule_lambdas(doc);
 
-                    Purchase purchase = new Purchase(rule_lambda, cond_lambdas ,name);
+                    Purchase_Rule purchase = new Purchase_Rule(rule_lambda, cond_lambdas ,name);
 
                     return purchase_policy.add_rule(ancestor_id,purchase);
 
@@ -260,82 +226,49 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             }
         }
 
-        public int add_discount(int ancestor_id, DateTime start, DateTime end, Discount_Strategy strategy, Func<Cart, double> relevant_product_lambda, List<Func<Cart, bool>> condition_lambdas = null)
+        public void edit_product(Dictionary<string, string> doc) // doc explained on doc_doc.cs
         {
+            int pid = Parser.parse_int(doc["product id"]);
+            string edit_type = Parser.parse_string(doc["edit type"]);
+            Product product = inventory.product_by_id(pid);
 
-            Discount discount;
-
-            if (condition_lambdas.IsNullOrEmpty())
-                discount = new Discount_Simple(start, end, strategy, relevant_product_lambda);
-            else
-                discount = new Discount_Conditional(start, end, strategy, relevant_product_lambda, condition_lambdas);
-
-            return discount_policy.add_discount(discount, ancestor_id);
-        }
-
-        public bool remove_discount(int discount)
-        {
-            return discount_policy.remove_discount(discount);
-        }
-
-
-        public Checkout calculate_product_prices(Dictionary<int, int> quantities)
-        {
-
-            Cart cart = new Cart();
-
-            foreach (var item in quantities)
+            lock (product)
             {
-                int p_id = item.Key;
-                int p_amount = item.Value;
-                double p_bag_price = calculate_product_bag(p_id, p_amount);
-                Product product = filter_id(p_id);
+                product.locked = true;
 
-                cart.add_product(product);
+                product.name = Parser.parse_string(doc["name"]);
+                product.category = Parser.parse_string(doc["category"]);
+                product.description = Parser.parse_string(doc["description"]);
+
+                product.locked = false;
             }
-
-            Mini_Checkout mini_check = discount_policy.calculate_discount(cart);
-            Checkout check = new Checkout(cart, mini_check);
-
-            return check;  
         }
 
-      
+        public int add_product(string name, double price, string category, string description, int amount)
+        {
+            return inventory.add_product(name, price, category, description, amount);
+        }
 
-        // ---------------- filters ----------------------------------------------------------------------------------------
 
+        // ---------------- find ----------------------------------------------------------------------------------------
+
+        public List<Product> all_products()
+        {
+            List<Product> products = new List<Product>();
+            foreach (Product product in inventory.all_products())
+                products.Add(product);
+
+            return products;
+        }
 
         public int amount_by_name(string productName)
         {
             return inventory.amount_by_name(productName);
         }
 
-        public Product filter_id(int productId)
+        public Product product_by_id(int productId)
         {
-
-            if (productId < 0 ) // || productId > Product.amount())
-            {
-                throw new ArgumentNullException("id not valid");
-            }
-
             return inventory.product_by_id(productId);
-        }
-
-        public List<Product> filter_name(string productName)
-        {
-
-            if (string.IsNullOrEmpty(productName))
-            {
-                throw new ArgumentNullException("cannot search null as name");
-            }
-            return inventory.products_by_name(productName);
-        }
-
-        public List<Product> filter_category(string category)
-        {
-            List<Product> result = inventory.products_by_category(category);
-
-            return result.Any() ? result : null;
         }
 
         public List<Product> filter_keyword(string[] keywords)
@@ -346,50 +279,6 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
             return result;
         }
-
-        public List<Product> filter_price(List<Product> searchResult, int low, int high)
-        {
-            if(searchResult.IsNullOrEmpty())
-                { return null; }
-
-            List<Product> filtered = new List<Product>();
-
-            foreach(Product product in searchResult)
-            {
-                if(product.price <= high && product.price >= low)
-                    filtered.Add(product);
-            }
-            return filtered;
-        }
-
-        public List<Product> filter_rating(List<Product> searchResult, int low)
-        {
-            if (searchResult.IsNullOrEmpty())
-            { return null; }
-
-            List<Product> filtered = new List<Product>();
-
-            foreach (Product product in searchResult)
-            {
-                if (product.rating >= low)
-                    filtered.Add(product);
-            }
-
-            return filtered;
-        }
-
-        public List<Product> filter_price_all(double low, double high)
-        {
-            List<Product> filtered = new List<Product>();
-
-            foreach (Product product in inventory.all_products())
-            {
-                if (product.price <= high && product.price >= low)
-                    filtered.Add(product);
-            }
-            return filtered;
-        }
-
 
 
         // ---------------- info ----------------------------------------------------------------------------------------
@@ -410,7 +299,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         public string show_inventory()
         {
-            string s = inventory.info_to_print();
+            string s = inventory.info();
 
             return s;
         }
@@ -453,7 +342,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             throw new Sadna17BException("store controller : illegal strategy detected");
         }
 
-        public Func<Cart, double> parse_relevant_lambdas(Dictionary<string, string> doc) // doc explained on doc_doc.cs 
+        public Func<Basket, double> parse_relevant_lambdas(Dictionary<string, string> doc) // doc explained on doc_doc.cs 
         {
             string relevant_type = Parser.parse_string(doc["relevant type"]);
             string relevant_factor = Parser.parse_string(doc["relevant factors"]);
@@ -464,26 +353,26 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                 case "product":
 
                     int product = Parser.parse_int(relevant_factor);
-                    return lambda_cart_pricing.product(product);
+                    return lambda_basket_pricing.product(product);
 
                 case "category":
 
                     string category = Parser.parse_string(relevant_factor);
-                    return lambda_cart_pricing.category(category);
+                    return lambda_basket_pricing.category(category);
 
                 case "products":
 
                     int[] products = Parser.parse_array<int>(relevant_factor);
-                    return lambda_cart_pricing.products(products);
+                    return lambda_basket_pricing.products(products);
 
                 case "categories":
 
                     string[] categories = Parser.parse_array<string>(relevant_factor);
-                    return lambda_cart_pricing.categories(categories);
+                    return lambda_basket_pricing.categories(categories);
 
-                case "cart":
+                case "basket":
 
-                    return lambda_cart_pricing.cart();
+                    return lambda_basket_pricing.basket();
 
                 default:
 
@@ -493,7 +382,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         }
 
-        public List<Func<Cart, bool>> parse_condition_lambdas(Dictionary<string, string> doc) // doc explained on doc_doc.cs 
+        public List<Func<Basket, bool>> parse_condition_lambdas(Dictionary<string, string> doc) // doc explained on doc_doc.cs 
         {
 
             string[] types = Parser.parse_array<string>(doc["cond type"]);
@@ -505,7 +394,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             int product = Parser.parse_int(doc["cond product"]); ;
             string category = Parser.parse_string(doc["cond category"]); ;
 
-            List<Func<Cart, bool>> lambdas = new List<Func<Cart, bool>>();
+            List<Func<Basket, bool>> lambdas = new List<Func<Basket, bool>>();
 
             foreach (string type in types)
             {
@@ -546,7 +435,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return lambdas;
         }
 
-        public Func<Cart,List<Func<Cart, bool>>,bool> parse_purchase_rule_lambdas(Dictionary<string, string> doc) // doc explained on doc_doc.cs 
+        public Func<Basket,List<Func<Basket, bool>>,bool> parse_purchase_rule_lambdas(Dictionary<string, string> doc) // doc explained on doc_doc.cs 
         {
 
             string type = Parser.parse_string(doc["rule type"]);

@@ -55,7 +55,7 @@ namespace Sadna_17_B.Utils
                 };
             }
 
-            public discount_policy_doc_builder set_base_add(string storeId, string startDate, string endDate, string strategy, string flat = "", string percentage = "", string relevantType = "cart", string relevantFactor = "a")
+            public discount_policy_doc_builder set_base_add(string storeId, string startDate, string endDate, string strategy, string flat = "", string percentage = "", string relevantType = "basket", string relevantFactor = "a")
             {
                 discountDoc["store id"] = storeId;
                 discountDoc["edit type"] = "add";
