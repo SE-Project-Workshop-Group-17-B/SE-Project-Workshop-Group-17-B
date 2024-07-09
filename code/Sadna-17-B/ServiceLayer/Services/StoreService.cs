@@ -200,6 +200,23 @@ namespace Sadna_17_B.ServiceLayer.Services
             }
         }
 
+        public Response edit_product_review(int storeID, int productID, string old_review, string new_review)
+        {
+            try
+            {
+                bool result = _storeController.edit_product_review(storeID, productID, old_review, new_review);
+                if (result)
+                    return new Response("Product review edited successfully", true);
+                else
+                    return new Response("Failed to edit product review", false);
+            }
+            catch (Sadna17BException ex)
+            {
+                error_logger.Log("Store Service", "Error editing product review");
+                return Response.GetErrorResponse(ex);
+            }
+        }
+
         public Response add_store_review(int storeID, string review) // --> bool
         {
             try
@@ -281,52 +298,78 @@ namespace Sadna_17_B.ServiceLayer.Services
 
         // ---------------- product feedbacks -------------------------------------------------------------------------------------------
 
-        
-        public Response add_product_rating(int storeID, int productID, int rating) // --> bool 
+
+
+        public Response add_product_rating(int storeID, int productID, int rating)
         {
             try
             {
                 bool result = _storeController.add_product_rating(storeID, productID, rating);
-
-                info_logger.Log("Store Service", "product rating added");
-
                 if (result)
-                    return new Response("product rating added", true);
+                    return new Response("Product rating added successfully", true);
                 else
-                    return new Response("product rating was not added for some reason", false);
+                    return new Response("Failed to add product rating", false);
             }
-
             catch (Sadna17BException ex)
             {
-                error_logger.Log("Store Service", "error, rating was not added");
+                error_logger.Log("Store Service", "Error adding product rating");
                 return Response.GetErrorResponse(ex);
             }
-
         }
 
-        public Response add_product_review(int storeID,int productID, string review) // --> bool
+
+        /* public Response add_product_rating(int storeID, int productID, int rating)
+         {
+             try
+             {
+                 bool result = _storeController.add_product_rating(storeID, productID, rating);
+                 if (result)
+                     return new Response("product rating added", true);
+                 else
+                     return new Response("product rating was not added for some reason", false);
+             }
+             catch (Sadna17BException ex)
+             {
+                 error_logger.Log("Store Service", "error, rating was not added");
+                 return Response.GetErrorResponse(ex);
+             }
+         }*/
+
+        public Response add_product_review(int storeID, int productID, string review)
         {
             try
             {
                 bool result = _storeController.add_product_review(storeID, productID, review);
+                if (result)
+                    return new Response("Product review added successfully", true);
+                else
+                    return new Response("Failed to add product review", false);
+            }
+            catch (Sadna17BException ex)
+            {
+                error_logger.Log("Store Service", "Error adding product review");
+                return Response.GetErrorResponse(ex);
+            }
+        }
 
-                info_logger.Log("Store Service", "product review added");
-
+        /*public Response add_product_review(int storeID, int productID, string review)
+        {
+            try
+            {
+                bool result = _storeController.add_product_review(storeID, productID, review);
                 if (result)
                     return new Response("product review added", true);
                 else
                     return new Response("product review was not added for some reason", false);
             }
-
             catch (Sadna17BException ex)
             {
                 error_logger.Log("Store Service", "error, review was not added");
                 return Response.GetErrorResponse(ex);
             }
-
         }
-
-        public Response edit_product_review(int storeID, int productID, string old_review, string new_review) // bool 
+*/
+        /*public Response edit_product_review(int storeID, int productID, string old_review, string new_review) // bool 
         {
 
             try
@@ -348,7 +391,7 @@ namespace Sadna_17_B.ServiceLayer.Services
             }
 
         }
-
+*/
 
 
         // ---------------- stores Management -------------------------------------------------------------------------------------------
@@ -512,7 +555,45 @@ namespace Sadna_17_B.ServiceLayer.Services
 
 
         // ---------------- search / filter products options -------------------------------------------------------------------------------------------
-        
+
+
+        /* public Response get_product_by_id(int productId)
+         {
+             try
+             {
+                 Product product = _storeController.get_product_by_id(productId);
+                 if (product != null)
+                 {
+                     return new Response(true, product);
+                 }
+                 else
+                 {
+                     return new Response("Product not found", false, null);
+                 }
+             }
+             catch (Sadna17BException ex)
+             {
+                 error_logger.Log("Store Service", "Error during fetching product data");
+                 return Response.GetErrorResponse(ex);
+             }
+         }*/
+
+
+
+        public Response get_product_by_id(int productId)
+        {
+            try
+            {
+                Product product = _storeController.get_product_by_id(productId);
+                return new Response(true, product);
+            }
+            catch (Sadna17BException ex)
+            {
+                error_logger.Log("Store Service", "Error during fetching product data");
+                return Response.GetErrorResponse(ex);
+            }
+        }
+
         private bool filter_apply(string[] filter) // inner function 
         {
             return filter[0] != "" || filter[1] != "";
@@ -535,6 +616,8 @@ namespace Sadna_17_B.ServiceLayer.Services
                 
                 // -------------- filtering ----------------------------------------------
 
+
+                
                 products = _storeController.search_products_by_keyword(filter_keyword);
                 products = _storeController.filter_products_by_store_id(products, Parser.parse_array<int>(filter_store)[0]);
                 products = _storeController.filter_products_by_store_rating(products, Parser.parse_array<double>(filter_store_rating)[0]);
@@ -542,17 +625,47 @@ namespace Sadna_17_B.ServiceLayer.Services
                 products = _storeController.filter_products_by_price(products, Parser.parse_double(filter_price_range[0],0), Parser.parse_double(filter_price_range[1],1));
                 products = _storeController.filter_products_by_product_rating(products, Parser.parse_int(filter_product_rating[0]));
 
-                return new Response("search filter succeed !!!",true, products);
-            
+                return new Response("search filter succeed !!!", true, products);
+      
+
             }
 
+            catch (Sadna17BException ex)
+            {
+                error_logger.Log("Store Service", "Error during product search");
+                return Response.GetErrorResponse(ex);
+            }
+        }
+
+
+
+        /*public Response search_product_by(Dictionary<string, string> doc)
+        {
+            try
+            {
+                string[] filter_keyword = Parser.parse_array<string>(doc["keyword"]);
+                string[] filter_store = Parser.parse_array<string>(doc["store id"]);
+                string[] filter_category = Parser.parse_array<string>(doc["category"]);
+                string[] filter_product_rating = Parser.parse_array<string>(doc["product rating"]);
+                string[] filter_store_rating = Parser.parse_array<string>(doc["store rating"]);
+                string[] filter_price_range = Parser.parse_array<string>(doc["product price"]);
+
+                List<Product> products = _storeController.search_products_by_keyword(filter_keyword);
+                products = _storeController.filter_products_by_store_id(products, Parser.parse_array<int>(filter_store)[0]);
+                products = _storeController.filter_products_by_store_rating(products, Parser.parse_array<double>(filter_store_rating)[0]);
+                products = _storeController.filter_products_by_category(products, filter_category);
+                products = _storeController.filter_products_by_price(products, Parser.parse_double(filter_price_range[0], 0), Parser.parse_double(filter_price_range[1], double.MaxValue));
+                products = _storeController.filter_products_by_product_rating(products, Parser.parse_int(filter_product_rating[0]));
+
+                return new Response("search filter succeed !!!", true, products);
+            }
             catch (Sadna17BException ex)
             {
                 error_logger.Log("Store Service", "error during fetching products data");
                 return Response.GetErrorResponse(ex);
             }
         }
-        
+*/
 
         // ---------------- Policy Requirements -------------------------------------------------------------------------------------------
 
@@ -684,3 +797,13 @@ namespace Sadna_17_B.ServiceLayer.Services
         }
     }
 }
+
+
+
+
+
+
+
+
+
+
