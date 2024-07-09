@@ -206,6 +206,11 @@ namespace Sadna_17_B_Frontend.Controllers
             userDTO = response.Data as UserDTO;
         }
 
+
+
+      
+
+
         public string login(string username, string password)
         {
             Response response = userService.Login(username, password);
@@ -391,6 +396,7 @@ namespace Sadna_17_B_Frontend.Controllers
         }
 
 
+
         // ---------- checkout -----------------------------------
 
         public double process_store_order(Basket basket)
@@ -407,18 +413,71 @@ namespace Sadna_17_B_Frontend.Controllers
 
 
 
-        
-        
-        
-    
-        
-        
+        // ---------- produt -----------------------------------
+
+
+
+
+        public Product get_product_by_id(int productId)
+        {
+            Response response = storeService.get_product_by_id(productId);
+            if (response.Success)
+            {
+                return response.Data as Product;
+            }
+            return null;
+        }
+
+        public Response add_to_cart(int productId)
+        {
+            //return userService.AddToCart(userDTO.AccessToken, productId);
+            return null;
+        }
+
+
+/*
+        // Todo impliment 
+        public Response add_to_cart(int productId)
+        {
+            //  return userService.AddToCart(userDTO.AccessToken, productId);
+            return new Response("succes", true);
+        }*/
+
+
+       
+
+        public Response add_product_rating(int storeID, int productID, int rating)
+        {
+            return storeService.add_product_rating(storeID, productID, rating);
+        }
+
+        public Response add_product_review(int storeID, int productID, string review)
+        {
+            return storeService.add_product_review(storeID, productID, review);
+        }
+
+
+    /*    public Response add_product_rating(int storeID, int productID, int rating)
+        {
+            return storeService.add_product_rating(storeID, productID, rating);
+        }
+
+        public Response add_product_review(int storeID, int productID, string review)
+        {
+            return storeService.add_product_review(storeID, productID, review);
+        }
+
+        public Response search_products_by(Dictionary<string, string> doc)
+        {
+            return storeService.search_product_by(doc);
+        }*/
+
+
+
+
+
 
 
     }
-
-
-  
-
-
 }
+

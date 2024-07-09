@@ -1,10 +1,12 @@
-﻿using Sadna_17_B.ServiceLayer.Services;
+﻿using Sadna_17_B.DomainLayer.StoreDom;
+using Sadna_17_B.ServiceLayer.Services;
 using Sadna_17_B.Utils;
 using Sadna_17_B_Frontend.Controllers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.Web.Razor.Tokenizer.Symbols;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
@@ -12,19 +14,16 @@ namespace Sadna_17_B_Frontend.Views
 {
     public partial class StorePage : System.Web.UI.Page
     {
+        private List<Product> productList;
+
         BackendController backendController = BackendController.get_instance();
         int storeId;
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (int.TryParse(Request.QueryString["storeId"], out storeId))
+            if ( int.TryParse(Request.QueryString["storeId"], out storeId) && !IsPostBack)
             {
                 LoadStoreData(storeId);
-            }
-            else
-            {
-                // Handle invalid storeId
-                storeDescriptionLiteral.Text = "Invalid Store ID.";
             }
         }
 
@@ -154,14 +153,65 @@ namespace Sadna_17_B_Frontend.Views
             ClientScript.RegisterStartupScript(this.GetType(), "Popup", script, true);
 
         }
-        protected void toStoreInventory_Click(object sender, EventArgs e)
-        {
 
+        protected string GetProductImage(string category)
+        {
+            return "https://via.placeholder.com/200"; // Placeholder image for now
         }
 
-        protected void viewComplaintsBtn_Click(object sender, EventArgs e)
+        protected void btnAddToCart_Click(object sender, EventArgs e)
         {
+            Button btn = (Button)sender;
+            int productId = Convert.ToInt32(btn.CommandArgument);
+            // Implement add to cart functionality here
+           
+        }
 
+        protected string GetStarRating(double rating)
+        {
+            int fullStars = (int)Math.Floor(rating);
+            bool hasHalfStar = rating - fullStars >= 0.5;
+            string stars = string.Concat(Enumerable.Repeat("★", fullStars));
+            if (hasHalfStar) stars += "½";
+            stars += string.Concat(Enumerable.Repeat("☆", 5 - stars.Length));
+            return stars;
+        }
+
+        protected void toStoreInventory_Click(object sender, EventArgs e)
+        {
+            int storeId = Convert.ToInt32(Request.QueryString["storeId"]);
+
+            string script = "$('#mymodal-inventory').modal('show')";
+            ClientScript.RegisterStartupScript(this.GetType(), "Popup", script, true);
+            
+            Dictionary<string, string> searchDoc = new Doc_generator.search_doc_builder()
+                                                                    .set_search_options(sid: $"{storeId}")
+                                                                    .Build();
+         
+
+            Response response = backendController.search_products_by(searchDoc);
+            if (response.Success)
+            {
+                productList = response.Data as List<Product>;
+                rptProducts2.DataSource = productList;
+                rptProducts2.DataBind();
+                //lblMessage.Visible = false;
+            }
+            else
+            {
+                rptProducts2.DataSource = new List<Product>();
+                rptProducts2.DataBind();
+               
+            }
+        }
+
+        protected void rptProducts_ItemCommand(object source, RepeaterCommandEventArgs e)
+        {
+            if (e.CommandName == "ViewDetails")
+            {
+                int productId = Convert.ToInt32(e.CommandArgument);
+                Response.Redirect($"ProductDetails.aspx?productId={productId}");
+            }
         }
 
         protected void viewReviewsBtn_Click(object sender, EventArgs e)

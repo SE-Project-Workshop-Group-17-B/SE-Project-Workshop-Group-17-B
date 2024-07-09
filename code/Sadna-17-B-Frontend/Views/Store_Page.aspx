@@ -154,6 +154,52 @@
         .all-review-container .user-review {
             font-style: italic;
         }
+        .product-container {
+             display: flex;
+             flex-direction: column; /* Ensure reviews are displayed vertically */
+             margin-bottom: 15px;
+        }
+        .product-container-grid {
+             display: grid;
+             grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+             gap: 20px;
+        }
+        .product-container-card {
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+            background-color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+        }
+        .product-container-containercard:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transform: translateY(-5px);
+        }
+        .product-container-containerimage {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        .product-container-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .product-container-price {
+            color: #28a745;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .product-container-rating {
+            color: #ffc107;
+            margin-bottom: 10px;
+        }
     </style>
 
     <!-- Fading messages (is not) implemented rn -->
@@ -255,6 +301,50 @@
             </div>
         </div>
     </div>                                                                      <!-- all reviews pop-up option starts here -->
+
+    <div class="inventory_container">                                          <!-- inventory pop-up option starts here -->
+    <div class="modal fade" id="mymodal-inventory" data-backdrop="false" role="dialog">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Our Products</h4>
+                    <asp:Label ID="Label2" Text="" runat="server" />
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="inventory-container" id="inventoryContainer">
+
+
+                        <div class="product-container-grid">
+                            <asp:Repeater ID="rptProducts2" runat="server" OnItemCommand="rptProducts_ItemCommand">
+                                <ItemTemplate>
+                                    <div class="product-container-card">
+                                        <asp:LinkButton ID="lnkProductDetails" runat="server" CssClass="product-container-link" CommandName="ViewDetails" CommandArgument='<%# Eval("ID") %>'>
+                                            <img src="<%# GetProductImage(Eval("category").ToString()) %>" alt="<%# Eval("name") %>" class="product-container-image">
+                                            <div class="product-container-name"><%# Eval("name") %></div>
+                                            <div class="product-container-price">$<%# Eval("price", "{0:F2}") %></div>
+                                            <div class="product-container-rating">
+                                                <%# GetStarRating(Convert.ToDouble(Eval("rating"))) %>
+                                            </div>
+                                            <div>Category: <%# Eval("category") %></div>
+                                            <div>Store ID: <%# Eval("store_ID") %></div>
+                                        </asp:LinkButton>
+                                        <asp:Button ID="btnAddToCart2" runat="server" Text="Add to Cart" CssClass="btn-add-to-cart" OnClick="btnAddToCart_Click" CommandArgument='<%# Eval("ID") %>' />
+                                    </div>
+                                </ItemTemplate>
+                            </asp:Repeater>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+       </div>                                                                     
+    </div>                                                                      <!-- inventory pop-up option ends here -->
+
     <div class="storepage-container">                                           <!-- actual store page starts here -->
         <header class="storepage-header">
             <h1>Welcome to Store: <asp:Literal ID="storeNameLiteral" runat="server"></asp:Literal></h1>

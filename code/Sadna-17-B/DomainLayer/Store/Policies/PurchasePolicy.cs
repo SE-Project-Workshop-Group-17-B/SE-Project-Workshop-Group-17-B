@@ -11,6 +11,40 @@ using Basket = Sadna_17_B.DomainLayer.User.Basket;
 namespace Sadna_17_B.DomainLayer.StoreDom
 {
 
+    /*
+     * 
+     * 
+     *   
+     *   
+     *      - Discount 
+     *           - DiscountID
+     *           - startDate (date)
+     *           - endDate(date)
+     *           - Strategy - string (TEXT)
+     *           - discountType - string 
+     *           - relevant - string 
+     *           -  conditions - string
+     *          
+     *      
+     *      - purchase policy (1) 
+     *         - id - store     | pk
+     *         - id - purchase  | pk
+     *  
+     *      - policy policy (1) 
+     *         - id - store     | pk
+     *         - id - purchase  | pk
+     *                  
+     *      - purchase
+     *         - id int
+     *         - name string
+     *         - aggregation rule  string
+     *         - conditions        string
+     *     
+     *    
+
+     * 
+     * 
+     */
 
     // ---------------- Policy ----------------------------------------------------------------------------------------
 

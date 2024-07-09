@@ -459,7 +459,18 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
 
         // ----------------  product filters  -------------------------------------------------------------------------------------------
-
+        public Product get_product_by_id(int productId)
+        {
+            foreach (Store store in active_stores.Values)
+            {
+                Product product = store.filter_id(productId);
+                if (product != null)
+                {
+                    return product;
+                }
+            }
+            throw new Sadna17BException($"No product found with ID: {productId}");
+        }
 
         public List<Product> search_products_by_keyword(string[] keywords)
         {

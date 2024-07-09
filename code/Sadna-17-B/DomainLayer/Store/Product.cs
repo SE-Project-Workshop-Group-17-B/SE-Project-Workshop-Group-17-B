@@ -26,7 +26,8 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         public double rating { get; set; }
         public string category { get; set; }
         public string description { get; set; } // up to 100 char
-        public List<string> reviews { get; set; } // up to 75 char
+        public List<string> reviews { get; set; }
+        public List<int> ratings { get; set; }
 
 
         public bool locked { get; set; }
