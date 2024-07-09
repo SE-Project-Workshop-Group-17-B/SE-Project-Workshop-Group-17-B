@@ -33,6 +33,15 @@ namespace Sadna_17_B_Frontend.Views
         protected global::System.Web.UI.WebControls.Repeater rptManagedStores;
 
         /// <summary>
+        /// litNoManagedStores control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal litNoManagedStores;
+
+        /// <summary>
         /// rptOwnedStores control.
         /// </summary>
         /// <remarks>
@@ -40,5 +49,14 @@ namespace Sadna_17_B_Frontend.Views
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Repeater rptOwnedStores;
+
+        /// <summary>
+        /// litNoOwnedStores control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal litNoOwnedStores;
     }
 }

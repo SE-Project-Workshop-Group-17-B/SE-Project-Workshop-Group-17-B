@@ -15,22 +15,22 @@ namespace Sadna_17_B_Frontend.Views
     {
 
         /// <summary>
-        /// storeNameLiteral control.
+        /// litStoreName control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Literal storeNameLiteral;
+        protected global::System.Web.UI.WebControls.Literal litStoreName;
 
         /// <summary>
-        /// storeIdLiteral control.
+        /// litStoreId control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Literal storeIdLiteral;
+        protected global::System.Web.UI.WebControls.Literal litStoreId;
 
         /// <summary>
         /// btnPurchaseHistory control.
@@ -87,24 +87,6 @@ namespace Sadna_17_B_Frontend.Views
         protected global::System.Web.UI.WebControls.Button btnAppointOwner;
 
         /// <summary>
-        /// rptMessages control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Repeater rptMessages;
-
-        /// <summary>
-        /// rptReviews control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Repeater rptReviews;
-
-        /// <summary>
         /// txtPurchasePolicy control.
         /// </summary>
         /// <remarks>
@@ -114,6 +96,15 @@ namespace Sadna_17_B_Frontend.Views
         protected global::System.Web.UI.WebControls.TextBox txtPurchasePolicy;
 
         /// <summary>
+        /// btnUpdatePurchasePolicy control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnUpdatePurchasePolicy;
+
+        /// <summary>
         /// txtDiscountPolicy control.
         /// </summary>
         /// <remarks>
@@ -121,6 +112,15 @@ namespace Sadna_17_B_Frontend.Views
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtDiscountPolicy;
+
+        /// <summary>
+        /// btnUpdateDiscountPolicy control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnUpdateDiscountPolicy;
 
         /// <summary>
         /// btnCloseStore control.
