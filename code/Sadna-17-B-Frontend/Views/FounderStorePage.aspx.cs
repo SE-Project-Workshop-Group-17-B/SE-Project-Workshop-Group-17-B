@@ -1,18 +1,19 @@
 ﻿using Sadna_17_B_Frontend.Controllers;
 using System;
 using System.Web.UI.WebControls;
+using System.Collections.Generic;
 
 namespace Sadna_17_B_Frontend.Views
 {
     public partial class FounderStorePage : System.Web.UI.Page
     {
         BackendController backendController = BackendController.get_instance();
+        private int storeId;
 
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
             {
-                int storeId;
                 if (int.TryParse(Request.QueryString["storeId"], out storeId))
                 {
                     LoadStoreData(storeId);
@@ -20,6 +21,7 @@ namespace Sadna_17_B_Frontend.Views
                 else
                 {
                     // Handle invalid storeId
+                    Response.Redirect("~/Views/MyStores.aspx");
                 }
             }
         }
@@ -29,68 +31,79 @@ namespace Sadna_17_B_Frontend.Views
             var store = backendController.get_store_details_by_id(storeId);
             if (store != null)
             {
-                storeNameLiteral.Text = store.name;
-                //storeIdLiteral.Text = store.i;
-                // Load additional data such as managers, owners, messages, reviews, policies
-                // Here you would use backendController methods to get the data and bind to repeaters
+                litStoreName.Text = store.name;
+                litStoreId.Text = storeId.ToString();
+
+                // Load policies
+                Dictionary<string, string> doc = new Dictionary<string, string>
+                {
+                    ["store id"] = storeId.ToString()
+                };
+                var purchasePolicyResponse = backendController.storeService.show_purchase_policy(doc);
+                if (purchasePolicyResponse.Success)
+                {
+                    txtPurchasePolicy.Text = purchasePolicyResponse.Data as string;
+                }
+
+                var discountPolicyResponse = backendController.storeService.show_discount_policy(doc);
+                if (discountPolicyResponse.Success)
+                {
+                    txtDiscountPolicy.Text = discountPolicyResponse.Data as string;
+                }
+
+                // Note: Loading managers and owners would require additional methods in your BackendController
+                // which don't seem to be available based on the provided information.
+                // You may need to implement these methods in your BackendController if needed.
             }
         }
 
         protected void btnPurchaseHistory_Click(object sender, EventArgs e)
         {
-            // Implement the logic for Purchase History button click
+            Response.Redirect($"~/Views/PurchaseHistory.aspx?storeId={storeId}");
         }
 
         protected void btnManageInventory_Click(object sender, EventArgs e)
         {
-            // Implement the logic for Manage Inventory button click
+            Response.Redirect($"~/Views/ManageInventory.aspx?storeId={storeId}");
         }
 
         protected void btnRemoveManager_Click(object sender, EventArgs e)
         {
-            var button = (Button)sender;
-            int managerId = int.Parse(button.CommandArgument);
-            // Implement the logic to remove manager
+            Button btn = (Button)sender;
+            int managerId = int.Parse(btn.CommandArgument);
+            // Implement manager removal logic here
         }
 
         protected void btnAppointManager_Click(object sender, EventArgs e)
         {
-            // Implement the logic to appoint a new manager
+            // Implement manager appointment logic here
         }
 
         protected void btnRemoveOwner_Click(object sender, EventArgs e)
         {
-            var button = (Button)sender;
-            int ownerId = int.Parse(button.CommandArgument);
-            // Implement the logic to remove owner
+            Button btn = (Button)sender;
+            int ownerId = int.Parse(btn.CommandArgument);
+            // Implement owner removal logic here
         }
 
         protected void btnAppointOwner_Click(object sender, EventArgs e)
         {
-            // Implement the logic to appoint a new owner
+            // Implement owner appointment logic here
         }
 
-        protected void btnReplyMessage_Click(object sender, EventArgs e)
+        protected void btnUpdatePurchasePolicy_Click(object sender, EventArgs e)
         {
-            var button = (Button)sender;
-            int messageId = int.Parse(button.CommandArgument);
-            // Implement the logic to reply to a message
+            // Implement purchase policy update logic here
         }
 
-        protected void btnReplyReview_Click(object sender, EventArgs e)
+        protected void btnUpdateDiscountPolicy_Click(object sender, EventArgs e)
         {
-            var button = (Button)sender;
-            int reviewId = int.Parse(button.CommandArgument);
-            // Implement the logic to reply to a review
+            // Implement discount policy update logic here
         }
 
         protected void btnCloseStore_Click(object sender, EventArgs e)
         {
-            int storeId;
-            if (int.TryParse(Request.QueryString["storeId"], out storeId))
-            {
-                // Implement the logic to close the store
-            }
+            // Implement store closure logic here
         }
     }
 }
