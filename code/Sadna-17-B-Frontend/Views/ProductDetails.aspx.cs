@@ -1,10 +1,9 @@
 ﻿using Sadna_17_B.DomainLayer.StoreDom;
 using Sadna_17_B_Frontend.Controllers;
 using System;
-using System.Web;
 using System.Web.UI;
-using Newtonsoft.Json;
 using System.Linq;
+using Sadna_17_B.Utils;
 
 namespace Sadna_17_B_Frontend.Views
 {
@@ -17,49 +16,69 @@ namespace Sadna_17_B_Frontend.Views
         {
             if (!IsPostBack)
             {
-                string encodedDetails = Request.QueryString["details"];
-                if (!string.IsNullOrEmpty(encodedDetails))
+                string productIdString = Request.QueryString["productId"];
+                if (!string.IsNullOrEmpty(productIdString) && int.TryParse(productIdString, out int productId))
                 {
-                    string decodedDetails = HttpUtility.UrlDecode(encodedDetails);
-                    LoadProductDetails(decodedDetails);
+                    LoadProductDetails(productId);
                 }
                 else
                 {
-                    // Handle error - no product details provided
                     Response.Redirect("SearchProduct.aspx");
                 }
             }
         }
 
-        private void LoadProductDetails(string productDetailsJson)
+        private void LoadProductDetails(int productId)
         {
-            try
+            currentProduct = backendController.get_product_by_id(productId);
+            if (currentProduct != null)
             {
-                currentProduct = JsonConvert.DeserializeObject<Product>(productDetailsJson);
-
                 imgProduct.ImageUrl = GetProductImage(currentProduct.category);
                 litProductName.Text = currentProduct.name;
                 litProductPrice.Text = currentProduct.price.ToString("F2");
                 litProductRating.Text = GetStarRating(currentProduct.rating);
+                //litRatingCount.Text = currentProduct.ratings.Count.ToString();
                 litProductDescription.Text = currentProduct.description;
                 litProductCategory.Text = currentProduct.category;
                 litStoreID.Text = currentProduct.store_ID.ToString();
 
-                // Load reviews
                 rptReviews.DataSource = currentProduct.reviews;
                 rptReviews.DataBind();
             }
-            catch (Exception ex)
+            else
             {
-                // Handle JSON parsing error
                 Response.Redirect("SearchProduct.aspx");
             }
         }
 
         protected void btnAddToCart_Click(object sender, EventArgs e)
         {
-            // Implement add to cart functionality
-            // You can use the currentProduct object here
+            Response response = backendController.add_to_cart(currentProduct.ID);
+            if (response.Success)
+            {
+                // Show success message
+            }
+            else
+            {
+                // Show error message
+            }
+        }
+
+        protected void btnSubmitRating_Click(object sender, EventArgs e)
+        {
+            if (int.TryParse(rblRating.SelectedValue, out int rating))
+            {
+                Response response = backendController.add_product_rating(currentProduct.store_ID, currentProduct.ID, rating);
+                if (response.Success)
+                {
+                    LoadProductDetails(currentProduct.ID);
+                    rblRating.ClearSelection();
+                }
+                else
+                {
+                    // Show error message
+                }
+            }
         }
 
         protected void btnSubmitReview_Click(object sender, EventArgs e)
@@ -67,25 +86,25 @@ namespace Sadna_17_B_Frontend.Views
             string review = txtReview.Text.Trim();
             if (!string.IsNullOrEmpty(review))
             {
-                currentProduct.add_review(review);
-                // You might want to call a method on your backend controller to save the review
-                // backendController.AddProductReview(currentProduct.ID, review);
-
-                // Refresh the reviews list
-                rptReviews.DataSource = currentProduct.reviews;
-                rptReviews.DataBind();
-
-                txtReview.Text = string.Empty;
+                Response response = backendController.add_product_review(currentProduct.store_ID, currentProduct.ID, review);
+                if (response.Success)
+                {
+                    LoadProductDetails(currentProduct.ID);
+                    txtReview.Text = string.Empty;
+                }
+                else
+                {
+                    // Show error message
+                }
             }
         }
 
         private string GetProductImage(string category)
         {
-            // Implement logic to return an image URL based on the category
-            return "https://via.placeholder.com/400"; // Placeholder image for now
+            return "https://via.placeholder.com/300"; // Placeholder image for now
         }
 
-        private string GetStarRating(double rating)
+        protected string GetStarRating(double rating)
         {
             int fullStars = (int)Math.Floor(rating);
             bool hasHalfStar = rating - fullStars >= 0.5;

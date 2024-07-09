@@ -1,5 +1,5 @@
 ﻿<%@ Page Title="Search Products" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="SearchProduct.aspx.cs" Inherits="Sadna_17_B_Frontend.Views.SearchProduct" %>
-<asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
+<asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">
 <style>
     .search-container {
         max-width: 1200px;
@@ -25,7 +25,10 @@
         text-align: center;
         transition: all 0.3s ease;
         background-color: white;
-        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 100%;
     }
     .product-card:hover {
         box-shadow: 0 5px 15px rgba(0,0,0,0.1);
@@ -55,13 +58,19 @@
         background-color: #007bff;
         color: white;
         border: none;
-        padding: 8px 15px;
-        border-radius: 5px;
+        padding: 5px 10px;
+        font-size: 14px;
+        border-radius: 3px;
         cursor: pointer;
         transition: background-color 0.3s ease;
+        margin-top: 10px;
     }
     .btn-add-to-cart:hover {
         background-color: #0056b3;
+    }
+    .product-link {
+        text-decoration: none;
+        color: inherit;
     }
 </style>
 
@@ -71,11 +80,9 @@
         <div class="row g-3">
             <div class="col-md-4">
                 <input type="text" id="txtKeyword" placeholder="Keyword..." class="form-control" runat="server">
-                <asp:Literal ID="litKeywordMessage" runat="server"></asp:Literal>
             </div>
             <div class="col-md-4">
                 <input type="text" id="txtCategory" placeholder="Category..." class="form-control" runat="server">
-                <asp:Literal ID="litCategoryMessage" runat="server"></asp:Literal>
             </div>
             <div class="col-md-4">
                 <div class="input-group">
@@ -85,25 +92,21 @@
                     <input type="text" class="form-control" placeholder="Max price" runat="server" id="txtMaxPrice">
                     <span class="input-group-text">$</span>
                 </div>
-                <asp:Literal ID="litPriceMessage" runat="server"></asp:Literal>
             </div>
             <div class="col-md-4">
                 <div class="input-group">
                     <span class="input-group-text">Product Rating</span>
                     <input type="number" id="txtMinRating" placeholder="Min rating (1-5)" class="form-control" runat="server">
                 </div>
-                <asp:Literal ID="litRatingMessage" runat="server"></asp:Literal>
             </div>
             <div class="col-md-4">
                 <div class="input-group">
                     <span class="input-group-text">Store Rating</span>
                     <input type="number" id="txtMinStoreRating" placeholder="Min rating (1-5)" class="form-control" runat="server">
                 </div>
-                <asp:Literal ID="litStoreRatingMessage" runat="server"></asp:Literal>
             </div>
             <div class="col-md-4">
                 <input type="text" id="txtStoreID" placeholder="Store ID" class="form-control" runat="server">
-                <asp:Literal ID="litStoreIDMessage" runat="server"></asp:Literal>
             </div>
             <div class="col-md-12">
                 <asp:Button ID="btnSearch" type="button" class="btn btn-primary" OnClick="btnSearch_Click" Text="Search" runat="server"></asp:Button>
@@ -114,17 +117,19 @@
     <div class="product-grid">
         <asp:Repeater ID="rptProducts" runat="server" OnItemCommand="rptProducts_ItemCommand">
             <ItemTemplate>
-                <asp:LinkButton ID="lnkProductDetails" runat="server" CssClass="product-card" CommandName="ViewDetails" CommandArgument='<%# Container.ItemIndex %>'>
-                    <img src="<%# GetProductImage(Eval("category").ToString()) %>" alt="<%# Eval("name") %>" class="product-image">
-                    <div class="product-name"><%# Eval("name") %></div>
-                    <div class="product-price">$<%# Eval("price", "{0:F2}") %></div>
-                    <div class="product-rating">
-                        <%# GetStarRating(Convert.ToDouble(Eval("rating"))) %>
-                    </div>
-                    <div>Category: <%# Eval("category") %></div>
-                    <div>Store ID: <%# Eval("store_ID") %></div>
-                </asp:LinkButton>
-                <asp:Button ID="btnAddToCart" runat="server" Text="Add to Cart" CssClass="btn-add-to-cart" OnClick="btnAddToCart_Click" CommandArgument='<%# Eval("ID") %>' />
+                <div class="product-card">
+                    <asp:LinkButton ID="lnkProductDetails" runat="server" CssClass="product-link" CommandName="ViewDetails" CommandArgument='<%# Eval("ID") %>'>
+                        <img src="<%# GetProductImage(Eval("category").ToString()) %>" alt="<%# Eval("name") %>" class="product-image">
+                        <div class="product-name"><%# Eval("name") %></div>
+                        <div class="product-price">$<%# Eval("price", "{0:F2}") %></div>
+                        <div class="product-rating">
+                            <%# GetStarRating(Convert.ToDouble(Eval("rating"))) %>
+                        </div>
+                        <div>Category: <%# Eval("category") %></div>
+                        <div>Store ID: <%# Eval("store_ID") %></div>
+                    </asp:LinkButton>
+                    <asp:Button ID="btnAddToCart" runat="server" Text="Add to Cart" CssClass="btn-add-to-cart" OnClick="btnAddToCart_Click" CommandArgument='<%# Eval("ID") %>' />
+                </div>
             </ItemTemplate>
         </asp:Repeater>
     </div>
