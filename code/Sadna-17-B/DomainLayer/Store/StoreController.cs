@@ -1,8 +1,10 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using Microsoft.SqlServer.Server;
 using Microsoft.Win32;
+using Sadna_17_B.DataAccessLayer.store;
 using Sadna_17_B.DomainLayer.User;
 using Sadna_17_B.DomainLayer.Utils;
+using Sadna_17_B.ServiceLayer.ServiceDTOs;
 using Sadna_17_B.Utils;
 using System;
 using System.Collections.Generic;
@@ -11,6 +13,7 @@ using System.Linq;
 using System.Web;
 using System.Web.UI.WebControls;
 using System.Xml.Linq;
+using StoreDTO = Sadna_17_B.DataAccessLayer.store.StoreDTO;
 
 namespace Sadna_17_B.DomainLayer.StoreDom
 {
@@ -119,9 +122,31 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
             active_stores.Add(store.ID,store);
 
+            pushStoreToDB(store);
+
             return store.ID;
         }
 
+        public void pushStoreToDB(Store store)
+        {
+            StoreDAO storeDAO = new StoreDAO();
+
+            StoreDTO storeDTO = new StoreDTO
+            {
+                Name = store.name,
+                Email = store.email,
+                PhoneNumber = store.phone_number,
+                Description = store.description,
+                Address = store.address,
+                Rating = store.rating,
+                Reviews = "",
+                Complaints = ""
+            };
+
+            storeDAO.AddStore(storeDTO);
+
+
+        }
         public int create_store(Dictionary<string,string> doc) // doc_doc abstraction implementation
         {
 
@@ -141,6 +166,8 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                                    .Build();
 
             active_stores.Add(store.ID, store);
+
+            pushStoreToDB(store);
 
             return store.ID;
         }

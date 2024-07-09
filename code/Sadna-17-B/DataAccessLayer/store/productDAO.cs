@@ -151,7 +151,7 @@ namespace Sadna_17_B.DataAccessLayer.store
                                 Rating = Convert.ToDouble(reader["Rating"]),
                                 Category = reader["Category"].ToString(),
                                 Description = reader["Description"].ToString(),
-                                Reviews = reader["Reviews"].ToString().Split(';').ToList(),
+                                Reviews = reader["Reviews"].ToString(),
                                 Locked = Convert.ToBoolean(reader["Locked"])
                             };
                         }
