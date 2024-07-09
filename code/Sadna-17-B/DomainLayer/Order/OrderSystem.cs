@@ -11,18 +11,29 @@ namespace Sadna_17_B.DomainLayer.Order
 {
     public class OrderSystem
     {
+
+        // ------- variables --------------------------------------------------------------------------------
+
+
         private StoreController storeController;
         private IPaymentSystem paymentSystem = new PaymentSystemProxy();
         private ISupplySystem supplySystem = new SupplySystemProxy();
         private Logger infoLogger = InfoLogger.Instance;
         private Logger errorLogger = ErrorLogger.Instance;
 
-        // All these data structures will move to DAL in version 3, it is currently held in memory. TODO: use a repository
+        
+        // ------- should move to DAL --------------------------------------------------------------------------------
+
+
         private Dictionary<int, Order> orderHistory = new Dictionary<int, Order>();                         // OrderId -> Order
         private Dictionary<int, List<Order>> guestOrders = new Dictionary<int, List<Order>>();              // GuestID -> List<Order>
         private Dictionary<string, List<Order>> subscriberOrders = new Dictionary<string, List<Order>>();   // Username -> List<Order>
         private Dictionary<int, List<SubOrder>> storeOrders = new Dictionary<int, List<SubOrder>>();        // StoreID -> Order
         private int orderCount = 0;
+
+
+        // ------- should move to DAL --------------------------------------------------------------------------------
+
 
         public OrderSystem(StoreController storeController)
         {
@@ -41,93 +52,108 @@ namespace Sadna_17_B.DomainLayer.Order
             this.supplySystem = supplyInstance;
         }
 
-        private Dictionary<int, Dictionary<int, int>> GetShoppingCartQuantities(ShoppingCart shoppingCart)
-        {
-            Dictionary<int, Dictionary<int, int>> quantities = new Dictionary<int, Dictionary<int, int>>();
-            foreach (var basket in shoppingCart.ShoppingBaskets)
-            {
-                quantities[basket.Key] = new Dictionary<int, int>();
-                foreach (var productQuantity in basket.Value.ProductQuantities)
-                {
-                    quantities[basket.Key][productQuantity.Key] = productQuantity.Value;
-                }
-            }
-            return quantities;
-        }
 
-        public void ProcessOrder(ShoppingCart shoppingCart, string userID, bool isGuest, string destinationAddress, string creditCardInfo)
+
+        // ------- process order --------------------------------------------------------------------------------
+
+
+        public void ProcessOrder(Cart cart, string userID, bool isGuest, string destination, string credit)
         {
+
+            // ------- guest log --------------------------------------------------------------------------------
+
             if (isGuest)
                 infoLogger.Log($"ORDER SYSTEM | processing Order for guest {userID}");
             else
                 infoLogger.Log($"ORDER SYSTEM | processing Order for Subscriber {userID}");
-            Dictionary<int, Dictionary<int, int>> quantities = GetShoppingCartQuantities(shoppingCart);
-            // Check Order Validity with StoreController: satisfies the store policies and all product quantities exist in the inventory
-            foreach (var quantitiesOfStore in quantities)
+
+
+            // ------- shoping cart validations -----------------------------------------------------------------
+
+
+            bool inventory_blocked_order = !storeController.validate_inventories(cart);
+            bool policies_blocked_order = !storeController.validate_policies(cart);
+
+            if (inventory_blocked_order | policies_blocked_order)
+                throw new Sadna17BException("Order is not valid");
+
+
+            // ------- shoping cart final price -----------------------------------------------------------------
+
+            double cart_price_with_discount = 0;
+            double cart_price_without_discount = 0;
+
+            foreach (var basket in cart.baskets())
             {
-                int storeID = quantitiesOfStore.Key;
-                if (!storeController.valid_order(storeID, quantitiesOfStore.Value))
-                {
-                    throw new Sadna17BException("Could not proceed with order, invalid shopping basket for storeID " + storeID + ".");
-                }
+                int sid = basket.store_id;
+                Checkout basket_checkout = storeController.calculate_products_prices(basket);
+                cart_price_with_discount += basket_checkout.total_price_with_discount;
+                cart_price_with_discount += basket_checkout.total_price_without_discount;
             }
 
-            // Calculate Product Final Prices with StoreController: containing all product prices after discounts
-            Dictionary<int, Dictionary<int, Tuple<int, double>>> products = new Dictionary<int, Dictionary<int, Tuple<int, double>>>();
-            double orderPrice = 0;
-            foreach (var quantitiesOfStore in quantities)
-            {
-                int storeID = quantitiesOfStore.Key;
-                Checkout store_checkout = storeController.calculate_products_prices(storeID, quantitiesOfStore.Value);
-                Dictionary<int,Product> storeProductsPrices = store_checkout.cart.products;
-                Dictionary<int, Tuple<int, double>> storeProductIdsPrices = new Dictionary<int, Tuple<int, double>>();
+            Order order = new Order(orderCount, userID, isGuest, cart, destination, credit, cart_price_with_discount);
 
-                foreach (Product product in storeProductsPrices.Values)
-                {
-                    storeProductIdsPrices[product.ID] = Tuple.Create(product.amount,product.price);
-                }
+            
+            // ------- validations -------------------------------------------------------------------------------
 
-                products[storeID] = storeProductIdsPrices;
-                orderPrice += store_checkout.total_price_with_discount;
-            }
-            Order order = new Order(orderCount, userID, isGuest, products, destinationAddress, creditCardInfo, orderPrice);
-            // Check validity of total price
-            if (orderPrice <= 0)
-            {
-                errorLogger.Log($"ORDER SYSTEM | Order with invalid price - {orderPrice}");
-                throw new Sadna17BException("Invalid order price: " + orderPrice);
-            }
+            validate_supply_system_availability(destination, order);
+            validate_payment_system_availability(credit, order);
+            validate_price(cart_price_with_discount);
+
+            // ------- execute purchase -------------------------------------------------------------------------------
+
+            reduce_cart(cart);
+
+            paymentSystem.ExecutePayment(credit, order.TotalPrice);
+            supplySystem.ExecuteDelivery(destination, order.GetManufacturerProductNumbers());
+
+            add_to_history(order);
+
+        }
+
+        public void validate_supply_system_availability(string dest, Order order)
+        {
             List<int> manufacturerProductNumbers = order.GetManufacturerProductNumbers();
 
-            // Check availability of PaymentSystem external service:
-            if (!paymentSystem.IsValidPayment(creditCardInfo, order.TotalPrice))
-            {
-                infoLogger.Log($"ORDER SYSTEM | Payment system failure: invalid credit card information given.");
-                throw new Sadna17BException("Payment system failure: invalid credit card information given.");
-            }
-            // Check availability of SupplySystem external service:
-            if (!supplySystem.IsValidDelivery(destinationAddress, manufacturerProductNumbers))
+            if (!supplySystem.IsValidDelivery(dest, manufacturerProductNumbers))
             {
                 infoLogger.Log("ORDER SYSTEM | Supply system failure: invalid destination address or product numbers given.");
                 throw new Sadna17BException("Supply system failure: invalid destination address or product numbers given.");
             }
-
-            // Process Order by StoreController: Executes the reduction of the product quantities from the inventory
-            foreach (var quantitiesOfStore in quantities)
-            {
-                int storeID = quantitiesOfStore.Key;
-                storeController.decrease_products_amount(storeID, quantitiesOfStore.Value);
-            }
-
-            // Execute Order by PaymentSystem external service:
-            paymentSystem.ExecutePayment(creditCardInfo, order.TotalPrice);
-            // Execute Order by SupplySystem external service:
-            supplySystem.ExecuteDelivery(destinationAddress, manufacturerProductNumbers);
-
-            AddOrderToHistory(order);
         }
 
-        private void AddOrderToHistory(Order order)
+        public void validate_payment_system_availability(string credit , Order order)
+        {
+            if (!paymentSystem.IsValidPayment(credit, order.TotalPrice))
+            {
+                infoLogger.Log($"ORDER SYSTEM | Payment system failure: invalid credit card information given.");
+                throw new Sadna17BException("Payment system failure: invalid credit card information given.");
+            }
+
+        }
+       
+        public void validate_price(double price)
+        {
+
+            if (price <= 0)
+            {
+                errorLogger.Log($"ORDER SYSTEM | Order with invalid price - {price}");
+                throw new Sadna17BException("Invalid order price: " + price);
+            }
+
+        }
+
+        public void reduce_cart(Cart cart)
+        {
+            foreach (var basket in cart.baskets())
+               storeController.decrease_products_amount(basket);
+        }
+
+
+        // ------- history --------------------------------------------------------------------------------
+
+
+        private void add_to_history(Order order)
         {
             orderHistory[orderCount] = order; // Insert to order history
             orderCount++;
@@ -166,7 +192,7 @@ namespace Sadna_17_B.DomainLayer.Order
             }
         }
 
-        public List<Order> GetUserOrderHistory(string userID)
+        public List<Order> order_history(string userID)
         {
             if (subscriberOrders.ContainsKey(userID))
             {
@@ -187,7 +213,7 @@ namespace Sadna_17_B.DomainLayer.Order
             }
         }
 
-        public List<SubOrder> GetStoreOrderHistory(int storeID)
+        public List<SubOrder> sub_order_history(int storeID)
         {
             if (storeOrders.ContainsKey(storeID))
             {
@@ -198,5 +224,7 @@ namespace Sadna_17_B.DomainLayer.Order
                 return new List<SubOrder>(); // Return an empty sub-orders list
             }
         }
+
+
     }
 }

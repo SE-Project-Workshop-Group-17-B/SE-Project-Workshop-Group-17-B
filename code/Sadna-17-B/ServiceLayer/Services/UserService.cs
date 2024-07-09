@@ -10,7 +10,7 @@ using System.Web;
 
 namespace Sadna_17_B.ServiceLayer.Services
 {
-    public class UserService : IUserService
+    public class UserService 
     {
         private readonly UserController userController;
         private readonly Logger infoLogger;
@@ -373,12 +373,26 @@ namespace Sadna_17_B.ServiceLayer.Services
             }
         }
 
-        public Response AddToCart(string token, int storeID, int productID, int quantity)
+
+        // ----------- cart ------------------------------------------------------------------------------------
+
+        /*
+        * 
+        * product_doc:
+        * 
+        *   - token
+        *   - store id
+        *   - product id
+        *   - category
+        * 
+        * 
+        */
+
+        public Response cart_add_product(Dictionary<string,string> doc)
         {
             try
             {
-                // Note: should probably check with StoreService if the given productID exists in the given store.
-                userController.AddToCart(token, storeID, productID, quantity);
+                userController.cart_add_product(doc);
                 return new Response(true);
             }
             catch (Sadna17BException e)
@@ -387,13 +401,12 @@ namespace Sadna_17_B.ServiceLayer.Services
             }
         }
 
-        public Response /*ShoppingCartDTO*/ GetShoppingCart(string token)
+        public Response cart_by_token(Dictionary<string,string> doc)
         {
             try
             {
-                ShoppingCart shoppingCart = userController.GetShoppingCart(token);
-                // Note: Possible to extend this to call StoreService to get the actual products info
-                // Dictionary<string, Product> products = new Dictionary<string, Product>();
+                string token = Parser.parse_string(doc["token"]);
+                Cart shoppingCart = userController.cart_by_token(token);
                 return new Response(true, new ShoppingCartDTO(shoppingCart));
             }
             catch (Sadna17BException e)
@@ -402,12 +415,11 @@ namespace Sadna_17_B.ServiceLayer.Services
             }
         }
 
-        public Response UpdateCartProduct(string token, int storeID, int productID, int quantity)
+        public Response cart_update_product(Dictionary<string,string> doc)
         {
             try
             {
-                // Note: should probably check with StoreService if the given productID exists in the given store.
-                userController.UpdateCartProduct(token, storeID, productID, quantity); // Note: Quantity = 0 removes the item from the cart and basket
+                userController.cart_update_product(doc); 
                 return new Response(true);
             }
             catch (Sadna17BException e)
@@ -415,6 +427,11 @@ namespace Sadna_17_B.ServiceLayer.Services
                 return Response.GetErrorResponse(e);
             }
         }
+
+
+
+        // ----------- cart ------------------------------------------------------------------------------------
+       
 
         public Response CompletePurchase(string token, string destinationAddress, string creditCardInfo)
         {

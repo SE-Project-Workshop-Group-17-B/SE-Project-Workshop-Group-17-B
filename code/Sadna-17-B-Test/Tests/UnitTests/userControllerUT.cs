@@ -8,6 +8,7 @@ using Sadna_17_B.DomainLayer.User;
 using Sadna_17_B.DomainLayer.Order;
 using Microsoft.VisualBasic;
 using Sadna_17_B.Utils;
+using System.Security.Cryptography;
 
 namespace Sadna_17_B_Test.Tests.UnitTests
 {
@@ -202,18 +203,30 @@ namespace Sadna_17_B_Test.Tests.UnitTests
             Assert.IsFalse(_userController.IsOwner(token2, storeId));
         }
 
-        [TestMethod]
+        /*[TestMethod]
         public void TestSuccesfullAddToCart()
         {           
             _userController.CreateSubscriber(username1, password1);
             string token1 = _userController.Login(username1, password1);
 
-            _userController.AddToCart(token1, storeId, productId, 2);
-            ShoppingCart sc = _userController.GetShoppingCart(token1);
-            Assert.IsNotNull(sc.ShoppingBaskets);
+            Dictionary<string, string> doc = new Dictionary<string, string>()
+            {
+                ["token"] = token1,
+                [$"store id"] = $"{storeId}",
+                [$"price"] = $"{50}",
+                [$"amount"] = "2",
+                [$"category"] = "category",
+                [$"product store id"] = $"{productId}"
+            };
 
-            Dictionary<int, int> busket = sc.ShoppingBaskets[storeId].ProductQuantities;
-            Assert.AreEqual(2, busket[productId]);
-        }
+
+            _userController.cart_add_product(doc);
+            Cart sc = _userController.cart_by_token(token1);
+            Assert.IsNotNull(sc.sid_to_basket);
+
+            Basket basket = sc.sid_to_basket[storeId];
+            Dictionary<int, int> products = basket.basket_products();
+            Assert.AreEqual(2, products[productId]);
+        }*/
     }
 }

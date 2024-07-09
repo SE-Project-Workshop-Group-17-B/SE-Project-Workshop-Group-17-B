@@ -18,7 +18,10 @@ namespace Sadna_17_B_Frontend.Views
         private void LoadCart()
         {
             BackendController backendController = BackendController.get_instance();
-            ShoppingCartDTO cart = backendController.get_shoping_cart();
+
+            Dictionary<string,string> doc = new Dictionary<string,string>();
+
+            ShoppingCartDTO cart = backendController.get_shoping_cart(doc);
 
             if (cart != null)
             {

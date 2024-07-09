@@ -113,9 +113,9 @@ namespace Sadna_17_B.ServiceLayer.Services
         /// </summary>
         Response RevokeOwnership(string token, int storeID, string ownerUsername);
 
-        Response AddToCart(string token, int storeID, int productID, int quantity);
+        Response cart_add_product(string token, int storeID, int productID, int quantity);
 
-        Response /*ShoppingCartDTO*/ GetShoppingCart(string token);
+        Response /*ShoppingCartDTO*/ cart_by_token(string token);
 
         Response UpdateCartProduct(string token, int storeID, int productID, int quantity);
 

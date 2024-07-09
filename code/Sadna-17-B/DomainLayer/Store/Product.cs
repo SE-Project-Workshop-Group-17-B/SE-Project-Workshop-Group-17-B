@@ -1,4 +1,5 @@
-﻿using Sadna_17_B.DomainLayer.Utils;
+﻿using Sadna_17_B.DomainLayer.User;
+using Sadna_17_B.DomainLayer.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +7,7 @@ using System.Web;
 
 namespace Sadna_17_B.DomainLayer.StoreDom
 {
-    public class Product : I_informative_class
+    public class Product 
     {
 
 
@@ -97,6 +98,10 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         }
 
 
+        public Cart_Product to_cart_product()
+        {
+            return new Cart_Product(store_ID, amount, price, category, ID);
+        }
 
         public string info_to_print()
         {

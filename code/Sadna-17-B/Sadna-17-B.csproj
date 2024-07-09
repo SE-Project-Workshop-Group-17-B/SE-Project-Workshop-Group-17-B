@@ -176,13 +176,12 @@
     <Compile Include="DomainLayer\Order\Order.cs" />
     <Compile Include="DomainLayer\Order\OrderSystem.cs" />
     <Compile Include="DomainLayer\Order\SubOrder.cs" />
-    <Compile Include="DomainLayer\Store\Cart.cs" />
     <Compile Include="DomainLayer\Store\Policies\PolicyLambdas.cs" />
     <Compile Include="DomainLayer\Store\Policies\Discount.cs" />
     <Compile Include="DomainLayer\Store\Policies\DiscountPolicy.cs" />
     <Compile Include="DomainLayer\Store\Inventory.cs" />
     <Compile Include="DomainLayer\Store\Policies\DiscountStrategy.cs" />
-    <Compile Include="DomainLayer\Store\Policies\Purchase.cs" />
+    <Compile Include="DomainLayer\Store\Policies\Purchase_Rule.cs" />
     <Compile Include="DomainLayer\Store\Product.cs" />
     <Compile Include="DomainLayer\Store\Policies\PurchasePolicy.cs" />
     <Compile Include="DomainLayer\Store\Checkout.cs" />
@@ -196,8 +195,8 @@
     <Compile Include="DomainLayer\User\NotificationSystem.cs" />
     <Compile Include="DomainLayer\User\OfferSystem.cs" />
     <Compile Include="DomainLayer\User\Owner.cs" />
-    <Compile Include="DomainLayer\User\ShoppingBasket.cs" />
-    <Compile Include="DomainLayer\User\ShoppingCart.cs" />
+    <Compile Include="DomainLayer\User\Basket.cs" />
+    <Compile Include="DomainLayer\User\Cart.cs" />
     <Compile Include="DomainLayer\User\Subscriber.cs" />
     <Compile Include="DomainLayer\User\User.cs" />
     <Compile Include="DomainLayer\User\UserController.cs" />

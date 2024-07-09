@@ -18,7 +18,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
     [TestClass]
     public class UserAT
     {
-        IUserService userService;
+        UserService userService;
         StoreService storeService;
         UserDTO userDTO;
         string username1 = "test1";
@@ -161,13 +161,23 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
             Response res = userService.Login(username2, password2);
             userDTO = res.Data as UserDTO;
             string token = userDTO.AccessToken;
+            Dictionary<string, string> doc = new Dictionary<string, string>()
+            {
+                ["token"] = token,
+                [$"store id"] = $"{sid}",
+                [$"price"] = $"{50}",
+                [$"amount"] = $"{10}",
+                [$"category"] = $"category",
+                [$"product store id"] = $"{pid}"
+            };
 
-            Response test = userService.AddToCart(token, sid, pid, 10);
-            Response test2 = userService.GetShoppingCart(token);
+        
+            ignore = userService.cart_add_product(doc);
+            Response test2 = userService.cart_by_token(doc);
             ShoppingCartDTO shoppingCart = test2.Data as ShoppingCartDTO;
             ShoppingBasketDTO shoppingBasket = shoppingCart.ShoppingBaskets[sid];
 
-            Assert.IsTrue(test.Success);
+            Assert.IsTrue(ignore.Success);
             Assert.AreEqual(1, shoppingBasket.ProductQuantities.Count);
         }
 
@@ -185,8 +195,18 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
             string token = userDTO.AccessToken;
 
             int pid = 10; //does not exist in our store
-            Response test = userService.AddToCart(token, sid, pid, 10);
-            Assert.IsTrue(test.Success); // The addition to cart does not enforce existence of the product in the store, it can be added later, but it is checked in complete purchase
+            Dictionary<string, string> doc = new Dictionary<string, string>()
+            {
+                ["token"] = token,
+                [$"store id"] = $"{sid}",
+                [$"price"] = $"{50}",
+                [$"amount"] = $"{10}",
+                [$"category"] = $"category",
+                [$"product store id"] = $"{pid}"
+            };
+
+            ignore = userService.cart_add_product(doc);
+            Assert.IsTrue(ignore.Success); // The addition to cart does not enforce existence of the product in the store, it can be added later, but it is checked in complete purchase
         }
 
         [TestMethod]
@@ -214,9 +234,18 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
             Response ignore2 = userService.CreateSubscriber(username2, password2);
             Response result2 = userService.Login(username2, password2);
             UserDTO temp2 = result2.Data as UserDTO;
+            Dictionary<string, string> doc = new Dictionary<string, string>()
+            {
+                ["token"] = temp1.AccessToken,
+                [$"store id"] = $"{sid}",
+                [$"price"] = $"{50}",
+                [$"amount"] = $"{quantity * 2}",
+                [$"category"] = $"category",
+                [$"product store id"] = $"{pid}"
+            };
 
-            Response test = userService.AddToCart(temp2.AccessToken, sid, pid, 2*quantity);
-            Assert.IsTrue(test.Success);
+            Response ignore = userService.cart_add_product(doc);
+            Assert.IsTrue(ignore.Success);
         }
 
         [TestMethod]
@@ -247,8 +276,18 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
             Response res = userService.Login(username2, password2);
             userDTO = res.Data as UserDTO;
             string token = userDTO.AccessToken;
+            Dictionary<string, string> doc = new Dictionary<string, string>()
+            {
+                ["token"] = token,
+                [$"store id"] = $"{sid}",
+                [$"price"] = $"{50}",
+                [$"amount"] = $"{quantity}",
+                [$"category"] = $"category",
+                [$"product store id"] = $"{pid}"
+            };
 
-            ignore = userService.AddToCart(token, sid, pid, quantity);
+            ignore = userService.cart_add_product(doc);
+            
             ignore = userService.CompletePurchase(token, "someAddr", "SomeInfo");
 
             Response test = userService.GetMyOrderHistory(token);
@@ -287,7 +326,17 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
             userDTO = res.Data as UserDTO;
             string token = userDTO.AccessToken;
 
-            ignore = userService.AddToCart(token, sid, pid, quantity);
+            Dictionary<string, string> doc = new Dictionary<string, string>()
+            {
+                ["token"] = token,
+                [$"store id"] = $"{sid}",
+                [$"price"] = $"{50}",
+                [$"amount"] = $"{quantity}",
+                [$"category"] = $"category",
+                [$"product store id"] = $"{pid}"
+            };
+
+            ignore = userService.cart_add_product(doc);
             ignore = userService.CompletePurchase(token, "someAddr", "SomeInfo");
 
             Response test = userService.GetMyOrderHistory(token);
@@ -325,8 +374,17 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
             Response res = userService.Login(username2, password2);
             userDTO = res.Data as UserDTO;
             string token = userDTO.AccessToken;
+            Dictionary<string, string> doc = new Dictionary<string, string>()
+            {
+                ["token"] = token,
+                [$"store id"] = $"{sid}",
+                [$"price"] = $"{50}",
+                [$"amount"] = $"{quantity}",
+                [$"category"] = $"category",
+                [$"product store id"] = $"{pid}"
+            };
 
-            ignore = userService.AddToCart(token, sid, pid, quantity);
+            ignore = userService.cart_add_product(doc);
             ignore = userService.CompletePurchase(token, "someAddr", "SomeInfo");
 
             Response test = userService.GetStoreOrderHistory(temp1.AccessToken, sid);
@@ -365,7 +423,17 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
             userDTO = res.Data as UserDTO;
             string token = userDTO.AccessToken;
 
-            ignore = userService.AddToCart(token, sid, pid, quantity);
+            Dictionary<string, string> doc = new Dictionary<string, string>()
+            {
+                ["token"] = token,
+                [$"store id"] = $"{sid}",
+                [$"price"] = $"{50}",
+                [$"amount"] = $"{quantity }",
+                [$"category"] = $"category",
+                [$"product store id"] = $"{pid}"
+            };
+
+            ignore = userService.cart_add_product(doc);
             ignore = userService.CompletePurchase(token, "someAddr", "SomeInfo");
 
             Response test = userService.GetStoreOrderHistory(token, sid);

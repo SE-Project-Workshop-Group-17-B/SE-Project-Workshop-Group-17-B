@@ -7,6 +7,8 @@ using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using Basket = Sadna_17_B.DomainLayer.User.Basket;
+
 
 
 namespace Sadna_17_B.DomainLayer.StoreDom
@@ -16,7 +18,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
 
 
-    public abstract class Discount :  I_discount
+    public abstract class Discount 
     {
 
 
@@ -26,8 +28,8 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         public static int discount_counter;
 
-        public List<Func<Cart, bool>> discount_condition_lambdas = new List<Func<Cart, bool>>();
-        protected Func<Cart, double> discount_pricing_lambda { get; set; }
+        public List<Func<Basket, bool>> discount_condition_lambdas = new List<Func<Basket, bool>>();
+        protected Func<Basket, double> discount_pricing_lambda { get; set; }
 
 
         public int ID;
@@ -76,19 +78,19 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         }
 
 
-        // ----------- Cart --------------------------------------------------------  
+        // ----------- Basket --------------------------------------------------------  
 
 
-        public bool check_conditions(Cart cart)
+        public bool check_conditions(Basket basket)
         {
             foreach( var condition in discount_condition_lambdas)
-                if (!condition(cart))
+                if (!condition(basket))
                     return false;
 
             return true;
         }
 
-        public abstract Mini_Checkout apply_discount(Cart cart);
+        public abstract Mini_Checkout apply_discount(Basket basket);
 
         public virtual string info(int depth, string indent = "")
         {
@@ -125,17 +127,17 @@ namespace Sadna_17_B.DomainLayer.StoreDom
     {
 
         public Discount_Simple(DateTime StartDate, DateTime EndDate, Discount_Strategy strategy,
-                                                                    Func<Cart, double> relevant_products_price) : base(StartDate, EndDate, strategy) 
+                                                                    Func<Basket, double> relevant_products_price) : base(StartDate, EndDate, strategy) 
         {
             discount_condition_lambdas.Add((c) => (true));
             base.discount_pricing_lambda = relevant_products_price;
         }
 
-        public override Mini_Checkout apply_discount(Cart cart)
+        public override Mini_Checkout apply_discount(Basket basket)
         {
             List<Tuple<Discount, double>> applied_discounts = new List<Tuple<Discount, double>>();
 
-            double relevant_price = discount_pricing_lambda(cart);
+            double relevant_price = discount_pricing_lambda(basket);
 
             if (relevant_price != 0)
                 applied_discounts.Add(Tuple.Create((Discount)this, strategy.apply_discount_strategy(relevant_price)));
@@ -155,25 +157,25 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         
         public Discount_Conditional(DateTime StartDate, DateTime EndDate, Discount_Strategy strategy,
-                                        Func<Cart, double> relevant_price_lambda, List<Func<Cart, bool>> condition_lambdas) : base(StartDate, EndDate, strategy) 
+                                        Func<Basket, double> relevant_price_lambda, List<Func<Basket, bool>> condition_lambdas) : base(StartDate, EndDate, strategy) 
         { 
             discount_condition_lambdas.AddRange(condition_lambdas);
             discount_pricing_lambda = relevant_price_lambda;
         }
 
         public Discount_Conditional(DateTime StartDate, DateTime EndDate, Discount_Strategy strategy,
-                                        Func<Cart, double> relevant_price_lambda, Func<Cart, bool> condition_lambda) : base(StartDate, EndDate, strategy)
+                                        Func<Basket, double> relevant_price_lambda, Func<Basket, bool> condition_lambda) : base(StartDate, EndDate, strategy)
         {
             discount_condition_lambdas.Add(condition_lambda);
             discount_pricing_lambda = relevant_price_lambda;
         }
 
-        public override Mini_Checkout apply_discount(Cart cart)
+        public override Mini_Checkout apply_discount(Basket basket)
         {
 
             List<Tuple<Discount, double>> applied_discounts = new List<Tuple<Discount, double>>();
 
-            double relevant_price = discount_pricing_lambda(cart);
+            double relevant_price = discount_pricing_lambda(basket);
 
             if (relevant_price != 0)
                 applied_discounts.Add(Tuple.Create((Discount) this, strategy.apply_discount_strategy(relevant_price)));
@@ -188,24 +190,24 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
     // ------------------- Discount rule : composite discount -----------------------------------------------------------------------------------------
 
-    public class Discount_Composite : Discount
+    public class Discount_Rule : Discount
 
     {
         public List<Discount> discounts = new List<Discount>();
         public string composite_name { get; private set; }
 
 
-        public Func<Cart, List<Discount>, Mini_Checkout> rule_function { get; private set; }
+        public Func<Basket, List<Discount>, Mini_Checkout> aggregation_rule { get; private set; }
 
-        public Discount_Composite(Func<Cart, List<Discount>, Mini_Checkout> rule, string rule_name) 
+        public Discount_Rule(Func<Basket, List<Discount>, Mini_Checkout> aggregation, string name) 
         { 
-            rule_function = rule;
-            composite_name = rule_name;
+            aggregation_rule = aggregation;
+            composite_name = name;
         }
 
-        public override Mini_Checkout apply_discount(Cart cart)
+        public override Mini_Checkout apply_discount(Basket basket)
         {
-            return rule_function(cart, discounts);
+            return aggregation_rule(basket, discounts);
         }
 
 

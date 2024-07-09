@@ -16,22 +16,23 @@
  *     "product price"      :       double | double
  *     "store rating"       :       double
  * 
+ * 
  *      ------------------------------------------------------------------------------
  *      
  * * * edit-discount-policy()   -       abstract discount policy edit
  *      
  *      "store id"          :       int
  *      "discount id"       :       int
- *      "discount type"     :       ( add composite / add rule / remove composite / remove rule )
+ *      "edit type"         :       ( add / remove )
  *      "start date"        :       dd/mm/yyyy
  *      "end date"          :       dd/mm/yyyy
  *      
  *      "strategy"          :       ( flat / precentage / membership )
  *      "flat"              :       double
- *      "precentage"        :       double
- *      
+ *      "precentage"        :       double                                                      
+ *                          
  *      "relevant type"     :       ( product / category / products / categories / cart)
- *      "relevant factores" :       ( string / int ) | ...                                // for product id, for category string
+ *      "relevant factores" :       ( int / string ) | ...                                // for product id, for category string
  *      
  *      "cond type"         :       ( p amount / p price / c amount / c price )
  *      "cond product"      :       int

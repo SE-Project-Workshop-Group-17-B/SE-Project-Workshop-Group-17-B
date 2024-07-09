@@ -10,11 +10,12 @@ using System.Xml.Linq;
 using System.Linq.Expressions;
 using System.Diagnostics;
 using System.Net;
+using Sadna_17_B.DomainLayer.User;
 
 
 namespace Sadna_17_B.ServiceLayer.Services
 {
-    public class StoreService : IStoreService
+    public class StoreService 
     {
         /*
          *     response                            data
@@ -160,11 +161,11 @@ namespace Sadna_17_B.ServiceLayer.Services
             
         }
 
-        public Response valid_order(int storeId, Dictionary<int, int> quantities) // --> bool
+        public Response valid_order(Cart cart) // --> bool
         {
             try
             {
-                bool result = _storeController.valid_order(storeId, quantities);
+                bool result = _storeController.validate_inventories(cart);
 
                 info_logger.Log("Store Service", "order validation completed");
 
@@ -353,13 +354,13 @@ namespace Sadna_17_B.ServiceLayer.Services
 
         // ---------------- stores Management -------------------------------------------------------------------------------------------
 
-        public Response reduce_products(string token, int storeID, Dictionary<int, int> quantities) // --> bool
+        public Response reduce_products(string token, Basket basket) // --> bool
         {
 
 
             // ---------- founder authentication ---------------
 
-            if (_userService.IsOwnerBool(token, storeID) || _userService.HasManagerAuthorizationBool(token, storeID, DomainLayer.User.Manager.ManagerAuthorization.UpdateSupply))
+            if (_userService.IsOwnerBool(token, basket.store_id) || _userService.HasManagerAuthorizationBool(token, basket.store_id, Manager.ManagerAuthorization.UpdateSupply))
             {
                 error_logger.Log("Store Service", " authentication error, user should be owner to reduce quantities");
                 return new Response("product reduction : user should be owner to reduce product quantities", false);
@@ -369,7 +370,7 @@ namespace Sadna_17_B.ServiceLayer.Services
 
             try
             {
-                _storeController.decrease_products_amount(storeID, quantities);
+                _storeController.decrease_products_amount(basket);
 
                 info_logger.Log("Store Service", "reduction success");
                 return new Response("reduction success",true);
@@ -659,11 +660,11 @@ namespace Sadna_17_B.ServiceLayer.Services
 
 
 
-        public Response calculate_products_prices(int storeID, Dictionary<int, int> quantities) // --> checkout
+        public Response calculate_products_prices(Basket basket) // --> checkout
         {
             try
             {
-                Checkout checkout = _storeController.calculate_products_prices(storeID, quantities);
+                Checkout checkout = _storeController.calculate_products_prices(basket);
 
                 if (checkout == null)
                     return new Response("Failed to return calculation of product prices.", false);

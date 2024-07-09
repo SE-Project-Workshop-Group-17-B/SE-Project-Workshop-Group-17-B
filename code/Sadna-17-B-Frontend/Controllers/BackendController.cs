@@ -1,5 +1,6 @@
 ﻿using Microsoft.Ajax.Utilities;
 using Sadna_17_B.DomainLayer.StoreDom;
+using Sadna_17_B.DomainLayer.User;
 using Sadna_17_B.ServiceLayer;
 using Sadna_17_B.ServiceLayer.ServiceDTOs;
 using Sadna_17_B.ServiceLayer.Services;
@@ -24,7 +25,7 @@ namespace Sadna_17_B_Frontend.Controllers
 
         private ServiceFactory serviceFactory;
 
-        private IUserService userService;
+        private UserService userService;
 
         public StoreService storeService;
         
@@ -116,9 +117,10 @@ namespace Sadna_17_B_Frontend.Controllers
 
         // ----------------------------------- store information -----------------------------------------------------------------------
 
-        public ShoppingCartDTO get_shoping_cart()
+        public ShoppingCartDTO get_shoping_cart(Dictionary<string,string> doc)
         {
-            Response response = userService.GetShoppingCart(userDTO.AccessToken);
+
+            Response response = userService.cart_by_token(doc);
             if (response.Success)
             {
                 return (response.Data as ShoppingCartDTO);
@@ -391,9 +393,9 @@ namespace Sadna_17_B_Frontend.Controllers
 
         // ---------- checkout -----------------------------------
 
-        public double process_store_order(int storeID, Dictionary<int, int> quantities)
+        public double process_store_order(Basket basket)
         {
-            Response response = storeService.calculate_products_prices(storeID, quantities);
+            Response response = storeService.calculate_products_prices(basket);
             if (response.Success)
             {
                 return (response.Data as Mini_Checkout).price_after_discount();
@@ -401,27 +403,7 @@ namespace Sadna_17_B_Frontend.Controllers
             return 0;
         }
 
-        public Response cart_checkout() // not implemented
-        {
-            // --- retrieve cart check from DataBase --- //
-
-            int storeID = 0;
-            Dictionary<int,int> quantities = new Dictionary<int,int>();
-
-            // --- retrieve cart check from DataBase --- //
-
-            Response response = storeService.calculate_products_prices(storeID, quantities);
-            if (response.Success)
-            {
-                return response;
-            }
-            return null;
-        }
-
-        public Response cart_purchase()  // not implemented
-        {
-            return new Response(true);
-        }
+   
 
 
 
