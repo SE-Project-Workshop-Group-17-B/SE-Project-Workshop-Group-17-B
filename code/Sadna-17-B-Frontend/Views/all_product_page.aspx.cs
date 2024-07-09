@@ -43,7 +43,7 @@ namespace Sadna_17_B_Frontend.Views
             int.TryParse(minStoreRatingText, out minStoreRating);
 
             BackendController backendController = BackendController.get_instance();
-            IStoreService storeService = backendController.storeService;
+            StoreService storeService = backendController.storeService;
             Response response = storeService.all_products();
             Dictionary<Product, int> products = new Dictionary<Product, int>();
             if (response.Success)

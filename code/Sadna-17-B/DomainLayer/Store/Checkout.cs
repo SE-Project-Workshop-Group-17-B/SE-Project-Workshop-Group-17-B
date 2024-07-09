@@ -9,6 +9,7 @@ using System.Net.Http.Headers;
 using System.Web;
 using System.Web.UI.WebControls.WebParts;
 using System.Xml.Linq;
+using Basket = Sadna_17_B.DomainLayer.User.Basket;
 
 namespace Sadna_17_B.DomainLayer.StoreDom
 {
@@ -113,18 +114,18 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
     public class Checkout
     {
-        public Cart cart { get; private set; }
+        public Basket basket { get; private set; }
         public List<Tuple<Discount, double>> discounts { get; private set; }
         public double total_price_without_discount { get; private set; }
         public double total_price_with_discount { get; private set; }
         public double total_discount { get; private set; }
 
-        public Checkout(Cart cart, Mini_Checkout mini_check)
+        public Checkout(Basket basket, Mini_Checkout mini_check)
         {
-            this.cart = cart;
+            this.basket = basket;
             this.discounts = mini_check.discounts;
             this.total_discount = mini_check.total_discount;
-            this.total_price_without_discount = cart.price_all();
+            this.total_price_without_discount = basket.price_all();
             this.total_price_with_discount = total_price_without_discount - total_discount;
 
         }

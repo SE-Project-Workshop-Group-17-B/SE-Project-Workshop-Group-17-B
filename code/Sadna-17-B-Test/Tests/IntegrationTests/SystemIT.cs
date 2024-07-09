@@ -19,7 +19,7 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
     [TestClass]
     public class SystemIT
     {
-        IUserService userService;
+        UserService userService;
         StoreService storeService;
         UserDTO userDTO;
 
@@ -87,7 +87,17 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
             Response res = userService.Login(username2, password2);
             userDTO = res.Data as UserDTO;
             string token = userDTO.AccessToken;
-            ignore = userService.AddToCart(token, sid, pid, amount2Buy);
+            Dictionary<string, string> doc = new Dictionary<string, string>()
+            {
+                ["token"] = token,
+                [$"store id"] = $"{sid}",
+                [$"price"] = $"{50}",
+                [$"amount"] = $"{amount2Buy}",
+                [$"category"] = "category",
+                [$"product store id"] = $"{pid}"
+            };
+
+            ignore = userService.cart_add_product(doc);
 
             string wrongCreditCardInfo = null;
             Response completeRes = userService.CompletePurchase(token, destAddr, wrongCreditCardInfo);
@@ -103,7 +113,17 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
             Response res = userService.Login(username2, password2);
             userDTO = res.Data as UserDTO;
             string token = userDTO.AccessToken;
-            ignore = userService.AddToCart(token, sid, pid, amount2Buy);
+            Dictionary<string, string> doc = new Dictionary<string, string>()
+            {
+                ["token"] = token,
+                [$"store id"] = $"{sid}",
+                [$"price"] = $"{50}",
+                [$"amount"] = $"{amount2Buy}",
+                [$"category"] = $"category",
+                [$"product store id"] = $"{pid}"
+            };
+
+            ignore = userService.cart_add_product(doc);
 
             string wrongDestAddrInfo = null;
             Response completeRes = userService.CompletePurchase(token, wrongDestAddrInfo, creditCardInfo);
@@ -124,8 +144,8 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
             int sid = sc.store_by_name("name")[0].ID;
             int pid = sc.add_store_product(sid, "prd", 5.0, "category", "desc", 10);
 
-            ShoppingCart cart = new ShoppingCart();
-            cart.AddToCart(sid,pid, 2);
+            Cart cart = new Cart();
+            cart.add_product(new Cart_Product(sid, 10, 5.0, "category", pid));
 
             OrderSystem os = new OrderSystem(sc, testObject.Object);
             try
@@ -152,8 +172,8 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
             int sid = sc.store_by_name("name")[0].ID;
             int pid = sc.add_store_product(sid, "prd", 5.0, "category", "desc", 10);
 
-            ShoppingCart cart = new ShoppingCart();
-            cart.AddToCart(sid, pid, 2);
+            Cart cart = new Cart();
+            cart.add_product(new Cart_Product(sid,20, 10, "category", pid));
 
             OrderSystem os = new OrderSystem(sc, testObject.Object);
             try
@@ -175,13 +195,23 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
             Response res = userService.Login(username2, password2);
             userDTO = res.Data as UserDTO;
             string token = userDTO.AccessToken;
-            ignore = userService.AddToCart(token, sid, pid, quantity * 2); //we added too many items, so action should fail
-            Response temp = userService.GetShoppingCart(token);
+            Dictionary<string, string> doc = new Dictionary<string, string>()
+            {
+                ["token"] = token,
+                [$"store id"] = $"{sid}",
+                [$"category"] = $"category",
+                [$"price"] = $"{50}",
+                [$"amount"] = $"{quantity * 2}",
+                [$"product store id"] = $"{pid}"
+            };
+
+            ignore = userService.cart_add_product(doc);
+            Response temp = userService.cart_by_token(doc);
 
             ShoppingCartDTO prevCart = temp.Data as ShoppingCartDTO;
             Response completeRes = userService.CompletePurchase(token, destAddr, creditCardInfo);
 
-            temp = userService.GetShoppingCart(token);
+            temp = userService.cart_by_token(doc);
             ShoppingCartDTO newCart = temp.Data as ShoppingCartDTO;
 
             Dictionary<int, ShoppingBasketDTO> prevCartInside = prevCart.ShoppingBaskets;
@@ -212,7 +242,18 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
             Response res = userService.Login(username2, password2);
             userDTO = res.Data as UserDTO;
             string token = userDTO.AccessToken;
-            ignore = userService.AddToCart(token, sid, pid, quantity * 2);
+
+            Dictionary<string, string> doc = new Dictionary<string, string>()
+            {
+                ["token"] = token,
+                [$"store id"] = $"{sid}",
+                [$"price"] = $"{50}",
+                [$"amount"] = $"{quantity * 2}",
+                [$"category"] = $"category",
+                [$"product store id"] = $"{pid}"
+            };
+
+            ignore = userService.cart_add_product(doc);
 
             Response completeRes = userService.CompletePurchase(token, destAddr, creditCardInfo);
             int amount = ((List<Store>)storeService.store_by_name(storeName).Data)[0].amount_by_name(productName);

@@ -1,4 +1,5 @@
-﻿using Sadna_17_B.Utils;
+﻿using Sadna_17_B.DomainLayer.StoreDom;
+using Sadna_17_B.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,29 +9,23 @@ namespace Sadna_17_B.DomainLayer.User
 {
     public abstract class User
     {
-        public ShoppingCart ShoppingCart { get; }
+        public Cart ShoppingCart { get; }
 
         public User()
         {
-            ShoppingCart = new ShoppingCart();
+            ShoppingCart = new Cart();
         }
 
-        public void AddToCart(int storeID, int productID, int quantity)
+
+        public void add_to_cart(int sid, int amount, double price, string category, int pid)
         {
-            if (quantity <= 0)
-            {
-                throw new Sadna17BException("Invalid quantity given: " + quantity + ".");
-            }
-            ShoppingCart.AddToCart(storeID, productID, quantity);
+            ShoppingCart.add_product(sid, amount,  price,  category, pid);
         }
 
-        public void UpdateCartProduct(int storeID, int productID, int quantity)
+        public void update_product_in_cart(int sid, int pid, int amount)
         {
-            if (quantity < 0)
-            {
-                throw new Sadna17BException("Invalid quantity given: " + quantity + ".");
-            }
-            ShoppingCart.UpdateCartProduct(storeID, productID, quantity);
+            ShoppingCart.update_product(sid, pid, amount);
         }
+    
     }
 }

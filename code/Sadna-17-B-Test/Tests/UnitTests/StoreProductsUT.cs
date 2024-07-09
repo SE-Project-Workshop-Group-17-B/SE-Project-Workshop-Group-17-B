@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -22,7 +23,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         private Product product2;
         private Product product3;
         private Subscriber subscriber;
-        private Cart cart;
+        private Basket cart;
 
         private DateTime start_date;
         private DateTime end_date;
@@ -33,13 +34,13 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         private Discount_Percentage strategy_precentage;
         private Discount_Membership strategy_membership;
 
-        Func<Cart, double> relevant_price_by_category;
-        Func<Cart, double> relevant_price_by_product;
-        Func<Cart, double> relevant_price_by_all;
+        Func<Basket, double> relevant_price_by_category;
+        Func<Basket, double> relevant_price_by_product;
+        Func<Basket, double> relevant_price_by_all;
 
-        Func<Cart, bool> condition_category;
-        Func<Cart, bool> condition_product;
-        Func<Cart, bool> condition_all;
+        Func<Basket, bool> condition_category;
+        Func<Basket, bool> condition_product;
+        Func<Basket, bool> condition_all;
 
 
         [TestInitialize]
@@ -47,7 +48,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         {
             /*
            * 
-           *  Cart:           | name        |  price   | category  | descript  | amount   | total price
+           *  Basket:           | name        |  price   | category  | descript  | amount   | total price
            *  -----------------------------------------------------------------------------------------
            *  
            *  - product 1 :   |   product1  |   30     |   Food    |   Nice    |  100      | 3000
@@ -95,10 +96,10 @@ namespace Sadna_17_B_Test.Tests.UnitTests
             product2 = store1.inventory.product_by_id(pid2);
             product3 = store1.inventory.product_by_id(pid3);
 
-            cart = new Cart();
-            cart.add_product(product1);
-            cart.add_product(product2);
-            cart.add_product(product3);
+            cart = new Basket(sid);
+            cart.add_product(product1.to_cart_product());
+            cart.add_product(product2.to_cart_product());
+            cart.add_product(product3.to_cart_product());
 
 
             discount_policy = store1.discount_policy;
@@ -113,11 +114,11 @@ namespace Sadna_17_B_Test.Tests.UnitTests
 
             // -------- relevant functions -------------------------------
 
-            relevant_price_by_category = lambda_cart_pricing.category(product1.category);
+            relevant_price_by_category = lambda_basket_pricing.category(product1.category);
 
-            relevant_price_by_product = lambda_cart_pricing.product(product1.ID);
+            relevant_price_by_product = lambda_basket_pricing.product(product1.ID);
 
-            relevant_price_by_all = lambda_cart_pricing.cart();
+            relevant_price_by_all = lambda_basket_pricing.basket();
 
 
 
@@ -127,7 +128,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
 
             condition_category = lambda_condition.condition_category_amount(product1.category, "!=", 0);
 
-            condition_all = lambda_condition.condition_cart_price(">", 200);
+            condition_all = lambda_condition.condition_basket_price(">", 200);
 
 
         }
@@ -137,15 +138,17 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         {
             int productId = store_controller.add_store_product(sid, "Test Product 1", 100, "Category", "Good product", 50);
 
-            Dictionary<int, int> order = new Dictionary<int, int>();
-            order[productId] = 5;
+            Basket basket = new Basket(sid);
+            Cart_Product cart_product = store_controller.store_by_id(sid).product_by_id(productId).to_cart_product();
+            cart_product.amount = 5;
+            basket.add_product(cart_product);
 
-            Task task1 = Task.Run(() => store_controller.decrease_products_amount(sid, order));
-            Task task2 = Task.Run(() => store_controller.decrease_products_amount(sid, order));
-            Task task3 = Task.Run(() => store_controller.decrease_products_amount(sid, order));
-            Task task4 = Task.Run(() => store_controller.decrease_products_amount(sid, order));
-            Task task5 = Task.Run(() => store_controller.decrease_products_amount(sid, order));
-            Task task6 = Task.Run(() => store_controller.decrease_products_amount(sid, order));
+            Task task1 = Task.Run(() => store_controller.decrease_products_amount(basket));
+            Task task2 = Task.Run(() => store_controller.decrease_products_amount(basket));
+            Task task3 = Task.Run(() => store_controller.decrease_products_amount(basket));
+            Task task4 = Task.Run(() => store_controller.decrease_products_amount(basket));
+            Task task5 = Task.Run(() => store_controller.decrease_products_amount(basket));
+            Task task6 = Task.Run(() => store_controller.decrease_products_amount(basket));
 
             Task.WaitAll(task1, task2, task3, task4, task5, task6);
 
@@ -161,15 +164,15 @@ namespace Sadna_17_B_Test.Tests.UnitTests
             {
                 int productId = store_controller.add_store_product(sid, "Test Product 2", 100, "Category", "Good product", 15);
 
-                Dictionary<int, int> order = new Dictionary<int, int>();
-                order[productId] = 5;
+                Basket basket = new Basket(sid);
+                basket.add_product(store_controller.store_by_id(sid).product_by_id(productId).to_cart_product());
 
-                Task task1 = Task.Run(() => store_controller.decrease_products_amount(sid, order));
-                Task task2 = Task.Run(() => store_controller.decrease_products_amount(sid, order));
-                Task task3 = Task.Run(() => store_controller.decrease_products_amount(sid, order));
-                Task task4 = Task.Run(() => store_controller.decrease_products_amount(sid, order));
-                Task task5 = Task.Run(() => store_controller.decrease_products_amount(sid, order));
-                Task task6 = Task.Run(() => store_controller.decrease_products_amount(sid, order));
+                Task task1 = Task.Run(() => store_controller.decrease_products_amount(basket));
+                Task task2 = Task.Run(() => store_controller.decrease_products_amount(basket));
+                Task task3 = Task.Run(() => store_controller.decrease_products_amount(basket));
+                Task task4 = Task.Run(() => store_controller.decrease_products_amount(basket));
+                Task task5 = Task.Run(() => store_controller.decrease_products_amount(basket));
+                Task task6 = Task.Run(() => store_controller.decrease_products_amount(basket));
 
                 Task.WaitAll(task1, task2, task3, task4, task5, task6);
 

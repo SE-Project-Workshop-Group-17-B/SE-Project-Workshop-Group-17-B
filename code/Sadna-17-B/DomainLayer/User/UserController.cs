@@ -3,6 +3,7 @@ using Sadna_17_B.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Web;
 using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 using static Sadna_17_B.DomainLayer.User.Notification;
@@ -191,6 +192,7 @@ namespace Sadna_17_B.DomainLayer.User
             }
             throw new Sadna17BException("Invalid userID, given userID doesn't correspond to any user in the system.");
         }
+
 
         public bool IsAdmin(string token)
         {
@@ -397,6 +399,8 @@ namespace Sadna_17_B.DomainLayer.User
             }
         }
 
+
+
         private void AddOwnership(string username, int storeID)
         {
             Subscriber subscriber = GetSubscriberByUsername(username);
@@ -454,34 +458,47 @@ namespace Sadna_17_B.DomainLayer.User
             RemoveManagement(managerUsername, storeID); // Should not throw an exception as long as the requesting subscriber did appoint him before
         }
 
-        public void AddToCart(string token, int storeID, int productID, int quantity)
-        {
-            infoLogger.Log($"Adding product to cart - Subscriber: {GetSubscriberByToken(token).Username} Store: {storeID} Product: {productID} Quantity: {quantity}");
-            User user = GetUserByToken(token);
-            if (quantity <= 0)
-            {
-                throw new Sadna17BException("Invalid quantity given: " + quantity + ".");
-            }
-            user.AddToCart(storeID, productID, quantity);
-        }
 
-        public ShoppingCart GetShoppingCart(string token)
+        // ----------- cart ------------------------------------------------------------------------------------
+
+
+        public Cart cart_by_token(string token)
         {
             infoLogger.Log($"Getting shopping cart - Subscriber: {GetSubscriberByToken(token).Username}");
             User user = GetUserByToken(token);
             return user.ShoppingCart;
         }
 
-        public void UpdateCartProduct(string token, int storeID, int productID, int quantity)
+        public void cart_update_product(Dictionary<string,string> doc)
         {
-            infoLogger.Log($"Updating Shopping Cart - Subscriber: {GetSubscriberByToken(token).Username} Store: {storeID} Product: {productID} Quantity: {quantity}");
+            string token = Parser.parse_string(doc["token"]);
+            int sid = Parser.parse_int(doc["store id"]);
+            int pid = Parser.parse_int(doc["product id"]);
+            int amount = Parser.parse_int(doc["amount"]);
+
             User user = GetUserByToken(token);
-            if (quantity < 0)
-            {
-                throw new Sadna17BException("Invalid quantity given: " + quantity + ".");
-            }
-            user.UpdateCartProduct(storeID, productID, quantity);
+
+            user.update_product_in_cart(sid, pid, amount);
         }
+
+        public void cart_add_product(Dictionary<string,string> doc)
+        {
+            string token = Parser.parse_string(doc["token"]);
+            int sid = Parser.parse_int(doc["store id"]);
+            double price = Parser.parse_double(doc["price"]);
+            int amount = Parser.parse_int(doc["amount"]);
+            string category = Parser.parse_string(doc["category"]);
+            int psid = Parser.parse_int(doc["product store id"]);
+
+            User user = GetUserByToken(token);
+            user.add_to_cart(sid,amount,price,category, psid);
+        }
+
+
+
+        // ----------- cart ------------------------------------------------------------------------------------
+
+
 
         public void CompletePurchase(string token, string destinationAddress, string creditCardInfo)
         {
@@ -508,12 +525,12 @@ namespace Sadna_17_B.DomainLayer.User
             if (user is Guest)
             {
                 infoLogger.Log($"Getting order history - Guest: {(user as Guest).GuestID.ToString()}");
-                return orderSystem.GetUserOrderHistory((user as Guest).GuestID.ToString());
+                return orderSystem.order_history((user as Guest).GuestID.ToString());
             }
             else if (user is Subscriber)
             {
                 infoLogger.Log($"Getting order history - Subscriber: {(user as Subscriber).Username}");
-                return orderSystem.GetUserOrderHistory((user as Subscriber).Username);
+                return orderSystem.order_history((user as Subscriber).Username);
             }
             else
             {
@@ -543,7 +560,7 @@ namespace Sadna_17_B.DomainLayer.User
                 throw new Sadna17BException("Invalid operation, only admins and store owners can retrieve order history of stores.");
             }
             // Should probably check the StoreID exists in the system, currently returns an empty sub-orders list
-            return orderSystem.GetStoreOrderHistory(storeID);
+            return orderSystem.sub_order_history(storeID);
         }
 
         public Tuple<HashSet<string>, Dictionary<string, HashSet<Manager.ManagerAuthorization>>> GetStoreRoles(string token, int storeID)

@@ -17,7 +17,7 @@ namespace Sadna_17_B.ServiceLayer
     /// </summary>
     public class ServiceFactory
     {
-        public IUserService UserService { get; set; }
+        public UserService UserService { get; set; }
         public StoreService StoreService { get; set; }
 
         private DomainFactory domainFactory;

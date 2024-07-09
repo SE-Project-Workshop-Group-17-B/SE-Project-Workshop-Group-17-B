@@ -16,7 +16,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
     [TestClass]
     public class StoreAT
     {
-        IUserService userService;
+        UserService userService;
         StoreService storeService;
         UserDTO userDTO;
         string username1 = "test1";

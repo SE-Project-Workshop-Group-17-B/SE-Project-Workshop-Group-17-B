@@ -9,15 +9,13 @@ using System.Runtime.Remoting.Messaging;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using Basket = Sadna_17_B.DomainLayer.User.Basket;
 
 
 namespace Sadna_17_B.DomainLayer.StoreDom
 {
 
-
-
-
-    public class Purchase
+    public class Purchase_Rule
     {
 
         // ------------- Variables --------------------------------------------------------------------------
@@ -28,28 +26,28 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         public string Name;
         protected double price;
 
-        protected List<Func<Cart, bool>> conditions = new List<Func<Cart, bool>>();
+        protected List<Func<Basket, bool>> conditions = new List<Func<Basket, bool>>();
 
-        protected List<Purchase> purchase_rules = new List<Purchase>();
-        protected Func<Cart, List<Func<Cart, bool>>, bool> purchase_rule { get; set; }
+        protected List<Purchase_Rule> purchase_rules = new List<Purchase_Rule>();
+        protected Func<Basket, List<Func<Basket, bool>>, bool> aggregation_rule { get; set; }
 
 
 
         // ------------- Constructors --------------------------------------------------------------------------
 
-        public Purchase()
+        public Purchase_Rule()
         {
             id_counter++;
             ID = id_counter;
         }
         
-        public Purchase(Func<Cart, List<Func<Cart, bool>>, bool> purchase_rule, string name = "default") : this()
+        public Purchase_Rule(Func<Basket, List<Func<Basket, bool>>, bool> purchase_rule, string name = "default") : this()
         {
-            this.purchase_rule = purchase_rule;
+            this.aggregation_rule = purchase_rule;
             this.Name = name;
         }
 
-        public Purchase(Func<Cart, List<Func<Cart, bool>>, bool> purchase_rule, List<Func<Cart, bool>> conds, string name = "default") : this(purchase_rule,name)
+        public Purchase_Rule(Func<Basket, List<Func<Basket, bool>>, bool> purchase_rule, List<Func<Basket, bool>> conds, string name = "default") : this(purchase_rule,name)
         {
             this.conditions = conds;
         }
@@ -58,17 +56,18 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         // ------------- add / remove --------------------------------------------------------------------------
 
-        public void add_condition(Func<Cart, bool> cond)
+
+        public void add_condition(Func<Basket, bool> cond)
         {
             conditions.Add(cond);
         }
 
-        public void remove_condition(Func<Cart, bool> cond)
+        public void remove_condition(Func<Basket, bool> cond)
         {
             conditions.Remove(cond);
         }
 
-        public int add_purchase_rule(int ancestor_id, Purchase purchase_to_add)
+        public int add_purchase_rule(int ancestor_id, Purchase_Rule purchase_to_add)
         {
             if (ancestor_id == ID)
             {
@@ -76,7 +75,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                 return purchase_to_add.ID;
             }
 
-            foreach (Purchase composite in purchase_rules)
+            foreach (Purchase_Rule composite in purchase_rules)
                 if (composite.add_purchase_rule(ancestor_id, purchase_to_add) != -1)
                     return purchase_to_add.ID;
 
@@ -89,7 +88,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                 if (purchase_rule.ID == id)
                     return purchase_rules.Remove(purchase_rule);
 
-            foreach (Purchase composite in purchase_rules)
+            foreach (Purchase_Rule composite in purchase_rules)
                 if (composite.remove_purchase_rule(id))
                     return true;
 
@@ -126,12 +125,12 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         // ------------- apply rules --------------------------------------------------------------------------
 
-        public bool apply_purchase(Cart cart)
+        public bool apply_purchase(Basket basket)
         {
-            bool valid_purchase = purchase_rule(cart, conditions);
+            bool valid_purchase = aggregation_rule(basket, conditions);
 
             foreach (var rule in purchase_rules)
-                valid_purchase = rule.apply_purchase(cart);
+                valid_purchase = rule.apply_purchase(basket);
 
             return valid_purchase;
         }

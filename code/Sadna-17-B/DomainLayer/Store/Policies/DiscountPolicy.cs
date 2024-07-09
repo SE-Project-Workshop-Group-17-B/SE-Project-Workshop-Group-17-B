@@ -1,10 +1,13 @@
-﻿using System;
+﻿using Microsoft.IdentityModel.Tokens;
+using Sadna_17_B.DomainLayer.Utils;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using Basket = Sadna_17_B.DomainLayer.User.Basket;
 
 namespace Sadna_17_B.DomainLayer.StoreDom
 {
@@ -29,7 +32,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         public Dictionary<Discount, HashSet<int>> discount_to_categories;
         public Dictionary<Discount, HashSet<int>> discount_to_member;
 
-        public Discount_Composite discount_tree;
+        public Discount_Rule discount_tree;
 
 
         // ----------- constructor -----------------------------------------------------------
@@ -44,7 +47,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             this.discount_to_products = new Dictionary<Discount, HashSet<int>>();
             this.discount_to_categories = new Dictionary<Discount, HashSet<int>>();
             this.discount_to_member = new Dictionary<Discount, HashSet<int>>();
-            this.discount_tree = new Discount_Composite(lambda_discount_rule.numeric.addition(), "addition");
+            this.discount_tree = new Discount_Rule(lambda_discount_rule.numeric.addition(), "addition");
             
         }
 
@@ -94,12 +97,27 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         // ----------- other -----------------------------------------------------------
 
 
-        public int add_discount(Discount discount, int ancestor_id = -1)
+        public int add_discount(int ancestor_id, DateTime start, DateTime end, Discount_Strategy strategy, 
+                                                                 Func<Basket, double> relevant_product_lambda, List<Func<Basket, bool>> condition_lambdas = null)
         {
-             id_to_discount.Add(discount.ID, discount);
+
+            Discount discount;
+
+            if (condition_lambdas.IsNullOrEmpty())
+                discount = new Discount_Simple(start, end, strategy, relevant_product_lambda);
+            else
+                discount = new Discount_Conditional(start, end, strategy, relevant_product_lambda, condition_lambdas);
+
+            id_to_discount.Add(discount.ID, discount);
 
              return discount_tree.add_discount(discount, ancestor_id);
 
+        }
+
+        public int add_discount(Discount discount)
+        {
+            id_to_discount.Add(discount.ID, discount);
+            return discount_tree.add_discount(discount);
         }
 
         public bool remove_discount(int id)
@@ -124,9 +142,9 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return false;
         }
 
-        public Mini_Checkout calculate_discount(Cart cart)
+        public Mini_Checkout calculate_discount(Basket basket)
         {
-            return discount_tree.apply_discount(cart);
+            return discount_tree.apply_discount(basket);
         }
 
         public int get_id()
