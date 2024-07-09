@@ -11,7 +11,7 @@ namespace Sadna_17_B
         public static void Main(string[] args)
         {
             Console.WriteLine("Initializing database...");
-            InitializeDatabase();
+            //InitializeDatabase();
 
             ServiceFactory serviceFactory = new ServiceFactory();
             IUserService userService = serviceFactory.UserService;
