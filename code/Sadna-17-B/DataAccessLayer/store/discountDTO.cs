@@ -8,8 +8,8 @@ namespace Sadna_17_B.DataAccessLayer.store
     public class DiscountDTO
     {
         public int DiscountID { get; set; }
-        public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
+        public string StartDate { get; set; }
+        public string EndDate { get; set; }
         public string Strategy { get; set; }
         public string DiscountType { get; set; }
         public string Relevant { get; set; }

@@ -23,16 +23,13 @@ namespace Sadna_17_B.DataAccessLayer.store
         {
             using (SQLiteConnection connection = new SQLiteConnection(connectionString))
             {
-                connection.Open();
-
-                string query = @"
-                CREATE TABLE IF NOT EXISTS PurchasePolicy (
-                    storeID INT NOT NULL,
-                    purchaseID INT NOT NULL,
-                    PRIMARY KEY (storeID, purchaseID),
-                    FOREIGN KEY (storeID) REFERENCES Stores(ID),
-                    FOREIGN KEY (purchaseID) REFERENCES Purchase(Id)
-                );";
+                string query = @"CREATE TABLE IF NOT EXISTS PurchasePolicy (
+                        storeID INT NOT NULL,
+                        purchaseID INT NOT NULL,
+                        PRIMARY KEY (storeID, purchaseID),
+                        FOREIGN KEY (storeID) REFERENCES Store(ID),
+                        FOREIGN KEY (purchaseID) REFERENCES Purchase(Id)
+                    )";
 
                 using (SQLiteCommand command = new SQLiteCommand(query, connection))
                 {
@@ -40,7 +37,6 @@ namespace Sadna_17_B.DataAccessLayer.store
                     command.ExecuteNonQuery();
                 }
                 connection.Close();
-
             }
         }
 
@@ -48,8 +44,6 @@ namespace Sadna_17_B.DataAccessLayer.store
         {
             using (SQLiteConnection connection = new SQLiteConnection(connectionString))
             {
-                connection.Open();
-
                 string query = "INSERT INTO PurchasePolicy (storeID, purchaseID) VALUES (@StoreID, @PurchaseID)";
 
                 using (SQLiteCommand command = new SQLiteCommand(query, connection))
@@ -71,7 +65,6 @@ namespace Sadna_17_B.DataAccessLayer.store
 
             using (SQLiteConnection connection = new SQLiteConnection(connectionString))
             {
-                connection.Open();
 
                 string query = "SELECT * FROM PurchasePolicy WHERE storeID = @StoreID AND purchaseID = @PurchaseID";
 
@@ -106,7 +99,6 @@ namespace Sadna_17_B.DataAccessLayer.store
 
             using (SQLiteConnection connection = new SQLiteConnection(connectionString))
             {
-                connection.Open();
                 string query = "SELECT * FROM PurchasePolicy";
 
                 using (SQLiteCommand command = new SQLiteCommand(query, connection))
@@ -137,7 +129,6 @@ namespace Sadna_17_B.DataAccessLayer.store
         {
             using (SQLiteConnection connection = new SQLiteConnection(connectionString))
             {
-                connection.Open();
                 string query = "UPDATE PurchasePolicy SET storeID = @StoreID, purchaseID = @PurchaseID " +
                                "WHERE storeID = @StoreID AND purchaseID = @PurchaseID";
 
@@ -158,7 +149,6 @@ namespace Sadna_17_B.DataAccessLayer.store
         {
             using (SQLiteConnection connection = new SQLiteConnection(connectionString))
             {
-                connection.Open();
 
                 string query = "DELETE FROM PurchasePolicy WHERE storeID = @StoreID AND purchaseID = @PurchaseID";
 

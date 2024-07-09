@@ -125,8 +125,8 @@ namespace Sadna_17_B
                 DiscountDTO discount = new DiscountDTO
                 {
                     DiscountID = 1,
-                    StartDate = DateTime.Parse("2024-01-01"),
-                    EndDate = DateTime.Parse("2024-12-31"),
+                    StartDate = "2024-01-01",
+                    EndDate = "2024-12-31",
                     Strategy = "Flat",
                     DiscountType = "Seasonal",
                     Relevant = "All Products",
@@ -140,6 +140,7 @@ namespace Sadna_17_B
                 if (addedDiscount != null)
                 {
                     Console.WriteLine($"Discount retrieved: {addedDiscount.DiscountID}");
+                    Console.WriteLine($"Discount retrieved start date: {addedDiscount.StartDate}");
                     addedDiscount.Strategy = "Percentage";
                     discountDAO.UpdateDiscount(addedDiscount);
                     Console.WriteLine("Discount updated successfully.");
@@ -178,10 +179,9 @@ namespace Sadna_17_B
                     Console.WriteLine($"Discount policy retrieved: StoreID: {addedDiscountPolicy.StoreID}, DiscountID: {addedDiscountPolicy.DiscountID}");
                 }
 
-                // delete works too 
-                // discountPolicyDAO.DeleteDiscountPolicy(1, 1);
-                // DiscountPolicyDTO deletedDiscountPolicy = discountPolicyDAO.GetDiscountPolicy(1, 1);
-                // Console.WriteLine(deletedDiscountPolicy == null ? "Discount policy deleted successfully." : "Discount policy deletion failed.");
+                discountPolicyDAO.DeleteDiscountPolicy(1, 1);
+                DiscountPolicyDTO deletedDiscountPolicy = discountPolicyDAO.GetDiscountPolicy(1, 1);
+                Console.WriteLine(deletedDiscountPolicy == null ? "Discount policy deleted successfully." : "Discount policy deletion failed.");
             }
             catch (Exception ex)
             {
@@ -241,18 +241,19 @@ namespace Sadna_17_B
                 };
 
                 purchasePolicyDAO.AddPurchasePolicy(purchasePolicy);
+                
                 Console.WriteLine("Test purchase policy added successfully.");
 
                 PurchasePolicyDTO addedPurchasePolicy = purchasePolicyDAO.GetPurchasePolicy(1, 1);
+                
                 if (addedPurchasePolicy != null)
                 {
                     Console.WriteLine($"Purchase policy retrieved: StoreID: {addedPurchasePolicy.StoreID}, PurchaseID: {addedPurchasePolicy.PurchaseID}");
                 }
 
-                // delete works too 
-                // purchasePolicyDAO.DeletePurchasePolicy(1, 1);
-                // PurchasePolicyDTO deletedPurchasePolicy = purchasePolicyDAO.GetPurchasePolicy(1, 1);
-                // Console.WriteLine(deletedPurchasePolicy == null ? "Purchase policy deleted successfully." : "Purchase policy deletion failed.");
+                purchasePolicyDAO.DeletePurchasePolicy(1, 1);
+                PurchasePolicyDTO deletedPurchasePolicy = purchasePolicyDAO.GetPurchasePolicy(1, 1);
+                Console.WriteLine(deletedPurchasePolicy == null ? "Purchase policy deleted successfully." : "Purchase policy deletion failed.");
             }
             catch (Exception ex)
             {

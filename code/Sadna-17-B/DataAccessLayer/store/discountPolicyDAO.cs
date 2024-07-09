@@ -19,14 +19,13 @@ public class DiscountPolicyDAO
     {
         using (SQLiteConnection connection = new SQLiteConnection(connectionString))
         {
-            string query = @"
-            CREATE TABLE IF NOT EXISTS DiscountPolicy (
-                storeID INT NOT NULL,
-                discountID INT NOT NULL,
-                PRIMARY KEY (storeID, discountID),
-                FOREIGN KEY (storeID) REFERENCES Stores(ID),
-                FOREIGN KEY (discountID) REFERENCES Discount(DiscountID)
-            )";
+            string query = @"CREATE TABLE IF NOT EXISTS DiscountPolicy (
+                        storeID INT NOT NULL,
+                        discountID INT NOT NULL,
+                        PRIMARY KEY (storeID, discountID),
+                        FOREIGN KEY (storeID) REFERENCES Store(ID),
+                        FOREIGN KEY (discountID) REFERENCES Discount(DiscountID)
+                    )";
 
             using (SQLiteCommand command = new SQLiteCommand(query, connection))
             {
@@ -34,6 +33,7 @@ public class DiscountPolicyDAO
                 command.ExecuteNonQuery();
             }
         }
+
     }
 
     public void AddDiscountPolicy(DiscountPolicyDTO discountPolicy)
@@ -44,8 +44,8 @@ public class DiscountPolicyDAO
 
             using (SQLiteCommand command = new SQLiteCommand(query, connection))
             {
-                command.Parameters.AddWithValue("@storeID", discountPolicy.StoreID);
-                command.Parameters.AddWithValue("@discountID", discountPolicy.DiscountID);
+                command.Parameters.AddWithValue("@StoreID", discountPolicy.StoreID);
+                command.Parameters.AddWithValue("@DiscountID", discountPolicy.DiscountID);
 
                 connection.Open();
                 command.ExecuteNonQuery();

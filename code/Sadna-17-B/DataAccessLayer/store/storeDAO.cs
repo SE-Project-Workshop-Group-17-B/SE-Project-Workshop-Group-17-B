@@ -42,6 +42,8 @@ namespace Sadna_17_B.DataAccessLayer.store
                         command.ExecuteNonQuery();
                         Console.WriteLine("Store table created.");
                     }
+                    connection.Close();
+
                 }
             }
             catch (Exception ex)

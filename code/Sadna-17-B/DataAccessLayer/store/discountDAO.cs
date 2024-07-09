@@ -81,45 +81,47 @@ public class DiscountDAO
 
         using (SQLiteConnection connection = new SQLiteConnection(connectionString))
         {
-            connection.Open();
 
             string query = "SELECT * FROM Discount WHERE DiscountID = @DiscountID";
 
             using (SQLiteCommand command = new SQLiteCommand(query, connection))
             {
-                command.Parameters.AddWithValue("@DiscountID", discountID);
-
                 connection.Open();
+
+                command.Parameters.AddWithValue("@DiscountID", discountID);
                 using (SQLiteDataReader reader = command.ExecuteReader())
                 {
                     if (reader.Read())
                     {
+                        Console.WriteLine("reader can read");
                         discount = new DiscountDTO
                         {
-                            DiscountID = (int)reader["DiscountID"],
-                            StartDate = (DateTime)reader["startDate"],
-                            EndDate = (DateTime)reader["endDate"],
-                            Strategy = reader["Strategy"].ToString(),
-                            DiscountType = reader["discountType"].ToString(),
-                            Relevant = reader["relevant"].ToString(),
-                            Conditions = reader["conditions"].ToString()
+                            DiscountID = reader["DiscountID"] != DBNull.Value ? Convert.ToInt32(reader["DiscountID"]) : discountID,
+                            StartDate = reader["StartDate"] != DBNull.Value ? Convert.ToString(reader["StartDate"]) : "string.Empty",
+                            EndDate = reader["EndDate"] != DBNull.Value ? Convert.ToString(reader["EndDate"]) : "string.Empty",
+                            Strategy = reader["Strategy"] != DBNull.Value ? Convert.ToString(reader["Strategy"]) : "string.Empty",
+                            DiscountType = reader["DiscountType"] != DBNull.Value ? Convert.ToString(reader["DiscountType"]) : "string.Empty",
+                            Relevant = reader["Relevant"] != DBNull.Value ? Convert.ToString(reader["Relevant"]) : " string.Empty",
+                            Conditions = reader["Conditions"] != DBNull.Value ? Convert.ToString(reader["Conditions"]) : "string.Empty"
                         };
                     }
+                    else
+                    {
+                        Console.WriteLine("No rows found.");
+                    }
                 }
+                connection.Close();
+
             }
-            connection.Close();
-
         }
-
         return discount;
     }
+
 
     public void UpdateDiscount(DiscountDTO discount)
     {
         using (SQLiteConnection connection = new SQLiteConnection(connectionString))
         {
-            connection.Open();
-
             string query = "UPDATE Discount SET startDate = @StartDate, endDate = @EndDate, Strategy = @Strategy, " +
                            "discountType = @DiscountType, relevant = @Relevant, conditions = @Conditions " +
                            "WHERE DiscountID = @DiscountID";
@@ -146,7 +148,6 @@ public class DiscountDAO
     {
         using (SQLiteConnection connection = new SQLiteConnection(connectionString))
         {
-            connection.Open();
 
             string query = "DELETE FROM Discount WHERE DiscountID = @DiscountID";
 
@@ -168,7 +169,6 @@ public class DiscountDAO
 
         using (SQLiteConnection connection = new SQLiteConnection(connectionString))
         {
-            connection.Open();
 
             string query = "SELECT * FROM Discount";
 
@@ -182,8 +182,8 @@ public class DiscountDAO
                         DiscountDTO discount = new DiscountDTO
                         {
                             DiscountID = (int)reader["DiscountID"],
-                            StartDate = (DateTime)reader["startDate"],
-                            EndDate = (DateTime)reader["endDate"],
+                            StartDate = reader["startDate"].ToString(),
+                            EndDate = reader["endDate"].ToString(),
                             Strategy = reader["Strategy"].ToString(),
                             DiscountType = reader["discountType"].ToString(),
                             Relevant = reader["relevant"].ToString(),
