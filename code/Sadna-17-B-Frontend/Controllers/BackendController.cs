@@ -72,6 +72,7 @@ namespace Sadna_17_B_Frontend.Controllers
 
         public bool has_roles(Dictionary<string, string> doc)    // return true if given roles applied. - doc_doc - 
         {
+
             string[] check_roles = Parser.parse_array<string>(doc["roles to check"]);
             string[] actual_roles = roles(doc);
 
