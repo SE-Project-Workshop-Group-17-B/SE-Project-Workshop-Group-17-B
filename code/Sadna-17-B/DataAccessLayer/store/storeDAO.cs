@@ -76,8 +76,8 @@ namespace Sadna_17_B.DataAccessLayer.store
                                     Description = reader["Description"].ToString(),
                                     Address = reader["Address"].ToString(),
                                     Rating = Convert.ToDouble(reader["Rating"]),
-                                    Reviews = reader["Reviews"].ToString().Split(';').ToList(),
-                                    Complaints = reader["Complaints"].ToString().Split(';').ToList()
+                                    Reviews = reader["Reviews"].ToString(),
+                                    Complaints = reader["Complaints"].ToString()
                                 });
                             }
                         }
@@ -186,8 +186,8 @@ namespace Sadna_17_B.DataAccessLayer.store
                                 Description = reader["Description"].ToString(),
                                 Address = reader["Address"].ToString(),
                                 Rating = Convert.ToDouble(reader["Rating"]),
-                                Reviews = reader["Reviews"].ToString().Split(';').ToList(),
-                                Complaints = reader["Complaints"].ToString().Split(';').ToList()
+                                Reviews = reader["Reviews"].ToString(),
+                                Complaints = reader["Complaints"].ToString()
                             };
                         }
                     }

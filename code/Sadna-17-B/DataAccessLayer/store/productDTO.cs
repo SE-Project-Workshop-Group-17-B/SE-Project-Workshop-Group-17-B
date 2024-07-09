@@ -15,7 +15,7 @@ namespace Sadna_17_B.DataAccessLayer.store
         public double Rating { get; set; }
         public string Category { get; set; }
         public string Description { get; set; }
-        public List<string> Reviews { get; set; }
+        public string Reviews { get; set; }
         public bool Locked { get; set; }
 
     }

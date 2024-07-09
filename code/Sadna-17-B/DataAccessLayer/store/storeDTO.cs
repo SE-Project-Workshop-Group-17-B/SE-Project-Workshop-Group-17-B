@@ -14,8 +14,8 @@ namespace Sadna_17_B.DataAccessLayer.store
         public string Description { get; set; }
         public string Address { get; set; }
         public double Rating { get; set; }
-        public List<string> Reviews { get; set; }
-        public List<string> Complaints { get; set; }
+        public  string Reviews { get; set; }
+        public string Complaints { get; set; }
     }
 
 }

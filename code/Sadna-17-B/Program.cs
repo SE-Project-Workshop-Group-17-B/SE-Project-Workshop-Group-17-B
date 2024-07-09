@@ -11,7 +11,7 @@ namespace Sadna_17_B
         public static void Main(string[] args)
         {
             Console.WriteLine("Initializing database...");
-            //InitializeDatabase();
+            InitializeDatabase();
 
             ServiceFactory serviceFactory = new ServiceFactory();
             UserService userService = serviceFactory.UserService;
@@ -22,12 +22,30 @@ namespace Sadna_17_B
 
         static void InitializeDatabase()
         {
-            InitializeStoreTable();
-            InitializeProductTable();
-            InitializeDiscountTable();
-            InitializeDiscountPolicyTable();
-            InitializePurchaseTable();
-            InitializePurchasePolicyTable();
+            StoreDAO storeDAO = new StoreDAO();
+            storeDAO.CreateStoreTable();
+
+            ProductDAO productDAO = new ProductDAO();
+            productDAO.CreateProductTable();
+
+            DiscountDAO discountDAO = new DiscountDAO();
+            discountDAO.CreateDiscountTable();
+
+            DiscountPolicyDAO discountPolicyDAO = new DiscountPolicyDAO();
+            discountPolicyDAO.CreateDiscountPolicyTable();
+
+            PurchaseDAO purchaseDAO = new PurchaseDAO();
+            purchaseDAO.CreatePurchaseTable();
+
+            PurchasePolicyDAO purchasePolicyDAO = new PurchasePolicyDAO();
+            purchasePolicyDAO.CreatePurchasePolicyTable();
+
+            //InitializeStoreTable();
+            //InitializeProductTable();
+            //InitializeDiscountTable();
+            //InitializeDiscountPolicyTable();
+            //InitializePurchaseTable();
+            //InitializePurchasePolicyTable();
         }
 
         static void InitializeStoreTable()
@@ -45,8 +63,8 @@ namespace Sadna_17_B
                     Description = "This is a test store.",
                     Address = "123 Test Street",
                     Rating = 4.5,
-                    Reviews = new List<string> { "Great store!", "Excellent service." },
-                    Complaints = new List<string> { "None" }
+                    Reviews = "Great store!\nExcellent service." ,
+                    Complaints = "None"
                 };
 
                 storeDAO.AddStore(store);
@@ -88,7 +106,7 @@ namespace Sadna_17_B
                     Rating = 0,
                     Category = "Test Category",
                     Description = "This is a test product.",
-                    Reviews = new List<string>(),
+                    Reviews = "",
                     Locked = false
                 };
 
