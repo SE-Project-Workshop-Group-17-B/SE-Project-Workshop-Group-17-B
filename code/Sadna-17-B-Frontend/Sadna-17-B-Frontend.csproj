@@ -48,12 +48,6 @@
       <HintPath>..\Sadna-17-B\packages\Microsoft.Bcl.AsyncInterfaces.1.1.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Microsoft.IdentityModel.Abstractions, Version=7.6.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\Sadna-17-B\packages\Microsoft.IdentityModel.Abstractions.7.6.1\lib\net472\Microsoft.IdentityModel.Abstractions.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.IdentityModel.Logging, Version=7.6.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\Sadna-17-B\packages\Microsoft.IdentityModel.Logging.7.6.1\lib\net472\Microsoft.IdentityModel.Logging.dll</HintPath>
-    </Reference>
     <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\Sadna-17-B\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
     </Reference>
@@ -241,6 +235,7 @@
     <Content Include="Views\ManagerStorePage.aspx" />
     <Content Include="Views\MyCart.aspx" />
     <Content Include="Views\MyStores.aspx" />
+    <Content Include="Views\ProductDetails.aspx" />
     <Content Include="Views\SearchProduct.aspx" />
     <Content Include="Views\SignUp.aspx" />
     <Content Include="Views\Store_Page.aspx" />
@@ -349,6 +344,13 @@
     </Compile>
     <Compile Include="Views\MyStores.aspx.designer.cs">
       <DependentUpon>MyStores.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ProductDetails.aspx.cs">
+      <DependentUpon>ProductDetails.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Views\ProductDetails.aspx.designer.cs">
+      <DependentUpon>ProductDetails.aspx</DependentUpon>
     </Compile>
     <Compile Include="Views\SearchProduct.aspx.cs">
       <DependentUpon>SearchProduct.aspx</DependentUpon>
