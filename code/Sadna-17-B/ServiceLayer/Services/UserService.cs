@@ -392,6 +392,7 @@ namespace Sadna_17_B.ServiceLayer.Services
         {
             try
             {
+
                 userController.cart_add_product(doc);
                 return new Response(true);
             }
@@ -405,7 +406,8 @@ namespace Sadna_17_B.ServiceLayer.Services
         {
             try
             {
-                string token = Parser.parse_string(doc["token"]);
+                
+                string token = doc["token"];
                 Cart shoppingCart = userController.cart_by_token(token);
                 return new Response(true, new ShoppingCartDTO(shoppingCart));
             }

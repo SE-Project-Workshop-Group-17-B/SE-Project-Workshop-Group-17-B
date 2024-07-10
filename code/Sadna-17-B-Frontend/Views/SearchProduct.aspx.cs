@@ -93,6 +93,20 @@ namespace Sadna_17_B_Frontend.Views
             Button btn = (Button)sender;
             int productId = Convert.ToInt32(btn.CommandArgument);
             // Implement add to cart functionality here
+            Product product =  backendController.get_product_by_id(productId);
+
+            Dictionary<string, string> doc = new Dictionary<string, string>
+            {
+                ["token"] = $"{backendController.userDTO.AccessToken}",
+                ["store id"] = $"{product.store_ID}",
+                ["product store id"] = $"{product.ID}",
+                ["price"] = $"{product.price}",
+                ["amount"] = $"{1}",
+                ["category"] = $"{product.category}",
+                ["name"] = $"{product.name}"
+            };
+
+            backendController.add_product_to_cart(doc);
             lblMessage.Text = $"Product {productId} added to cart!";
             lblMessage.Visible = true;
         }

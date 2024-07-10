@@ -101,7 +101,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         public Cart_Product to_cart_product()
         {
-            return new Cart_Product(store_ID, amount, price, category, ID);
+            return new Cart_Product(store_ID, amount, price, category, ID, name);
         }
 
         public string info_to_print()

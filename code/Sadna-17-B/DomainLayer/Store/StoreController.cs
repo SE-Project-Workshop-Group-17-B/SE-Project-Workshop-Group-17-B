@@ -490,7 +490,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         {
             foreach (Store store in active_stores.Values)
             {
-                Product product = store.filter_id(productId);
+                Product product = store.product_by_id(productId);
                 if (product != null)
                 {
                     return product;

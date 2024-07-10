@@ -35,6 +35,11 @@ namespace Sadna_17_B.DomainLayer.User
             
         }
 
+        public List<Cart_Product> produts()
+        {
+            return id_to_product.Values.ToList();
+        }
+
         private Dictionary<int, Cart_Product> copy_id_dict()
         {
             Dictionary<int, Cart_Product> copy = new Dictionary<int, Cart_Product>();
@@ -84,6 +89,10 @@ namespace Sadna_17_B.DomainLayer.User
             return id_to_product.ContainsKey(pid);
         }
 
+        public bool contains_store_product(int pid)
+        {
+            return id_to_product.ContainsKey(pid);
+        }
 
         // ------------ basket manipulations ----------------------
 
@@ -94,6 +103,18 @@ namespace Sadna_17_B.DomainLayer.User
 
             throw new Sadna17BException("Cart : no product was found");
         }
+
+        public Cart_Product product_by_psid(int pid)
+        {
+            foreach (Cart_Product product in id_to_product.Values)
+            {
+                if(product.ID == pid)
+                    return product;
+            }
+
+            throw new Sadna17BException("Cart : no product was found");
+        }
+
 
         public void add_product(Cart_Product product)
         {
