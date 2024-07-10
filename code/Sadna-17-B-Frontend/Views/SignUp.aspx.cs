@@ -24,9 +24,8 @@ namespace Sadna_17_B_Frontend.Views
             using (HttpClient client = new HttpClient())
             {
                 var user = new UserDto { Username = username, Password = password };
-                var content = new StringContent(JsonConvert.SerializeObject(user), Encoding.UTF8, "application/json");
-                string prefix = "https://localhost:44334";
-                HttpResponseMessage response = await client.PostAsync(prefix+ "/api/RestAPI/signup", content); // add relative path
+                string prefix = "https://localhost:7063";
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix+ "/RestAPI/signup", user); // add relative path
                 if (response.IsSuccessStatusCode)
                 {
                     return null; // Sign up successful
