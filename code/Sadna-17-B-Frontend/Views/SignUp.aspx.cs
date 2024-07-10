@@ -9,6 +9,9 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.UI;
 using static System.Net.WebRequestMethods;
+using Newtonsoft.Json;
+using System.Text;
+using Sadna_17_B_Backend.Controllers;
 
 namespace Sadna_17_B_Frontend.Views
 {
@@ -20,13 +23,10 @@ namespace Sadna_17_B_Frontend.Views
         {
             using (HttpClient client = new HttpClient())
             {
-                var content = new FormUrlEncodedContent(new[]
-                {
-                    new KeyValuePair<string, string>("username", username),
-                    new KeyValuePair<string, string>("password", password)
-                });
+                var user = new UserDto { Username = username, Password = password };
+                var content = new StringContent(JsonConvert.SerializeObject(user), Encoding.UTF8, "application/json");
                 string prefix = "https://localhost:44334";
-                HttpResponseMessage response = await client.PostAsync(prefix+"/api/user/signup", content); // add relative path
+                HttpResponseMessage response = await client.PostAsync(prefix+ "/api/RestAPI/signup", content); // add relative path
                 if (response.IsSuccessStatusCode)
                 {
                     return null; // Sign up successful
@@ -39,7 +39,7 @@ namespace Sadna_17_B_Frontend.Views
             }
         }
 
-        protected void Page_Load(object sender, EventArgs e)
+        protected async void Page_Load(object sender, EventArgs e)
         {
 
         }
