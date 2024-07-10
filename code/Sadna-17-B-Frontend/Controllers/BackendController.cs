@@ -86,32 +86,32 @@ namespace Sadna_17_B_Frontend.Controllers
 
         private bool founder(int store_id)
         {
-            return userService.IsFounder(userDTO.AccessToken,store_id).Success;
+            return userService.founder(userDTO.AccessToken,store_id).Success;
         }
 
         private bool owner(int store_id) 
         {
-            return userService.IsOwner(userDTO.AccessToken, store_id).Success;
+            return userService.owner(userDTO.AccessToken, store_id).Success;
         }
 
         private bool manager(int store_id) 
         {
-            return userService.IsManager(userDTO.AccessToken, store_id).Success;
+            return userService.manager(userDTO.AccessToken, store_id).Success;
         }
 
         private bool guest()
         {
-            return userService.IsGuest(userDTO.AccessToken).Success;
+            return userService.guest(userDTO.AccessToken).Success;
         }
 
         private bool subscriber()
         {
-            return userService.IsSubscriber(userDTO.AccessToken).Success;
+            return userService.subscriber(userDTO.AccessToken).Success;
         }
 
         private bool admin()
         {
-            return userService.IsAdmin(userDTO.AccessToken).Success;
+            return userService.admin(userDTO.AccessToken).Success;
         }
 
 
@@ -202,7 +202,7 @@ namespace Sadna_17_B_Frontend.Controllers
 
         private void entry()
         {
-            Response response = userService.GuestEntry();
+            Response response = userService.entry_guest();
             userDTO = response.Data as UserDTO;
         }
 
@@ -216,7 +216,7 @@ namespace Sadna_17_B_Frontend.Controllers
 
         public string login(string username, string password)
         {
-            Response response = userService.Login(username, password);
+            Response response = userService.entry_subscriber(username, password);
             if (!response.Success)
             {
                 return response.Message;
@@ -228,7 +228,7 @@ namespace Sadna_17_B_Frontend.Controllers
 
         public string sign_up(string username, string password)
         {
-            Response response = userService.CreateSubscriber(username, password);
+            Response response = userService.upgrade_subscriber(username, password);
             if (!response.Success)
             {
                 return response.Message;
@@ -238,7 +238,7 @@ namespace Sadna_17_B_Frontend.Controllers
 
         public string logout()
         {
-            Response response = userService.Logout(userDTO.AccessToken);
+            Response response = userService.exit_subscriber(userDTO.AccessToken);
             if (!response.Success)
             {
                 return response.Message;

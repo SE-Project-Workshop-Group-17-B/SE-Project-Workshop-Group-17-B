@@ -42,8 +42,8 @@ namespace Sadna_17_B.ServiceLayer
 
             // ------- Create an admin --------------------------
 
-            UserService.CreateAdmin("admin", "password");
-            Response res = UserService.Login("admin", "password");
+            UserService.upgrade_admin("admin", "password");
+            Response res = UserService.entry_subscriber("admin", "password");
 
             // ------- Create 5 stores -------------------------------
 

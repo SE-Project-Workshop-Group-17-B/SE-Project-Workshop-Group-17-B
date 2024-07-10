@@ -50,13 +50,13 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
             ServiceFactory serviceFactory = new ServiceFactory();
             userService = serviceFactory.UserService;
             storeService = serviceFactory.StoreService;
-            Response ignore = userService.CreateSubscriber(username1, password1);
+            Response ignore = userService.upgrade_subscriber(username1, password1);
         }
 
         [TestMethod]
         public void TestSuccessfullLogin()
         {
-            Response res = userService.Login(username1, password1);
+            Response res = userService.entry_subscriber(username1, password1);
             Assert.IsTrue(res.Success);
             userDTO = res.Data as UserDTO;
             Assert.IsTrue(userDTO.Username.Equals(username1));
@@ -66,23 +66,23 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         [TestMethod]
         public void TestFailedLogin()
         {
-            Response res = userService.Login(username1, password2);
+            Response res = userService.entry_subscriber(username1, password2);
             Assert.IsFalse(res.Success);
         }
 
         [TestMethod]
         public void TestSuccessfullLogout()
         {
-            Response res = userService.Login(username1, password1);
+            Response res = userService.entry_subscriber(username1, password1);
             userDTO = res.Data as UserDTO;
-            Response res2 = userService.Logout(userDTO.AccessToken);
+            Response res2 = userService.exit_subscriber(userDTO.AccessToken);
             Assert.IsTrue(res2.Success);
         }       
 
         [TestMethod]
         public void TestSuccessfullGuestEntry()
         {
-            Response res1 = userService.GuestEntry();
+            Response res1 = userService.entry_guest();
             Assert.IsTrue(res1.Success);
             Assert.IsNotNull(res1.Data);
         }
@@ -90,9 +90,9 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         [TestMethod]
         public void TestSuccessfullGuestLogout()
         {
-            Response res1 = userService.GuestEntry();
+            Response res1 = userService.entry_guest();
             userDTO = res1.Data as UserDTO;
-            Response res2 = userService.GuestExit(userDTO.AccessToken);
+            Response res2 = userService.exit_guest(userDTO.AccessToken);
 
             Assert.IsTrue(res2.Success);
         }
@@ -100,7 +100,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         [TestMethod]
         public void TestFailedGuestLogout()
         {
-            Response res = userService.GuestExit("");
+            Response res = userService.exit_guest("");
 
             Assert.IsFalse(res.Success);
         }
@@ -110,7 +110,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         {
             username1 = "username1";
             password1 = "password1";
-            Response res = userService.CreateAdmin(username1, password1);
+            Response res = userService.upgrade_admin(username1, password1);
 
             Assert.IsTrue(res.Success);
         }
@@ -120,8 +120,8 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         {
             username1 = "username1";
             password1 = "password1";
-            Response ignore = userService.CreateAdmin(username1, password1);
-            Response res = userService.CreateAdmin(username1, password1);
+            Response ignore = userService.upgrade_admin(username1, password1);
+            Response res = userService.upgrade_admin(username1, password1);
 
             Assert.IsFalse(res.Success);
         }       
@@ -129,8 +129,8 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         [TestMethod]
         public void TestBadCaseRegisterSameUserTwice()
         {          
-            Response ignore = userService.CreateSubscriber(username1, password1);
-            Response res = userService.CreateSubscriber(username1, password1);
+            Response ignore = userService.upgrade_subscriber(username1, password1);
+            Response res = userService.upgrade_subscriber(username1, password1);
             Assert.IsFalse(res.Success);
         }
 
@@ -141,8 +141,8 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
 
             int quantity = 10;
 
-            Response ignore1 = userService.CreateSubscriber(username1, password1);
-            Response result1 = userService.Login(username1, password1);
+            Response ignore1 = userService.upgrade_subscriber(username1, password1);
+            Response result1 = userService.entry_subscriber(username1, password1);
             UserDTO temp1 = result1.Data as UserDTO;
 
             // init store service
@@ -157,8 +157,8 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
 
             // rest
 
-            Response ignore = userService.CreateSubscriber(username2, password2);
-            Response res = userService.Login(username2, password2);
+            Response ignore = userService.upgrade_subscriber(username2, password2);
+            Response res = userService.entry_subscriber(username2, password2);
             userDTO = res.Data as UserDTO;
             string token = userDTO.AccessToken;
             Dictionary<string, string> doc = new Dictionary<string, string>()
@@ -184,13 +184,13 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         [TestMethod]
         public void TestBadCaseAddToCartWrongProduct()
         {          
-            Response ignore = userService.CreateSubscriber(username1, password1);
-            ignore = userService.Login(username1, password1);
+            Response ignore = userService.upgrade_subscriber(username1, password1);
+            ignore = userService.entry_subscriber(username1, password1);
             UserDTO temp = ignore.Data as UserDTO;
             sid = (int) storeService.create_store(temp.AccessToken, name, email, phonenumber, storeDescr, addr).Data;
             
-            ignore = userService.CreateSubscriber(username2, password2);
-            Response res = userService.Login(username2, password2);
+            ignore = userService.upgrade_subscriber(username2, password2);
+            Response res = userService.entry_subscriber(username2, password2);
             userDTO = res.Data as UserDTO;
             string token = userDTO.AccessToken;
 
@@ -216,8 +216,8 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
 
             int quantity = 10;
 
-            Response ignore1 = userService.CreateSubscriber(username1, password1);
-            Response result1 = userService.Login(username1, password1);
+            Response ignore1 = userService.upgrade_subscriber(username1, password1);
+            Response result1 = userService.entry_subscriber(username1, password1);
             UserDTO temp1 = result1.Data as UserDTO;
 
             // init store service
@@ -231,8 +231,8 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
             Product product = store.inventory.product_by_id(pid);
 
 
-            Response ignore2 = userService.CreateSubscriber(username2, password2);
-            Response result2 = userService.Login(username2, password2);
+            Response ignore2 = userService.upgrade_subscriber(username2, password2);
+            Response result2 = userService.entry_subscriber(username2, password2);
             UserDTO temp2 = result2.Data as UserDTO;
             Dictionary<string, string> doc = new Dictionary<string, string>()
             {
@@ -256,8 +256,8 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
 
             int quantity = 10;
 
-            Response ignore1 = userService.CreateSubscriber(username1, password1);
-            Response result1 = userService.Login(username1, password1);
+            Response ignore1 = userService.upgrade_subscriber(username1, password1);
+            Response result1 = userService.entry_subscriber(username1, password1);
             UserDTO temp1 = result1.Data as UserDTO;
 
             // init store service
@@ -272,8 +272,8 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
             
             // rest
 
-            Response ignore = userService.CreateSubscriber(username2, password2);
-            Response res = userService.Login(username2, password2);
+            Response ignore = userService.upgrade_subscriber(username2, password2);
+            Response res = userService.entry_subscriber(username2, password2);
             userDTO = res.Data as UserDTO;
             string token = userDTO.AccessToken;
             Dictionary<string, string> doc = new Dictionary<string, string>()
@@ -305,8 +305,8 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
 
             int quantity = 10;
 
-            Response ignore1 = userService.CreateSubscriber(username1, password1);
-            Response result1 = userService.Login(username1, password1);
+            Response ignore1 = userService.upgrade_subscriber(username1, password1);
+            Response result1 = userService.entry_subscriber(username1, password1);
             UserDTO temp1 = result1.Data as UserDTO;
 
             // init store service
@@ -321,8 +321,8 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
 
             // rest
 
-            Response ignore = userService.CreateSubscriber(username2, password2);
-            Response res = userService.Login(username2, password2);
+            Response ignore = userService.upgrade_subscriber(username2, password2);
+            Response res = userService.entry_subscriber(username2, password2);
             userDTO = res.Data as UserDTO;
             string token = userDTO.AccessToken;
 
@@ -354,8 +354,8 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
 
             int quantity = 10;
 
-            Response ignore1 = userService.CreateSubscriber(username1, password1);
-            Response result1 = userService.Login(username1, password1);
+            Response ignore1 = userService.upgrade_subscriber(username1, password1);
+            Response result1 = userService.entry_subscriber(username1, password1);
             UserDTO temp1 = result1.Data as UserDTO;
 
             // init store service
@@ -370,8 +370,8 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
 
             // rest
 
-            Response ignore = userService.CreateSubscriber(username2, password2);
-            Response res = userService.Login(username2, password2);
+            Response ignore = userService.upgrade_subscriber(username2, password2);
+            Response res = userService.entry_subscriber(username2, password2);
             userDTO = res.Data as UserDTO;
             string token = userDTO.AccessToken;
             Dictionary<string, string> doc = new Dictionary<string, string>()
@@ -402,8 +402,8 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
 
             int quantity = 10;
 
-            Response ignore1 = userService.CreateSubscriber(username1, password1);
-            Response result1 = userService.Login(username1, password1);
+            Response ignore1 = userService.upgrade_subscriber(username1, password1);
+            Response result1 = userService.entry_subscriber(username1, password1);
             UserDTO temp1 = result1.Data as UserDTO;
 
             // init store service
@@ -418,8 +418,8 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
 
             // rest
 
-            Response ignore = userService.CreateSubscriber(username2, password2);
-            Response res = userService.Login(username2, password2);
+            Response ignore = userService.upgrade_subscriber(username2, password2);
+            Response res = userService.entry_subscriber(username2, password2);
             userDTO = res.Data as UserDTO;
             string token = userDTO.AccessToken;
 

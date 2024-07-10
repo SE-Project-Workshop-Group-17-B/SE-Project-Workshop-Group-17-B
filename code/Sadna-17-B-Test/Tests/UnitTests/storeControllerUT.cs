@@ -162,7 +162,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
             store_service = (StoreService) serviceFactory.StoreService;
             store_controller = new StoreController();
 
-            Response ignore = user_service.CreateSubscriber("hihihi", "byebyebye");
+            Response ignore = user_service.upgrade_subscriber("hihihi", "byebyebye");
 
             sid = store_controller.create_store("test store", "mail@example.com", "055555055", "hi bye", "compton");
             store1 = store_controller.store_by_id(sid);
@@ -414,7 +414,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         {
             // ---------- init data
 
-            Response res = user_service.Login("hihihi", "byebyebye");
+            Response res = user_service.entry_subscriber("hihihi", "byebyebye");
             string token = (res.Data as UserDTO).AccessToken;
             int sid = (int)store_service.create_store(token, "test store now", "mail@example.com", "055555055", "hi bye", "compton").Data;
 
@@ -463,7 +463,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
             
             // ---------- init data
 
-            Response res = user_service.Login("hihihi", "byebyebye");
+            Response res = user_service.entry_subscriber("hihihi", "byebyebye");
             string token = (res.Data as UserDTO).AccessToken;
             int sid = (int)store_service.create_store(token, "test store right now", "mail@example.com", "055555055", "hi bye", "compton").Data;
 
@@ -512,7 +512,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         {
             // init
 
-            Response res = user_service.Login("hihihi", "byebyebye");
+            Response res = user_service.entry_subscriber("hihihi", "byebyebye");
             string token = (res.Data as UserDTO).AccessToken;
             int sid = (int)store_service.create_store(token, "test store right now", "mail@example.com", "055555055", "hi bye", "compton").Data;
 

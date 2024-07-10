@@ -61,8 +61,8 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
 
             // init user
 
-            Response ignore1 = userService.CreateSubscriber(username1, password1);
-            Response result1 = userService.Login(username1, password1);
+            Response ignore1 = userService.upgrade_subscriber(username1, password1);
+            Response result1 = userService.entry_subscriber(username1, password1);
             UserDTO userDTO = result1.Data as UserDTO;
 
             // init store
@@ -83,8 +83,8 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
         [TestMethod]
         public void TestPaymentServiceError_Fail()
         {
-            Response ignore = userService.CreateSubscriber(username2, password2);
-            Response res = userService.Login(username2, password2);
+            Response ignore = userService.upgrade_subscriber(username2, password2);
+            Response res = userService.entry_subscriber(username2, password2);
             userDTO = res.Data as UserDTO;
             string token = userDTO.AccessToken;
             Dictionary<string, string> doc = new Dictionary<string, string>()
@@ -109,8 +109,8 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
         [TestMethod]
         public void TestSupplyMethodError_Fail()
         {
-            Response ignore = userService.CreateSubscriber(username2, password2);
-            Response res = userService.Login(username2, password2);
+            Response ignore = userService.upgrade_subscriber(username2, password2);
+            Response res = userService.entry_subscriber(username2, password2);
             userDTO = res.Data as UserDTO;
             string token = userDTO.AccessToken;
             Dictionary<string, string> doc = new Dictionary<string, string>()
@@ -191,8 +191,8 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
         [TestMethod]
         public void TestCartSameIfPurchaseFail_Success()
         {
-            Response ignore = userService.CreateSubscriber(username2, password2);
-            Response res = userService.Login(username2, password2);
+            Response ignore = userService.upgrade_subscriber(username2, password2);
+            Response res = userService.entry_subscriber(username2, password2);
             userDTO = res.Data as UserDTO;
             string token = userDTO.AccessToken;
             Dictionary<string, string> doc = new Dictionary<string, string>()
@@ -238,8 +238,8 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
         [TestMethod]
         public void TestWhenPurchaseFailSameAmountInStore_Success()
         {
-            Response ignore = userService.CreateSubscriber(username2, password2);
-            Response res = userService.Login(username2, password2);
+            Response ignore = userService.upgrade_subscriber(username2, password2);
+            Response res = userService.entry_subscriber(username2, password2);
             userDTO = res.Data as UserDTO;
             string token = userDTO.AccessToken;
 

@@ -44,7 +44,6 @@ namespace Sadna_17_B.ServiceLayer.Services
 
         // ---------------- Constructors -------------------------------------------------------------------------------------------
 
-
         public StoreService()
         {
             _storeController = new StoreController();
@@ -66,7 +65,7 @@ namespace Sadna_17_B.ServiceLayer.Services
         {
             // ---------- subscriber authentication ---------------
 
-            if (!_userService.IsSubscriberBool(token))
+            if (!_userService.subscriber_internal(token))
             {
                 error_logger.Log("Store Service", " authentication error, user should be subscriber to create store");
                 return new Response("store creation : user should be subscriber to create store", false);
@@ -102,7 +101,7 @@ namespace Sadna_17_B.ServiceLayer.Services
 
             // ---------- subscriber authentication ---------------
 
-            if (!_userService.IsSubscriberBool(token))
+            if (!_userService.subscriber_internal(token))
             {
                 error_logger.Log("Store Service", " authentication error, user should be subscriber to create store");
                 return new Response("store creation : user should be subscriber to create store", false);
@@ -136,7 +135,7 @@ namespace Sadna_17_B.ServiceLayer.Services
 
             // ---------- founder authentication ---------------
 
-            if (!_userService.IsFounderBool(token, storeID))
+            if (!_userService.founder_internal(token, storeID))
             {
                 error_logger.Log("Store Service", " authentication error, user should be founder to close store");
                 return new Response("store creation : user should be founder to close store", false);
@@ -184,7 +183,9 @@ namespace Sadna_17_B.ServiceLayer.Services
         }
 
 
+
         // ---------------- store feedbacks -------------------------------------------------------------------------------------------
+
 
         public Response get_store_rating(int storeID)
         {
@@ -318,24 +319,6 @@ namespace Sadna_17_B.ServiceLayer.Services
             }
         }
 
-
-        /* public Response add_product_rating(int storeID, int productID, int rating)
-         {
-             try
-             {
-                 bool result = _storeController.add_product_rating(storeID, productID, rating);
-                 if (result)
-                     return new Response("product rating added", true);
-                 else
-                     return new Response("product rating was not added for some reason", false);
-             }
-             catch (Sadna17BException ex)
-             {
-                 error_logger.Log("Store Service", "error, rating was not added");
-                 return Response.GetErrorResponse(ex);
-             }
-         }*/
-
         public Response add_product_review(int storeID, int productID, string review)
         {
             try
@@ -353,49 +336,9 @@ namespace Sadna_17_B.ServiceLayer.Services
             }
         }
 
-        /*public Response add_product_review(int storeID, int productID, string review)
-        {
-            try
-            {
-                bool result = _storeController.add_product_review(storeID, productID, review);
-                if (result)
-                    return new Response("product review added", true);
-                else
-                    return new Response("product review was not added for some reason", false);
-            }
-            catch (Sadna17BException ex)
-            {
-                error_logger.Log("Store Service", "error, review was not added");
-                return Response.GetErrorResponse(ex);
-            }
-        }
-*/
-        /*public Response edit_product_review(int storeID, int productID, string old_review, string new_review) // bool 
-        {
-
-            try
-            {
-                bool result = _storeController.edit_product_review(storeID, productID, old_review, new_review);
-
-                info_logger.Log("Store Service", "product review edited");
-
-                if (result)
-                    return new Response("product review edited", true);
-                else
-                    return new Response("product review was not edited for some reason", false);
-            }
-
-            catch (Sadna17BException ex)
-            {
-                error_logger.Log("Store Service", "error, review was not edited");
-                return Response.GetErrorResponse(ex);
-            }
-
-        }
-*/
-
-
+    
         // ---------------- stores Management -------------------------------------------------------------------------------------------
+
 
         public Response reduce_products(string token, Basket basket) // --> bool
         {
@@ -403,7 +346,7 @@ namespace Sadna_17_B.ServiceLayer.Services
 
             // ---------- founder authentication ---------------
 
-            if (_userService.IsOwnerBool(token, basket.store_id) || _userService.HasManagerAuthorizationBool(token, basket.store_id, Manager.ManagerAuthorization.UpdateSupply))
+            if (_userService.owner_internal(token, basket.store_id) || _userService.authorized_internal(token, basket.store_id, Manager.ManagerAuthorization.UpdateSupply))
             {
                 error_logger.Log("Store Service", " authentication error, user should be owner to reduce quantities");
                 return new Response("product reduction : user should be owner to reduce product quantities", false);
@@ -432,7 +375,7 @@ namespace Sadna_17_B.ServiceLayer.Services
            
             // ---------- subscriber authentication ---------------
 
-            if (!(_userService.IsOwnerBool(token, storeID) || _userService.HasManagerAuthorizationBool(token, storeID, DomainLayer.User.Manager.ManagerAuthorization.UpdateSupply)))
+            if (!(_userService.owner_internal(token, storeID) || _userService.authorized_internal(token, storeID, DomainLayer.User.Manager.ManagerAuthorization.UpdateSupply)))
             {
                 error_logger.Log("Store Service", " authentication error, user should be owner or founder to edit products");
                 return new Response("product edit : user should be owner or founder to edit products", false, -1);
@@ -465,7 +408,7 @@ namespace Sadna_17_B.ServiceLayer.Services
 
             // ---------- subscriber authentication ---------------
 
-            if (!(_userService.IsOwnerBool(token, storeID) || _userService.HasManagerAuthorizationBool(token, storeID, DomainLayer.User.Manager.ManagerAuthorization.UpdateSupply)))
+            if (!(_userService.owner_internal(token, storeID) || _userService.authorized_internal(token, storeID, DomainLayer.User.Manager.ManagerAuthorization.UpdateSupply)))
             {
                 error_logger.Log("Store Service", " authentication error, user should be owner or founder to edit products");
                 return new Response("product edit : user should be owner or founder to edit products", false);
@@ -491,23 +434,8 @@ namespace Sadna_17_B.ServiceLayer.Services
 
         // ---------------- search stores options -------------------------------------------------------------------------------------------
 
-        public Response all_products()              //  --> List < product > 
-        {
-
-            try
-            {
-                List<Product> products = _storeController.all_products();
-
-                return new Response(true, products);
-            }
-            catch (Sadna17BException ex)
-            {
-                error_logger.Log("Store Service", "error during fetching all stores data");
-                return Response.GetErrorResponse(ex);
-            }
-        }
-
-        public Response all_stores()                //  --> List < store > 
+        
+        public Response all_stores() 
         {
             try
             {
@@ -524,7 +452,7 @@ namespace Sadna_17_B.ServiceLayer.Services
 
         }
 
-        public Response store_by_name(string name)  //  --> store 
+        public Response store_by_name(string name) 
         {
             try
             {
@@ -538,7 +466,7 @@ namespace Sadna_17_B.ServiceLayer.Services
             }
         }
 
-        public Response store_by_id(int storeID)    //  --> store 
+        public Response store_by_id(int storeID)  
         {
 
             try
@@ -557,29 +485,21 @@ namespace Sadna_17_B.ServiceLayer.Services
 
         // ---------------- search / filter products options -------------------------------------------------------------------------------------------
 
+        public Response all_products() 
+        {
 
-        /* public Response get_product_by_id(int productId)
-         {
-             try
-             {
-                 Product product = _storeController.get_product_by_id(productId);
-                 if (product != null)
-                 {
-                     return new Response(true, product);
-                 }
-                 else
-                 {
-                     return new Response("Product not found", false, null);
-                 }
-             }
-             catch (Sadna17BException ex)
-             {
-                 error_logger.Log("Store Service", "Error during fetching product data");
-                 return Response.GetErrorResponse(ex);
-             }
-         }*/
+            try
+            {
+                List<Product> products = _storeController.all_products();
 
-
+                return new Response(true, products);
+            }
+            catch (Sadna17BException ex)
+            {
+                error_logger.Log("Store Service", "error during fetching all stores data");
+                return Response.GetErrorResponse(ex);
+            }
+        }
 
         public Response get_product_by_id(int productId)
         {
@@ -593,11 +513,6 @@ namespace Sadna_17_B.ServiceLayer.Services
                 error_logger.Log("Store Service", "Error during fetching product data");
                 return Response.GetErrorResponse(ex);
             }
-        }
-
-        private bool filter_apply(string[] filter) // inner function 
-        {
-            return filter[0] != "" || filter[1] != "";
         }
 
         public Response search_product_by(Dictionary<string,string> doc) // --> List < product > // doc explained on doc_doc.cs 
@@ -639,36 +554,30 @@ namespace Sadna_17_B.ServiceLayer.Services
         }
 
 
+        // ---------------- Policy Requirements -------------------------------------------------------------------------------------------
 
-        /*public Response search_product_by(Dictionary<string, string> doc)
+
+        public Response edit_purchase_policy(Dictionary<string, string> doc) // doc explained on doc_doc.cs 
         {
+            string message = "";
+
             try
             {
-                string[] filter_keyword = Parser.parse_array<string>(doc["keyword"]);
-                string[] filter_store = Parser.parse_array<string>(doc["store id"]);
-                string[] filter_category = Parser.parse_array<string>(doc["category"]);
-                string[] filter_product_rating = Parser.parse_array<string>(doc["product rating"]);
-                string[] filter_store_rating = Parser.parse_array<string>(doc["store rating"]);
-                string[] filter_price_range = Parser.parse_array<string>(doc["product price"]);
+                int result = _storeController.edit_purchase_policy(doc);
 
-                List<Product> products = _storeController.search_products_by_keyword(filter_keyword);
-                products = _storeController.filter_products_by_store_id(products, Parser.parse_array<int>(filter_store)[0]);
-                products = _storeController.filter_products_by_store_rating(products, Parser.parse_array<double>(filter_store_rating)[0]);
-                products = _storeController.filter_products_by_category(products, filter_category);
-                products = _storeController.filter_products_by_price(products, Parser.parse_double(filter_price_range[0], 0), Parser.parse_double(filter_price_range[1], double.MaxValue));
-                products = _storeController.filter_products_by_product_rating(products, Parser.parse_int(filter_product_rating[0]));
-
-                return new Response("search filter succeed !!!", true, products);
+                if (result != -1)
+                    return new Response("edited policy successfully", true, result);
+                else
+                    return new Response("did not edit policy", false, result);
             }
-            catch (Sadna17BException ex)
+            catch (Sadna17BException e)
             {
-                error_logger.Log("Store Service", "error during fetching products data");
-                return Response.GetErrorResponse(ex);
-            }
-        }
-*/
+                error_logger.Log("did not edit policy");
 
-        // ---------------- Policy Requirements -------------------------------------------------------------------------------------------
+                return Response.GetErrorResponse(e);
+            }
+
+        }
 
         public Response edit_discount_policy(Dictionary<string, string> doc) // doc explained on doc_doc.cs
         {
@@ -703,28 +612,6 @@ namespace Sadna_17_B.ServiceLayer.Services
             }
         }
         
-        public Response edit_purchase_policy(Dictionary<string, string> doc) // doc explained on doc_doc.cs 
-        {
-            string message = "";
-
-            try
-            {
-                int result = _storeController.edit_purchase_policy(doc);
-
-                if (result != -1)
-                    return new Response("edited policy successfully", true, result);
-                else
-                    return new Response("did not edit policy", false, result);
-            }
-            catch (Sadna17BException e)
-            {
-                error_logger.Log("did not edit policy");
-
-                return Response.GetErrorResponse(e);
-            }
-
-        }
-
         public Response show_purchase_policy(Dictionary<string, string> doc) // doc explained on doc_doc.cs 
         {
             try
@@ -796,6 +683,7 @@ namespace Sadna_17_B.ServiceLayer.Services
             
             
         }
+    
     }
 }
 
