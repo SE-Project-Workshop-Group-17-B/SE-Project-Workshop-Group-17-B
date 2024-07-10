@@ -184,7 +184,7 @@ namespace Sadna_17_B_Frontend.Views
             string script = "$('#mymodal-inventory').modal('show')";
             ClientScript.RegisterStartupScript(this.GetType(), "Popup", script, true);
             
-            Dictionary<string, string> searchDoc = new Doc_generator.search_doc_builder()
+            Dictionary<string, string> searchDoc = new Documentor.search_doc_builder()
                                                                     .set_search_options(sid: $"{storeId}")
                                                                     .Build();
          

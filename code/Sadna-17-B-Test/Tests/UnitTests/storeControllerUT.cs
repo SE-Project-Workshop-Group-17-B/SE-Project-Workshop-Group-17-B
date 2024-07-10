@@ -74,7 +74,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
     [TestClass]
     public class StoreControllerTests
     {
-        private Doc_generator doc_generator; 
+        private Documentor doc_generator; 
         private Subscriber subscriber;
         private StoreService store_service;
         private UserService user_service;
@@ -155,7 +155,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
              * 
              */
 
-            doc_generator = new Doc_generator();
+            doc_generator = new Documentor();
             ServiceFactory serviceFactory = new ServiceFactory();
 
             user_service = (UserService) serviceFactory.UserService;
@@ -421,7 +421,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
 
             // ---------- empty policy
 
-            Dictionary<string, string> show_doc = new Doc_generator.discount_policy_doc_builder()
+            Dictionary<string, string> show_doc = new Documentor.discount_policy_doc_builder()
                                                         .set_show_policy(sid.ToString())
                                                         .Build();
 
@@ -431,7 +431,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
 
             // ----------  flat added
 
-            Dictionary<string, string> add_flat_doc = new Doc_generator.discount_policy_doc_builder()
+            Dictionary<string, string> add_flat_doc = new Documentor.discount_policy_doc_builder()
                                                                        .set_base_add($"{sid}", "06/07/2024", "10/07/2024", "flat", flat: "50")
                                                                        .Build();
 
@@ -446,7 +446,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
 
             // ----------  flat removed
 
-            Dictionary<string, string> remove_flat_doc = new Doc_generator.discount_policy_doc_builder()
+            Dictionary<string, string> remove_flat_doc = new Documentor.discount_policy_doc_builder()
                                                                        .set_remove($"{sid}", $"{aid}")
                                                                        .Build();
 
@@ -470,7 +470,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
 
             // ---------- empty policy
 
-            Dictionary<string, string> show_doc = new Doc_generator.purchase_policy_doc_builder()
+            Dictionary<string, string> show_doc = new Documentor.purchase_policy_doc_builder()
                                                         .set_show_policy(sid.ToString())
                                                         .Build();
 
@@ -481,7 +481,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
 
             // ----------  flat added
 
-            Dictionary<string, string> add_or_doc = new Doc_generator.purchase_policy_doc_builder()
+            Dictionary<string, string> add_or_doc = new Documentor.purchase_policy_doc_builder()
                                                                        .set_base_add($"{sid}","or","or")
                                                                        .Build();
 
@@ -494,7 +494,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
 
             // ----------  flat removed
 
-            Dictionary<string, string> remove_or_doc = new Doc_generator.purchase_policy_doc_builder()
+            Dictionary<string, string> remove_or_doc = new Documentor.purchase_policy_doc_builder()
                                                                        .set_remove($"{sid}", $"{aid}")
                                                                        .Build();
 
@@ -530,7 +530,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
 
             // filter
 
-            Dictionary<string, string> search_doc = new Doc_generator.search_doc_builder().set_search_options(category:"Electronics").Build();
+            Dictionary<string, string> search_doc = new Documentor.search_doc_builder().set_search_options(category:"Electronics").Build();
 
             Response response = store_service.search_product_by(search_doc);
             List<Product> products = response.Data as List<Product>;
