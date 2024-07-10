@@ -152,7 +152,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
              */
 
             doc_generator = new Doc_generator();
-            ServiceFactory serviceFactory = new ServiceFactory();
+            UserController serviceFactory = new ServiceFactory();
 
             user_service = (UserService) serviceFactory.UserService;
             store_service = (StoreService) serviceFactory.StoreService;

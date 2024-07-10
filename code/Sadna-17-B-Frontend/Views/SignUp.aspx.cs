@@ -5,12 +5,39 @@ using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using System.Net.Http;
+using System.Threading.Tasks;
+using System.Web.UI;
+using static System.Net.WebRequestMethods;
 
 namespace Sadna_17_B_Frontend.Views
 {
+
     public partial class SignUp : System.Web.UI.Page
     {
         BackendController backendController = BackendController.get_instance();
+        private async Task<string> SignUpUser(string username, string password)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                var content = new FormUrlEncodedContent(new[]
+                {
+                    new KeyValuePair<string, string>("username", username),
+                    new KeyValuePair<string, string>("password", password)
+                });
+                string prefix = "https://localhost:44334";
+                HttpResponseMessage response = await client.PostAsync(prefix+"/api/user/signup", content); // add relative path
+                if (response.IsSuccessStatusCode)
+                {
+                    return null; // Sign up successful
+                }
+                else
+                {
+                    string errorMessage = await response.Content.ReadAsStringAsync();
+                    return $"Sign up failed: {errorMessage}";
+                }
+            }
+        }
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -22,7 +49,7 @@ namespace Sadna_17_B_Frontend.Views
             Response.Write(@"<script language='javascript'>alert('" + message + "')</script>");
         }
 
-        protected void btnSignUp_Click(object sender, EventArgs e)
+        protected async void btnSignUp_Click(object sender, EventArgs e)
         {
             string message = "";
             if (txtUsername.Text.Length == 0)
@@ -47,7 +74,7 @@ namespace Sadna_17_B_Frontend.Views
             }
             else
             {
-                message = backendController.sign_up(txtUsername.Text, txtPassword.Text);
+                message = await SignUpUser(txtUsername.Text, txtPassword.Text);
                 if (message != null)
                 {
                     lblMessage.Text = message;
@@ -59,5 +86,7 @@ namespace Sadna_17_B_Frontend.Views
                 }
             }
         }
+
     }
+
 }

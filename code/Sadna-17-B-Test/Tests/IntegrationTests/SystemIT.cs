@@ -55,7 +55,7 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
         {
             // init services
 
-            ServiceFactory serviceFactory = new ServiceFactory();
+            UserController serviceFactory = new ServiceFactory();
             userService = serviceFactory.UserService;
             storeService = serviceFactory.StoreService;
 

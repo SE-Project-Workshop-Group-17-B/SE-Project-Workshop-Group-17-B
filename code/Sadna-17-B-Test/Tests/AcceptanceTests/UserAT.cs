@@ -47,7 +47,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         [TestInitialize]
         public void SetUp()
         {
-            ServiceFactory serviceFactory = new ServiceFactory();
+            UserController serviceFactory = new ServiceFactory();
             userService = serviceFactory.UserService;
             storeService = serviceFactory.StoreService;
             Response ignore = userService.CreateSubscriber(username1, password1);
