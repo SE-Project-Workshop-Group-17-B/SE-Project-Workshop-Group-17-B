@@ -189,18 +189,6 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DataAccessLayer\store\discountDAO.cs" />
-    <Compile Include="DataAccessLayer\store\discountDTO.cs" />
-    <Compile Include="DataAccessLayer\store\discountPolicyDAO.cs" />
-    <Compile Include="DataAccessLayer\store\discountPolicyDTO.cs" />
-    <Compile Include="DataAccessLayer\store\productDAO.cs" />
-    <Compile Include="DataAccessLayer\store\productDTO.cs" />
-    <Compile Include="DataAccessLayer\store\PurchaseDAO.cs" />
-    <Compile Include="DataAccessLayer\store\purchaseDTO.cs" />
-    <Compile Include="DataAccessLayer\store\purchasePolicyDAO.cs" />
-    <Compile Include="DataAccessLayer\store\purchasePolicyDTO.cs" />
-    <Compile Include="DataAccessLayer\store\storeDAO.cs" />
-    <Compile Include="DataAccessLayer\store\storeDTO.cs" />
     <Compile Include="DomainLayer\DomainFactory.cs" />
     <Compile Include="DomainLayer\Order\Order.cs" />
     <Compile Include="DomainLayer\Order\OrderSystem.cs" />
