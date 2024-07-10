@@ -185,7 +185,7 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Utils\zero_stars_rating.png" />
+    <Content Include="Utils_local\zero_stars_rating.png" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
@@ -217,31 +217,31 @@
     <Compile Include="DomainLayer\User\Subscriber.cs" />
     <Compile Include="DomainLayer\User\User.cs" />
     <Compile Include="DomainLayer\User\UserController.cs" />
-    <Compile Include="ExternalServices\ISupplySystem.cs" />
-    <Compile Include="ExternalServices\IPaymentSystem.cs" />
-    <Compile Include="ExternalServices\PaymentSystemProxy.cs" />
-    <Compile Include="ExternalServices\SupplySystemProxy.cs" />
+    <Compile Include="Utils_external\ISupplySystem.cs" />
+    <Compile Include="Utils_external\IPaymentSystem.cs" />
+    <Compile Include="Utils_external\PaymentSystemProxy.cs" />
+    <Compile Include="Utils_external\SupplySystemProxy.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ServiceLayer\ServiceDTOs\OrderDTO.cs" />
-    <Compile Include="ServiceLayer\ServiceDTOs\ProductDTO.cs" />
-    <Compile Include="ServiceLayer\ServiceDTOs\ShoppingBasketDTO.cs" />
-    <Compile Include="ServiceLayer\ServiceDTOs\ShoppingCartDTO.cs" />
-    <Compile Include="ServiceLayer\ServiceDTOs\StoreDTO.cs" />
-    <Compile Include="ServiceLayer\ServiceDTOs\SubOrderDTO.cs" />
-    <Compile Include="ServiceLayer\ServiceDTOs\UserDTO.cs" />
-    <Compile Include="ServiceLayer\ServiceFactory.cs" />
-    <Compile Include="ServiceLayer\Services\IStoreService.cs" />
-    <Compile Include="ServiceLayer\Services\IUserService.cs" />
-    <Compile Include="ServiceLayer\Services\StoreService.cs" />
-    <Compile Include="ServiceLayer\Services\UserService.cs" />
-    <Compile Include="Utils\Doc_Generator.cs" />
-    <Compile Include="Utils\Parser.cs" />
-    <Compile Include="Utils\Cryptography.cs" />
-    <Compile Include="Utils\Interfaces.cs" />
-    <Compile Include="Utils\Logger.cs" />
-    <Compile Include="Utils\Response.cs" />
-    <Compile Include="Utils\Sadna17BException.cs" />
+    <Compile Include="Layer_Service\ServiceDTOs\OrderDTO.cs" />
+    <Compile Include="Layer_Service\ServiceDTOs\ProductDTO.cs" />
+    <Compile Include="Layer_Service\ServiceDTOs\ShoppingBasketDTO.cs" />
+    <Compile Include="Layer_Service\ServiceDTOs\ShoppingCartDTO.cs" />
+    <Compile Include="Layer_Service\ServiceDTOs\StoreDTO.cs" />
+    <Compile Include="Layer_Service\ServiceDTOs\SubOrderDTO.cs" />
+    <Compile Include="Layer_Service\ServiceDTOs\UserDTO.cs" />
+    <Compile Include="Layer_Service\ServiceFactory.cs" />
+    <Compile Include="Layer_Service\Services\IStoreService.cs" />
+    <Compile Include="Layer_Service\Services\IUserService.cs" />
+    <Compile Include="Layer_Service\Services\StoreService.cs" />
+    <Compile Include="Layer_Service\Services\UserService.cs" />
+    <Compile Include="Utils_local\Documentor.cs" />
+    <Compile Include="Utils_local\Parser.cs" />
+    <Compile Include="Utils_local\Cryptography.cs" />
+    <Compile Include="Utils_local\Interfaces.cs" />
+    <Compile Include="Utils_local\Logger.cs" />
+    <Compile Include="Utils_local\Response.cs" />
+    <Compile Include="Utils_local\Sadna17BException.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -252,7 +252,11 @@
       <DependentUpon>Web.config</DependentUpon>
     </None>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Layer_DataAccess\Context\" />
+    <Folder Include="Layer_DataAccess\Entities\" />
+    <Folder Include="Layer_DataAccess\Repositories\" />
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

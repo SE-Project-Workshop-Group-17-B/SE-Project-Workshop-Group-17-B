@@ -13,7 +13,7 @@ namespace Sadna_17_B.Utils
 {
 
 
-    public class Doc_generator
+    public class Documentor
     {
 
 
@@ -187,7 +187,6 @@ namespace Sadna_17_B.Utils
         }
     
     
-
         public class search_doc_builder
         {
             private Dictionary<string, string> searchDoc;
