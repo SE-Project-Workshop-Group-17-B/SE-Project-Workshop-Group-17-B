@@ -22,6 +22,7 @@ namespace Sadna_17_B.DomainLayer.User
         private Dictionary<int, Guest> guests = new Dictionary<int, Guest>();
         private Dictionary<string, Subscriber> subscribers = new Dictionary<string, Subscriber>();
         private Dictionary<string, Admin> admins = new Dictionary<string, Admin>();
+         
 
         public UserController(OrderSystem orderSystem)
         {
@@ -489,9 +490,11 @@ namespace Sadna_17_B.DomainLayer.User
             int amount = Parser.parse_int(doc["amount"]);
             string category = Parser.parse_string(doc["category"]);
             int psid = Parser.parse_int(doc["product store id"]);
+            string name = Parser.parse_string(doc["name"]);
+
 
             User user = GetUserByToken(token);
-            user.add_to_cart(sid,amount,price,category, psid);
+            user.add_to_cart(sid,amount,price,category, psid, name);
         }
 
 

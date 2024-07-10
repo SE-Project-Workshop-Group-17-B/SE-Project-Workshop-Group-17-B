@@ -17,9 +17,9 @@ namespace Sadna_17_B.DomainLayer.User
         }
 
 
-        public void add_to_cart(int sid, int amount, double price, string category, int pid)
+        public void add_to_cart(int sid, int amount, double price, string category, int pid, string name)
         {
-            ShoppingCart.add_product(sid, amount,  price,  category, pid);
+            ShoppingCart.add_product(sid, amount,  price,  category, pid, name);
         }
 
         public void update_product_in_cart(int sid, int pid, int amount)

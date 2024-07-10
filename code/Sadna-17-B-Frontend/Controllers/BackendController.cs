@@ -29,7 +29,7 @@ namespace Sadna_17_B_Frontend.Controllers
 
         public StoreService storeService;
         
-        private UserDTO userDTO;
+        public UserDTO userDTO;
 
 
         private BackendController()
@@ -206,7 +206,10 @@ namespace Sadna_17_B_Frontend.Controllers
             userDTO = response.Data as UserDTO;
         }
 
-
+        public void add_product_to_cart(Dictionary<string,string> doc)
+        {
+            userService.cart_add_product(doc);
+        }
 
       
 
@@ -428,11 +431,7 @@ namespace Sadna_17_B_Frontend.Controllers
             return null;
         }
 
-        public Response add_to_cart(int productId)
-        {
-            //return userService.AddToCart(userDTO.AccessToken, productId);
-            return null;
-        }
+  
 
 
 /*

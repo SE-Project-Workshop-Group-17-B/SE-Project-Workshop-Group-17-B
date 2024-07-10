@@ -36,7 +36,7 @@ namespace Sadna_17_B.ServiceLayer.Services
         // ---------------- readonly Variables -------------------------------------------------------------------------------------------
 
 
-        private readonly StoreController _storeController;
+        public StoreController _storeController { get; set; }
         private readonly UserService _userService;
         private readonly ErrorLogger error_logger;
         private readonly InfoLogger info_logger;

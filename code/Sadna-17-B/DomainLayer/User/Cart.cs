@@ -77,9 +77,16 @@ namespace Sadna_17_B.DomainLayer.User
             return product.ID;
         }
 
-        public int add_product(int sid, int amount, double price, string category, int pid)
+        public int add_product(int sid, int amount, double price, string category, int psid, string name)
         {
-            Cart_Product product = new Cart_Product(sid, amount, price, category, pid);
+            Cart_Product product;
+
+            if (contains(psid)){
+                product = get_product_by_psid(psid);
+                product.amount += amount;
+            }
+            else
+               product = new Cart_Product(sid, amount, price, category, psid, name);
 
             if (!contains_store(sid))
                 sid_to_basket[sid] = new Basket(sid);
@@ -87,6 +94,32 @@ namespace Sadna_17_B.DomainLayer.User
             sid_to_basket[sid].add_product(product);
 
             return product.ID;
+        }
+
+        public bool contains(int id)
+        {
+            foreach (Basket basket in baskets())
+            {
+                if (basket.contains_store_product(id))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public Cart_Product get_product_by_psid(int id)
+        {
+            foreach (Basket basket in baskets())
+            {
+                if (basket.contains_store_product(id))
+                {
+                    return basket.product_by_psid(id);
+                }
+            }
+
+            return null;
         }
 
         public void update_product(int sid, int pid, int amount)
@@ -130,8 +163,9 @@ namespace Sadna_17_B.DomainLayer.User
         public int amount { get; set; }
         public double price { get; set; }
         public string category { get; set; }
+        public string name { get; set; }
 
-        public Cart_Product(int sid, int amount, double price, string category, int store_product_id)
+        public Cart_Product(int sid, int amount, double price, string category, int store_product_id, string name)
         {
             count_id += 1;
             this.ID = count_id;
@@ -140,6 +174,7 @@ namespace Sadna_17_B.DomainLayer.User
             this.price = price;
             this.category = category;
             this.store_product_id = store_product_id;
+            this.name = name;
         }
 
         public Cart_Product(Cart_Product product)
@@ -150,6 +185,7 @@ namespace Sadna_17_B.DomainLayer.User
             this.price = product.price;
             this.category = product.category;
             this.store_product_id = product.store_product_id;
+            this.name = product.name;
         }
     }
     

@@ -53,7 +53,7 @@ namespace Sadna_17_B_Frontend.Views
 
         protected void btnAddToCart_Click(object sender, EventArgs e)
         {
-            Response response = backendController.add_to_cart(currentProduct.ID);
+            /*Response response = backendController.add_to_cart(currentProduct.ID);
             if (response.Success)
             {
                 // Show success message
@@ -61,7 +61,7 @@ namespace Sadna_17_B_Frontend.Views
             else
             {
                 // Show error message
-            }
+            }*/
         }
 
         protected void btnSubmitRating_Click(object sender, EventArgs e)
