@@ -44,8 +44,9 @@ namespace Sadna_17_B.DomainLayer.User
                 throw new Sadna17BException("User doesn't have an owner appointment offer in the store with the given storeID.");
             }
             Tuple<int, string> storeId_SubscriberId = new Tuple<int, string>(storeID, subscriberUsername);
+            OwnerAppointmentOffer appointmentOffer = ownerAppointmentOffers[storeId_SubscriberId];
             ownerAppointmentOffers.Remove(storeId_SubscriberId);
-            //ownerAppointmentOffersRepository.Remove(storeId_SubscriberId);
+            ownerAppointmentOffersRepository.Delete(appointmentOffer);
         }
 
         public string GetOwnerAppointmentOfferAppointer(int storeID, string subscriberUsername)
@@ -82,8 +83,9 @@ namespace Sadna_17_B.DomainLayer.User
                 throw new Sadna17BException("User doesn't have a manager appointment offer in the store with the given storeID.");
             }
             Tuple<int, string> storeId_SubscriberId = new Tuple<int, string>(storeID, subscriberUsername);
+            ManagerAppointmentOffer appointOffer = managerAppointmentOffers[storeId_SubscriberId];
             managerAppointmentOffers.Remove(storeId_SubscriberId);
-            //managerAppointmentOffersRepository.Remove(storeId_SubscriberId);
+            managerAppointmentOffersRepository.Delete(appointOffer);
         }
 
         public Tuple<string, HashSet<Manager.ManagerAuthorization>> GetManagerAppointmentOfferAppointer(int storeID, string subscriberUsername)

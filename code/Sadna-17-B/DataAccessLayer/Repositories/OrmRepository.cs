@@ -49,5 +49,21 @@ namespace Sadna_17_B.DataAccessLayer.Repositories
                 return db.Select<T>();
             }
         }
+
+        public int Delete(T entry)
+        {
+            using (IDbConnection db = OrmLiteHelper.GetInstance().OpenConnection())
+            {
+                return db.Delete<T>(entry);
+            }
+        }
+
+        public int DeleteById(object id)
+        {
+            using (IDbConnection db = OrmLiteHelper.GetInstance().OpenConnection())
+            {
+                return db.DeleteById<T>(id);
+            }
+        }
     }
 }
