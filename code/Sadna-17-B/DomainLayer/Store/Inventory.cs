@@ -2,6 +2,8 @@
 using Sadna_17_B.Utils;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Web;
 using System.Xml.Linq;
@@ -12,13 +14,21 @@ namespace Sadna_17_B.DomainLayer.StoreDom
     {
 
         // ---------------- Variables -------------------------------------------------------------------------------------------
-
+        [Key]
         public int store_id { get; private set; }
+
+        [NotMapped]
 
         private Dictionary<int, Product> id_to_product = new Dictionary<int, Product>();
 
 
         // ---------------- Adjust product -------------------------------------------------------------------------------------------
+
+        public Inventory()
+        {
+            // Parameterless constructor required by EF
+        }
+       
 
         public Inventory(int store_id)
         {

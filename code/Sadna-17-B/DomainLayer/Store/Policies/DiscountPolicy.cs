@@ -2,6 +2,8 @@
 using Sadna_17_B.DomainLayer.Utils;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Runtime.Remoting.Messaging;
 using System.Text;
@@ -23,14 +25,18 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         // ----------- variables -----------------------------------------------------------
 
-
-        public static int policy_id;
+        [Key]
+        public static int policy_id { get; set; }
         public string policy_name { get; set; }
-
+        [NotMapped]
         public Dictionary<int, Discount> id_to_discount;
+        [NotMapped]
         public Dictionary<Discount, HashSet<int>> discount_to_products;
+        [NotMapped]
         public Dictionary<Discount, HashSet<int>> discount_to_categories;
+        [NotMapped]
         public Dictionary<Discount, HashSet<int>> discount_to_member;
+        [NotMapped]
 
         public Discount_Rule discount_tree;
 

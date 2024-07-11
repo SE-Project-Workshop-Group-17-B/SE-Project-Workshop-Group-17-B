@@ -2,6 +2,7 @@
 using Sadna_17_B.Utils;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Web;
@@ -14,7 +15,8 @@ namespace Sadna_17_B.DomainLayer.User
         //  --------- variables -----------------------------------------------------------------------------------
 
         private int counter_id = 0;
-        public int ID;
+        [Key]
+        public int ID { get; set; }
         public int user_age { get; private set; } 
 
         public Dictionary<int, Basket> sid_to_basket = new Dictionary<int, Basket>();

@@ -2,6 +2,8 @@
 using Sadna_17_B.DomainLayer.Utils;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Web;
 
@@ -18,6 +20,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         public static int ratingCounter = 0;
         public static int ratingOverAllScore = 0;
 
+        [Key]
         public int ID { get; private set; }
         public int store_ID { get; private set; }
         public int amount { get; set; }
@@ -26,15 +29,23 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         public double rating { get; set; }
         public string category { get; set; }
         public string description { get; set; } // up to 100 char
-        public List<string> reviews { get; set; }
-        public List<int> ratings { get; set; }
+
+        public virtual List<string> reviews { get; set; } = new List<string>();
+        public virtual List<int> ratings { get; set; } = new List<int>();
 
 
+
+        [NotMapped]
         public bool locked { get; set; }
 
 
         // ---------------- Constructor -------------------------------------------------------------------------------------------
 
+        public Product()
+        {
+            // Parameterless constructor required by EF
+        }
+       
         public Product(string name, double price, string category, int store_id, string description = "", int amount = 0)
         {
             ID = idCounter++;

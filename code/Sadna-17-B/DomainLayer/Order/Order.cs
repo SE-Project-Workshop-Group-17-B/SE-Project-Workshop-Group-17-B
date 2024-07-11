@@ -1,6 +1,7 @@
 ﻿using Sadna_17_B.DomainLayer.User;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 
@@ -8,14 +9,18 @@ namespace Sadna_17_B.DomainLayer.Order
 {
     public class Order
     {
-        public int OrderID { get; }
-        public string UserID { get; } // Can be either GuestID or Username, according to the order type
-        public bool IsGuestOrder { get; }
-        public DateTime Timestamp { get; }
-        public Cart Cart { get; } // StoreID -> ProductID -> (quantity,unitPrice)
-        public string DestinationAddress { get; }
-        public string CreditCardInfo { get; }
-        public double TotalPrice { get; } // Price after discount
+
+        [Key]
+        public int OrderID { get; set; }
+        public string UserID { get; set; } // Can be either GuestID or Username, according to the order type
+        public bool IsGuestOrder { get; set; }
+        public DateTime Timestamp { get; set; }
+
+        [Required]
+        public virtual Cart Cart { get; set; } // StoreID -> ProductID -> (quantity,unitPrice)
+        public string DestinationAddress { get; set; }
+        public string CreditCardInfo { get; set; }
+        public double TotalPrice { get; set; } // Price after discount
 
         public Order(int orderID, string userID, bool isGuestOrder, Cart cart, string destinationAddress, string creditCardInfo, double totalPrice)
         {

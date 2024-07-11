@@ -12,6 +12,8 @@ using System.Data;
 using Sadna_17_B.Utils;
 using System.Web.UI.WebControls;
 using Basket = Sadna_17_B.DomainLayer.User.Basket;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 
 namespace Sadna_17_B.DomainLayer.StoreDom
@@ -24,33 +26,50 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         // ---------------- Variables -------------------------------------------------------------------------------------------
 
 
-        public static int idCounter = 1;
-        private int ratingCounter { get; set; }
-        private double ratingOverAllScore { get; set; }
-        
+   
 
-        public int ID { get; private set; }
+        [Key]
+        public int ID { get; set; }  // Change here: { get; private set; } to { get; set; }
+
         public string name { get; set; }
         public string email { get; set; }
         public string phone_number { get; set; }
         public string description { get; set; }
         public string address { get; set; }
-        public Inventory inventory { get; set; }
 
+      
+        public virtual Inventory inventory { get; set; }
 
-        public DiscountPolicy discount_policy { get; private set; }
-        public PurchasePolicy purchase_policy { get; private set; }
+       
+        public virtual DiscountPolicy discount_policy { get; private set; }
+
+ 
+        public virtual PurchasePolicy purchase_policy { get; private set; }
 
 
         public double rating { get; set; }
-        public List<string> reviews { get; set; }
-        public List<string> complaints { get; set; }
+        public virtual List<string> reviews { get; set; }
+        public virtual List<string> complaints { get; set; }
+
+        [NotMapped]
+        public static int idCounter = 1;
+
+        [NotMapped]
+        private int ratingCounter { get; set; }
+
+        [NotMapped]
+        private double ratingOverAllScore { get; set; }
 
 
 
 
         // ---------------- Constructor & store management -------------------------------------------------------------------------------------------
 
+
+        public Store()
+        {
+            // Parameterless constructor required by EF
+        }
 
         public Store(string name, string email, string phone_number, string store_description, string address)
         {
@@ -132,7 +151,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         }
 
 
-        
+
         public double calculate_product_bag(int p_id, int amount)
         {
             Product product = inventory.product_by_id(p_id);
@@ -152,10 +171,10 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
             return check;
         }
-        
+
         public bool validate_purchase_policy(Basket basket)
-        { 
-            return purchase_policy.validate_purchase_rules(basket); 
+        {
+            return purchase_policy.validate_purchase_rules(basket);
         }
 
 
@@ -206,11 +225,11 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
                     string name = Parser.parse_string(doc["name"]);
                     List<Func<Basket, bool>> cond_lambdas = parse_condition_lambdas(doc);
-                    Func<Basket,List<Func<Basket, bool>>, bool> rule_lambda = parse_purchase_rule_lambdas(doc);
+                    Func<Basket, List<Func<Basket, bool>>, bool> rule_lambda = parse_purchase_rule_lambdas(doc);
 
-                    Purchase_Rule purchase = new Purchase_Rule(rule_lambda, cond_lambdas ,name);
+                    Purchase_Rule purchase = new Purchase_Rule(rule_lambda, cond_lambdas, name);
 
-                    return purchase_policy.add_rule(ancestor_id,purchase);
+                    return purchase_policy.add_rule(ancestor_id, purchase);
 
 
                 case "remove":
@@ -293,7 +312,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
             s += "A little about us ... \n" + description;
 
-            
+
             return s;
         }
 
@@ -435,18 +454,18 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return lambdas;
         }
 
-        public Func<Basket,List<Func<Basket, bool>>,bool> parse_purchase_rule_lambdas(Dictionary<string, string> doc) // doc explained on doc_doc.cs 
+        public Func<Basket, List<Func<Basket, bool>>, bool> parse_purchase_rule_lambdas(Dictionary<string, string> doc) // doc explained on doc_doc.cs 
         {
 
             string type = Parser.parse_string(doc["rule type"]);
 
-          
+
             switch (type)
             {
                 case "and":
 
                     return lambda_purchase_rule.and();
-                    
+
 
                 case "or":
 
@@ -455,7 +474,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                 case "conditional":
 
                     return lambda_purchase_rule.conditional();
-                   
+
 
                 default:
 

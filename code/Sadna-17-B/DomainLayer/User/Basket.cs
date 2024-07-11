@@ -3,6 +3,7 @@ using Sadna_17_B.DomainLayer.StoreDom;
 using Sadna_17_B.Utils;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 using System.Web.Caching;
@@ -14,8 +15,13 @@ namespace Sadna_17_B.DomainLayer.User
 
         // ----------- variables + constructor -------------------------------------------------------------
 
+        [Key]
         public int store_id { get; private set; }
 
+        // Foreign Key to Store
+
+        // Navigation properties
+        public virtual ICollection<Cart_Product> Products { get; set; }
         private Dictionary<int, Cart_Product> id_to_product = new Dictionary<int, Cart_Product>();
 
         private Dictionary<string, List<Cart_Product>> category_to_products = new Dictionary<string, List<Cart_Product>>();
@@ -26,6 +32,7 @@ namespace Sadna_17_B.DomainLayer.User
         {
             store_id = storeID;
         }
+
 
         public Basket(Basket basket)
         {
