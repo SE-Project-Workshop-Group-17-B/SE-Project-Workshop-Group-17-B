@@ -9,7 +9,7 @@ namespace Sadna_17_B.DomainLayer.User
     public class Subscriber : User
     {
         public string Username { get; }
-        private string passwordHash;
+        public string PasswordHash { get; }
 
         public Dictionary<int, Owner> Ownerships { get; } // storeID -> Owner object
         public Dictionary<int, Manager> Managements { get; } // storeID -> Manager object
@@ -25,14 +25,14 @@ namespace Sadna_17_B.DomainLayer.User
             {
                 throw new Sadna17BException("Given password isn't valid, it has to be at least 6 characters long.");
             }
-            passwordHash = Cryptography.HashString(password);
+            PasswordHash = Cryptography.HashString(password);
             Ownerships = new Dictionary<int, Owner>();
             Managements = new Dictionary<int, Manager>();
         }
 
         public bool CheckPassword(string password)
         {
-            return passwordHash == Cryptography.HashString(password);
+            return PasswordHash == Cryptography.HashString(password);
         }
 
         public static bool IsValidUsername(string username)

@@ -14,7 +14,8 @@ namespace Sadna_17_B.DataAccessLayer.store
 
         public PurchasePolicyDAO()
         {
-            connectionString = ConfigurationManager.ConnectionStrings["SQLiteDB"].ConnectionString;
+            string connectionName = OrmLiteHelper.memoryDB ? "SQLiteDB-Memory" : "SQLiteDB";
+            connectionString = ConfigurationManager.ConnectionStrings[connectionName].ConnectionString;
             Console.WriteLine("connection string for PurchasePolicy is: " + connectionString);
 
         }

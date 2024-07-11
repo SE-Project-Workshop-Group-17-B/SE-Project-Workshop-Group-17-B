@@ -1,4 +1,5 @@
-﻿using Sadna_17_B.DataAccessLayer.store;
+﻿using Sadna_17_B.DataAccessLayer;
+using Sadna_17_B.DataAccessLayer.store;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -12,7 +13,8 @@ public class DiscountPolicyDAO
 
     public DiscountPolicyDAO()
     {
-        connectionString = ConfigurationManager.ConnectionStrings["SQLiteDB"].ConnectionString;
+        string connectionName = OrmLiteHelper.memoryDB ? "SQLiteDB-Memory" : "SQLiteDB";
+        connectionString = ConfigurationManager.ConnectionStrings[connectionName].ConnectionString;
     }
 
     public void CreateDiscountPolicyTable()

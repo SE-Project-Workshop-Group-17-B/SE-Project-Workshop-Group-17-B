@@ -1,4 +1,5 @@
-﻿using Sadna_17_B.DomainLayer.Order;
+﻿using Sadna_17_B.DataAccessLayer.Repositories;
+using Sadna_17_B.DomainLayer.Order;
 using Sadna_17_B.Utils;
 using System;
 using System.Collections.Generic;
@@ -22,7 +23,10 @@ namespace Sadna_17_B.DomainLayer.User
         private Dictionary<int, Guest> guests = new Dictionary<int, Guest>();
         private Dictionary<string, Subscriber> subscribers = new Dictionary<string, Subscriber>();
         private Dictionary<string, Admin> admins = new Dictionary<string, Admin>();
-         
+
+        // DAL Repositories
+        OrmRepository<Subscriber> subscriberRepository = new OrmRepository<Subscriber>();
+        OrmRepository<Admin> adminRepository = new OrmRepository<Admin>();
 
         public UserController(OrderSystem orderSystem)
         {
@@ -68,6 +72,7 @@ namespace Sadna_17_B.DomainLayer.User
             {
                 Subscriber subscriber = new Subscriber(username, password);
                 subscribers[username] = subscriber;
+                subscriberRepository.Add(subscriber);
                 return;
             }
             throw new Sadna17BException("Given username already exists in the system.");
@@ -84,6 +89,7 @@ namespace Sadna_17_B.DomainLayer.User
             {
                 Admin admin = new Admin(username, password);
                 admins[username] = admin;
+                adminRepository.Add(admin);
                 return;
             }
             throw new Sadna17BException("Given username already exists in the system.");

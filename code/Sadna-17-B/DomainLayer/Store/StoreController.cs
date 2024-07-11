@@ -168,7 +168,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
             active_stores.Add(store.ID, store);
 
-            pushStoreToDB(store);
+            //pushStoreToDB(store);
 
             return store.ID;
         }

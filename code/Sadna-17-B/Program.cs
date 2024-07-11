@@ -3,6 +3,10 @@ using Sadna_17_B.ServiceLayer.Services;
 using Sadna_17_B.ServiceLayer;
 using System;
 using System.Collections.Generic;
+using Sadna_17_B.DataAccessLayer.Repositories;
+using Sadna_17_B.DataAccessLayer;
+using Sadna_17_B.DomainLayer.User;
+using Sadna_17_B.DomainLayer.Order;
 
 namespace Sadna_17_B
 {
@@ -11,7 +15,7 @@ namespace Sadna_17_B
         public static void Main(string[] args)
         {
             Console.WriteLine("Initializing database...");
-            InitializeDatabase();
+            //InitializeDatabase(); // Moved to ServiceFactory GenerateData
 
             ServiceFactory serviceFactory = new ServiceFactory();
             UserService userService = serviceFactory.UserService;
@@ -22,23 +26,35 @@ namespace Sadna_17_B
 
         static void InitializeDatabase()
         {
+            OrmLiteHelper.memoryDB = false; // Optionally load from config file
+
+
             StoreDAO storeDAO = new StoreDAO();
             storeDAO.CreateStoreTable();
-
+            
             ProductDAO productDAO = new ProductDAO();
             productDAO.CreateProductTable();
-
+            
             DiscountDAO discountDAO = new DiscountDAO();
             discountDAO.CreateDiscountTable();
-
+            
             DiscountPolicyDAO discountPolicyDAO = new DiscountPolicyDAO();
             discountPolicyDAO.CreateDiscountPolicyTable();
-
+            
             PurchaseDAO purchaseDAO = new PurchaseDAO();
             purchaseDAO.CreatePurchaseTable();
-
+            
             PurchasePolicyDAO purchasePolicyDAO = new PurchasePolicyDAO();
             purchasePolicyDAO.CreatePurchasePolicyTable();
+            
+            OrmRepository<Subscriber> subscriberRepository = new OrmRepository<Subscriber>();
+            subscriberRepository.CreateTable();
+
+            OrmRepository<Admin> adminRepository = new OrmRepository<Admin>();
+            adminRepository.CreateTable();
+
+            OrmRepository<SubOrder> subOrderRepository = new OrmRepository<SubOrder>();
+            subOrderRepository.CreateTable();
 
             //InitializeStoreTable();
             //InitializeProductTable();

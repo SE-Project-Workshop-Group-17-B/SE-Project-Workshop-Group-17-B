@@ -3,13 +3,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using ServiceStack.DataAnnotations;
 
 namespace Sadna_17_B.DomainLayer.Order
 {
     /// <summary>
     /// Represents a part of a full order, the part for a specific shop
     /// </summary>
-    public class SubOrder 
+    public class SubOrder
     {
         public int StoreID { get; }
         public int OrderID { get; }
@@ -19,6 +20,18 @@ namespace Sadna_17_B.DomainLayer.Order
         public Cart cart { get; } // ProductID -> (quantity,unitPrice)
         public string DestinationAddress { get; }
         public string CreditCardInfo { get; }
+
+        public SubOrder()
+        {
+            StoreID = -1;
+            OrderID = -1;
+            UserID = null;
+            IsGuestOrder = false;
+            Timestamp = DateTime.MinValue;
+            cart = null;
+            DestinationAddress = null;
+            CreditCardInfo = null;
+        }
 
         public SubOrder(int storeID, Order order)
         {

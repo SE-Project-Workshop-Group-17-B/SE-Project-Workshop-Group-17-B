@@ -1,4 +1,5 @@
-﻿using Sadna_17_B.DomainLayer.StoreDom;
+﻿using Sadna_17_B.DataAccessLayer.Repositories;
+using Sadna_17_B.DomainLayer.StoreDom;
 using Sadna_17_B.DomainLayer.User;
 using Sadna_17_B.ExternalServices;
 using Sadna_17_B.Utils;
@@ -33,6 +34,9 @@ namespace Sadna_17_B.DomainLayer.Order
 
 
         // ------- should move to DAL --------------------------------------------------------------------------------
+
+        OrmRepository<Order> orderHistoryRepository = new OrmRepository<Order>();
+        OrmRepository<SubOrder> subOrdersRepository = new OrmRepository<SubOrder>();
 
 
         public OrderSystem(StoreController storeController)
@@ -156,6 +160,7 @@ namespace Sadna_17_B.DomainLayer.Order
         private void add_to_history(Order order)
         {
             orderHistory[orderCount] = order; // Insert to order history
+            orderHistoryRepository.Add(order);
             orderCount++;
             if (order.IsGuestOrder) // Insert to guests order history
             {
@@ -167,6 +172,8 @@ namespace Sadna_17_B.DomainLayer.Order
                         guestOrders[guestId] = new List<Order>();
                     }
                     guestOrders[guestId].Add(order); // Should be valid integer when it is a guest order
+                    //guestOrdersRepository.Remove(guestId);
+                    //guestOrdersRepository.Add(guestId, guestOrders[guestId]);
                 }
                 catch (Exception e)
                 {
@@ -189,6 +196,7 @@ namespace Sadna_17_B.DomainLayer.Order
                     storeOrders[subOrder.StoreID] = new List<SubOrder>();
                 }
                 storeOrders[subOrder.StoreID].Add(subOrder);
+                subOrdersRepository.Add(subOrder);
             }
         }
 

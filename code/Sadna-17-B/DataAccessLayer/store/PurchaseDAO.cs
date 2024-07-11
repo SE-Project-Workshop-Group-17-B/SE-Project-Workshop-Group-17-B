@@ -13,7 +13,8 @@ namespace Sadna_17_B.DataAccessLayer.store
 
         public PurchaseDAO()
         {
-            connectionString = ConfigurationManager.ConnectionStrings["SQLiteDB"].ConnectionString;
+            string connectionName = OrmLiteHelper.memoryDB ? "SQLiteDB-Memory" : "SQLiteDB";
+            connectionString = ConfigurationManager.ConnectionStrings[connectionName].ConnectionString;
         }
 
         public void CreatePurchaseTable()

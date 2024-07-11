@@ -1,5 +1,10 @@
-﻿using Sadna_17_B.DomainLayer;
+﻿using Sadna_17_B.DataAccessLayer;
+using Sadna_17_B.DataAccessLayer.Repositories;
+using Sadna_17_B.DataAccessLayer.store;
+using Sadna_17_B.DomainLayer;
+using Sadna_17_B.DomainLayer.Order;
 using Sadna_17_B.DomainLayer.StoreDom;
+using Sadna_17_B.DomainLayer.User;
 using Sadna_17_B.ServiceLayer.ServiceDTOs;
 using Sadna_17_B.ServiceLayer.Services;
 using Sadna_17_B.Utils;
@@ -26,8 +31,52 @@ namespace Sadna_17_B.ServiceLayer
         {
             domainFactory = new DomainFactory();
             BuildInstances();
+            InitializeDatabase();
             GenerateData(); // Comment this out in version 3 when we load the data from the database.
             // LoadData(); // Will be used to load the data from the database in version 3.
+        }
+
+        public void InitializeDatabase()
+        {
+            //OrmLiteHelper.memoryDB = true; // Optionally load from config file
+
+
+            StoreDAO storeDAO = new StoreDAO();
+            storeDAO.CreateStoreTable();
+
+            ProductDAO productDAO = new ProductDAO();
+            productDAO.CreateProductTable();
+
+            DiscountDAO discountDAO = new DiscountDAO();
+            discountDAO.CreateDiscountTable();
+
+            DiscountPolicyDAO discountPolicyDAO = new DiscountPolicyDAO();
+            discountPolicyDAO.CreateDiscountPolicyTable();
+
+            PurchaseDAO purchaseDAO = new PurchaseDAO();
+            purchaseDAO.CreatePurchaseTable();
+
+            PurchasePolicyDAO purchasePolicyDAO = new PurchasePolicyDAO();
+            purchasePolicyDAO.CreatePurchasePolicyTable();
+
+            OrmRepository<Subscriber> subscriberRepository = new OrmRepository<Subscriber>();
+            subscriberRepository.CreateTable();
+
+            OrmRepository<Admin> adminRepository = new OrmRepository<Admin>();
+            adminRepository.DropAndCreateTable();
+
+            OrmRepository<Order> orderHistoryRepository = new OrmRepository<Order>();
+            orderHistoryRepository.DropAndCreateTable();
+            
+            OrmRepository<SubOrder> subOrdersRepository = new OrmRepository<SubOrder>();
+            subOrdersRepository.DropAndCreateTable();
+
+            //InitializeStoreTable();
+            //InitializeProductTable();
+            //InitializeDiscountTable();
+            //InitializeDiscountPolicyTable();
+            //InitializePurchaseTable();
+            //InitializePurchasePolicyTable();
         }
 
         public void GenerateData()
@@ -70,6 +119,11 @@ namespace Sadna_17_B.ServiceLayer
             for (int j = 1; j < 2; j++)
                 StoreService.add_product_review(1, j, "Very good");
             
+
+        }
+
+        private void LoadData()
+        {
 
         }
 

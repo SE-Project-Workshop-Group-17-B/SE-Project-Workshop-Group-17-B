@@ -24,5 +24,12 @@ namespace Sadna_17_B.DomainLayer
             OrderSystem = new OrderSystem(storeController: StoreController);
             UserController = new UserController(OrderSystem);
         }
+
+        public void LoadData()
+        {
+            //UserController.LoadData();
+            //StoreController.LoadData();
+            //OrderSystem.LoadData();
+        }
     }
 }
