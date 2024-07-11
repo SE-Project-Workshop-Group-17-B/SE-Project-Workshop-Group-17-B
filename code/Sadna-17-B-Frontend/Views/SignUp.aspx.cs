@@ -18,24 +18,7 @@ namespace Sadna_17_B_Frontend.Views
 
     public partial class SignUp : System.Web.UI.Page
     {
-        private async Task<string> SignUpUser(string username, string password)
-        {
-            using (HttpClient client = new HttpClient())
-            {
-                var user = new UserDto { Username = username, Password = password, AccessToken = ""};
-                string prefix = "https://localhost:7063";
-                HttpResponseMessage response = await client.PostAsJsonAsync(prefix+ "/RestAPI/signup", user); // add relative path
-                if (response.IsSuccessStatusCode)
-                {
-                    return null; // Sign up successful
-                }
-                else
-                {
-                    string errorMessage = await response.Content.ReadAsStringAsync();
-                    return $"Sign up failed: {errorMessage}";
-                }
-            }
-        }
+        private BackendController backendController = BackendController.get_instance();
 
         protected async void Page_Load(object sender, EventArgs e)
         {
@@ -72,7 +55,7 @@ namespace Sadna_17_B_Frontend.Views
             }
             else
             {
-                message = await SignUpUser(txtUsername.Text, txtPassword.Text);
+                message = await backendController.signup(txtUsername.Text, txtPassword.Text);
                 if (message != null)
                 {
                     lblMessage.Text = message;

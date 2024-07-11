@@ -1,4 +1,5 @@
 ﻿using Sadna_17_B.DomainLayer.StoreDom;
+using Sadna_17_B.Utils;
 using Sadna_17_B_Frontend.Controllers;
 using System;
 using System.Collections.Generic;
@@ -13,7 +14,7 @@ namespace Sadna_17_B_Frontend
     {
         private BackendController backendController = BackendController.get_instance();
 
-        protected void Page_Load(object sender, EventArgs e)
+        protected async void Page_Load(object sender, EventArgs e)
         {
             // Testing login
             //string message = backendController.Login("admin", "password");
@@ -21,8 +22,8 @@ namespace Sadna_17_B_Frontend
             //{
             //    MessageBox(message);
             //}
-
-            List<Store> stores = backendController.get_stores().Data as List<Store>;
+            Response response = await backendController.get_stores();
+            List<Store> stores =response.Data as List<Store>;// herer we will need to makith into the same change :)
             store1Name.Text = stores[0].name;
             store1Description.Text = stores[0].description;
             store2Name.Text = stores[1].name;

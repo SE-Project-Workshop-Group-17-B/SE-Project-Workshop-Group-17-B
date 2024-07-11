@@ -132,25 +132,30 @@ namespace Sadna_17_B_Frontend.Controllers
             return null;
         }
 
-        public Response get_stores()
+        public async Task<Response> get_stores()
         {
-            try
+            using (HttpClient client = new HttpClient())
             {
-                var response = storeService.all_stores();
-                if (!response.Success) return response;
+                HttpResponseMessage response = await client.GetAsync(prefix + "/RestAPI/get_stores"); // add relative path
 
-                var stores = response.Data as List<Store>;
-                if (stores == null || stores.Count == 0)
+                if (response.IsSuccessStatusCode)
                 {
-                    return new Response("No stores found.", false, null);
-                }
+                    string response1 = await response.Content.ReadAsStringAsync();
+                    Response response2 = JsonConvert.DeserializeObject<Response>(response1);
+                    var stores = JsonConvert.DeserializeObject<List<Store>>(response2.Data.ToString());
+                    if (stores == null || stores.Count == 0)
+                    {
+                        return new Response("No stores found.", false, null);
+                    }
 
-                return new Response("Stores found successfully.", true, stores);
-            }
-            catch (Exception ex)
-            {
-                // Log exception details here to diagnose issues.
-                return new Response("An error occurred while retrieving stores: " + ex.Message, false, null);
+                    return new Response("Stores found successfully.", true, stores);
+
+                }
+                else
+                {
+                    string errorMessage = await response.Content.ReadAsStringAsync();
+                    return new Response("An error occurred while retrieving stores: " + errorMessage, false, null);
+                }
             }
         }
 
@@ -244,14 +249,22 @@ namespace Sadna_17_B_Frontend.Controllers
             //return null;
         }
 
-        public string sign_up(string username, string password)
+        public async Task<string> signup(string username, string password)
         {
-            Response response = userService.CreateSubscriber(username, password);
-            if (!response.Success)
+            using (HttpClient client = new HttpClient())
             {
-                return response.Message;
+                var user = new UserDto { Username = username, Password = password, AccessToken = "" };
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/signup", user); // add relative path
+                if (response.IsSuccessStatusCode)
+                {
+                    return null; // Sign up successful
+                }
+                else
+                {
+                    string errorMessage = await response.Content.ReadAsStringAsync();
+                    return $"Sign up failed: {errorMessage}";
+                }
             }
-            return null;
         }
 
         public string logout()

@@ -3,6 +3,7 @@ using Sadna_17_B_API.Models;
 using Sadna_17_B;
 using Sadna_17_B.ServiceLayer;
 using Sadna_17_B.ServiceLayer.Services;
+using Sadna_17_B.Utils;
 
 namespace Sadna_17_B_API.Controllers
 {
@@ -52,6 +53,12 @@ namespace Sadna_17_B_API.Controllers
             {
                 return BadRequest(response.Message);
             }
+        }
+        [HttpGet("get_stores")]
+        public Response get_stores()
+        {
+            var response = _storeService.all_stores();
+            return response;
         }
     }
 }
