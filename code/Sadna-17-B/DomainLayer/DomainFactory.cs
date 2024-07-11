@@ -25,11 +25,18 @@ namespace Sadna_17_B.DomainLayer
             UserController = new UserController(OrderSystem);
         }
 
+        public void CleanData()
+        {
+            UserController.CleanData();
+            StoreController.CleanData();
+            OrderSystem.CleanData();
+        }
+
         public void LoadData()
         {
-            //UserController.LoadData();
-            //StoreController.LoadData();
-            //OrderSystem.LoadData();
+            UserController.LoadData();
+            StoreController.LoadData();
+            OrderSystem.LoadData();
         }
     }
 }

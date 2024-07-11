@@ -34,6 +34,18 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             temporary_closed_stores = new Dictionary<int,Store>();
             permanently_closed_stores = new Dictionary<int,Store>();
         }
+        
+        // --------- Clean Data ----------
+        public void CleanData()
+        {
+
+        }
+
+        // --------- Load Data -----------
+        public void LoadData()
+        {
+
+        }
 
 
         // ---------------- Store Builder -------------------------------------------------------------------------------------------

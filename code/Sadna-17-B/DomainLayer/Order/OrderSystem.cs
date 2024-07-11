@@ -22,19 +22,20 @@ namespace Sadna_17_B.DomainLayer.Order
         private Logger infoLogger = InfoLogger.Instance;
         private Logger errorLogger = ErrorLogger.Instance;
 
-        
+
         // ------- should move to DAL --------------------------------------------------------------------------------
 
 
         private Dictionary<int, Order> orderHistory = new Dictionary<int, Order>();                         // OrderId -> Order
         private Dictionary<int, List<Order>> guestOrders = new Dictionary<int, List<Order>>();              // GuestID -> List<Order>
         private Dictionary<string, List<Order>> subscriberOrders = new Dictionary<string, List<Order>>();   // Username -> List<Order>
-        private Dictionary<int, List<SubOrder>> storeOrders = new Dictionary<int, List<SubOrder>>();        // StoreID -> Order
+        private Dictionary<int, List<SubOrder>> storeOrders = new Dictionary<int, List<SubOrder>>();        // StoreID -> List<SubOrder>
         private int orderCount = 0;
 
 
         // ------- should move to DAL --------------------------------------------------------------------------------
 
+        // DAL Repositories:
         OrmRepository<Order> orderHistoryRepository = new OrmRepository<Order>();
         OrmRepository<SubOrder> subOrdersRepository = new OrmRepository<SubOrder>();
 
@@ -56,6 +57,51 @@ namespace Sadna_17_B.DomainLayer.Order
             this.supplySystem = supplyInstance;
         }
 
+        // ------ Clean Data ----------
+        public void CleanData()
+        {
+            orderHistoryRepository.DropAndCreateTable();
+            subOrdersRepository.DropAndCreateTable();
+        }
+
+        // ------ Load Data -----------
+        public void LoadData()
+        {
+            List<Order> orderHistoryTable = orderHistoryRepository.GetAll();
+            List<SubOrder> subOrdersTable = subOrdersRepository.GetAll();
+
+            foreach (Order order in orderHistoryTable)
+            {
+                orderHistory[order.OrderID] = order;
+                if (order.IsGuestOrder)
+                {
+                    int guestId = int.Parse(order.UserID);
+                    if (!guestOrders.ContainsKey(guestId)) {
+                        guestOrders[guestId] = new List<Order>();
+                    }
+                    guestOrders[guestId].Add(order);
+                }
+                else
+                {
+                    if (!subscriberOrders.ContainsKey(order.UserID)) {
+                        subscriberOrders[order.UserID] = new List<Order>();
+                    }
+                    subscriberOrders[order.UserID].Add(order);
+                }
+            }
+
+            foreach (SubOrder subOrder in subOrdersTable)
+            {
+                if (!storeOrders.ContainsKey(subOrder.StoreID))
+                {
+                    storeOrders[subOrder.StoreID] = new List<SubOrder>();
+                }
+                storeOrders[subOrder.StoreID].Add(subOrder);
+                //orderHistory[subOrder.OrderID].AddSubOrder(subOrder); // or AddBasket(new Basket(subOrder));
+            }
+
+            orderCount = orderHistory.Count; // Or 1 + max(orderId)
+        }
 
 
         // ------- process order --------------------------------------------------------------------------------
@@ -172,8 +218,6 @@ namespace Sadna_17_B.DomainLayer.Order
                         guestOrders[guestId] = new List<Order>();
                     }
                     guestOrders[guestId].Add(order); // Should be valid integer when it is a guest order
-                    //guestOrdersRepository.Remove(guestId);
-                    //guestOrdersRepository.Add(guestId, guestOrders[guestId]);
                 }
                 catch (Exception e)
                 {

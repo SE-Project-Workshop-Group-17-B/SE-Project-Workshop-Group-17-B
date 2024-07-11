@@ -10,9 +10,16 @@ namespace Sadna_17_B.DomainLayer.User
     {
         // Note: Owner doesn't necessarily have to hold the Owner & Manager objects, right now it can function with the identifier alone,
         // but it could help to hold it too in the future in case we'll need it.
-        public Dictionary<string,Owner> AppointedOwners { get; } // username -> Owner object
-        public Dictionary<string,Manager> AppointedManagers { get; } // username -> Manager object
+        public Dictionary<string,Owner> AppointedOwners { get; set; } // username -> Owner object
+        public Dictionary<string,Manager> AppointedManagers { get; set; } // username -> Manager object
         public bool IsFounder { get; set; }
+
+        public Owner()
+        {
+            AppointedOwners = new Dictionary<string, Owner>();
+            AppointedManagers = new Dictionary<string, Manager>();
+            IsFounder = false;
+        }
 
         public Owner(bool isFounder)
         {

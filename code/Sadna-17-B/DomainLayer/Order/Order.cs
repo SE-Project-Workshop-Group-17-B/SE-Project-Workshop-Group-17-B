@@ -8,14 +8,26 @@ namespace Sadna_17_B.DomainLayer.Order
 {
     public class Order
     {
-        public int OrderID { get; }
-        public string UserID { get; } // Can be either GuestID or Username, according to the order type
-        public bool IsGuestOrder { get; }
-        public DateTime Timestamp { get; }
-        public Cart Cart { get; } // StoreID -> ProductID -> (quantity,unitPrice)
-        public string DestinationAddress { get; }
-        public string CreditCardInfo { get; }
-        public double TotalPrice { get; } // Price after discount
+        public int OrderID { get; set; }
+        public string UserID { get; set; } // Can be either GuestID or Username, according to the order type
+        public bool IsGuestOrder { get; set; }
+        public DateTime Timestamp { get; set; }
+        public Cart Cart { get; set; } // StoreID -> ProductID -> (quantity,unitPrice)
+        public string DestinationAddress { get; set; }
+        public string CreditCardInfo { get; set; }
+        public double TotalPrice { get; set; } // Price after discount
+
+        public Order()
+        {
+            OrderID = -1;
+            UserID = null;
+            IsGuestOrder = false;
+            Timestamp = DateTime.MinValue;
+            this.Cart = null;
+            DestinationAddress = null;
+            CreditCardInfo = null;
+            TotalPrice = 0;
+        }
 
         public Order(int orderID, string userID, bool isGuestOrder, Cart cart, string destinationAddress, string creditCardInfo, double totalPrice)
         {

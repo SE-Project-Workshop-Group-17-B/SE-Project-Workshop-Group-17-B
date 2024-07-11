@@ -35,6 +35,28 @@ namespace Sadna_17_B.DomainLayer.User
             this.notificationSystem = new NotificationSystem();
         }
 
+        public void CleanData()
+        {
+            subscriberRepository.DropAndCreateTable();
+            adminRepository.DropAndCreateTable();
+        }
+
+        public void LoadData()
+        {
+            // Load subscribers from database:
+            List<Subscriber> subscribersTable = subscriberRepository.GetAll();
+            foreach (Subscriber subscriber in subscribersTable)
+            {
+                subscribers[subscriber.Username] = subscriber;
+            }
+            // Load admins from database:
+            List<Admin> adminsTable = adminRepository.GetAll();
+            foreach (Admin admin in adminsTable)
+            {
+                admins[admin.Username] = admin;
+            }
+        }
+
         /// <summary>
         /// Creates a new guest in the system, its corresponding guestID will be the next available ID (integer),
         /// but the corresponding Guest Token will be returned as a string.

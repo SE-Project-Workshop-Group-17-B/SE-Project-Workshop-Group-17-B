@@ -8,11 +8,19 @@ namespace Sadna_17_B.DomainLayer.User
 {
     public class Subscriber : User
     {
-        public string Username { get; }
-        public string PasswordHash { get; }
+        public string Username { get; set; }
+        public string PasswordHash { get; set; }
 
-        public Dictionary<int, Owner> Ownerships { get; } // storeID -> Owner object
-        public Dictionary<int, Manager> Managements { get; } // storeID -> Manager object
+        public Dictionary<int, Owner> Ownerships { get; set; } // storeID -> Owner object
+        public Dictionary<int, Manager> Managements { get; set; } // storeID -> Manager object
+
+        public Subscriber()
+        {
+            Username = null;
+            PasswordHash = null;
+            Ownerships = new Dictionary<int, Owner>();
+            Managements = new Dictionary<int, Manager>();
+        }
 
         public Subscriber(string username, string password) : base()
         {

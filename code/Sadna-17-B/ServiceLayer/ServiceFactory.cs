@@ -31,7 +31,7 @@ namespace Sadna_17_B.ServiceLayer
         {
             domainFactory = new DomainFactory();
             BuildInstances();
-            InitializeDatabase();
+            InitializeDatabase(); // Cleans and initializes the database tables
             GenerateData(); // Comment this out in version 3 when we load the data from the database.
             // LoadData(); // Will be used to load the data from the database in version 3.
         }
@@ -59,17 +59,7 @@ namespace Sadna_17_B.ServiceLayer
             PurchasePolicyDAO purchasePolicyDAO = new PurchasePolicyDAO();
             purchasePolicyDAO.CreatePurchasePolicyTable();
 
-            OrmRepository<Subscriber> subscriberRepository = new OrmRepository<Subscriber>();
-            subscriberRepository.CreateTable();
-
-            OrmRepository<Admin> adminRepository = new OrmRepository<Admin>();
-            adminRepository.DropAndCreateTable();
-
-            OrmRepository<Order> orderHistoryRepository = new OrmRepository<Order>();
-            orderHistoryRepository.DropAndCreateTable();
-            
-            OrmRepository<SubOrder> subOrdersRepository = new OrmRepository<SubOrder>();
-            subOrdersRepository.DropAndCreateTable();
+            CleanData();
 
             //InitializeStoreTable();
             //InitializeProductTable();
@@ -77,6 +67,11 @@ namespace Sadna_17_B.ServiceLayer
             //InitializeDiscountPolicyTable();
             //InitializePurchaseTable();
             //InitializePurchasePolicyTable();
+        }
+        
+        public void CleanData()
+        {
+            domainFactory.CleanData();
         }
 
         public void GenerateData()
@@ -124,7 +119,7 @@ namespace Sadna_17_B.ServiceLayer
 
         private void LoadData()
         {
-
+            domainFactory.LoadData();
         }
 
 

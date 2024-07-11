@@ -14,25 +14,31 @@ namespace Sadna_17_B.DomainLayer.User
 
         // ----------- variables + constructor -------------------------------------------------------------
 
-        public int store_id { get; private set; }
+        public int store_id { get; set; }
 
-        private Dictionary<int, Cart_Product> id_to_product = new Dictionary<int, Cart_Product>();
+        private Dictionary<int, Cart_Product> id_to_product { get; set; }
 
-        private Dictionary<string, List<Cart_Product>> category_to_products = new Dictionary<string, List<Cart_Product>>();
+        private Dictionary<string, List<Cart_Product>> category_to_products { get; set; }
 
-
+        public Basket()
+        {
+            store_id = -1;
+            id_to_product = new Dictionary<int, Cart_Product>();
+            category_to_products = new Dictionary<string, List<Cart_Product>>();
+        }
 
         public Basket(int storeID)
         {
             store_id = storeID;
+            id_to_product = new Dictionary<int, Cart_Product>();
+            category_to_products = new Dictionary<string, List<Cart_Product>>();
         }
 
         public Basket(Basket basket)
         {
             store_id = basket.store_id;
-            id_to_product = copy_id_dict();
-            category_to_products = copy_category_dict();
-            
+            id_to_product = basket.copy_id_dict(); // Note: Test this
+            category_to_products = basket.copy_category_dict(); // Note: Test this
         }
 
         public List<Cart_Product> produts()

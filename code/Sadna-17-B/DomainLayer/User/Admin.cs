@@ -10,5 +10,9 @@ namespace Sadna_17_B.DomainLayer.User
         public Admin(string username, string password) : base(username, password)
         {
         }
+
+        public Admin() : base()
+        {
+        }
     }
 }

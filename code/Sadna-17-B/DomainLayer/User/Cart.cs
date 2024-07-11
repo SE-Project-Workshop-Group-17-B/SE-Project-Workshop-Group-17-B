@@ -13,11 +13,11 @@ namespace Sadna_17_B.DomainLayer.User
 
         //  --------- variables -----------------------------------------------------------------------------------
 
-        private int counter_id = 0;
-        public int ID;
-        public int user_age { get; private set; } 
+        private static int counter_id = 0;
+        public int ID { get; set; }
+        public int user_age { get; set; } 
 
-        public Dictionary<int, Basket> sid_to_basket = new Dictionary<int, Basket>();
+        public Dictionary<int, Basket> sid_to_basket { get; set; }
 
      
 
@@ -26,7 +26,8 @@ namespace Sadna_17_B.DomainLayer.User
             counter_id++;
             ID = counter_id;
 
-            user_age = 18; 
+            user_age = 18;
+            sid_to_basket = new Dictionary<int, Basket>();
         }
 
         public Cart(Cart cart)
@@ -34,7 +35,7 @@ namespace Sadna_17_B.DomainLayer.User
             ID = -1;
 
             user_age = 18;
-            sid_to_basket = copy_baskets();
+            sid_to_basket = cart.copy_baskets(); // Note: Test this copy
 
         }
 
