@@ -19,7 +19,7 @@
 
         protected override void Seed(ApplicationDbContext context)
         {
-            // Add initial data here
+            /*// Add initial data here
             if (!context.Stores.Any())
             {
                 context.Stores.AddOrUpdate(
@@ -29,7 +29,7 @@
                 );
 
                 context.SaveChanges();
-            }
+            }*/
 
             /*if (!context.products.Any())
             {

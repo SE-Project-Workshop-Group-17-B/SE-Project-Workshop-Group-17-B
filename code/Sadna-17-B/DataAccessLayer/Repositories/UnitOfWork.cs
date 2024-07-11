@@ -18,7 +18,7 @@ namespace Sadna_17_B.Repositories
             Stores = new StoreRepository(_context);
             Products = new ProductRepository(_context);
             Orders = new OrderRepository(_context);
-            Users = new UserRepository(_context);
+       //     Users = new UserRepository(_context);
         }
 
         public int Complete()
