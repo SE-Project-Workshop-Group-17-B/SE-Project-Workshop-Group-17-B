@@ -60,5 +60,47 @@ namespace Sadna_17_B_API.Controllers
             var response = _storeService.all_stores();
             return response;
         }
+        [HttpPost("isFounder")]
+        public Response IsFounder([FromBody] RoleCheckRequest request)
+        {
+            var response = _userService.IsFounder(request.AccessToken, request.StoreId);
+            return response;
+        }
+
+        [HttpPost("isOwner")]
+        public Response IsOwner([FromBody] RoleCheckRequest request)
+        {
+            var response = _userService.IsOwner(request.AccessToken, request.StoreId);
+            return response;
+        }
+
+        [HttpPost("isManager")]
+        public Response IsManager([FromBody] RoleCheckRequest request)
+        {
+            var response = _userService.IsManager(request.AccessToken, request.StoreId);
+            return response;
+        }
+
+        [HttpPost("isGuest")]
+        public Response IsGuest([FromBody] RoleCheckRequest request)
+        {
+            var response = _userService.IsGuest(request.AccessToken);
+            return response;
+        }
+
+        [HttpPost("isSubscriber")]
+        public Response IsSubscriber([FromBody] RoleCheckRequest request)
+        {
+            var response = _userService.IsSubscriber(request.AccessToken);
+            return response;
+        }
+
+        [HttpPost("isAdmin")]
+        public Response IsAdmin([FromBody] RoleCheckRequest request)
+        {
+            var response = _userService.IsAdmin(request.AccessToken);
+            return response;
+        }
+
     }
 }

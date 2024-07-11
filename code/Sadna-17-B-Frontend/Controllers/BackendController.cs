@@ -58,66 +58,104 @@ namespace Sadna_17_B_Frontend.Controllers
 
 
         // ----------------------------------- user classifications -----------------------------------------------------------------------
-        
-        public string[] roles(Dictionary<string,string> doc)    // return all roles ( example : founder|owner|...).  - doc_doc - 
+
+        public async Task<string[]> roles(Dictionary<string, string> doc)
         {
-            int store_id = Parser.parse_int(doc["store id"]);
+            int storeId = Parser.parse_int(doc["store id"]);
 
-            string s =      (founder(store_id)   ? "|founder "      : "") +
-                            (owner(store_id)     ? "|owner "        : "") +
-                            (manager(store_id)   ? "|manager "      : "") +
-                            (guest()             ? "|guest "        : "") +
-                            (subscriber()        ? "|subscriber "   : "") +
-                            (admin()             ? "|admin "        : "") ;
+            string s = (await founder(storeId) ? "|founder " : "") +
+                       (await owner(storeId) ? "|owner " : "") +
+                       (await manager(storeId) ? "|manager " : "") +
+                       (await guest() ? "|guest " : "") +
+                       (await subscriber() ? "|subscriber " : "") +
+                       (await admin() ? "|admin " : "");
 
-            if (s == "")
+            if (string.IsNullOrEmpty(s))
+            {
                 return new string[0];
+            }
 
-            return s.Substring(1,s.Length).Split('|');
+            return s.Substring(1, s.Length - 1).Split('|');
         }
 
-        public bool has_roles(Dictionary<string, string> doc)    // return true if given roles applied. - doc_doc - 
+
+        public async Task<bool> has_roles(Dictionary<string, string> doc) // return true if given roles applied. - doc_doc -
         {
             string[] check_roles = Parser.parse_array<string>(doc["roles to check"]);
-            string[] actual_roles = roles(doc);
+            string[] actual_roles = await roles(doc);
 
-            foreach (string role in check_roles) 
+            foreach (string role in check_roles)
+            {
                 if (!actual_roles.Contains(role))
+                {
                     return false;
-            
+                }
+            }
+
             return true;
-
         }
 
-        private bool founder(int store_id)
+        private async Task<bool> founder(int storeId)
         {
-            return userService.IsFounder(userDTO.AccessToken,store_id).Success;
+            var payload = new { AccessToken = userDTO.AccessToken, StoreId = storeId };
+            Response response = await CheckRoleAsync(prefix + "/RestAPI/isFounder", payload);
+            return response.Success;
         }
 
-        private bool owner(int store_id) 
+        private async Task<bool> owner(int storeId)
         {
-            return userService.IsOwner(userDTO.AccessToken, store_id).Success;
+            var payload = new { AccessToken = userDTO.AccessToken, StoreId = storeId };
+            Response response = await CheckRoleAsync(prefix + "/RestAPI/isOwner", payload);
+            return response.Success;
         }
 
-        private bool manager(int store_id) 
+        private async Task<bool> manager(int storeId)
         {
-            return userService.IsManager(userDTO.AccessToken, store_id).Success;
+            var payload = new { AccessToken = userDTO.AccessToken, StoreId = storeId };
+            Response response = await CheckRoleAsync(prefix + "/RestAPI/isManager", payload);
+            return response.Success;
         }
 
-        private bool guest()
+        private async Task<bool> guest()
         {
-            return userService.IsGuest(userDTO.AccessToken).Success;
+            var payload = new { AccessToken = userDTO.AccessToken };
+            Response response = await CheckRoleAsync(prefix + "/RestAPI/isGuest", payload);
+            return response.Success;
         }
 
-        private bool subscriber()
+        private async Task<bool> subscriber()
         {
-            return userService.IsSubscriber(userDTO.AccessToken).Success;
+            var payload = new { AccessToken = userDTO.AccessToken };
+            Response response = await CheckRoleAsync(prefix + "/RestAPI/isSubscriber", payload);
+            return response.Success;
         }
 
-        private bool admin()
+        private async Task<bool> admin()
         {
-            return userService.IsAdmin(userDTO.AccessToken).Success;
+            var payload = new { AccessToken = userDTO.AccessToken };
+            Response response = await CheckRoleAsync(prefix + "/RestAPI/isAdmin", payload);
+            return response.Success;
         }
+        private async Task<Response> CheckRoleAsync(string endpoint, object payload)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                HttpResponseMessage response = await client.PostAsJsonAsync(endpoint, payload);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseContent = await response.Content.ReadAsStringAsync();
+                    Response responseObject = JsonConvert.DeserializeObject<Response>(responseContent);
+                    return responseObject;
+                }
+                else
+                {
+                    string errorMessage = await response.Content.ReadAsStringAsync();
+                    return new Response("An error occurred: " + errorMessage, false, null);
+                }
+            }
+        }
+
 
 
         // ----------------------------------- store information -----------------------------------------------------------------------

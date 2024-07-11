@@ -65,7 +65,7 @@ namespace Sadna_17_B_Frontend.Views
                 ["checked roles"] = "founder"
             };
 
-            bool founder = backendController.has_roles(doc); // Assume this method checks if the current user is the founder
+            bool founder = backendController.has_roles(doc).GetAwaiter().GetResult(); // Assume this method checks if the current user is the founder
 
             if (founder)
                 Response.Redirect("~/Views/FounderStorePage.aspx?storeId=" + sid);
