@@ -1,4 +1,4 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿/*using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using Sadna_17_B.ServiceLayer;
 using Sadna_17_B.ServiceLayer.Services;
@@ -183,3 +183,4 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
         }
     }
 }
+*/

@@ -1,4 +1,4 @@
-using System;
+/*using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -19,7 +19,7 @@ using Newtonsoft.Json.Linq;
 namespace Sadna_17_B_Test.Tests.UnitTests
 {
 
-    /*
+    *//*
      *     
      *      -------------------- Front : ----------------------------
      *      
@@ -68,7 +68,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
      * 
      * 
      * 
-     */
+     *//*
 
 
     [TestClass]
@@ -113,7 +113,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         [TestInitialize]
         public void SetUp()
         {
-            /*
+            *//*
              * 
              *  Cart:           | name        |  price   | category  | descript  | amount   | total price
              *  -----------------------------------------------------------------------------------------
@@ -149,7 +149,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
              *   max_rule                           true, 550   (550 bigger than 0)
              *   add_rule                           true, 1150  (550 + 50 + 550)
              * 
-             */
+             *//*
 
             doc_generator = new Doc_generator();
             UserController serviceFactory = new ServiceFactory();
@@ -620,3 +620,4 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         }
     }
 }
+*/

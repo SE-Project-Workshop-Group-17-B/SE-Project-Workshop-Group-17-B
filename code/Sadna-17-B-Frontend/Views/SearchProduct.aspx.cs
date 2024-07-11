@@ -24,7 +24,7 @@ namespace Sadna_17_B_Frontend.Views
             }
         }
 
-        protected void btnSearch_Click(object sender, EventArgs e)
+        protected async void btnSearch_Click(object sender, EventArgs e)
         {
             BackendController backendController = BackendController.get_instance();
 
@@ -39,7 +39,7 @@ namespace Sadna_17_B_Frontend.Views
                                                                     .set_search_options(keyword, sid, category, p_rate, price_range, s_rate)
                                                                     .Build();
 
-            Response response = backendController.search_products_by(search_doc);
+            Response response = await backendController.search_products_by(search_doc);
 
             
 

@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Sadna_17_B.DomainLayer.StoreDom;
+using Sadna_17_B.DomainLayer.User;
 using Sadna_17_B.ServiceLayer;
 using Sadna_17_B.ServiceLayer.ServiceDTOs;
 using Sadna_17_B.ServiceLayer.Services;
@@ -354,6 +355,7 @@ namespace Sadna_17_B_Frontend.Controllers
 
         public Tuple<string, int> create_store(string name, string email, string phoneNumber, string storeDescription, string address) // upgrade to create_store by doc_doc
         {
+            //NOT SURE IF NEEDED
             Response response = storeService.create_store(userDTO.AccessToken, name, email, phoneNumber, storeDescription, address);
             if (!response.Success)
             {
@@ -362,9 +364,27 @@ namespace Sadna_17_B_Frontend.Controllers
             return new Tuple<string, int>(null, (int)(response.Data));
         }
 
-        public Response create_store(Dictionary<string, string> doc) // implement with doc_doc documentation
+        public async Task<Response> create_store(Dictionary<string, string> doc)
         {
-            return storeService.create_store(doc);
+            using (HttpClient client = new HttpClient())
+            {
+                object payload = new { doc = doc };
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/create_store", payload); // add relative path
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string response1 = await response.Content.ReadAsStringAsync();
+                    Response response2 = JsonConvert.DeserializeObject<Response>(response1);
+                    var storeId = JsonConvert.DeserializeObject<int>(response2.Data.ToString());
+                    return new Response("Succesfully created new store", true, storeId);
+                }
+                else
+                {
+                    string errorMessage = await response.Content.ReadAsStringAsync();
+                    return new Response("An error occurred while creating new store: " + errorMessage, false, null);
+                }
+
+            }
         }
 
         public Response reopen_store(int store_id) // not implemented
@@ -457,9 +477,28 @@ namespace Sadna_17_B_Frontend.Controllers
             }
         }
 
-        public Response search_products_by(Dictionary<string, string> doc) // implement with doc_doc documentation
+
+        public async Task<Response> search_products_by(Dictionary<string, string> doc)
         {
-            return storeService.search_product_by(doc);
+            using (HttpClient client = new HttpClient())
+            {
+                object payload = new { doc = doc };
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/search_product", payload); // add relative path
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string response1 = await response.Content.ReadAsStringAsync();
+                    Response response2 = JsonConvert.DeserializeObject<Response>(response1);
+                    var products = JsonConvert.DeserializeObject<List<Product>>(response2.Data.ToString());
+                    return new Response("Succesfully found products", true, products);
+                }
+                else
+                {
+                    string errorMessage = await response.Content.ReadAsStringAsync();
+                    return new Response("An error occurred while searching the product: " + errorMessage, false, null);
+                }
+
+            }
         }
 
         public Response show_cart(Dictionary<string, string> doc) // not implemented 
@@ -470,14 +509,27 @@ namespace Sadna_17_B_Frontend.Controllers
 
         // ---------- checkout -----------------------------------
 
-        public double process_store_order(int storeID, Dictionary<int, int> quantities)
+        public async Task<double> process_store_order(int storeID, Dictionary<int, int> quantities)
         {
-            Response response = storeService.calculate_products_prices(storeID, quantities);
-            if (response.Success)
+            using (HttpClient client = new HttpClient())
             {
-                return (response.Data as Mini_Checkout).price_after_discount();
+                object payload = new { quantities = quantities, storeID = storeID };
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/process_store_order", payload); // add relative path
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string response1 = await response.Content.ReadAsStringAsync();
+                    Response response2 = JsonConvert.DeserializeObject<Response>(response1);
+                    var miniCheckout = JsonConvert.DeserializeObject<Mini_Checkout>(response2.Data.ToString());
+                    return miniCheckout.price_after_discount();
+                }
+                else
+                {
+                    string errorMessage = await response.Content.ReadAsStringAsync();
+                    return 0;
+                }
+
             }
-            return 0;
         }
 
         public Response cart_checkout() // not implemented
@@ -502,20 +554,6 @@ namespace Sadna_17_B_Frontend.Controllers
             return new Response(true);
         }
 
-
-
-        
-        
-        
-    
-        
-        
-
-
     }
-
-
-  
-
 
 }

@@ -102,5 +102,26 @@ namespace Sadna_17_B_API.Controllers
             return response;
         }
 
+        [HttpPost("create_store")]
+        public Response CreateStore([FromBody] StoreDTO storeData)
+        {
+            var response = _storeService.create_store(storeData.doc);
+            return response;
+        }
+
+        [HttpPost("search_product")]
+        public Response SearchProduct([FromBody] StoreDTO storeData)
+        {
+            var response = _storeService.search_product_by(storeData.doc);
+            return response;
+        }
+
+        [HttpPost("process_store_order")]
+        public Response ProcessStoreOrder([FromBody] StoreDTO data)
+        {
+            var response = _storeService.calculate_products_prices(data.storeId, data.quantities);
+            return response;
+        }
+
     }
 }
