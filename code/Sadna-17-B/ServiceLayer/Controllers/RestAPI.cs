@@ -45,5 +45,6 @@ namespace Sadna_17_B_Backend.Controllers
     {
         public string Username { get; set; }
         public string Password { get; set; }
+        public string AccessToken { get; set; }
     }
 }

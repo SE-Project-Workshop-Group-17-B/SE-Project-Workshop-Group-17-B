@@ -10,11 +10,15 @@ namespace Sadna_17_B_API.Controllers
     [Route("[controller]")]
     public class RestAPIController : ControllerBase
     {
+        private readonly ServiceFactory _serviceFactory;
         private readonly IUserService _userService;
+        private readonly StoreService _storeService;
 
-        public RestAPIController(IUserService userService)
+        public RestAPIController(ServiceFactory serviceFactory)
         {
-            _userService = userService;
+            _serviceFactory = serviceFactory;
+            _userService = serviceFactory.UserService;
+            _storeService = serviceFactory.StoreService;
         }
 
         [HttpPost("signup")]
@@ -26,7 +30,23 @@ namespace Sadna_17_B_API.Controllers
 
             if (response.Success)
             {
-                return Ok("Sign up successful!");
+                return Ok(response);
+            }
+            else
+            {
+                return BadRequest(response.Message);
+            }
+        }
+        [HttpPost("login")]
+        public IActionResult Login([FromBody] UserDto userDto)
+        {
+            // Validate userDto
+
+            var response = _userService.Login(userDto.Username, userDto.Password);
+
+            if (response.Success)
+            {
+                return Ok(response);
             }
             else
             {

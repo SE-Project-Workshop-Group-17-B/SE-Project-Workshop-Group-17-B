@@ -18,12 +18,11 @@ namespace Sadna_17_B_Frontend.Views
 
     public partial class SignUp : System.Web.UI.Page
     {
-        BackendController backendController = BackendController.get_instance();
         private async Task<string> SignUpUser(string username, string password)
         {
             using (HttpClient client = new HttpClient())
             {
-                var user = new UserDto { Username = username, Password = password };
+                var user = new UserDto { Username = username, Password = password, AccessToken = ""};
                 string prefix = "https://localhost:7063";
                 HttpResponseMessage response = await client.PostAsJsonAsync(prefix+ "/RestAPI/signup", user); // add relative path
                 if (response.IsSuccessStatusCode)

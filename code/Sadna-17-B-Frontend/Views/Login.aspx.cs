@@ -1,16 +1,20 @@
-﻿using Sadna_17_B_Frontend.Controllers;
+﻿using Sadna_17_B.ServiceLayer.ServiceDTOs;
+using Sadna_17_B_Frontend.Controllers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using Sadna_17_B_Backend.Controllers;
 
 namespace Sadna_17_B_Frontend.Views
 {
     public partial class Login : System.Web.UI.Page
     {
-        BackendController backendController = BackendController.get_instance();
+        private BackendController backendController = BackendController.get_instance();
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -22,7 +26,7 @@ namespace Sadna_17_B_Frontend.Views
             Response.Write(@"<script language='javascript'>alert('" + message + "')</script>");
         }
 
-        protected void btnLogin_Click(object sender, EventArgs e)
+        protected async void btnLogin_Click(object sender, EventArgs e)
         {
             string message = "";
             if (txtUsername.Text.Length == 0)
@@ -40,15 +44,13 @@ namespace Sadna_17_B_Frontend.Views
             }
             else
             {
-                message = backendController.login(txtUsername.Text, txtPassword.Text);
+                message = await backendController.login(txtUsername.Text, txtPassword.Text);
                 if (message != null)
                 {
-                    //MessageBox(message);
                     lblMessage.Text = message;
                 }
                 else
                 {
-                    //MessageBox("User logged in successfully, redirecting to home page"); // Cannot show the messagebox since the redirect happens before it shows up
                     Response.Redirect("~/Views/Homepage"); // Redirects back to the home page after a successful login.
                 }
             }

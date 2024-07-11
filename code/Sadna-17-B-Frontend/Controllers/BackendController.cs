@@ -1,14 +1,18 @@
 ﻿using Microsoft.Ajax.Utilities;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Sadna_17_B.DomainLayer.StoreDom;
 using Sadna_17_B.ServiceLayer;
 using Sadna_17_B.ServiceLayer.ServiceDTOs;
 using Sadna_17_B.ServiceLayer.Services;
 using Sadna_17_B.Utils;
+using Sadna_17_B_Backend.Controllers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.WebPages;
 
@@ -19,7 +23,7 @@ namespace Sadna_17_B_Frontend.Controllers
         
         // ----------------------------------- class initials -----------------------------------------------------------------------
 
-
+        
         private static BackendController instance = null;
 
         private ServiceFactory serviceFactory;
@@ -29,6 +33,8 @@ namespace Sadna_17_B_Frontend.Controllers
         public StoreService storeService;
         
         private UserDTO userDTO;
+
+        string prefix = "https://localhost:7063";
 
 
         private BackendController()
@@ -197,23 +203,45 @@ namespace Sadna_17_B_Frontend.Controllers
 
 
         // ----------------------------------- authentication system -----------------------------------------------------------------------
-
+        // we will change the logic in here to call to the api with the right method. 
+        //the api calls will be from here and not in the Aspx.cs
         private void entry()
         {
             Response response = userService.GuestEntry();
             userDTO = response.Data as UserDTO;
         }
 
-        public string login(string username, string password)
+        public async Task<string> login(string username, string password)
         {
-            Response response = userService.Login(username, password);
-            if (!response.Success)
+            using (HttpClient client = new HttpClient())
             {
-                return response.Message;
-            }
+                var user = new UserDto { Username = username, Password = password, AccessToken = "" };
+                
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/login", user); // add relative path
+                
+                if (response.IsSuccessStatusCode)
+                {
+                    //userDTO = response.Content as UserDTO;
+                    string response1 = await response.Content.ReadAsStringAsync();
+                    Response response2 = JsonConvert.DeserializeObject <Response>(response1);
+                    userDTO = JsonConvert.DeserializeObject<UserDTO>(response2.Data.ToString());
+                    return null; // Login successful
+                }
+                else
+                {
+                    string errorMessage = await response.Content.ReadAsStringAsync();
 
-            userDTO = response.Data as UserDTO;
-            return null;
+                    return $"Login failed: {errorMessage}";
+                }
+            }
+            //Response response = userService.Login(username, password);
+            //if (!response.Success)
+            //{
+            //    return response.Message;
+            //}
+            //
+            //userDTO = response.Data as UserDTO;
+            //return null;
         }
 
         public string sign_up(string username, string password)

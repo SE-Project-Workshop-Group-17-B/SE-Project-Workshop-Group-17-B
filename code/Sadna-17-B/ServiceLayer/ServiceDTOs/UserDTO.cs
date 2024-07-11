@@ -8,8 +8,14 @@ namespace Sadna_17_B.ServiceLayer.ServiceDTOs
 {
     public class UserDTO
     {
-        public string Username { get; }
-        public string AccessToken { get; }
+        public string Username { get; set; }
+        public string AccessToken { get; set; }
+
+        public UserDTO() 
+        {
+            Username = null;
+            AccessToken = null;
+        }
 
         public UserDTO(string username, string accessToken)
         {
