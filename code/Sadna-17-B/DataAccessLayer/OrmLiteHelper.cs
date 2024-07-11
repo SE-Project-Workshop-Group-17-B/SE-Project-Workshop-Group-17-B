@@ -18,7 +18,7 @@ namespace Sadna_17_B.DataAccessLayer
 
         private OrmLiteHelper()
         {
-            string connectionName = memoryDB ? "SQLiteDB-Memory" : "SQLiteDB";
+            string connectionName = memoryDB ? "SQLiteDB-Memory" : "SQLiteDB"; // Can be used to swap the database to an in-memory one
             // Ensure the provider is only registered once
             var connectionString = ConfigurationManager.ConnectionStrings[connectionName]?.ConnectionString;
 
