@@ -20,8 +20,7 @@ namespace Sadna_17_B.DomainLayer.User
 
         // Foreign Key to Store
 
-        // Navigation properties
-        public virtual ICollection<Cart_Product> Products { get; set; }
+      
         private Dictionary<int, Cart_Product> id_to_product = new Dictionary<int, Cart_Product>();
 
         private Dictionary<string, List<Cart_Product>> category_to_products = new Dictionary<string, List<Cart_Product>>();

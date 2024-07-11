@@ -197,6 +197,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataAccessLayer\ApplicationDbContext.cs" />
+    <Compile Include="DataAccessLayer\Repositories\IOrderRepository.cs" />
+    <Compile Include="DataAccessLayer\Repositories\IProductRepository.cs" />
+    <Compile Include="DataAccessLayer\Repositories\IRepository.cs" />
+    <Compile Include="DataAccessLayer\Repositories\IStoreRepository.cs" />
+    <Compile Include="DataAccessLayer\Repositories\IUnitOfWork.cs" />
+    <Compile Include="DataAccessLayer\Repositories\IUserRepository.cs" />
+    <Compile Include="DataAccessLayer\Repositories\OrderRepository.cs" />
+    <Compile Include="DataAccessLayer\Repositories\ProductRepository.cs" />
+    <Compile Include="DataAccessLayer\Repositories\Repository.cs" />
+    <Compile Include="DataAccessLayer\Repositories\StoreRepository.cs" />
+    <Compile Include="DataAccessLayer\Repositories\UnitOfWork.cs" />
+    <Compile Include="DataAccessLayer\Repositories\UserRepository.cs" />
     <Compile Include="DomainLayer\DomainFactory.cs" />
     <Compile Include="DomainLayer\Order\Order.cs" />
     <Compile Include="DomainLayer\Order\OrderSystem.cs" />
