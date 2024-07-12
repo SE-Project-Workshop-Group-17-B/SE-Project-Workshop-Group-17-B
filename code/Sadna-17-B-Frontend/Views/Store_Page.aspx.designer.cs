@@ -123,6 +123,24 @@ namespace Sadna_17_B_Frontend.Views
         protected global::System.Web.UI.WebControls.Label lblReviews;
 
         /// <summary>
+        /// Label2 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label Label2;
+
+        /// <summary>
+        /// rptProducts2 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Repeater rptProducts2;
+
+        /// <summary>
         /// storeNameLiteral control.
         /// </summary>
         /// <remarks>

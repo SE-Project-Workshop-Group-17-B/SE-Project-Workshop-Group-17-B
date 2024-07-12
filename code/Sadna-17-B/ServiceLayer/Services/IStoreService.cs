@@ -42,7 +42,7 @@ namespace Sadna_17_B.ServiceLayer.Services
         // ---------------- search / filter options -------------------------------------------------------------------------------------------
         
         Response all_products();
-
+        Response get_product_by_id(int productId);
 
         // ---------------- adjust policy options -------------------------------------------------------------------------------------------
 

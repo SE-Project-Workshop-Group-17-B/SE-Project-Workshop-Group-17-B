@@ -11,97 +11,133 @@ namespace Sadna_17_B_Frontend.Views
 {
 
 
-    public partial class SearchProduct
+    public partial class ProductDetails
     {
 
         /// <summary>
-        /// txtKeyword control.
+        /// imgProduct control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlInputText txtKeyword;
+        protected global::System.Web.UI.WebControls.Image imgProduct;
 
         /// <summary>
-        /// txtCategory control.
+        /// litProductName control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlInputText txtCategory;
+        protected global::System.Web.UI.WebControls.Literal litProductName;
 
         /// <summary>
-        /// txtMinPrice control.
+        /// litProductPrice control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlInputText txtMinPrice;
+        protected global::System.Web.UI.WebControls.Literal litProductPrice;
 
         /// <summary>
-        /// txtMaxPrice control.
+        /// litProductRating control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlInputText txtMaxPrice;
+        protected global::System.Web.UI.WebControls.Literal litProductRating;
 
         /// <summary>
-        /// txtMinRating control.
+        /// litRatingCount control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlInputGenericControl txtMinRating;
+        protected global::System.Web.UI.WebControls.Literal litRatingCount;
 
         /// <summary>
-        /// txtMinStoreRating control.
+        /// litProductCategory control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlInputGenericControl txtMinStoreRating;
+        protected global::System.Web.UI.WebControls.Literal litProductCategory;
 
         /// <summary>
-        /// txtStoreID control.
+        /// litStoreID control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlInputText txtStoreID;
+        protected global::System.Web.UI.WebControls.Literal litStoreID;
 
         /// <summary>
-        /// btnSearch control.
+        /// btnAddToCart control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnSearch;
+        protected global::System.Web.UI.WebControls.Button btnAddToCart;
 
         /// <summary>
-        /// rptProducts control.
+        /// litProductDescription control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Repeater rptProducts;
+        protected global::System.Web.UI.WebControls.Literal litProductDescription;
 
         /// <summary>
-        /// lblMessage control.
+        /// rblRating control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Literal lblMessage;
+        protected global::System.Web.UI.WebControls.RadioButtonList rblRating;
+
+        /// <summary>
+        /// btnSubmitRating control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnSubmitRating;
+
+        /// <summary>
+        /// txtReview control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtReview;
+
+        /// <summary>
+        /// btnSubmitReview control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnSubmitReview;
+
+        /// <summary>
+        /// rptReviews control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Repeater rptReviews;
     }
 }
