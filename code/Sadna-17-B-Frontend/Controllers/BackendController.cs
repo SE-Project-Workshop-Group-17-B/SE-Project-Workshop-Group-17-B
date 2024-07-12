@@ -23,13 +23,11 @@ namespace Sadna_17_B_Frontend.Controllers
     {
         
         // ----------------------------------- class initials -----------------------------------------------------------------------
-
         
         private static BackendController instance = null;
 
         private ServiceFactory serviceFactory;
 
-        private IUserService userService;
 
         public StoreService storeService;
         
@@ -41,7 +39,6 @@ namespace Sadna_17_B_Frontend.Controllers
         private BackendController()
         {
             serviceFactory = new ServiceFactory();
-            userService = serviceFactory.UserService;
             storeService = serviceFactory.StoreService;
 
             entry();

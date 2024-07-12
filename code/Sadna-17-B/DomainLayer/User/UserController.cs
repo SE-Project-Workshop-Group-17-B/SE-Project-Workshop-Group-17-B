@@ -483,6 +483,8 @@ namespace Sadna_17_B.DomainLayer.User
             user.UpdateCartProduct(storeID, productID, quantity);
         }
 
+
+        //Elay Here
         public void CompletePurchase(string token, string destinationAddress, string creditCardInfo)
         {
             infoLogger.Log($"Attempting to purchase - Subscriber: {GetSubscriberByToken(token).Username}");
