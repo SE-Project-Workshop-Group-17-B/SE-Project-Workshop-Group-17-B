@@ -29,14 +29,12 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         public string Name { get; set; }
         protected double price { get; set; }
 
-        [NotMapped]
-        protected List<Func<Basket, bool>> conditions = new List<Func<Basket, bool>>();
+        
+        public virtual List<Func<Basket, bool>> conditions { get; set; }
 
-        [NotMapped]
-        protected List<Purchase_Rule> purchase_rules = new List<Purchase_Rule>();
+        public virtual List<Purchase_Rule> purchase_rules { get; set; }
 
-        [NotMapped]
-        protected Func<Basket, List<Func<Basket, bool>>, bool> aggregation_rule { get; set; }
+        public virtual Func<Basket, List<Func<Basket, bool>>, bool> aggregation_rule { get; set; }
 
 
 
@@ -46,6 +44,9 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         {
             id_counter++;
             ID = id_counter;
+
+            conditions = new List<Func<Basket, bool>>();
+            purchase_rules = new List<Purchase_Rule>();
         }
         
         public Purchase_Rule(Func<Basket, List<Func<Basket, bool>>, bool> purchase_rule, string name = "default") : this()
