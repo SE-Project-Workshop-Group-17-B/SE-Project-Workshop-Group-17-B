@@ -38,9 +38,9 @@ namespace Sadna_17_B_Frontend.Controllers
         string prefix = "https://localhost:7063";
 
 
-        private BackendController()
+        private BackendController(ServiceFactory sf)
         {
-            serviceFactory = new ServiceFactory();
+            serviceFactory = sf;
             userService = serviceFactory.UserService;
             storeService = serviceFactory.StoreService;
 
@@ -51,7 +51,7 @@ namespace Sadna_17_B_Frontend.Controllers
         {
             if (instance == null)
             {
-                instance = new BackendController();
+                instance = new BackendController(new ServiceFactory());
             }
             return instance;
         }
