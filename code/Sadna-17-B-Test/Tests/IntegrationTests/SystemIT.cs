@@ -145,7 +145,7 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
             int pid = sc.add_store_product(sid, "prd", 5.0, "category", "desc", 10);
 
             Cart cart = new Cart();
-            cart.add_product(new Cart_Product(sid, 10, 5.0, "category", pid));
+            cart.add_product(new Cart_Product(sid, 10, 5.0, "category", pid, "product1"));
 
             OrderSystem os = new OrderSystem(sc, testObject.Object);
             try
@@ -173,7 +173,7 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
             int pid = sc.add_store_product(sid, "prd", 5.0, "category", "desc", 10);
 
             Cart cart = new Cart();
-            cart.add_product(new Cart_Product(sid,20, 10, "category", pid));
+            cart.add_product(new Cart_Product(sid,20, 10, "category", pid, "product1"));
 
             OrderSystem os = new OrderSystem(sc, testObject.Object);
             try
