@@ -4,6 +4,7 @@ using Sadna_17_B;
 using Sadna_17_B.ServiceLayer;
 using Sadna_17_B.ServiceLayer.Services;
 using Sadna_17_B.Utils;
+using Sadna_17_B.DomainLayer.User;
 
 namespace Sadna_17_B_API.Controllers
 {
@@ -20,6 +21,13 @@ namespace Sadna_17_B_API.Controllers
             _serviceFactory = serviceFactory;
             _userService = serviceFactory.UserService;
             _storeService = serviceFactory.StoreService;
+        }
+
+        [HttpPost("entry")]
+        public Response Entry()
+        {
+            var response = _userService.GuestEntry();
+            return response;
         }
 
         [HttpPost("signup")]
@@ -54,6 +62,14 @@ namespace Sadna_17_B_API.Controllers
                 return BadRequest(response.Message);
             }
         }
+
+        [HttpPost("logout")]
+        public Response Logout([FromBody] UserDto user)
+        {
+            var response = _userService.Logout(user.AccessToken);
+            return response;
+        }
+
         [HttpGet("get_stores")]
         public Response get_stores()
         {
@@ -123,5 +139,33 @@ namespace Sadna_17_B_API.Controllers
             return response;
         }
 
+        [HttpPost("get_shoping_cart")]
+        public Response getShopingCart([FromBody] UserDto user)
+        {
+            var response = _userService.GetShoppingCart(user.AccessToken);
+            return response;
+        }
+
+        [HttpPost("get_owned_stores")]
+        public Response getOwnedStores([FromBody] UserDto user)
+        {
+            var response = _userService.GetMyOwnedStores(user.AccessToken);
+            return response;
+        }
+
+        [HttpPost("get_managed_stores")]
+        public Response getManagedStores([FromBody] UserDto user)
+        {
+            var response = _userService.GetMyManagedStores(user.AccessToken);
+            return response;
+        }
+
+        [HttpPost("get_stores_by_id")]
+
+        public Response getStoresById([FromBody] StoreDTO store)
+        {
+            var response = _storeService.store_by_id(store.storeId);
+            return response;
+        }
     }
 }

@@ -161,14 +161,26 @@ namespace Sadna_17_B_Frontend.Controllers
 
         // ----------------------------------- store information -----------------------------------------------------------------------
 
-        public ShoppingCartDTO get_shoping_cart()
+
+        public async Task<ShoppingCartDTO> get_shoping_cart()
         {
-            Response response = userService.GetShoppingCart(userDTO.AccessToken);
-            if (response.Success)
+            using (HttpClient client = new HttpClient())
             {
-                return (response.Data as ShoppingCartDTO);
+                var payload = new { AccessToken = userDTO.AccessToken };
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/get_Shoping_cart", payload); // add relative path
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string response1 = await response.Content.ReadAsStringAsync();
+                    Response response2 = JsonConvert.DeserializeObject<Response>(response1);
+                    return JsonConvert.DeserializeObject<ShoppingCartDTO>(response2.Data.ToString());
+                }
+                else
+                {
+                    return null;
+                }
             }
-            return null;
+
         }
 
         public async Task<Response> get_stores()
@@ -198,34 +210,55 @@ namespace Sadna_17_B_Frontend.Controllers
             }
         }
 
-        public List<Store> got_owned_stores()
+        public async Task<List<Store>> got_owned_stores()
         {
-            Response response = userService.GetMyOwnedStores(userDTO.AccessToken);
-            if (response.Success)
+            using (HttpClient client = new HttpClient())
             {
-                List<int> storeIds = response.Data as List<int>;
-                return get_store_details(storeIds);
+                var payload = new { AccessToken = userDTO.AccessToken };
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/get_owned_stores", payload); // add relative path
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string response1 = await response.Content.ReadAsStringAsync();
+                    Response response2 = JsonConvert.DeserializeObject<Response>(response1);
+                    var storeIds =  JsonConvert.DeserializeObject<List<int>>(response2.Data.ToString());
+                    return await get_store_details(storeIds);
+                }
+                else
+                {
+                    return new List<Store>();
+                }
             }
-            return new List<Store>();
         }
 
-        public List<Store> get_managed_store()
+
+        public async Task<List<Store>> get_managed_store()
         {
-            Response response = userService.GetMyManagedStores(userDTO.AccessToken);
-            if (response.Success)
+            using (HttpClient client = new HttpClient())
             {
-                List<int> storeIds = response.Data as List<int>;
-                return get_store_details(storeIds);
+                var payload = new { AccessToken = userDTO.AccessToken };
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/get_managed_stores", payload); // add relative path
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string response1 = await response.Content.ReadAsStringAsync();
+                    Response response2 = JsonConvert.DeserializeObject<Response>(response1);
+                    var storeIds = JsonConvert.DeserializeObject<List<int>>(response2.Data.ToString());
+                    return await get_store_details(storeIds);
+                }
+                else
+                {
+                    return new List<Store>();
+                }
             }
-            return new List<Store>();
         }
 
-        private List<Store> get_store_details(List<int> storeIds)
+        private async Task<List<Store>> get_store_details(List<int> storeIds)
         {
             List<Store> storeDetailsList = new List<Store>();
             foreach (int storeId in storeIds)
             {
-                var storeDetails = get_store_details_by_id(storeId);
+                var storeDetails = await get_store_details_by_id(storeId);
                 if (storeDetails != null)
                 {
                     storeDetailsList.Add(storeDetails);
@@ -234,14 +267,25 @@ namespace Sadna_17_B_Frontend.Controllers
             return storeDetailsList;
         }
 
-        public Store get_store_details_by_id(int storeId)
+        public async Task<Store> get_store_details_by_id(int storeId)
         {
-            Response response = storeService.store_by_id(storeId);
-            if (response.Success)
+            using (HttpClient client = new HttpClient())
             {
-                return response.Data as Store;
+                var payload = new { storeId = storeId };
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/get_stores_by_id", payload); // add relative path
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string response1 = await response.Content.ReadAsStringAsync();
+                    Response response2 = JsonConvert.DeserializeObject<Response>(response1);
+                    var store = JsonConvert.DeserializeObject<Store>(response2.Data.ToString());
+                    return store;
+                }
+                else
+                {
+                    return null;
+                }
             }
-            return null;
         }
 
 
@@ -249,10 +293,18 @@ namespace Sadna_17_B_Frontend.Controllers
         // ----------------------------------- authentication system -----------------------------------------------------------------------
         // we will change the logic in here to call to the api with the right method. 
         //the api calls will be from here and not in the Aspx.cs
-        private void entry()
+        private async void entry()
         {
-            Response response = userService.GuestEntry();
-            userDTO = response.Data as UserDTO;
+            using(HttpClient client = new HttpClient())
+            {
+                HttpResponseMessage response = await client.GetAsync(prefix + "/RestAPI/entry");
+                string response1 = await response.Content.ReadAsStringAsync();
+                Response response2 = JsonConvert.DeserializeObject<Response>(response1);
+                if (response.IsSuccessStatusCode)
+                {
+                    userDTO = JsonConvert.DeserializeObject<UserDTO>(response2.Data.ToString());
+                } else {}
+            }
         }
 
         public async Task<string> login(string username, string password)
@@ -306,16 +358,25 @@ namespace Sadna_17_B_Frontend.Controllers
             }
         }
 
-        public string logout()
+        public async Task<string> logout()
         {
-            Response response = userService.Logout(userDTO.AccessToken);
-            if (!response.Success)
+            using(HttpClient client = new HttpClient())
             {
-                return response.Message;
-            }
+                var payload = new {AccessToken = userDTO.AccessToken};
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/logout", payload);
+                string response1 = await response.Content.ReadAsStringAsync();
+                Response response2 = JsonConvert.DeserializeObject<Response>(response1);
 
-            userDTO = response.Data as UserDTO;
-            return null;
+                if (!response.IsSuccessStatusCode)
+                {
+                    return response2.Message;
+                }
+                else
+                {
+                    userDTO = response2.Data as UserDTO;
+                    return null;
+                }
+            }
         }
 
         public bool logged_in()
