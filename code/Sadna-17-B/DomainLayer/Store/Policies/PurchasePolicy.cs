@@ -1,6 +1,7 @@
 ﻿using Sadna_17_B.DomainLayer.Utils;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -53,7 +54,11 @@ namespace Sadna_17_B.DomainLayer.StoreDom
     {
 
         // ---------------- variables ----------------------------------------------------
+        public int storeId { get; set; }
+        public int purchaseId { get; set; }
 
+
+        [NotMapped]
         public Purchase_Rule purchase_tree;
 
         public PurchasePolicy()

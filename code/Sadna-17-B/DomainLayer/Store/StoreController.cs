@@ -1,6 +1,7 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using Microsoft.SqlServer.Server;
 using Microsoft.Win32;
+using Sadna_17_B.DataAccessLayer;
 using Sadna_17_B.DomainLayer.User;
 using Sadna_17_B.DomainLayer.Utils;
 using Sadna_17_B.Utils;
@@ -119,6 +120,12 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                                    .Build();
 
             active_stores.Add(store.ID,store);
+            
+            using (var context = new ApplicationDbContext())
+            {
+                context.Stores.Add(store);
+                context.SaveChanges();
+            }
 
             return store.ID;
         }
