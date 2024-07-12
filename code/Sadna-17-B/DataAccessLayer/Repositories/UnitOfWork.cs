@@ -51,6 +51,10 @@ namespace Sadna_17_B.Repositories
         public void DeleteAll()
         {
             _context.DeleteAll();
+            Stores.ResetAutoIncrementKey();
+            Products.ResetAutoIncrementKey();
+            Orders.ResetAutoIncrementKey();
+            //Users.ResetAutoIncrementKey();
         }
     }
 }
