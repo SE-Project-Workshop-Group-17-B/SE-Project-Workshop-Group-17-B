@@ -5,6 +5,6 @@ namespace Sadna_17_B.Repositories
 {
     public interface IProductRepository : IRepository<Product>
     {
-        IEnumerable<Product> GetProductsByStore(int storeId);
+        //IEnumerable<Product> GetProductsByStore(int storeId);
     }
 }

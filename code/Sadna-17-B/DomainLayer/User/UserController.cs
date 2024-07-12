@@ -22,13 +22,18 @@ namespace Sadna_17_B.DomainLayer.User
         private Dictionary<int, Guest> guests = new Dictionary<int, Guest>();
         private Dictionary<string, Subscriber> subscribers = new Dictionary<string, Subscriber>();
         private Dictionary<string, Admin> admins = new Dictionary<string, Admin>();
-         
+
 
         public UserController(OrderSystem orderSystem)
         {
             this.orderSystem = orderSystem;
             infoLogger = InfoLogger.Instance;
             this.notificationSystem = new NotificationSystem();
+        }
+
+        public void LoadData()
+        {
+
         }
 
         /// <summary>

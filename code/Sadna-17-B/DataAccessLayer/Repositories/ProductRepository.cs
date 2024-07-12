@@ -11,9 +11,9 @@ namespace Sadna_17_B.Repositories.Implementations
         {
         }
 
-        public IEnumerable<Product> GetProductsByStore(int storeId)
-        {
-            return Context.Products.Where(p => p.store_ID == storeId).ToList();
-        }
+        //public IEnumerable<Product> GetProductsByStore(int storeId)
+        //{
+        //    return Context.Products.Where(p => p.store_ID == storeId).ToList();
+        //}
     }
 }

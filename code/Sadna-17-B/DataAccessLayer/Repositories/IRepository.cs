@@ -13,5 +13,7 @@ namespace Sadna_17_B.Repositories
         void AddRange(IEnumerable<TEntity> entities);
         void Remove(TEntity entity);
         void RemoveRange(IEnumerable<TEntity> entities);
+        void DeleteAll();
+        void ResetAutoIncrementKey();
     }
 }

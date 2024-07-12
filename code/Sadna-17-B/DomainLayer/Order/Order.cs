@@ -15,12 +15,14 @@ namespace Sadna_17_B.DomainLayer.Order
         public string UserID { get; set; } // Can be either GuestID or Username, according to the order type
         public bool IsGuestOrder { get; set; }
         public DateTime Timestamp { get; set; }
-
-        [Required]
         public virtual Cart Cart { get; set; } // StoreID -> ProductID -> (quantity,unitPrice)
         public string DestinationAddress { get; set; }
         public string CreditCardInfo { get; set; }
         public double TotalPrice { get; set; } // Price after discount
+
+        public Order()
+        {
+        }
 
         public Order(int orderID, string userID, bool isGuestOrder, Cart cart, string destinationAddress, string creditCardInfo, double totalPrice)
         {

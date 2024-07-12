@@ -10,11 +10,11 @@ namespace Sadna_17_B.Repositories.Implementations
         {
         }
 
-        public Store GetStoreWithProducts(int id)
-        {
-            return Context.Stores
-                .Include("Products")
-                .SingleOrDefault(s => s.ID == id);
-        }
+        //public Store GetStoreWithProducts(int id)
+        //{
+        //    return Context.Stores
+        //        .Include("Products")
+        //        .SingleOrDefault(s => s.ID == id);
+        //}
     }
 }

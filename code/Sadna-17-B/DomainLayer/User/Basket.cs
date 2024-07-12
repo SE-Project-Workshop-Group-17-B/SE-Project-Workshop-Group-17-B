@@ -16,7 +16,7 @@ namespace Sadna_17_B.DomainLayer.User
         // ----------- variables + constructor -------------------------------------------------------------
 
         [Key]
-        public int store_id { get; private set; }
+        public int store_id { get; set; }
 
         // Foreign Key to Store
 
@@ -25,6 +25,9 @@ namespace Sadna_17_B.DomainLayer.User
 
         private Dictionary<string, List<Cart_Product>> category_to_products = new Dictionary<string, List<Cart_Product>>();
 
+        public Basket()
+        {
+        }
 
 
         public Basket(int storeID)

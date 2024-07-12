@@ -15,11 +15,10 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         // ---------------- Variables -------------------------------------------------------------------------------------------
         [Key]
-        public int store_id { get; private set; }
+        public int store_id { get; set; }
 
-        [NotMapped]
 
-        private Dictionary<int, Product> id_to_product = new Dictionary<int, Product>();
+        public Dictionary<int, Product> id_to_product { get; set; }
 
 
         // ---------------- Adjust product -------------------------------------------------------------------------------------------
@@ -33,6 +32,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         public Inventory(int store_id)
         {
             this.store_id = store_id;
+            id_to_product = new Dictionary<int, Product>();
         }
 
         public int add_product(string name, double price, string category,string description, int amount)

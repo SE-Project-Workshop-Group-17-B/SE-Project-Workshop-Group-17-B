@@ -7,18 +7,35 @@ namespace Sadna_17_B.Repositories
     {
         private readonly ApplicationDbContext _context;
 
-        public IStoreRepository Stores { get; private set; }
-        public IProductRepository Products { get; private set; }
-        public IOrderRepository Orders { get; private set; }
-        public IUserRepository Users { get; private set; }
+        private static UnitOfWork instance = null;
 
-        public UnitOfWork(ApplicationDbContext context)
+        public IStoreRepository Stores { get; set; }
+        public IProductRepository Products { get; set; }
+        public IOrderRepository Orders { get; set; }
+        public IUserRepository Users { get; set; }
+
+        protected UnitOfWork(ApplicationDbContext context)
         {
             _context = context;
             Stores = new StoreRepository(_context);
             Products = new ProductRepository(_context);
             Orders = new OrderRepository(_context);
        //     Users = new UserRepository(_context);
+        }
+
+        public static UnitOfWork GetInstance()
+        {
+            if (instance == null)
+            {
+                if (ApplicationDbContext.isMemoryDB) // or Configuration.IsMemoryDb
+                {
+                    instance = new MemoryUnitOfWork(new ApplicationDbContext());
+                } else
+                {
+                    instance = new UnitOfWork(new ApplicationDbContext());
+                }
+            }
+            return instance;
         }
 
         public int Complete()
@@ -29,6 +46,11 @@ namespace Sadna_17_B.Repositories
         public void Dispose()
         {
             _context.Dispose();
+        }
+
+        public void DeleteAll()
+        {
+            _context.DeleteAll();
         }
     }
 }

@@ -4,6 +4,8 @@ using Microsoft.Win32;
 using Sadna_17_B.DataAccessLayer;
 using Sadna_17_B.DomainLayer.User;
 using Sadna_17_B.DomainLayer.Utils;
+using Sadna_17_B.Repositories;
+using Sadna_17_B.Repositories.Implementations;
 using Sadna_17_B.Utils;
 using System;
 using System.Collections.Generic;
@@ -27,10 +29,25 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         private Dictionary<int, Store> permanently_closed_stores;
         private StoreBuilder store_builder;
 
+        // DAL Repository:
+        IUnitOfWork repository = UnitOfWork.GetInstance();
+
         public StoreController() {
             active_stores = new Dictionary<int,Store>(); 
             temporary_closed_stores = new Dictionary<int,Store>();
             permanently_closed_stores = new Dictionary<int,Store>();
+        }
+
+        public void LoadData()
+        {
+            IEnumerable<Store> stores = repository.Stores.GetAll();
+            foreach (Store store in stores)
+            {
+                //if (store.IsActive)
+                //{
+                    active_stores[store.ID] = store;
+                //}
+            }
         }
 
 
@@ -113,20 +130,16 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             StoreBuilder builder = new StoreBuilder();
 
             Store store = builder.SetName(name)
-                                   .SetEmail(email) 
+                                   .SetEmail(email)
                                    .SetPhoneNumber(phoneNumber)
                                    .SetStoreDescription(storeDescription)
                                    .SetAddress(address)
                                    .Build();
 
-            active_stores.Add(store.ID,store);
-            
-            using (var context = new ApplicationDbContext())
-            {
-                context.Stores.Add(store);
-                context.SaveChanges();
-            }
+            repository.Stores.Add(store);
+            repository.Complete(); // SaveChanges -> Updates the ID according to the Stores Table
 
+            active_stores.Add(store.ID, store);
             return store.ID;
         }
 

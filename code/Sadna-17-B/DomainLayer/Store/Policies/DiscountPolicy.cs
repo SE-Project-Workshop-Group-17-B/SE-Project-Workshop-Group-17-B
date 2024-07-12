@@ -43,6 +43,9 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         // ----------- constructor -----------------------------------------------------------
 
+        public DiscountPolicy()
+        {
+        }
 
         public DiscountPolicy(string policy_name)
         {

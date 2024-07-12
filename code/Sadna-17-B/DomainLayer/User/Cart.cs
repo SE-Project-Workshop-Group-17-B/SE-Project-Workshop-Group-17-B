@@ -17,7 +17,7 @@ namespace Sadna_17_B.DomainLayer.User
         private int counter_id = 0;
         [Key]
         public int ID { get; set; }
-        public int user_age { get; private set; } 
+        public int user_age { get; set; } 
 
         public Dictionary<int, Basket> sid_to_basket = new Dictionary<int, Basket>();
 

@@ -52,5 +52,20 @@ namespace Sadna_17_B.Repositories.Implementations
         {
             DbSet.RemoveRange(entities);
         }
+
+        public void DeleteAll()
+        {
+            var allEntities = DbSet.ToList();
+            RemoveRange(allEntities);
+            ResetAutoIncrementKey();
+        }
+
+        public void ResetAutoIncrementKey()
+        {
+            // Choose the appropriate implementation based on your database
+            var tableName = Context.GetTableName(typeof(TEntity));
+            Context.Database.ExecuteSqlCommand($"DBCC CHECKIDENT('{tableName}', RESEED, 0)");
+        }
+
     }
 }

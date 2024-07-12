@@ -52,6 +52,11 @@ namespace Sadna_17_B.DomainLayer.Order
             this.supplySystem = supplyInstance;
         }
 
+        public void LoadData()
+        {
+
+        }
+
 
 
         // ------- process order --------------------------------------------------------------------------------

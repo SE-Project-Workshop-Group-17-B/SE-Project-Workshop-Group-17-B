@@ -11,9 +11,9 @@ namespace Sadna_17_B.Repositories.Implementations
         {
         }
 
-        public IEnumerable<Order> GetOrdersByUser(string userId)
-        {
-            return Context.Orders.Where(o => o.UserID == userId).ToList();
-        }
+        //public IEnumerable<Order> GetOrdersByUser(string userId)
+        //{
+        //    return Context.Orders.Where(o => o.UserID == userId).ToList();
+        //}
     }
 }

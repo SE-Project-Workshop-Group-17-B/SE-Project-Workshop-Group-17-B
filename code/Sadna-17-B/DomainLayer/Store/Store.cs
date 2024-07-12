@@ -37,8 +37,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         public string description { get; set; }
         public string address { get; set; }
 
-      
-        public virtual Inventory inventory { get; set; }
+        public Inventory inventory { get; set; }
 
        
         public virtual DiscountPolicy discount_policy { get; private set; }
@@ -54,10 +53,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         [NotMapped]
         public static int idCounter = 1;
 
-        [NotMapped]
         private int ratingCounter { get; set; }
-
-        [NotMapped]
         private double ratingOverAllScore { get; set; }
 
 
@@ -80,7 +76,6 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             this.phone_number = phone_number;
             this.description = store_description;
             this.address = address;
-            this.inventory = inventory;
 
             this.inventory = new Inventory(ID);
             this.discount_policy = new DiscountPolicy("default policy");

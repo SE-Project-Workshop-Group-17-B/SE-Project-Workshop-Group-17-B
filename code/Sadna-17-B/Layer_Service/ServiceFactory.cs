@@ -1,5 +1,6 @@
 ﻿using Sadna_17_B.DomainLayer;
 using Sadna_17_B.DomainLayer.StoreDom;
+using Sadna_17_B.Repositories;
 using Sadna_17_B.ServiceLayer.ServiceDTOs;
 using Sadna_17_B.ServiceLayer.Services;
 using Sadna_17_B.Utils;
@@ -24,10 +25,22 @@ namespace Sadna_17_B.ServiceLayer
 
         public ServiceFactory()
         {
+            // Read Configuration File -> isMemory = false / frue
             domainFactory = new DomainFactory();
             BuildInstances();
+            CleanDatabase();
             GenerateData(); // Comment this out in version 3 when we load the data from the database.
-            // LoadData(); // Will be used to load the data from the database in version 3.
+            //LoadData(); // Will be used to load the data from the database in version 3.
+        }
+
+        public void CleanDatabase()
+        {
+            UnitOfWork.GetInstance().DeleteAll();
+        }
+
+        public void LoadData()
+        {
+            domainFactory.LoadData();
         }
 
         public void GenerateData()
