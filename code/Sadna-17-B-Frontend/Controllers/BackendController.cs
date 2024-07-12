@@ -293,19 +293,24 @@ namespace Sadna_17_B_Frontend.Controllers
         // ----------------------------------- authentication system -----------------------------------------------------------------------
         // we will change the logic in here to call to the api with the right method. 
         //the api calls will be from here and not in the Aspx.cs
-        private async void entry()
+        private void entry()
         {
-            using(HttpClient client = new HttpClient())
+            using (HttpClient client = new HttpClient())
             {
-                HttpResponseMessage response = await client.GetAsync(prefix + "/RestAPI/entry");
-                string response1 = await response.Content.ReadAsStringAsync();
+                HttpResponseMessage response = client.GetAsync(prefix + "/RestAPI/entry").GetAwaiter().GetResult();
+                string response1 = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
                 Response response2 = JsonConvert.DeserializeObject<Response>(response1);
                 if (response.IsSuccessStatusCode)
                 {
                     userDTO = JsonConvert.DeserializeObject<UserDTO>(response2.Data.ToString());
-                } else {}
+                }
+                else
+                {
+                    // Handle error case here if necessary
+                }
             }
         }
+
 
         public async Task<string> login(string username, string password)
         {
@@ -358,22 +363,22 @@ namespace Sadna_17_B_Frontend.Controllers
             }
         }
 
-        public async Task<string> logout()
+        public string logout()
         {
-            using(HttpClient client = new HttpClient())
+            using (HttpClient client = new HttpClient())
             {
-                var payload = new {AccessToken = userDTO.AccessToken};
-                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/logout", payload);
-                string response1 = await response.Content.ReadAsStringAsync();
-                Response response2 = JsonConvert.DeserializeObject<Response>(response1);
+                var payload = new { AccessToken = userDTO.AccessToken };
+                HttpResponseMessage response = client.PostAsJsonAsync(prefix + "/RestAPI/logout", payload).GetAwaiter().GetResult();
+                string responseContent = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                Response responseObj = JsonConvert.DeserializeObject<Response>(responseContent);
 
                 if (!response.IsSuccessStatusCode)
                 {
-                    return response2.Message;
+                    return responseObj?.Message ?? "Unknown error occurred";
                 }
                 else
                 {
-                    userDTO = response2.Data as UserDTO;
+                    userDTO = responseObj.Data as UserDTO;
                     return null;
                 }
             }

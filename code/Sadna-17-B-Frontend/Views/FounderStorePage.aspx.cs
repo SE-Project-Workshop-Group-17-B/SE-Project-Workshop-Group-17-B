@@ -24,9 +24,9 @@ namespace Sadna_17_B_Frontend.Views
             }
         }
 
-        private void LoadStoreData(int storeId)
+        private async void LoadStoreData(int storeId)
         {
-            var store = backendController.get_store_details_by_id(storeId);
+            var store =  await backendController.get_store_details_by_id(storeId);
             if (store != null)
             {
                 storeNameLiteral.Text = store.name;
