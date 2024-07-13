@@ -89,11 +89,11 @@ namespace Sadna_17_B_Frontend.Views
             {
                 var data_item = item.DataItem;
                 var id = DataBinder.Eval(data_item, "Id");
-                var name = DataBinder.Eval(data_item, "Name");
-                var category = DataBinder.Eval(data_item, "Category");
-                var store_id = DataBinder.Eval(data_item, "store_id");
+                var name = DataBinder.Eval(data_item, "name");
+                var category = DataBinder.Eval(data_item, "category");
+                var store_id = DataBinder.Eval(data_item, "storeId");
                 var amount = DataBinder.Eval(data_item, "quantity");
-                var price = DataBinder.Eval(data_item, "Price");
+                var price = DataBinder.Eval(data_item, "price");
 
                 products.Add(new
                 {

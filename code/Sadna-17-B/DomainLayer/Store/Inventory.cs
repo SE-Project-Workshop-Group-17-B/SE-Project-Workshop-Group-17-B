@@ -3,6 +3,8 @@ using Sadna_17_B.DomainLayer.Utils;
 using Sadna_17_B.Utils;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Web;
 using System.Xml.Linq;
@@ -14,20 +16,32 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         // ---------------- Variables -------------------------------------------------------------------------------------------
 
-        public int store_id { get; private set; }
+        [Key, ForeignKey("Store")]
+        public int StoreId { get; set; }
+        public virtual Store Store { get; set; }
 
-        private Dictionary<int, Product> id_to_product = new Dictionary<int, Product>();
+
+        // public virtual Store Store { get; set; }
+        public Dictionary<int, Product> id_to_product { get; set; }
 
         // ---------------- Adjust product -------------------------------------------------------------------------------------------
 
+        public Inventory()
+        {
+            // Parameterless constructor required by EF
+        }
+       
+
         public Inventory(int store_id)
         {
-            this.store_id = store_id;
+            this.StoreId = store_id;
+            id_to_product = new Dictionary<int, Product>();
         }
 
         public int add_product(string name, double price, string category,string description, int amount)
         {
-            Product product = new Product(name, price, category, store_id, description, amount);
+            Product product = new Product(name, price, category, StoreId, description, amount);
+
             id_to_product[product.ID] = product;
 
             pushProductToDB(product);

@@ -52,7 +52,7 @@
                     <div class="item-details">
                         <div class="item-name"><%# Eval("name") %></div>
                         <p>Category: <%# Eval("category") %></p>
-                        <p>Store ID: <%# Eval("store_ID") %></p>
+                        <p>Store ID: <%# Eval("store_id") %></p>
                         <p>Quantity: <%# Eval("quantity") %></p>
                         <asp:LinkButton ID="lnkRemove" runat="server" CssClass="btn-remove" CommandName="Remove" CommandArgument='<%# Eval("ID") %>'>Remove</asp:LinkButton>
                     </div>

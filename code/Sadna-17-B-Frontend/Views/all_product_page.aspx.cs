@@ -71,7 +71,7 @@ namespace Sadna_17_B_Frontend.Views
                     p.Key.category,
                     p.Key.rating,
                     p.Key.description,
-                    p.Key.reviews,
+                    p.Key.Reviews,
                     StoreID = p.Value
                 }).ToList();
 

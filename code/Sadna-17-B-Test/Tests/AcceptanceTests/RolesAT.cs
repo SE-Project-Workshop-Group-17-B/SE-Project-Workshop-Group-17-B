@@ -11,6 +11,7 @@ using Newtonsoft.Json.Linq;
 using System.Diagnostics;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
+using Sadna_17_B.DataAccessLayer;
 
 namespace Sadna_17_B_Test.Tests.AcceptanceTests
 {
@@ -46,25 +47,26 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         [TestInitialize]
         public void SetUp()
         {
+            ApplicationDbContext.isMemoryDB = true; // Disconnect actual database from these tests
             ServiceFactory serviceFactory = new ServiceFactory();
             userService = serviceFactory.UserService;
             storeService = serviceFactory.StoreService;
-            Response ignore = userService.CreateSubscriber(username1, password1);
+            Response ignore = userService.upgrade_subscriber(username1, password1);
         }
 
         [TestMethod]
         public void TestSuccessfullCreateStoreFounder()
         {
-            Response ignore = userService.CreateSubscriber(username1, password1);
-            Response ignore2 = userService.CreateSubscriber(username2, password2);
-            Response res = userService.Login(username1, password1);
-            Response secUser = userService.Login(username2, password2);
+            Response ignore = userService.upgrade_subscriber(username1, password1);
+            Response ignore2 = userService.upgrade_subscriber(username2, password2);
+            Response res = userService.entry_subscriber(username1, password1);
+            Response secUser = userService.entry_subscriber(username2, password2);
             userDTO = res.Data as UserDTO;
             UserDTO secUserD = secUser.Data as UserDTO;
             ((UserService)userService).CreateStoreFounder(userDTO.AccessToken, sid);
 
-            Response res2 = ((UserService)userService).IsFounder(userDTO.AccessToken, sid);
-            Response res3 = ((UserService)userService).IsFounder(secUserD.AccessToken, sid);
+            Response res2 = ((UserService)userService).founder(userDTO.AccessToken, sid);
+            Response res3 = ((UserService)userService).founder(secUserD.AccessToken, sid);
 
             Assert.IsTrue(res2.Success);
             Assert.IsFalse(res3.Success);
@@ -73,10 +75,10 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         [TestMethod]
         public void TestSuccessfullStoreOwnerAppoitmentAccept()
         {
-            Response ignore = userService.CreateSubscriber(username1, password1);
-            Response ignore2 = userService.CreateSubscriber(username2, password2);
-            Response res1 = userService.Login(username1, password1);
-            Response res2 = userService.Login(username2, password2);
+            Response ignore = userService.upgrade_subscriber(username1, password1);
+            Response ignore2 = userService.upgrade_subscriber(username2, password2);
+            Response res1 = userService.entry_subscriber(username1, password1);
+            Response res2 = userService.entry_subscriber(username2, password2);
 
             string token1 = (res1.Data as UserDTO).AccessToken;
             string token2 = (res2.Data as UserDTO).AccessToken;
@@ -85,17 +87,17 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
             ignore = userService.OfferOwnerAppointment(token1, sid, username2);
             ignore = userService.RespondToOwnerAppointmentOffer(token2, sid, true);
 
-            Response res = userService.IsOwner(token2, sid);
+            Response res = userService.owner(token2, sid);
             Assert.IsTrue(res.Success);
         }
 
         [TestMethod]
         public void TestFailedStoreOwnerAppoitmentAccept()
         {
-            Response ignore = userService.CreateSubscriber(username1, password1);
-            Response ignore2 = userService.CreateSubscriber(username2, password2);
-            Response res1 = userService.Login(username1, password1);
-            Response res2 = userService.Login(username2, password2);
+            Response ignore = userService.upgrade_subscriber(username1, password1);
+            Response ignore2 = userService.upgrade_subscriber(username2, password2);
+            Response res1 = userService.entry_subscriber(username1, password1);
+            Response res2 = userService.entry_subscriber(username2, password2);
 
             string token1 = (res1.Data as UserDTO).AccessToken;
             string token2 = (res2.Data as UserDTO).AccessToken;
@@ -103,7 +105,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
 
             Response res = userService.RespondToOwnerAppointmentOffer(token2, sid, true);
 
-            Response isOwner = userService.IsOwner(token2, sid);
+            Response isOwner = userService.owner(token2, sid);
 
             Assert.IsFalse(res.Success);
             Assert.IsFalse(isOwner.Success);
@@ -112,10 +114,10 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         [TestMethod]
         public void TestSuccessfullStoreOwnerAppoitmentDecline()
         {
-            Response ignore = userService.CreateSubscriber(username1, password1);
-            Response ignore2 = userService.CreateSubscriber(username2, password2);
-            Response res1 = userService.Login(username1, password1);
-            Response res2 = userService.Login(username2, password2);
+            Response ignore = userService.upgrade_subscriber(username1, password1);
+            Response ignore2 = userService.upgrade_subscriber(username2, password2);
+            Response res1 = userService.entry_subscriber(username1, password1);
+            Response res2 = userService.entry_subscriber(username2, password2);
 
             string token1 = (res1.Data as UserDTO).AccessToken;
             string token2 = (res2.Data as UserDTO).AccessToken;
@@ -124,17 +126,17 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
             ignore = userService.OfferOwnerAppointment(token1, sid, username2);
             ignore = userService.RespondToOwnerAppointmentOffer(token2, sid, false);
 
-            Response res = userService.IsOwner(token2, sid);
+            Response res = userService.owner(token2, sid);
             Assert.IsFalse(res.Success);
         }
 
         [TestMethod]
         public void TestSuccessfullStoreManagerAppoitmentAccept()
         {
-            Response ignore = userService.CreateSubscriber(username1, password1);
-            Response ignore2 = userService.CreateSubscriber(username2, password2);
-            Response res1 = userService.Login(username1, password1);
-            Response res2 = userService.Login(username2, password2);
+            Response ignore = userService.upgrade_subscriber(username1, password1);
+            Response ignore2 = userService.upgrade_subscriber(username2, password2);
+            Response res1 = userService.entry_subscriber(username1, password1);
+            Response res2 = userService.entry_subscriber(username2, password2);
 
             string token1 = (res1.Data as UserDTO).AccessToken;
             string token2 = (res2.Data as UserDTO).AccessToken;
@@ -143,20 +145,20 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
             ignore = userService.OfferManagerAppointment(token1, sid, username2);
             ignore = userService.RespondToManagerAppointmentOffer(token2, sid, true);
 
-            Response res = userService.IsManager(token2, sid);
+            Response res = userService.manager(token2, sid);
             Assert.IsTrue(res.Success);
 
-            res = userService.IsManager(token1, sid);
+            res = userService.manager(token1, sid);
             Assert.IsFalse(res.Success);
         }
 
         [TestMethod]
         public void TestFailedStoreManagerAppoitmentAccept()
         {
-            Response ignore = userService.CreateSubscriber(username1, password1);
-            Response ignore2 = userService.CreateSubscriber(username2, password2);
-            Response res1 = userService.Login(username1, password1);
-            Response res2 = userService.Login(username2, password2);
+            Response ignore = userService.upgrade_subscriber(username1, password1);
+            Response ignore2 = userService.upgrade_subscriber(username2, password2);
+            Response res1 = userService.entry_subscriber(username1, password1);
+            Response res2 = userService.entry_subscriber(username2, password2);
 
             string token1 = (res1.Data as UserDTO).AccessToken;
             string token2 = (res2.Data as UserDTO).AccessToken;
@@ -164,7 +166,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
 
             Response res = userService.RespondToManagerAppointmentOffer(token2, sid, true);
 
-            Response checkNotApp = userService.IsManager(token2, sid);
+            Response checkNotApp = userService.manager(token2, sid);
 
             Assert.IsFalse(res.Success);
             Assert.IsFalse(checkNotApp.Success);
@@ -173,10 +175,10 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         [TestMethod]
         public void TestSuccessfullStoreManagerAppoitmentDecline()
         {
-            Response ignore = userService.CreateSubscriber(username1, password1);
-            Response ignore2 = userService.CreateSubscriber(username2, password2);
-            Response res1 = userService.Login(username1, password1);
-            Response res2 = userService.Login(username2, password2);
+            Response ignore = userService.upgrade_subscriber(username1, password1);
+            Response ignore2 = userService.upgrade_subscriber(username2, password2);
+            Response res1 = userService.entry_subscriber(username1, password1);
+            Response res2 = userService.entry_subscriber(username2, password2);
 
             string token1 = (res1.Data as UserDTO).AccessToken;
             string token2 = (res2.Data as UserDTO).AccessToken;
@@ -185,15 +187,15 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
             ignore = userService.OfferManagerAppointment(token1, sid, username2);
             ignore = userService.RespondToManagerAppointmentOffer(token2, sid, false);
 
-            Response res = userService.IsManager(token2, sid);
+            Response res = userService.manager(token2, sid);
             Assert.IsFalse(res.Success);
         }
 
         [TestMethod]
         public void TestSuccessfullStoreManagerAppoitmentWrongUser()
         {
-            Response ignore = userService.CreateSubscriber(username1, password1);
-            Response res1 = userService.Login(username1, password1);
+            Response ignore = userService.upgrade_subscriber(username1, password1);
+            Response res1 = userService.entry_subscriber(username1, password1);
 
             string token1 = (res1.Data as UserDTO).AccessToken;
             ((UserService)userService).CreateStoreFounder(token1, sid);
@@ -207,8 +209,8 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         public void TestSuccessfullStoreOwnerAppoitmentWrongUser()
         {
 
-            Response ignore = userService.CreateSubscriber(username1, password1);
-            Response res1 = userService.Login(username1, password1);
+            Response ignore = userService.upgrade_subscriber(username1, password1);
+            Response res1 = userService.entry_subscriber(username1, password1);
 
             string token1 = (res1.Data as UserDTO).AccessToken;
             ((UserService)userService).CreateStoreFounder(token1, sid);
@@ -221,10 +223,10 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         [TestMethod]
         public void TestSuccessfullRevokeOwnership()
         {
-            Response ignore = userService.CreateSubscriber(username1, password1);
-            Response ignore2 = userService.CreateSubscriber(username2, password2);
-            Response res1 = userService.Login(username1, password1);
-            Response res2 = userService.Login(username2, password2);
+            Response ignore = userService.upgrade_subscriber(username1, password1);
+            Response ignore2 = userService.upgrade_subscriber(username2, password2);
+            Response res1 = userService.entry_subscriber(username1, password1);
+            Response res2 = userService.entry_subscriber(username2, password2);
 
             string token1 = (res1.Data as UserDTO).AccessToken;
             string token2 = (res2.Data as UserDTO).AccessToken;
@@ -234,7 +236,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
             ignore = userService.RespondToOwnerAppointmentOffer(token2, sid, true);
 
             Response res = userService.RevokeOwnership(token1, sid, username2);
-            Response res3 = userService.IsOwner(token2, sid);
+            Response res3 = userService.owner(token2, sid);
 
             Assert.IsTrue(res.Success);
             Assert.IsFalse(res3.Success);
@@ -243,17 +245,17 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         [TestMethod]
         public void TestFailedRevokeOwnership()
         {
-            Response ignore = userService.CreateSubscriber(username1, password1);
-            Response ignore2 = userService.CreateSubscriber(username2, password2);
-            Response res1 = userService.Login(username1, password1);
-            Response res2 = userService.Login(username2, password2);
+            Response ignore = userService.upgrade_subscriber(username1, password1);
+            Response ignore2 = userService.upgrade_subscriber(username2, password2);
+            Response res1 = userService.entry_subscriber(username1, password1);
+            Response res2 = userService.entry_subscriber(username2, password2);
 
             string token1 = (res1.Data as UserDTO).AccessToken;
             string token2 = (res2.Data as UserDTO).AccessToken;
             ((UserService)userService).CreateStoreFounder(token1, sid);
 
             Response res = userService.RevokeOwnership(token1, sid, username2);
-            Response res3 = userService.IsOwner(token2, sid);
+            Response res3 = userService.owner(token2, sid);
 
             Assert.IsFalse(res.Success); //username2 was never owner so we cannot take it from him
             Assert.IsFalse(res3.Success);
@@ -262,10 +264,10 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         [TestMethod]
         public void TestSuccessfullUpdateStoreManagerAuthorization()
         {
-            Response ignore = userService.CreateSubscriber(username1, password1);
-            Response ignore2 = userService.CreateSubscriber(username2, password2);
-            Response res1 = userService.Login(username1, password1);
-            Response res2 = userService.Login(username2, password2);
+            Response ignore = userService.upgrade_subscriber(username1, password1);
+            Response ignore2 = userService.upgrade_subscriber(username2, password2);
+            Response res1 = userService.entry_subscriber(username1, password1);
+            Response res2 = userService.entry_subscriber(username2, password2);
 
             string token1 = (res1.Data as UserDTO).AccessToken;
             string token2 = (res2.Data as UserDTO).AccessToken;
@@ -278,9 +280,9 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
             auth.Add(Manager.ManagerAuthorization.View);
             auth.Add(Manager.ManagerAuthorization.UpdateDiscountPolicy);
 
-            Response res = userService.UpdateManagerAuthorizations(token1, sid, username2, auth);
-            Response res3 = userService.HasManagerAuthorization(token2, sid, Manager.ManagerAuthorization.UpdateDiscountPolicy);
-            Response res4 = userService.HasManagerAuthorization(token2, sid, Manager.ManagerAuthorization.UpdateSupply);
+            Response res = userService.update_authorizations(token1, sid, username2, auth);
+            Response res3 = userService.authorized(token2, sid, Manager.ManagerAuthorization.UpdateDiscountPolicy);
+            Response res4 = userService.authorized(token2, sid, Manager.ManagerAuthorization.UpdateSupply);
 
             Assert.IsTrue(res.Success);
             Assert.IsTrue(res3.Success);
@@ -290,12 +292,12 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         [TestMethod]
         public void TestTwoPeopleUpdateSameUserAuthorizationsConccurency_Success()
         {
-            Response ignore = userService.CreateSubscriber(username1, password1);
-            ignore = userService.CreateSubscriber(username2, password2);
-            ignore = userService.CreateSubscriber(username3, password3);
-            Response res1 = userService.Login(username1, password1);
-            Response res2 = userService.Login(username2, password2);
-            Response res3 = userService.Login(username3, password3);
+            Response ignore = userService.upgrade_subscriber(username1, password1);
+            ignore = userService.upgrade_subscriber(username2, password2);
+            ignore = userService.upgrade_subscriber(username3, password3);
+            Response res1 = userService.entry_subscriber(username1, password1);
+            Response res2 = userService.entry_subscriber(username2, password2);
+            Response res3 = userService.entry_subscriber(username3, password3);
 
             string token1 = (res1.Data as UserDTO).AccessToken;
             string token2 = (res2.Data as UserDTO).AccessToken;
@@ -312,8 +314,8 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
             auth.Add(Manager.ManagerAuthorization.UpdateDiscountPolicy);
 
             //both users try to give the third user the same authorizations
-            Task task1 = Task.Run(() => userService.UpdateManagerAuthorizations(token1, sid, username3, auth));
-            Task task2 = Task.Run(() => userService.UpdateManagerAuthorizations(token2, sid, username3, auth));
+            Task task1 = Task.Run(() => userService.update_authorizations(token1, sid, username3, auth));
+            Task task2 = Task.Run(() => userService.update_authorizations(token2, sid, username3, auth));
 
             Task.WaitAll(task1, task2);
 

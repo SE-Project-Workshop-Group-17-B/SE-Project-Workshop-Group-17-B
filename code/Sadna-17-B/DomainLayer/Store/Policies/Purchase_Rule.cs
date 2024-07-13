@@ -3,6 +3,8 @@
 using Sadna_17_B.DomainLayer.Utils;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.Remoting.Messaging;
@@ -22,14 +24,17 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         public static int id_counter;
 
-        public int ID;
-        public string Name;
-        protected double price;
+        [Key]
+        public int ID { get; set; }
+        public string Name { get; set; }
+        protected double price { get; set; }
 
-        protected List<Func<Basket, bool>> conditions = new List<Func<Basket, bool>>();
+        
+        public virtual List<Func<Basket, bool>> conditions { get; set; }
 
-        protected List<Purchase_Rule> purchase_rules = new List<Purchase_Rule>();
-        protected Func<Basket, List<Func<Basket, bool>>, bool> aggregation_rule { get; set; }
+        public virtual List<Purchase_Rule> purchase_rules { get; set; }
+
+        public virtual Func<Basket, List<Func<Basket, bool>>, bool> aggregation_rule { get; set; }
 
 
 
@@ -39,6 +44,9 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         {
             id_counter++;
             ID = id_counter;
+
+            conditions = new List<Func<Basket, bool>>();
+            purchase_rules = new List<Purchase_Rule>();
         }
         
         public Purchase_Rule(Func<Basket, List<Func<Basket, bool>>, bool> purchase_rule, string name = "default") : this()

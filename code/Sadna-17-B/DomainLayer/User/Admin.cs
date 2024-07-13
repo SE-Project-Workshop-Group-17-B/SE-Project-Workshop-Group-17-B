@@ -7,6 +7,10 @@ namespace Sadna_17_B.DomainLayer.User
 {
     public class Admin : Subscriber
     {
+        public Admin() : base()
+        {
+        }
+
         public Admin(string username, string password) : base(username, password)
         {
         }

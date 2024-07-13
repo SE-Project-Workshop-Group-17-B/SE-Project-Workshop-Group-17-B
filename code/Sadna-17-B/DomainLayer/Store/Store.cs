@@ -12,6 +12,8 @@ using System.Data;
 using Sadna_17_B.Utils;
 using System.Web.UI.WebControls;
 using Basket = Sadna_17_B.DomainLayer.User.Basket;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 
 namespace Sadna_17_B.DomainLayer.StoreDom
@@ -24,27 +26,64 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         // ---------------- Variables -------------------------------------------------------------------------------------------
 
 
-        public static int idCounter = 1;
-        private int ratingCounter { get; set; }
-        private double ratingOverAllScore { get; set; }
-        
-
-        public int ID { get; private set; }
-        public string name { get; set; }
-        public string email { get; set; }
-        public string phone_number { get; set; }
-        public string description { get; set; }
-        public string address { get; set; }
-        public Inventory inventory { get; set; }
 
 
-        public DiscountPolicy discount_policy { get; private set; }
-        public PurchasePolicy purchase_policy { get; private set; }
 
 
-        public double rating { get; set; }
-        public List<string> reviews { get; set; }
-        public List<string> complaints { get; set; }
+
+
+
+
+     
+            /*public virtual Inventory Inventory { get; set; }
+            public virtual DiscountPolicy DiscountPolicy { get; set; }
+            public virtual PurchasePolicy PurchasePolicy { get; set; }
+            public double rating { get; set; }
+            public virtual ICollection<Review> Reviews { get; set; }
+            public virtual ICollection<Complaint> Complaints { get; set; }
+
+            [NotMapped]
+            public static int IdCounter = 1;
+            [NotMapped]
+            private int RatingCounter { get; set; }
+            [NotMapped]
+            private double RatingOverallScore { get; set; }
+        }
+*/
+
+        [Key]
+        public int ID { get; set; }  // Change here: { get; private set; } to { get; set; }
+
+        public string Name { get; set; }
+        public string Email { get; set; }
+
+        public string PhoneNumber { get; set; }
+        public string Description { get; set; }
+        public string Address { get; set; }
+
+  
+
+        public  Inventory Inventory { get; set; }
+
+       
+        public  DiscountPolicy DiscountPolicy { get; private set; }
+
+ 
+        public  PurchasePolicy PurchasePolicy { get; private set; }
+
+
+        public double Rating { get; set; }
+/*        public virtual List<string> Review { get; set; }
+        public virtual List<string> Complaints { get; set; }*/
+        public virtual ICollection<String> Reviews { get; set; }
+        public virtual ICollection<String> Complaints { get; set; }
+
+
+        [NotMapped]
+        public static int IdCounter = 1;
+
+        private int RatingCounter { get; set; }
+        private double RatingOverallScore { get; set; }
 
 
 
@@ -52,28 +91,32 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         // ---------------- Constructor & store management -------------------------------------------------------------------------------------------
 
 
+        public Store()
+        {
+            // Parameterless constructor required by EF
+        }
+
         public Store(string name, string email, string phone_number, string store_description, string address)
         {
-            this.ID = idCounter++;
+            this.ID = IdCounter++;
 
-            this.name = name;
-            this.email = email;
-            this.phone_number = phone_number;
-            this.description = store_description;
-            this.address = address;
-            this.inventory = inventory;
+            this.Name = name;
+            this.Email = email;
+            this.PhoneNumber = phone_number;
+            this.Description = store_description;
+            this.Address = address;
 
-            this.inventory = new Inventory(ID);
-            this.discount_policy = new DiscountPolicy("default policy");
-            this.purchase_policy = new PurchasePolicy();
+            this.Inventory = new Inventory(ID);
+            this.DiscountPolicy = new DiscountPolicy("default policy");
+            this.PurchasePolicy = new PurchasePolicy();
 
-            this.rating = 0;
-            this.ratingOverAllScore = 0;
-            this.reviews = new List<string>();
-            this.complaints = new List<string>();
+            this.Rating = 0;
+            this.RatingOverallScore = 0;
+            this.Reviews = new List<string>();
+            this.Complaints = new List<string>();
 
 
-            this.ratingCounter = 0;
+            this.RatingCounter = 0;
         }
 
         public bool add_rating(double ratingInput)
@@ -81,45 +124,45 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             if (ratingInput < 0) ratingInput = 0;
             if (ratingInput > 5) ratingInput = 5;
 
-            this.ratingCounter++;
-            this.ratingOverAllScore += ratingInput;
-            this.rating = ratingOverAllScore / ratingCounter;
+            this.RatingCounter++;
+            this.RatingOverallScore += ratingInput;
+            this.Rating = RatingOverallScore / RatingCounter;
 
             return true;
         }
 
         public bool add_review(string review)
         {
-            reviews.Add(review);
+            Reviews.Add(review);
             return true;
         }
 
         public bool add_complaint(string complaint)
         {
-            complaints.Add(complaint);
+            Complaints.Add(complaint);
             return true;
         }
 
 
 
-        // ---------------- inventory ----------------------------------------------------------------------------------------
+        // ---------------- Inventory ----------------------------------------------------------------------------------------
 
 
         public void increase_product_amount(int id, int amount)
         {
-            inventory.increase_product_amount(id, amount);
+            Inventory.increase_product_amount(id, amount);
         }
 
         public void decrease_product_amount(int p_id, int amount)
         {
 
-            inventory.decrease_product_amount(p_id, amount);
+            Inventory.decrease_product_amount(p_id, amount);
 
         }
 
         public void restore_product_amount(int pid, int amount)
         {
-            Product product = inventory.product_by_id(pid);
+            Product product = Inventory.product_by_id(pid);
 
             lock (product)
             {
@@ -132,10 +175,10 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         }
 
 
-        
+
         public double calculate_product_bag(int p_id, int amount)
         {
-            Product product = inventory.product_by_id(p_id);
+            Product product = Inventory.product_by_id(p_id);
 
             if (product == null)
                 return 0;
@@ -147,15 +190,15 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         public Checkout calculate_product_prices(Basket basket)
         {
 
-            Mini_Checkout mini_check = discount_policy.calculate_discount(basket);
+            Mini_Checkout mini_check = DiscountPolicy.calculate_discount(basket);
             Checkout check = new Checkout(basket, mini_check);
 
             return check;
         }
-        
+
         public bool validate_purchase_policy(Basket basket)
-        { 
-            return purchase_policy.validate_purchase_rules(basket); 
+        {
+            return PurchasePolicy.validate_purchase_rules(basket);
         }
 
 
@@ -177,14 +220,14 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                     Func<Basket, double> relevant_product_lambda = parse_relevant_lambdas(doc);
                     List<Func<Basket, bool>> condition_lambdas = parse_condition_lambdas(doc);
 
-                    return discount_policy.add_discount(ancestor_id, start, end, strategy, relevant_product_lambda, condition_lambdas);
+                    return DiscountPolicy.add_discount(ancestor_id, start, end, strategy, relevant_product_lambda, condition_lambdas);
 
 
                 case "remove":
 
                     int id = Parser.parse_int(doc["discount id"]);
 
-                    return discount_policy.remove_discount(id) ? 0 : -1;
+                    return DiscountPolicy.remove_discount(id) ? 0 : -1;
 
                 default:
 
@@ -202,22 +245,22 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                 case "add":
 
                     int ancestor_id = Parser.parse_int(doc["ancestor id"]);
-                    ancestor_id = (ancestor_id == -1) ? purchase_policy.purchase_tree.ID : ancestor_id;
+                    ancestor_id = (ancestor_id == -1) ? PurchasePolicy.PurchaseTree.ID : ancestor_id;
 
                     string name = Parser.parse_string(doc["name"]);
                     List<Func<Basket, bool>> cond_lambdas = parse_condition_lambdas(doc);
-                    Func<Basket,List<Func<Basket, bool>>, bool> rule_lambda = parse_purchase_rule_lambdas(doc);
+                    Func<Basket, List<Func<Basket, bool>>, bool> rule_lambda = parse_purchase_rule_lambdas(doc);
 
-                    Purchase_Rule purchase = new Purchase_Rule(rule_lambda, cond_lambdas ,name);
+                    Purchase_Rule purchase = new Purchase_Rule(rule_lambda, cond_lambdas, name);
 
-                    return purchase_policy.add_rule(ancestor_id,purchase);
+                    return PurchasePolicy.add_rule(ancestor_id, purchase);
 
 
                 case "remove":
 
                     int purchase_id = Parser.parse_int(doc["purchase rule id"]);
 
-                    return purchase_policy.remove_rule(purchase_id) ? 0 : -1;
+                    return PurchasePolicy.remove_rule(purchase_id) ? 0 : -1;
 
                 default:
 
@@ -230,7 +273,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         {
             int pid = Parser.parse_int(doc["product id"]);
             string edit_type = Parser.parse_string(doc["edit type"]);
-            Product product = inventory.product_by_id(pid);
+            Product product = Inventory.product_by_id(pid);
 
             lock (product)
             {
@@ -246,7 +289,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         public int add_product(string name, double price, string category, string description, int amount)
         {
-            return inventory.add_product(name, price, category, description, amount);
+            return Inventory.add_product(name, price, category, description, amount);
         }
 
 
@@ -255,7 +298,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         public List<Product> all_products()
         {
             List<Product> products = new List<Product>();
-            foreach (Product product in inventory.all_products())
+            foreach (Product product in Inventory.all_products())
                 products.Add(product);
 
             return products;
@@ -263,17 +306,17 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         public int amount_by_name(string productName)
         {
-            return inventory.amount_by_name(productName);
+            return Inventory.amount_by_name(productName);
         }
 
         public Product product_by_id(int productId)
         {
-            return inventory.product_by_id(productId);
+            return Inventory.product_by_id(productId);
         }
 
         public List<Product> filter_keyword(string[] keywords)
         {
-            List<Product> result = inventory.products_by_keyword(keywords);
+            List<Product> result = Inventory.products_by_keyword(keywords);
             if (result == null)
                 return new List<Product>();
 
@@ -287,31 +330,31 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         public string info_to_print()
         {
             string s = "";
-            s += "Our Email is " + email + "\n";
-            s += "To contact us, please call " + phone_number + "\n";
-            s += "We're Located at " + address + " feel free to drop by!\n";
+            s += "Our Email is " + Email + "\n";
+            s += "To contact us, please call " + PhoneNumber + "\n";
+            s += "We're Located at " + Address + " feel free to drop by!\n";
 
-            s += "A little about us ... \n" + description;
+            s += "A little about us ... \n" + Description;
 
-            
+
             return s;
         }
 
         public string show_inventory()
         {
-            string s = inventory.info();
+            string s = Inventory.info();
 
             return s;
         }
 
         public string show_discount_policy()
         {
-            return discount_policy.show_policy();
+            return DiscountPolicy.show_policy();
         }
 
         public string show_purchase_policy()
         {
-            return purchase_policy.show_policy();
+            return PurchasePolicy.show_policy();
         }
 
 
@@ -435,18 +478,18 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return lambdas;
         }
 
-        public Func<Basket,List<Func<Basket, bool>>,bool> parse_purchase_rule_lambdas(Dictionary<string, string> doc) // doc explained on doc_doc.cs 
+        public Func<Basket, List<Func<Basket, bool>>, bool> parse_purchase_rule_lambdas(Dictionary<string, string> doc) // doc explained on doc_doc.cs 
         {
 
             string type = Parser.parse_string(doc["rule type"]);
 
-          
+
             switch (type)
             {
                 case "and":
 
                     return lambda_purchase_rule.and();
-                    
+
 
                 case "or":
 
@@ -455,7 +498,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                 case "conditional":
 
                     return lambda_purchase_rule.conditional();
-                   
+
 
                 default:
 

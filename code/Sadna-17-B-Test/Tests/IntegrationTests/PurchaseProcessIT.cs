@@ -15,6 +15,7 @@ using Sadna_17_B.DomainLayer.User;
 using System.Xml.Linq;
 using Newtonsoft.Json.Linq;
 using Sadna_17_B_Test.Tests.AcceptanceTests;
+using Sadna_17_B.DataAccessLayer;
 
 namespace Sadna_17_B_Test.Tests.IntegrationTests
 {
@@ -55,6 +56,7 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
         [TestInitialize]
         public void SetUp()
         {
+            ApplicationDbContext.isMemoryDB = true; // Disconnect actual database from these tests
             // init services
 
             ServiceFactory serviceFactory = new ServiceFactory();
@@ -63,8 +65,8 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
 
             // init user
 
-            Response ignore1 = userService.CreateSubscriber(username1, password1);
-            Response result1 = userService.Login(username1, password1);
+            Response ignore1 = userService.upgrade_subscriber(username1, password1);
+            Response result1 = userService.entry_subscriber(username1, password1);
             UserDTO userDTO = result1.Data as UserDTO;
 
             // init store
@@ -75,16 +77,16 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
 
             // init product
 
-            Response product_response = storeService.add_product_to_store(userDTO.AccessToken, sid, productName, price, category, "Description", quantity);
+            Response product_response = storeService.add_product_to_store(userDTO.AccessToken, sid, productName, price, category, "description", quantity);
             pid = (int)product_response.Data;
-            product = store.inventory.product_by_id(pid);
+            product = store.Inventory.product_by_id(pid);
         }
 
         [TestMethod]
         public void TestSuccesfullPurchase()
         {
-            Response ignore = userService.CreateSubscriber(username2, password2);
-            Response res = userService.Login(username2, password2);
+            Response ignore = userService.upgrade_subscriber(username2, password2);
+            Response res = userService.entry_subscriber(username2, password2);
             userDTO = res.Data as UserDTO;
             string token = userDTO.AccessToken;
 
@@ -109,8 +111,8 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
         [TestMethod]
         public void TestPurhcaseFailWhenBuyingItemThatNotExist()
         {
-            Response ignore = userService.CreateSubscriber(username2, password2);
-            Response res = userService.Login(username2, password2);
+            Response ignore = userService.upgrade_subscriber(username2, password2);
+            Response res = userService.entry_subscriber(username2, password2);
             userDTO = res.Data as UserDTO;
             string token = userDTO.AccessToken;
 
@@ -124,8 +126,8 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
         [TestMethod]
         public void TestPurchaseFailWhenBuyingTooMuchProducts()
         {
-            Response ignore = userService.CreateSubscriber(username2, password2);
-            Response res = userService.Login(username2, password2);
+            Response ignore = userService.upgrade_subscriber(username2, password2);
+            Response res = userService.entry_subscriber(username2, password2);
             userDTO = res.Data as UserDTO;
             string token = userDTO.AccessToken;
 
@@ -149,12 +151,12 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
         [TestMethod]
         public void TestPurchaseNotEffectingDifferentCarts()
         {
-            Response result1 = userService.Login(username1, password1);
+            Response result1 = userService.entry_subscriber(username1, password1);
             UserDTO userDTO = result1.Data as UserDTO;
             string token1 = userDTO.AccessToken;
 
-            Response ignore = userService.CreateSubscriber(username2, password2);
-            Response res = userService.Login(username2, password2);
+            Response ignore = userService.upgrade_subscriber(username2, password2);
+            Response res = userService.entry_subscriber(username2, password2);
             userDTO = res.Data as UserDTO;
             string token = userDTO.AccessToken;
 
@@ -212,8 +214,8 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
         [TestMethod]
         public void TestHistoryPurchaseSameWhenPurchaseFail()
         {
-            Response ignore = userService.CreateSubscriber(username2, password2);
-            Response res = userService.Login(username2, password2);
+            Response ignore = userService.upgrade_subscriber(username2, password2);
+            Response res = userService.entry_subscriber(username2, password2);
             userDTO = res.Data as UserDTO;
             string token = userDTO.AccessToken;
 

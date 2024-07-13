@@ -21,9 +21,10 @@ namespace Sadna_17_B.DomainLayer.StoreDom
     {
 
         public double factor { get; set; }
-        private string strategy_type { get; set; }
+        public string strategy_type { get; set; }
 
 
+        public Discount_Strategy() { }
         public Discount_Strategy(double factor, string type) { this.factor = factor; this.strategy_type = type; }
 
         public abstract double apply_discount_strategy(double price);

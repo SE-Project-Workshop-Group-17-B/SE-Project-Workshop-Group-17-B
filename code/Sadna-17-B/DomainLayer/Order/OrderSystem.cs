@@ -28,7 +28,7 @@ namespace Sadna_17_B.DomainLayer.Order
         private Dictionary<int, Order> orderHistory = new Dictionary<int, Order>();                         // OrderId -> Order
         private Dictionary<int, List<Order>> guestOrders = new Dictionary<int, List<Order>>();              // GuestID -> List<Order>
         private Dictionary<string, List<Order>> subscriberOrders = new Dictionary<string, List<Order>>();   // Username -> List<Order>
-        private Dictionary<int, List<SubOrder>> storeOrders = new Dictionary<int, List<SubOrder>>();        // StoreID -> Order
+        private Dictionary<int, List<SubOrder>> storeOrders = new Dictionary<int, List<SubOrder>>();        // storeId -> Order
         private int orderCount = 0;
 
 
@@ -50,6 +50,11 @@ namespace Sadna_17_B.DomainLayer.Order
         {
             this.storeController = storeController;
             this.supplySystem = supplyInstance;
+        }
+
+        public void LoadData()
+        {
+
         }
 
 
@@ -117,8 +122,8 @@ namespace Sadna_17_B.DomainLayer.Order
 
             if (!supplySystem.IsValidDelivery(dest, manufacturerProductNumbers))
             {
-                infoLogger.Log("ORDER SYSTEM | Supply system failure: invalid destination address or product numbers given.");
-                throw new Sadna17BException("Supply system failure: invalid destination address or product numbers given.");
+                infoLogger.Log("ORDER SYSTEM | Supply system failure: invalid destination Address or product numbers given.");
+                throw new Sadna17BException("Supply system failure: invalid destination Address or product numbers given.");
             }
         }
 

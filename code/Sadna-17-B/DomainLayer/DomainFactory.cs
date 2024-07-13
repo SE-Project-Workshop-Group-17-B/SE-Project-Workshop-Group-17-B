@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using Sadna_17_B.DomainLayer.StoreDom;
+using Sadna_17_B.DataAccessLayer;
+using Sadna_17_B.Repositories;
 
 namespace Sadna_17_B.DomainLayer
 {
@@ -23,6 +25,13 @@ namespace Sadna_17_B.DomainLayer
             StoreController = new StoreController();
             OrderSystem = new OrderSystem(storeController: StoreController);
             UserController = new UserController(OrderSystem);
+        }
+
+        public void LoadData()
+        {
+            StoreController.LoadData();
+            OrderSystem.LoadData();
+            UserController.LoadData();
         }
     }
 }

@@ -15,6 +15,7 @@ using Sadna_17_B.ServiceLayer.Services;
 using Sadna_17_B.Utils;
 using Sadna_17_B.ServiceLayer;
 using Newtonsoft.Json.Linq;
+using Sadna_17_B.DataAccessLayer;
 
 namespace Sadna_17_B_Test.Tests.UnitTests
 {
@@ -74,7 +75,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
     [TestClass]
     public class StoreControllerTests
     {
-        private Doc_generator doc_generator; 
+        private Documentor doc_generator; 
         private Subscriber subscriber;
         private StoreService store_service;
         private UserService user_service;
@@ -117,6 +118,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         [TestInitialize]
         public void SetUp()
         {
+            ApplicationDbContext.isMemoryDB = true; // Disconnect actual database from these tests
             /*
              * 
              *  Basket:           | name        |  price   | category  | descript  | amount   | total price
@@ -155,14 +157,14 @@ namespace Sadna_17_B_Test.Tests.UnitTests
              * 
              */
 
-            doc_generator = new Doc_generator();
+            doc_generator = new Documentor();
             ServiceFactory serviceFactory = new ServiceFactory();
 
             user_service = (UserService) serviceFactory.UserService;
             store_service = (StoreService) serviceFactory.StoreService;
             store_controller = new StoreController();
 
-            Response ignore = user_service.CreateSubscriber("hihihi", "byebyebye");
+            Response ignore = user_service.upgrade_subscriber("hihihi", "byebyebye");
 
             sid = store_controller.create_store("test store", "mail@example.com", "055555055", "hi bye", "compton");
             store1 = store_controller.store_by_id(sid);
@@ -171,13 +173,13 @@ namespace Sadna_17_B_Test.Tests.UnitTests
             int pid2 = store1.add_product("product2", 50, "Drink", "Perfect",10);
             int pid3 = store1.add_product("product3", 10, "Food", "Eh", 50);
 
-            product1 = store1.inventory.product_by_id(pid1);
-            product2 = store1.inventory.product_by_id(pid2);
-            product3 = store1.inventory.product_by_id(pid3);
+            product1 = store1.Inventory.product_by_id(pid1);
+            product2 = store1.Inventory.product_by_id(pid2);
+            product3 = store1.Inventory.product_by_id(pid3);
 
-            cart_product1 = store1.inventory.product_by_id(pid1).to_cart_product();
-            cart_product2 = store1.inventory.product_by_id(pid2).to_cart_product();
-            cart_product3 = store1.inventory.product_by_id(pid3).to_cart_product();
+            cart_product1 = store1.Inventory.product_by_id(pid1).to_cart_product();
+            cart_product2 = store1.Inventory.product_by_id(pid2).to_cart_product();
+            cart_product3 = store1.Inventory.product_by_id(pid3).to_cart_product();
 
 
 
@@ -187,7 +189,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
             basket.add_product(cart_product3);
 
 
-            discount_policy = store1.discount_policy;
+            discount_policy = store1.DiscountPolicy;
             strategy_flat = new Discount_Flat(50);
             strategy_precentage = new Discount_Percentage(10);
             strategy_membership = new Discount_Membership();
@@ -244,10 +246,10 @@ namespace Sadna_17_B_Test.Tests.UnitTests
 
 
             discount_policy.add_discount(discount);
-            Assert.AreEqual(discount_policy.discount_tree.discounts.Count(), 1, 0.01);
+            Assert.AreEqual(discount_policy.DiscountTree.discounts.Count(), 1, 0.01);
 
             discount_policy.remove_discount(discount.ID);
-            Assert.AreEqual(discount_policy.discount_tree.discounts.Count(), 0, 0.01);
+            Assert.AreEqual(discount_policy.DiscountTree.discounts.Count(), 0, 0.01);
         }
 
         [TestMethod]
@@ -414,14 +416,14 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         {
             // ---------- init data
 
-            Response res = user_service.Login("hihihi", "byebyebye");
+            Response res = user_service.entry_subscriber("hihihi", "byebyebye");
             string token = (res.Data as UserDTO).AccessToken;
             int sid = (int)store_service.create_store(token, "test store now", "mail@example.com", "055555055", "hi bye", "compton").Data;
 
 
             // ---------- empty policy
 
-            Dictionary<string, string> show_doc = new Doc_generator.discount_policy_doc_builder()
+            Dictionary<string, string> show_doc = new Documentor.discount_policy_doc_builder()
                                                         .set_show_policy(sid.ToString())
                                                         .Build();
 
@@ -431,7 +433,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
 
             // ----------  flat added
 
-            Dictionary<string, string> add_flat_doc = new Doc_generator.discount_policy_doc_builder()
+            Dictionary<string, string> add_flat_doc = new Documentor.discount_policy_doc_builder()
                                                                        .set_base_add($"{sid}", "06/07/2024", "10/07/2024", "flat", flat: "50")
                                                                        .Build();
 
@@ -446,7 +448,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
 
             // ----------  flat removed
 
-            Dictionary<string, string> remove_flat_doc = new Doc_generator.discount_policy_doc_builder()
+            Dictionary<string, string> remove_flat_doc = new Documentor.discount_policy_doc_builder()
                                                                        .set_remove($"{sid}", $"{aid}")
                                                                        .Build();
 
@@ -463,14 +465,14 @@ namespace Sadna_17_B_Test.Tests.UnitTests
             
             // ---------- init data
 
-            Response res = user_service.Login("hihihi", "byebyebye");
+            Response res = user_service.entry_subscriber("hihihi", "byebyebye");
             string token = (res.Data as UserDTO).AccessToken;
             int sid = (int)store_service.create_store(token, "test store right now", "mail@example.com", "055555055", "hi bye", "compton").Data;
 
 
             // ---------- empty policy
 
-            Dictionary<string, string> show_doc = new Doc_generator.purchase_policy_doc_builder()
+            Dictionary<string, string> show_doc = new Documentor.purchase_policy_doc_builder()
                                                         .set_show_policy(sid.ToString())
                                                         .Build();
 
@@ -481,7 +483,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
 
             // ----------  flat added
 
-            Dictionary<string, string> add_or_doc = new Doc_generator.purchase_policy_doc_builder()
+            Dictionary<string, string> add_or_doc = new Documentor.purchase_policy_doc_builder()
                                                                        .set_base_add($"{sid}","or","or")
                                                                        .Build();
 
@@ -494,7 +496,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
 
             // ----------  flat removed
 
-            Dictionary<string, string> remove_or_doc = new Doc_generator.purchase_policy_doc_builder()
+            Dictionary<string, string> remove_or_doc = new Documentor.purchase_policy_doc_builder()
                                                                        .set_remove($"{sid}", $"{aid}")
                                                                        .Build();
 
@@ -512,7 +514,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         {
             // init
 
-            Response res = user_service.Login("hihihi", "byebyebye");
+            Response res = user_service.entry_subscriber("hihihi", "byebyebye");
             string token = (res.Data as UserDTO).AccessToken;
             int sid = (int)store_service.create_store(token, "test store right now", "mail@example.com", "055555055", "hi bye", "compton").Data;
 
@@ -530,7 +532,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
 
             // filter
 
-            Dictionary<string, string> search_doc = new Doc_generator.search_doc_builder().set_search_options(category:"Electronics").Build();
+            Dictionary<string, string> search_doc = new Documentor.search_doc_builder().set_search_options(category:"Electronics").Build();
 
             Response response = store_service.search_product_by(search_doc);
             List<Product> products = response.Data as List<Product>;
@@ -553,16 +555,16 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         public void TestSuccessfullCreateStore()
         {
             // Act
-            int store_id = store_controller.create_store("Test Store", "testemail@example.com", "1234567890", "Test Store Description", "Test Address");
+            int store_id = store_controller.create_store("Test Store", "testemail@example.com", "1234567890", "Test Store description", "Test Address");
             Store store = store_controller.store_by_id(store_id);
 
             // Assert
             Assert.IsNotNull(store);
-            Assert.AreEqual("Test Store", store.name);
-            Assert.AreEqual("testemail@example.com", store.email);
-            Assert.AreEqual("1234567890", store.phone_number);
-            Assert.AreEqual("Test Store Description", store.description);
-            Assert.AreEqual("Test Address", store.address);
+            Assert.AreEqual("Test Store", store.Name);
+            Assert.AreEqual("testemail@example.com", store.Email);
+            Assert.AreEqual("1234567890", store.PhoneNumber);
+            Assert.AreEqual("Test Store description", store.Description);
+            Assert.AreEqual("Test Address", store.Address);
         }
 
         [TestMethod]
@@ -570,19 +572,19 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         {
             // Arrange
 
-            store_controller.create_store("Test Store 1", "email1@example.com", "1111111111", "Description 1", "Address 1");
-            store_controller.create_store("Test Store 2", "email2@example.com", "2222222222", "Description 2", "Address 2");
+            store_controller.create_store("Test Store 1", "email1@example.com", "1111111111", "description 1", "Address 1");
+            store_controller.create_store("Test Store 2", "email2@example.com", "2222222222", "description 2", "Address 2");
 
             // Act
             Store result = store_controller.store_by_name("Test Store 2")[0];
 
             // Assert
             Assert.IsNotNull(result);
-            Assert.AreEqual("Test Store 2", result.name);
-            Assert.AreEqual("email2@example.com", result.email);
-            Assert.AreEqual("2222222222", result.phone_number);
-            Assert.AreEqual("Description 2", result.description);
-            Assert.AreEqual("Address 2", result.address);
+            Assert.AreEqual("Test Store 2", result.Name);
+            Assert.AreEqual("email2@example.com", result.Email);
+            Assert.AreEqual("2222222222", result.PhoneNumber);
+            Assert.AreEqual("description 2", result.Description);
+            Assert.AreEqual("Address 2", result.Address);
         }
 
         [TestMethod]
@@ -600,7 +602,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         {
             // Arrange
             store_controller.clear_stores();
-            int sid = store_controller.create_store("Test Store", "testemail@example.com", "1234567890", "Test Store Description", "Test Address");
+            int sid = store_controller.create_store("Test Store", "testemail@example.com", "1234567890", "Test Store description", "Test Address");
             Store store = store_controller.store_by_id(sid);
 
             // Act

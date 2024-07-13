@@ -1,6 +1,8 @@
 using Sadna_17_B.DomainLayer.Utils;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.Remoting.Messaging;
@@ -25,20 +27,28 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         // ----------- Variables --------------------------------------------------------------
 
-
+        [Key]
+        public int ID { get; set; }
         public static int discount_counter;
 
+        [NotMapped]
         public List<Func<Basket, bool>> discount_condition_lambdas = new List<Func<Basket, bool>>();
+        [NotMapped]
         protected Func<Basket, double> discount_pricing_lambda { get; set; }
 
-
-        public int ID;
+    
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public Discount_Strategy strategy { get; set; }
 
 
         // ----------- Constructor ------------------------------------------------------------  
+
+        public Discount()
+        {
+            discount_counter++;
+            ID = discount_counter;
+        }
 
 
         public Discount(DateTime StartDate, DateTime EndDate, Discount_Strategy strategy)
@@ -53,11 +63,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         }
 
-        public Discount()
-        {
-            discount_counter++;
-            ID = discount_counter;
-        }
+       
 
         
         // ----------- Expiration --------------------------------------------------------  

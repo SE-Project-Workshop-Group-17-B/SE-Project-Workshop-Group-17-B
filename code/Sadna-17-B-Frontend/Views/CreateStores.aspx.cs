@@ -23,7 +23,7 @@ namespace Sadna_17_B_Frontend.Views
         {
             bool hasErrors = false;
 
-            // Validate Store Name
+            // Validate Store name
             if (string.IsNullOrWhiteSpace(txtStoreName.Text))
             {
                 litStoreNameMessage.Text = "<span class='error-message'>Store name is required.</span>";
@@ -56,7 +56,7 @@ namespace Sadna_17_B_Frontend.Views
                 litPhoneNumberMessage.Text = "";
             }
 
-            // Validate Store Description
+            // Validate Store description
             if (string.IsNullOrWhiteSpace(txtStoreDescription.Text))
             {
                 litStoreDescriptionMessage.Text = "<span class='error-message'>Store description is required.</span>";
@@ -85,7 +85,7 @@ namespace Sadna_17_B_Frontend.Views
 
                 if (response.Item1 == null)
                 {
-                    DisplayMessage("Store created successfully. StoreID = " + response.Item2, true);
+                    DisplayMessage("Store created successfully. storeId = " + response.Item2, true);
                     Response.Redirect("~/Views/StoreDetails.aspx?storeId=" + response.Item2); // Ensure the URL is correct
                 }
                 else

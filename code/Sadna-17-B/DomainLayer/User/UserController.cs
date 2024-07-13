@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Security.Cryptography;
 using System.Web;
 using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 using static Sadna_17_B.DomainLayer.User.Notification;
@@ -22,13 +23,18 @@ namespace Sadna_17_B.DomainLayer.User
         private Dictionary<int, Guest> guests = new Dictionary<int, Guest>();
         private Dictionary<string, Subscriber> subscribers = new Dictionary<string, Subscriber>();
         private Dictionary<string, Admin> admins = new Dictionary<string, Admin>();
-         
+
 
         public UserController(OrderSystem orderSystem)
         {
             this.orderSystem = orderSystem;
             infoLogger = InfoLogger.Instance;
             this.notificationSystem = new NotificationSystem();
+        }
+
+        public void LoadData()
+        {
+
         }
 
         /// <summary>
@@ -562,7 +568,7 @@ namespace Sadna_17_B.DomainLayer.User
                 infoLogger.Log($"Getting store order history failed - Subscriber {subscriber.Username} is not Admin/Store owner of store: {storeID}");
                 throw new Sadna17BException("Invalid operation, only admins and store owners can retrieve order history of stores.");
             }
-            // Should probably check the StoreID exists in the system, currently returns an empty sub-orders list
+            // Should probably check the storeId exists in the system, currently returns an empty sub-orders list
             return orderSystem.sub_order_history(storeID);
         }
 
