@@ -7,18 +7,18 @@ namespace Sadna_17_B.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.4.4")]
-    public sealed partial class Initial : IMigrationMetadata
+    public sealed partial class c : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(Initial));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(c));
         
         string IMigrationMetadata.Id
         {
-            get { return "202407131835357_Initial"; }
+            get { return "202407131904488_c"; }
         }
         
         string IMigrationMetadata.Source
         {
-            get { return Resources.GetString("Source"); }
+            get { return null; }
         }
         
         string IMigrationMetadata.Target
