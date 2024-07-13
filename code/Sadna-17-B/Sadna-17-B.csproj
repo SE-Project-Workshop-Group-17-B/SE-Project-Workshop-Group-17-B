@@ -250,10 +250,6 @@
     <Compile Include="Migrations\202407111907350_initialCreate2.Designer.cs">
       <DependentUpon>202407111907350_initialCreate2.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\202407130939059_AddSubOrderTable.cs" />
-    <Compile Include="Migrations\202407130939059_AddSubOrderTable.designer.cs">
-      <DependentUpon>202407130939059_AddSubOrderTable.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Utils_external\ISupplySystem.cs" />
     <Compile Include="Utils_external\IPaymentSystem.cs" />
@@ -303,9 +299,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202407111907350_initialCreate2.resx">
       <DependentUpon>202407111907350_initialCreate2.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202407130939059_AddSubOrderTable.resx">
-      <DependentUpon>202407130939059_AddSubOrderTable.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
