@@ -46,12 +46,12 @@ namespace Sadna_17_B.ServiceLayer
         public void GenerateData()
         {
             /*// Initialize static counter variables
-            Store.idCounter = 1;
-            Store.ratingCounter = 0;
-            Store.ratingOverAllScore = 0;
-            Product.idCounter = 1;
-            Product.ratingCounter = 0;
-            Product.ratingOverAllScore = 0;*/
+            Store.IdCounter = 1;
+            Store.RatingCounter = 0;
+            Store.RatingOverallScore = 0;
+            Product.IdCounter = 1;
+            Product.RatingCounter = 0;
+            Product.RatingOverallScore = 0;*/
 
             // ------- Create an admin --------------------------
 
@@ -73,7 +73,7 @@ namespace Sadna_17_B.ServiceLayer
 
                 // Add 10 products to each store
                 for (int j = 1; j <= 10; j++)
-                    ((Store) StoreService.store_by_id(sid).Data).add_product($"Product{j}", 10.99 + j, $"Category{j % 3}", $"Description for Product{j}", j * 10);
+                    ((Store) StoreService.store_by_id(sid).Data).add_product($"Product{j}", 10.99 + j, $"category{j % 3}", $"description for Product{j}", j * 10);
 
 
                 ((Store)StoreService.store_by_id(sid).Data).add_rating(4.5);

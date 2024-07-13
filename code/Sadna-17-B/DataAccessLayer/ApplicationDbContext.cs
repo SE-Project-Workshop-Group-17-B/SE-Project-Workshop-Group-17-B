@@ -18,14 +18,13 @@ namespace Sadna_17_B.DataAccessLayer
         public static string ApplicationDbContextName = "RemoteSadna-17-B-DB";
         public static string SQLiteDbContextName = "SQLiteDB";
         public static bool isMemoryDB = false;
-
         public ApplicationDbContext() : base("RemoteSadna-17-B-DB")
         {
         }
 
 
         public DbSet<Store> Stores { get; set; }
-        public DbSet<Inventory> Inventory { get; set; }
+      //  public DbSet<Inventory> Inventory { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<Order> Orders { get; set; }
         //   public DbSet<Subscriber> Subscribers { get; set; }
@@ -77,23 +76,23 @@ namespace Sadna_17_B.DataAccessLayer
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
-            // Store Configuration
+            /*// Store Configuration
             modelBuilder.Entity<Store>()
                 .HasKey(s => s.ID); // Primary Key - Disable Auto Increment (sort of?)
 
             // Inventory Configuration
             modelBuilder.Entity<Inventory>()
-                .HasKey(i => i.store_id); // Primary Key - Disable Auto Increment (sort of?)
+                .HasKey(i => i.storeId); // Primary Key - Disable Auto Increment (sort of?)
 
-            base.OnModelCreating(modelBuilder);
+            base.OnModelCreating(modelBuilder);*/
         }
 
         public void DeleteAll()
         {
-            Inventory.RemoveRange(Inventory.ToList());
+          //  Inventory.RemoveRange(Inventory.ToList());
             Stores.RemoveRange(Stores.ToList());
             Orders.RemoveRange(Orders.ToList());
-            Products.RemoveRange(Products.ToList());
+            //Products.RemoveRange(Products.ToList());
             SaveChanges();
         }
     }

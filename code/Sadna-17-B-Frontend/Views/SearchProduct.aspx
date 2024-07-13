@@ -126,7 +126,7 @@
                             <%# GetStarRating(Convert.ToDouble(Eval("rating"))) %>
                         </div>
                         <div>Category: <%# Eval("category") %></div>
-                        <div>Store ID: <%# Eval("store_ID") %></div>
+                        <div>Store ID: <%# Eval("storeId") %></div>
                     </asp:LinkButton>
                     <asp:Button ID="btnAddToCart" runat="server" Text="Add to Cart" CssClass="btn-add-to-cart" OnClick="btnAddToCart_Click" CommandArgument='<%# Eval("ID") %>' />
                 </div>

@@ -9,7 +9,7 @@ namespace Sadna_17_B.DomainLayer.User
 {
     public abstract class User
     {
-        public Cart ShoppingCart { get; }
+        public Cart ShoppingCart { get; set; }
 
         public User()
         {

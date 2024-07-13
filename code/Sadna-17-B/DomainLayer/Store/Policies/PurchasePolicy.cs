@@ -1,6 +1,7 @@
 ﻿using Sadna_17_B.DomainLayer.Utils;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics;
 using System.Linq;
@@ -54,16 +55,23 @@ namespace Sadna_17_B.DomainLayer.StoreDom
     {
 
         // ---------------- variables ----------------------------------------------------
-        public int storeId { get; set; }
-        public int purchaseId { get; set; }
 
+
+     
+      
+ 
+   
+        [Key]
+        public int ID { get; set; }
+        public int StoreID { get; set; }
+        
 
         [NotMapped]
-        public Purchase_Rule purchase_tree;
+        public Purchase_Rule PurchaseTree { get; set; }
 
         public PurchasePolicy()
         {
-            this.purchase_tree = new Purchase_Rule(lambda_purchase_rule.and(),"and");
+            this.PurchaseTree = new Purchase_Rule(lambda_purchase_rule.and(),"and");
         }
 
         // ---------------- functions -----------------------------------------------------
@@ -71,22 +79,22 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         public int add_rule(int ancestor_id, Purchase_Rule purchase_rule)
         {
-            return purchase_tree.add_purchase_rule(ancestor_id, purchase_rule);
+            return PurchaseTree.add_purchase_rule(ancestor_id, purchase_rule);
         }
 
         public bool remove_rule(int purchase_rule)
         {
-            return purchase_tree.remove_purchase_rule(purchase_rule);
+            return PurchaseTree.remove_purchase_rule(purchase_rule);
         }
 
         public string show_policy()
         {
-            return "\n" + purchase_tree.info();
+            return "\n" + PurchaseTree.info();
         }
 
         public bool validate_purchase_rules(Basket basket)
         {
-            return purchase_tree.apply_purchase(basket);
+            return PurchaseTree.apply_purchase(basket);
         }
     
     

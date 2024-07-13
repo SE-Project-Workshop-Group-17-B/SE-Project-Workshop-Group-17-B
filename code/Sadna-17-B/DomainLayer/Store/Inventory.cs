@@ -14,10 +14,13 @@ namespace Sadna_17_B.DomainLayer.StoreDom
     {
 
         // ---------------- Variables -------------------------------------------------------------------------------------------
-        [Key]
-        public int store_id { get; set; }
+
+        [Key, ForeignKey("Store")]
+        public int StoreId { get; set; }
+        public virtual Store Store { get; set; }
 
 
+        // public virtual Store Store { get; set; }
         public Dictionary<int, Product> id_to_product { get; set; }
 
 
@@ -31,13 +34,13 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         public Inventory(int store_id)
         {
-            this.store_id = store_id;
+            this.StoreId = store_id;
             id_to_product = new Dictionary<int, Product>();
         }
 
         public int add_product(string name, double price, string category,string description, int amount)
         {
-            Product product = new Product(name, price, category, store_id, description, amount);
+            Product product = new Product(name, price, category, StoreId, description, amount);
 
             id_to_product[product.ID] = product;
             

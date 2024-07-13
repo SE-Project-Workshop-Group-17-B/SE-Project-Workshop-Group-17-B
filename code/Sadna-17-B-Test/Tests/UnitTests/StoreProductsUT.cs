@@ -94,9 +94,9 @@ namespace Sadna_17_B_Test.Tests.UnitTests
             int pid2 = store1.add_product("product2", 50, "Drink", "Perfect", 10);
             int pid3 = store1.add_product("product3", 10, "Food", "Eh", 50);
 
-            product1 = store1.inventory.product_by_id(pid1);
-            product2 = store1.inventory.product_by_id(pid2);
-            product3 = store1.inventory.product_by_id(pid3);
+            product1 = store1.Inventory.product_by_id(pid1);
+            product2 = store1.Inventory.product_by_id(pid2);
+            product3 = store1.Inventory.product_by_id(pid3);
 
             cart = new Basket(sid);
             cart.add_product(product1.to_cart_product());
@@ -104,7 +104,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
             cart.add_product(product3.to_cart_product());
 
 
-            discount_policy = store1.discount_policy;
+            discount_policy = store1.DiscountPolicy;
             strategy_flat = new Discount_Flat(50);
             strategy_precentage = new Discount_Percentage(10);
             strategy_membership = new Discount_Membership();
@@ -138,7 +138,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         [TestMethod]
         public void TestReduceProductAmount_Synchronization()
         {
-            int productId = store_controller.add_store_product(sid, "Test Product 1", 100, "Category", "Good product", 50);
+            int productId = store_controller.add_store_product(sid, "Test Product 1", 100, "category", "Good product", 50);
 
             Basket basket = new Basket(sid);
             Cart_Product cart_product = store_controller.store_by_id(sid).product_by_id(productId).to_cart_product();
@@ -164,7 +164,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         {
             try
             {
-                int productId = store_controller.add_store_product(sid, "Test Product 2", 100, "Category", "Good product", 15);
+                int productId = store_controller.add_store_product(sid, "Test Product 2", 100, "category", "Good product", 15);
 
                 Basket basket = new Basket(sid);
                 basket.add_product(store_controller.store_by_id(sid).product_by_id(productId).to_cart_product());
@@ -192,7 +192,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         public void TestAddingProductsConcurrently()
         {
 
-            int pid = store_controller.add_store_product(sid, "Test Product 3", 100, "Category", "Good product", 5);
+            int pid = store_controller.add_store_product(sid, "Test Product 3", 100, "category", "Good product", 5);
 
             Dictionary<int, int> order = new Dictionary<int, int>();
 

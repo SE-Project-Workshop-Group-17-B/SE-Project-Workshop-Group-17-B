@@ -40,9 +40,9 @@ namespace Sadna_17_B_Frontend.Views
                 //litRatingCount.Text = currentProduct.ratings.Count.ToString();
                 litProductDescription.Text = currentProduct.description;
                 litProductCategory.Text = currentProduct.category;
-                litStoreID.Text = currentProduct.store_ID.ToString();
+                litStoreID.Text = currentProduct.storeId.ToString();
 
-                rptReviews.DataSource = currentProduct.reviews;
+                rptReviews.DataSource = currentProduct.Reviews;
                 rptReviews.DataBind();
             }
             else
@@ -68,7 +68,7 @@ namespace Sadna_17_B_Frontend.Views
         {
             if (int.TryParse(rblRating.SelectedValue, out int rating))
             {
-                Response response = backendController.add_product_rating(currentProduct.store_ID, currentProduct.ID, rating);
+                Response response = backendController.add_product_rating(currentProduct.storeId, currentProduct.ID, rating);
                 if (response.Success)
                 {
                     LoadProductDetails(currentProduct.ID);
@@ -86,7 +86,7 @@ namespace Sadna_17_B_Frontend.Views
             string review = txtReview.Text.Trim();
             if (!string.IsNullOrEmpty(review))
             {
-                Response response = backendController.add_product_review(currentProduct.store_ID, currentProduct.ID, review);
+                Response response = backendController.add_product_review(currentProduct.storeId, currentProduct.ID, review);
                 if (response.Success)
                 {
                     LoadProductDetails(currentProduct.ID);

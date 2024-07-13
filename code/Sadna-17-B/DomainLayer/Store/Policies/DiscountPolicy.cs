@@ -26,8 +26,9 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         // ----------- variables -----------------------------------------------------------
 
         [Key]
-        public static int policy_id { get; set; }
-        public string policy_name { get; set; }
+        public  int ID { get; set; }
+        public string PolicyName { get; set; }
+
         [NotMapped]
         public Dictionary<int, Discount> id_to_discount;
         [NotMapped]
@@ -38,7 +39,11 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         public Dictionary<Discount, HashSet<int>> discount_to_member;
         [NotMapped]
 
-        public Discount_Rule discount_tree;
+         public Discount_Rule DiscountTree { get; set; }
+
+
+
+
 
 
         // ----------- constructor -----------------------------------------------------------
@@ -49,14 +54,14 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         public DiscountPolicy(string policy_name)
         {
-            policy_id += 1;
+            ID += 1;
 
-            this.policy_name = policy_name;
+            this.PolicyName = policy_name;
             this.id_to_discount = new Dictionary<int, Discount>();
             this.discount_to_products = new Dictionary<Discount, HashSet<int>>();
             this.discount_to_categories = new Dictionary<Discount, HashSet<int>>();
             this.discount_to_member = new Dictionary<Discount, HashSet<int>>();
-            this.discount_tree = new Discount_Rule(lambda_discount_rule.numeric.addition(), "addition");
+            this.DiscountTree = new Discount_Rule(lambda_discount_rule.numeric.addition(), "addition");
             
         }
 
@@ -119,20 +124,20 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
             id_to_discount.Add(discount.ID, discount);
 
-             return discount_tree.add_discount(discount, ancestor_id);
+             return DiscountTree.add_discount(discount, ancestor_id);
 
         }
 
         public int add_discount(Discount discount)
         {
             id_to_discount.Add(discount.ID, discount);
-            return discount_tree.add_discount(discount);
+            return DiscountTree.add_discount(discount);
         }
 
         public bool remove_discount(int id)
         {
             
-            return id_to_discount.Remove(id) && discount_tree.remove_discount(id);
+            return id_to_discount.Remove(id) && DiscountTree.remove_discount(id);
         }
 
         public bool add_product(int did, int pid)
@@ -153,18 +158,18 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         public Mini_Checkout calculate_discount(Basket basket)
         {
-            return discount_tree.apply_discount(basket);
+            return DiscountTree.apply_discount(basket);
         }
 
         public int get_id()
         {
-            return policy_id;
+            return ID;
         }
     
 
         public string show_policy()
         {
-            return discount_tree.info();
+            return DiscountTree.info();
         }
 
         

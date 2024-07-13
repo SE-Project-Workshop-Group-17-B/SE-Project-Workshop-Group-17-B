@@ -29,9 +29,9 @@ namespace Sadna_17_B_Frontend.Views
             var store = backendController.get_store_details_by_id(storeId);
             if (store != null)
             {
-                storeNameLiteral.Text = store.name;
+                storeNameLiteral.Text = store.Name;
                 //storeIdLiteral.Text = store.i;
-                // Load additional data such as managers, owners, messages, reviews, policies
+                // Load additional data such as managers, owners, messages, Review, policies
                 // Here you would use backendController methods to get the data and bind to repeaters
             }
         }

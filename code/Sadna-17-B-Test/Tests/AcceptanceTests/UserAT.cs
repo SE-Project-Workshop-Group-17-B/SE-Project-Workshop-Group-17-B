@@ -152,9 +152,9 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
             int sid = (int)store_response.Data;
             Store store = (Store)storeService.store_by_id(sid).Data;
 
-            Response product_response = storeService.add_product_to_store(temp1.AccessToken, sid, productName, productPrice, productCategory, "Description", quantity);
+            Response product_response = storeService.add_product_to_store(temp1.AccessToken, sid, productName, productPrice, productCategory, "description", quantity);
             int pid = (int)product_response.Data;
-            Product product = store.inventory.product_by_id(pid);
+            Product product = store.Inventory.product_by_id(pid);
 
             // rest
 
@@ -227,9 +227,9 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
             int sid = (int) store_response.Data;
             Store store = (Store) storeService.store_by_id(sid).Data;
 
-            Response product_response = storeService.add_product_to_store(temp1.AccessToken, sid, productName, productPrice, productCategory, "Description", quantity);
+            Response product_response = storeService.add_product_to_store(temp1.AccessToken, sid, productName, productPrice, productCategory, "description", quantity);
             int pid = (int) product_response.Data;
-            Product product = store.inventory.product_by_id(pid);
+            Product product = store.Inventory.product_by_id(pid);
 
 
             Response ignore2 = userService.upgrade_subscriber(username2, password2);
@@ -267,9 +267,9 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
             int sid = (int)store_response.Data;
             Store store = (Store)storeService.store_by_id(sid).Data;
 
-            Response product_response = storeService.add_product_to_store(temp1.AccessToken, sid, productName, productPrice, productCategory, "Description", quantity);
+            Response product_response = storeService.add_product_to_store(temp1.AccessToken, sid, productName, productPrice, productCategory, "description", quantity);
             int pid = (int)product_response.Data;
-            Product product = store.inventory.product_by_id(pid);
+            Product product = store.Inventory.product_by_id(pid);
             
             // rest
 
@@ -316,9 +316,9 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
             int sid = (int)store_response.Data;
             Store store = (Store)storeService.store_by_id(sid).Data;
 
-            Response product_response = storeService.add_product_to_store(temp1.AccessToken, sid, productName, productPrice, productCategory, "Description", quantity);
+            Response product_response = storeService.add_product_to_store(temp1.AccessToken, sid, productName, productPrice, productCategory, "description", quantity);
             int pid = (int)product_response.Data;
-            Product product = store.inventory.product_by_id(pid);
+            Product product = store.Inventory.product_by_id(pid);
 
             // rest
 
@@ -365,9 +365,9 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
             int sid = (int)store_response.Data;
             Store store = (Store)storeService.store_by_id(sid).Data;
 
-            Response product_response = storeService.add_product_to_store(temp1.AccessToken, sid, productName, productPrice, productCategory, "Description", quantity);
+            Response product_response = storeService.add_product_to_store(temp1.AccessToken, sid, productName, productPrice, productCategory, "description", quantity);
             int pid = (int)product_response.Data;
-            Product product = store.inventory.product_by_id(pid);
+            Product product = store.Inventory.product_by_id(pid);
 
             // rest
 
@@ -413,9 +413,9 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
             int sid = (int)store_response.Data;
             Store store = (Store)storeService.store_by_id(sid).Data;
 
-            Response product_response = storeService.add_product_to_store(temp1.AccessToken, sid, productName, productPrice, productCategory, "Description", quantity);
+            Response product_response = storeService.add_product_to_store(temp1.AccessToken, sid, productName, productPrice, productCategory, "description", quantity);
             int pid = (int)product_response.Data;
-            Product product = store.inventory.product_by_id(pid);
+            Product product = store.Inventory.product_by_id(pid);
 
             // rest
 

@@ -40,7 +40,7 @@ namespace Sadna_17_B_Frontend.Views
 
         protected void manageInventory()
         {
-            // Implement manage inventory redirection logic
+            // Implement manage Inventory redirection logic
         }
     }
 }

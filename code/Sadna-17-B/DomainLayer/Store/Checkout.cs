@@ -21,17 +21,19 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         // -------------- variables & constructor -----------------------------------------
 
-        public List<Tuple<Discount, double>> discounts = new List<Tuple<Discount, double>>();
+        public List<Tuple<Discount, double>> discounts { get; set; }
 
-        public double total_discount { get; private set; }
-        public double total_price_without_discount { get; private set; }
+        public double total_discount { get;  set; }
+        public double total_price_without_discount { get;  set; }
 
 
         public string checkout_type = "Mini Checkout";
 
 
+    
         public Mini_Checkout()
         {
+            discounts = new List<Tuple<Discount, double>>();
             this.checkout_type = "Mini checkout";
         }
 

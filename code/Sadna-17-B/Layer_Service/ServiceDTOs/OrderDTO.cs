@@ -13,7 +13,7 @@ namespace Sadna_17_B.ServiceLayer.ServiceDTOs
         public string UserID { get; } // Can be either GuestID or Username, according to the order type
         public bool IsGuestOrder { get; }
         public DateTime Timestamp { get; }
-        public Cart cart { get; } // StoreID -> ProductID -> (quantity,unitPrice)
+        public Cart cart { get; } // storeId -> ProductID -> (quantity,unitPrice)
         public string DestinationAddress { get; }
         public string CreditCardInfo { get; }
 

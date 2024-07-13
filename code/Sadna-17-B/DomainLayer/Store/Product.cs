@@ -15,14 +15,21 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         // ---------------- Search by -------------------------------------------------------------------------------------------
 
-
+        [NotMapped]
         public static int idCounter = 1;
+        [NotMapped]
         public static int ratingCounter = 0;
+        [NotMapped]
         public static int ratingOverAllScore = 0;
 
         [Key]
         public int ID { get; private set; }
-        public int store_ID { get; private set; }
+
+     
+        public int storeId { get; private set; }
+
+   //     [ForeignKey("storeId")]
+        public virtual Store Store { get; set; }
         public int amount { get; set; }
         public string name { get; set; }
         public double price { get; set; }
@@ -30,8 +37,12 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         public string category { get; set; }
         public string description { get; set; } // up to 100 char
 
-        public virtual List<string> reviews { get; set; } = new List<string>();
-        public virtual List<int> ratings { get; set; } = new List<int>();
+        public virtual ICollection<String> Reviews { get; set; }
+
+        public virtual ICollection<String> Complaints { get; set; }
+
+
+        public virtual List<int> ratings { get; set; } 
 
 
 
@@ -48,8 +59,10 @@ namespace Sadna_17_B.DomainLayer.StoreDom
        
         public Product(string name, double price, string category, int store_id, string description = "", int amount = 0)
         {
+            this.Reviews = new List<string>();
+            this.ratings = new List<int>();
             ID = idCounter++;
-            store_ID = store_id;
+            this.storeId = store_id;
 
             this.name = name.ToLower().Trim();
 
@@ -57,7 +70,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             this.price = price;
             this.amount = amount;
             this.category = category;
-            this.reviews = new List<string>();
+            this.Reviews = new List<string>();
             this.description = description.Length <= 100 ? description : description.Substring(0, 100);
             this.locked = false;
             this.amount = amount;
@@ -79,16 +92,16 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         public bool add_review(string review)
         {
-            reviews.Add(review);
+            Reviews.Add(review);
             return true;
         }
         
         public bool remove_review(string review)
         {
-            if (!reviews.Contains(review))
+            if (!Reviews.Contains(review))
                 return false;
 
-            reviews.Remove(review);
+            Reviews.Remove(review);
             return true;
         }
 
@@ -96,7 +109,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         {
             bool found = false;
 
-            foreach(string current_review in reviews)
+            foreach(string current_review in Reviews)
             {
                 if (current_review == oldreview)
                 {
@@ -112,7 +125,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         public Cart_Product to_cart_product()
         {
-            return new Cart_Product(store_ID, amount, price, category, ID, name);
+            return new Cart_Product(storeId, amount, price, category, ID, name);
         }
 
         public string info_to_print()

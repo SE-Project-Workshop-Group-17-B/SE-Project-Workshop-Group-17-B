@@ -21,7 +21,7 @@ namespace Sadna_17_B.ServiceLayer.Services
          *     response                            data
          *    ----------                          ------
          *    
-         *   create_store         ----->          store_ID
+         *   create_store         ----->          storeId
          * 
          * 
          * 
@@ -61,7 +61,7 @@ namespace Sadna_17_B.ServiceLayer.Services
         // ---------------- adjust stores options -------------------------------------------------------------------------------------------
 
         
-        public Response create_store(string token, string name, string email, string phoneNumber, string storeDescription, string address)// --> store_id
+        public Response create_store(string token, string name, string email, string phoneNumber, string storeDescription, string address)// --> storeId
         {
             // ---------- subscriber authentication ---------------
 
@@ -94,7 +94,7 @@ namespace Sadna_17_B.ServiceLayer.Services
 
         }
 
-        public Response create_store(Dictionary<string,string> doc)// --> store_id // doc_doc abstract implementation 
+        public Response create_store(Dictionary<string,string> doc)// --> storeId // doc_doc abstract implementation 
         {
 
             string token = Parser.parse_string(doc["token"]);
@@ -247,7 +247,7 @@ namespace Sadna_17_B.ServiceLayer.Services
             reviews = _storeController.get_store_reviews_by_ID(storeID);
             if (reviews.IsNullOrEmpty() || reviews[0].StartsWith("Fail"))
             {
-                return new Response("store reviews failed, check storeID", false, reviews);
+                return new Response("store Review failed, check storeID", false, reviews);
             }
             return new Response("Store Reviews:", true, reviews);
         }
@@ -653,7 +653,7 @@ namespace Sadna_17_B.ServiceLayer.Services
             string store_info = _storeController.get_store_inventory(storeID);
 
             if (store_info == null)
-                return new Response("Failed to return inventory for store ID: " + storeID, false);
+                return new Response("Failed to return Inventory for store ID: " + storeID, false);
 
             return new Response(store_info, true);
         }

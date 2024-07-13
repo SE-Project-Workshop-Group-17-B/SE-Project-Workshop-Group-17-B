@@ -15,6 +15,7 @@ using System.Web;
 using System.Web.UI.WebControls;
 using System.Xml.Linq;
 using Cart = Sadna_17_B.DomainLayer.User.Cart;
+using System.Linq;
 
 namespace Sadna_17_B.DomainLayer.StoreDom
 {
@@ -147,7 +148,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         {
 
             string name = Parser.parse_string(doc["name"]);
-            string email = Parser.parse_string(doc["email"]);
+            string email = Parser.parse_string(doc["Email"]);
             string phone = Parser.parse_string(doc["phone"]);
             string descr = Parser.parse_string(doc["descr"]);
             string addr = Parser.parse_string(doc["addr"]);
@@ -197,7 +198,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
 
 
-        // ---------------- store inventory -------------------------------------------------------------------------------------------
+        // ---------------- store Inventory -------------------------------------------------------------------------------------------
 
         public List<Product> all_products()
         {
@@ -247,7 +248,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         public bool validate_inventories(Cart cart)
         {
 
-            foreach (Basket basket in cart.sid_to_basket.Values)
+            foreach (Basket basket in cart.Baskets.Values)
             {
                 Store store = store_by_id(basket.store_id);
 
@@ -268,7 +269,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         public bool validate_policies(Cart cart)
         {
-            foreach (Basket basket in cart.sid_to_basket.Values)
+            foreach (Basket basket in cart.Baskets.Values)
             {
                 Store store = store_by_id(basket.store_id);
 
@@ -294,7 +295,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                 {
                     int p_id = item.Key;
                     int p_amount = item.Value;
-                    int p_before_amount = store.inventory.amount_by_id(p_id);
+                    int p_before_amount = store.Inventory.amount_by_id(p_id);
 
                     to_retrieve.Add(p_id, p_before_amount);
                     store.decrease_product_amount(p_id, p_amount);
@@ -340,10 +341,10 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             List<string> result = new List<string>();
             
             try{
-                result = store_by_id(storeID).reviews;
+                result = store_by_id(storeID).Reviews.ToList();
             }
             catch (Exception e) {
-                result.Add("Failed to retrieve store " + storeID + "reviews...");
+                result.Add("Failed to retrieve store " + storeID + "Review...");
                 result.Add(e.Message);
             }
 
@@ -360,7 +361,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         public double get_store_rating(int storeID)
         {
             Store store = store_by_id(storeID);
-            return store.rating;
+            return store.Rating;
         }
 
 
@@ -458,7 +459,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         public List<Store> store_by_name(string name)
         {
-            return active_stores.Values.Where(s => (s.name == name)).ToList();
+            return active_stores.Values.Where(s => (s.Name == name)).ToList();
         }
 
         public Store store_by_id(int id)
@@ -559,7 +560,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
             foreach (Product product in searchReesult)
             {
-                if (product.store_ID == storeID)
+                if (product.storeId == storeID)
                     filtered.Add(product);
             }
 
@@ -575,7 +576,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
             foreach (Product product in searchResult)
             {
-                double store_rating = store_by_id(product.store_ID).rating;
+                double store_rating = store_by_id(product.storeId).Rating;
                 if (low < store_rating)
                     filtered.Add(product);
             }
@@ -599,7 +600,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         public string get_store_name(int storeID)
         {
-            return (store_by_id(storeID)).name;
+            return (store_by_id(storeID)).Name;
         }
         
     }

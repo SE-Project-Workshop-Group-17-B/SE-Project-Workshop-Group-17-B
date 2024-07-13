@@ -137,7 +137,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
             
             Store store = (store_name_response.Data as List<Store>)[0];
             Assert.IsTrue(store_name_response.Success);
-            Assert.AreEqual(store.name, name);
+            Assert.AreEqual(store.Name, name);
         }
 
         [TestMethod]

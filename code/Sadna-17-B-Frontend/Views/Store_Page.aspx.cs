@@ -89,7 +89,7 @@ namespace Sadna_17_B_Frontend.Views
 
             if (ratingResponse.Success)
             {
-                MessageBox("Rating submitted successfully!");
+                MessageBox("rating submitted successfully!");
             }
             else
             {
@@ -181,7 +181,7 @@ namespace Sadna_17_B_Frontend.Views
         {
             int storeId = Convert.ToInt32(Request.QueryString["storeId"]);
 
-            string script = "$('#mymodal-inventory').modal('show')";
+            string script = "$('#mymodal-Inventory').modal('show')";
             ClientScript.RegisterStartupScript(this.GetType(), "Popup", script, true);
             
             Dictionary<string, string> searchDoc = new Documentor.search_doc_builder()
@@ -218,7 +218,7 @@ namespace Sadna_17_B_Frontend.Views
         {
             StoreService storeService = backendController.storeService;
 
-            // Fetch store reviews
+            // Fetch store Review
             Response reviewsResponse = storeService.get_store_reviews_by_ID(storeId);
 
             if (reviewsResponse.Success)
@@ -230,7 +230,7 @@ namespace Sadna_17_B_Frontend.Views
             }
             else
             {
-                MessageBox("Failed to load reviews: " + reviewsResponse.Message);
+                MessageBox("Failed to load Review: " + reviewsResponse.Message);
             }
         }
     }

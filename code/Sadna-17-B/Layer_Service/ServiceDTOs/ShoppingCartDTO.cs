@@ -9,7 +9,7 @@ namespace Sadna_17_B.ServiceLayer.ServiceDTOs
 {
     public class ShoppingCartDTO
     {
-        public Dictionary<int, ShoppingBasketDTO> ShoppingBaskets { get; } // StoreID -> ShoppingBasketDTO
+        public Dictionary<int, ShoppingBasketDTO> ShoppingBaskets { get; } // storeId -> ShoppingBasketDTO
 
         public ShoppingCartDTO()
         {
@@ -24,7 +24,7 @@ namespace Sadna_17_B.ServiceLayer.ServiceDTOs
         public ShoppingCartDTO(DomainLayer.User.Cart shoppingCart)
         {
             ShoppingBaskets = new Dictionary<int, ShoppingBasketDTO>();
-            foreach (Basket basket in shoppingCart.sid_to_basket.Values)
+            foreach (Basket basket in shoppingCart.Baskets.Values)
             {
                 ShoppingBaskets[basket.store_id] = new ShoppingBasketDTO(basket);
             }
@@ -33,7 +33,7 @@ namespace Sadna_17_B.ServiceLayer.ServiceDTOs
         public ShoppingCartDTO(DomainLayer.User.Cart shoppingCart, Dictionary<int,Product> products)
         {
             ShoppingBaskets = new Dictionary<int, ShoppingBasketDTO>();
-            foreach (Basket basket in shoppingCart.sid_to_basket.Values)
+            foreach (Basket basket in shoppingCart.Baskets.Values)
             {
                 ShoppingBaskets[basket.store_id] = new ShoppingBasketDTO(basket, products);
             }

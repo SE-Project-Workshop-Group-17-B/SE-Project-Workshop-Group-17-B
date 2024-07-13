@@ -17,26 +17,28 @@ namespace Sadna_17_B.DomainLayer.User
         private int counter_id = 0;
         [Key]
         public int ID { get; set; }
-        public int user_age { get; set; } 
+        public int UserAge { get; set; }
 
-        public Dictionary<int, Basket> sid_to_basket = new Dictionary<int, Basket>();
+        public virtual Dictionary<int, Basket> Baskets { get; set; }
+ 
 
-     
+
 
         public Cart() 
         {
+            Baskets = new Dictionary<int, Basket>();
             counter_id++;
             ID = counter_id;
 
-            user_age = 18; 
+            UserAge = 18; 
         }
 
         public Cart(Cart cart)
         {
             ID = -1;
 
-            user_age = 18;
-            sid_to_basket = copy_baskets();
+            UserAge = 18;
+            Baskets = copy_baskets();
 
         }
 
@@ -44,7 +46,7 @@ namespace Sadna_17_B.DomainLayer.User
         {
             Dictionary<int, Basket> copy = new Dictionary<int, Basket>();
 
-            foreach (Basket basket in sid_to_basket.Values)
+            foreach (Basket basket in Baskets.Values)
                 copy[basket.store_id] = new Basket(basket);
 
             return copy;
@@ -55,16 +57,16 @@ namespace Sadna_17_B.DomainLayer.User
 
         private Basket get_basket(int storeID)
         {
-            if (!sid_to_basket.ContainsKey(storeID))
+            if (!Baskets.ContainsKey(storeID))
             {
                 throw new Sadna17BException("User doesn't have a shopping basket for storeID " + storeID + ".");
             }
-            return sid_to_basket[storeID];
+            return Baskets[storeID];
         }
 
         public List<Basket> baskets()
         {
-            return sid_to_basket.Values.ToList();
+            return Baskets.Values.ToList();
         }
         
         public int add_product(Cart_Product product)
@@ -72,9 +74,9 @@ namespace Sadna_17_B.DomainLayer.User
             int sid = product.sid;
            
             if (!contains_store(sid))
-                sid_to_basket[sid] = new Basket(sid);
+                Baskets[sid] = new Basket(sid);
 
-            sid_to_basket[sid].add_product(product);
+            Baskets[sid].add_product(product);
 
             return product.ID;
         }
@@ -91,9 +93,9 @@ namespace Sadna_17_B.DomainLayer.User
                product = new Cart_Product(sid, amount, price, category, psid, name);
 
             if (!contains_store(sid))
-                sid_to_basket[sid] = new Basket(sid);
+                Baskets[sid] = new Basket(sid);
 
-            sid_to_basket[sid].add_product(product);
+            Baskets[sid].add_product(product);
 
             return product.ID;
         }
@@ -132,7 +134,7 @@ namespace Sadna_17_B.DomainLayer.User
             basket.update_product(pid, amount);
 
             if (basket.empty())
-                sid_to_basket.Remove(sid);
+                Baskets.Remove(sid);
 
         }
 
@@ -142,14 +144,15 @@ namespace Sadna_17_B.DomainLayer.User
         {
             List<int> products = new List<int>();
 
-            foreach (Basket basket in sid_to_basket.Values)
+            foreach (Basket basket in Baskets.Values)
                 products.AddRange(basket.basket_products().Keys);
 
             return products;
         }
         public bool contains_store(int sid)
         {
-            return sid_to_basket.ContainsKey(sid);
+           
+            return Baskets.ContainsKey(sid);
         }
 
         

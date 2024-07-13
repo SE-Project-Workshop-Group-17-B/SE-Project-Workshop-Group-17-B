@@ -44,6 +44,12 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         // ----------- Constructor ------------------------------------------------------------  
 
+        public Discount()
+        {
+            discount_counter++;
+            ID = discount_counter;
+        }
+
 
         public Discount(DateTime StartDate, DateTime EndDate, Discount_Strategy strategy)
         {
@@ -57,11 +63,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         }
 
-        public Discount()
-        {
-            discount_counter++;
-            ID = discount_counter;
-        }
+       
 
         
         // ----------- Expiration --------------------------------------------------------  

@@ -75,9 +75,9 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
 
             // init product
 
-            Response product_response = storeService.add_product_to_store(userDTO.AccessToken, sid, productName, price, category, "Description", quantity);
+            Response product_response = storeService.add_product_to_store(userDTO.AccessToken, sid, productName, price, category, "description", quantity);
             pid = (int)product_response.Data;
-            product = store.inventory.product_by_id(pid);
+            product = store.Inventory.product_by_id(pid);
         }
 
         

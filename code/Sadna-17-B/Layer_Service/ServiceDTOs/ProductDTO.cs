@@ -18,7 +18,9 @@ namespace Sadna_17_B.ServiceLayer.ServiceDTOs
         public double Price { get; }
         public string Category { get; }
         public double CustomerRate { get; }
-        public List<string> CustomerReview { get; } // up to 75 char
+
+        public virtual ICollection<String> CustomerReview { get; set; }// up to 75 char 
+      
         public string Description { get; } // up to 100 char
 
         public ProductDTO(int productID)
@@ -29,12 +31,12 @@ namespace Sadna_17_B.ServiceLayer.ServiceDTOs
         public ProductDTO(Product product)
         {
             Id = product.ID;
-            store_id = product.store_ID;
+            store_id = product.storeId;
             Name = product.name;
             Price = product.price;
             Category = product.category;
             CustomerRate = product.rating;
-            CustomerReview = product.reviews;
+            CustomerReview = product.Reviews;
             Description = product.description;
             amount = product.amount;
         }
