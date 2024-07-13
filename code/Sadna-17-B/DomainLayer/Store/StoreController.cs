@@ -504,6 +504,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         // ----------------  product filters  -------------------------------------------------------------------------------------------
         public Product get_product_by_id(int productId)
         {
+            Product retProduct = null;
             foreach (Store store in active_stores.Values)
             {
                 try
@@ -522,6 +523,22 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                 }
             }
             return null;
+                try
+                {
+                    Product product = store.product_by_id(productId);
+                    retProduct = product;
+                    break;
+                }
+                catch {}
+                /*Product product = store.product_by_id(productId);
+                if (product != null)
+                {
+                    return product;
+                }*/
+            }
+            if (retProduct == null)
+                throw new Sadna17BException($"No product found with ID: {productId}");
+            return retProduct;
         }
 
         public List<Product> search_products_by_keyword(string[] keywords)

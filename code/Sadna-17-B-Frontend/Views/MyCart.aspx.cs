@@ -8,6 +8,7 @@ using System.Linq;
 using Sadna_17_B.DomainLayer.User;
 using System.Web.UI.WebControls;
 using System.Web.UI;
+using Microsoft.Ajax.Utilities;
 
 namespace Sadna_17_B_Frontend.Views
 {
@@ -80,61 +81,44 @@ namespace Sadna_17_B_Frontend.Views
 
         protected void btnBuy_Click(object sender, EventArgs e)
         {
-
-
-
-            var products = new List<dynamic>();
-
-            foreach (RepeaterItem item in rptCartItems.Items)
-            {
-                var data_item = item.DataItem;
-                var id = DataBinder.Eval(data_item, "Id");
-                var name = DataBinder.Eval(data_item, "name");
-                var category = DataBinder.Eval(data_item, "category");
-                var store_id = DataBinder.Eval(data_item, "storeId");
-                var amount = DataBinder.Eval(data_item, "quantity");
-                var price = DataBinder.Eval(data_item, "price");
-
-                products.Add(new
-                {
-                    Id = id,
-                    Name = name,
-                    Categort = category,
-                    StoreId = store_id,
-                    Price = price,
-                    quantity = amount
-
-                });
-
-            }
-            
-
+            string script = "$('#mymodal').modal('show')";
+            ClientScript.RegisterStartupScript(this.GetType(), "Popup", script, true);
         }
 
+        protected void btnPurchase_Click(object sender, EventArgs e)
+        {
+            string token = backendController.userDTO.AccessToken;
+            string cardNum = cardNumber.Value.Trim();
+            string cardDate = txtCardExpiryDate.Value.Trim();
+            string cardCVV = txtCardCVVNum.Value.Trim();
 
+            string creditDetails = cardNum + cardCVV + cardDate;
 
+            string destShipp = textDestInfro.Value.Trim();
 
+            Response res = backendController.completePurchase(token,destShipp, creditDetails);
+            if (res.Success)
+            {
+                string script = "alert('Your purchase was successful!');";
+                ScriptManager.RegisterStartupScript(this, GetType(), "ServerControlScript", script, true);
+            }
+            else
+            {
+                string script = "alert('Payment Failed, please check if you vave money on your account...');";
+                ScriptManager.RegisterStartupScript(this, GetType(), "ServerControlScript", script, true);
+            }
 
-
-
-        
-       
-
-
-
-
-
-
-
+            backendController.clean_cart();
+            LoadCart();
+        }
 
         protected void rptCartItems_ItemCommand(object source, System.Web.UI.WebControls.RepeaterCommandEventArgs e)
         {
             if (e.CommandName == "Remove")
             {
-                int productId = Convert.ToInt32(e.CommandArgument);
-                // Implement remove from cart logic here
-                // Example:
-                // backendController.RemoveFromCart(productId);
+                int productIndex = Convert.ToInt32(e.CommandArgument);
+                Response ignore = backendController.remove_from_cart(productIndex);
+
                 LoadCart(); // Reload the cart after removing an item
             }
         }

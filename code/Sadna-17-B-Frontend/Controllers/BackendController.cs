@@ -211,10 +211,7 @@ namespace Sadna_17_B_Frontend.Controllers
         {
             userService.cart_add_product(doc);
         }
-
       
-
-
         public string login(string username, string password)
         {
             Response response = userService.entry_subscriber(username, password);
@@ -281,6 +278,46 @@ namespace Sadna_17_B_Frontend.Controllers
             return new Response(false, "");
         }
 
+        public Response remove_from_cart(int productIndex)
+        {
+            string tempAccToken = userDTO.AccessToken;
+            Dictionary<string, string> cartDoc = new Dictionary<string, string>();
+            cartDoc["token"] = tempAccToken;
+            ShoppingCartDTO cart = get_shoping_cart(cartDoc);
+            Dictionary<int, ShoppingBasketDTO> temp = cart.ShoppingBaskets;
+
+            foreach (KeyValuePair<int, ShoppingBasketDTO> element in temp)
+            {
+                ShoppingBasketDTO currBasket = element.Value;
+                Dictionary<ProductDTO, int> currProducts = currBasket.ProductQuantities;
+
+                foreach (KeyValuePair<ProductDTO, int> p in currProducts)
+                {
+                    ProductDTO currP = p.Key;
+                    if (productIndex == currP.Id)
+                    {
+                        return userService.cart_remove_product(currP, userDTO.AccessToken);
+                    }
+                }
+            }
+
+            return new Response("Faield to find the product", false);
+        }
+
+        private void updateCart(Dictionary<string,string> doc) 
+        {
+            ShoppingCartDTO cart = get_shoping_cart(doc);
+            foreach (KeyValuePair<int, ShoppingBasketDTO> element in cart.ShoppingBaskets)
+            {
+                checkIfDeleteBasket(element.Key, doc);
+            }
+        }
+
+        private bool checkIfDeleteBasket(int storeId, Dictionary<string, string> doc)
+        {
+            ShoppingBasketDTO basket = get_shoping_cart(doc).ShoppingBaskets[storeId];
+            return false;
+        }
 
         // ---------- status -----------------------------------
 
@@ -399,6 +436,31 @@ namespace Sadna_17_B_Frontend.Controllers
             return new Response(true, "");
         }
 
+        public Response clean_cart()
+        {
+
+            string tempAccToken = userDTO.AccessToken;
+            Dictionary<string, string> cartDoc = new Dictionary<string, string>();
+            cartDoc["token"] = tempAccToken;
+            ShoppingCartDTO cart = get_shoping_cart(cartDoc);
+            Dictionary<int, ShoppingBasketDTO> temp = cart.ShoppingBaskets;
+
+            foreach (KeyValuePair<int, ShoppingBasketDTO> element in temp)
+            {
+                ShoppingBasketDTO currBasket = element.Value;
+                Dictionary<ProductDTO, int> currProducts = currBasket.ProductQuantities;
+
+                foreach (KeyValuePair<ProductDTO, int> p in currProducts)
+                {
+                    ProductDTO currP = p.Key;
+                    userService.cart_remove_product(currP, userDTO.AccessToken);                    
+                }
+            }
+
+
+            return new Response(true, "");
+        }
+
 
 
         // ---------- checkout -----------------------------------
@@ -413,8 +475,10 @@ namespace Sadna_17_B_Frontend.Controllers
             return 0;
         }
 
-   
-
+        public Response completePurchase(string token, string destAddr, string creditCardInfo)
+        {
+            return userService.CompletePurchase(token, destAddr, creditCardInfo);
+        }
 
 
         // ---------- produt -----------------------------------
