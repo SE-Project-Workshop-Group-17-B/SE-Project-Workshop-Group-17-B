@@ -68,7 +68,7 @@ namespace Sadna_17_B_Frontend.Controllers
             if (s == "")
                 return new string[0];
 
-            return s.Substring(1,s.Length).Split('|');
+            return s.Substring(1,s.Length - 1).Split('|');
         }
 
         public bool has_roles(Dictionary<string, string> doc)    // return true if given roles applied. - doc_doc - 

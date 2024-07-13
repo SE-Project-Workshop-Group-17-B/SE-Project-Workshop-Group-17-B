@@ -452,20 +452,34 @@
         }
 
         function setInitialRating(rating) {
-            var starWidth = fiveStarsImgBottom.width;
-            var cropWidth = ((rating / 5) * starWidth); // Calculate crop width based on rating
+            var fiveStarsImgBottom = document.getElementById('fiveStarsImg2');
+            var zeroStarsImgBottom = document.getElementById('zeroStarsImg2');
 
-            if (cropWidth > 180 && cropWidth < 240) {
-                cropWidth += 10;
-            }
-            else if (cropWidth > 240) {
-                cropWidth += 5;
+            // Wait for both images to load
+            Promise.all([
+                new Promise(resolve => {
+                    if (fiveStarsImgBottom.complete) resolve();
+                    else fiveStarsImgBottom.onload = resolve;
+                }),
+                new Promise(resolve => {
+                    if (zeroStarsImgBottom.complete) resolve();
+                    else zeroStarsImgBottom.onload = resolve;
+                })
+            ]).then(() => {
+                var starWidth = fiveStarsImgBottom.width;
+                var cropWidth = ((rating / 5) * starWidth);
 
-            }
+                if (cropWidth > 180 && cropWidth < 240) {
+                    cropWidth += 10;
+                }
+                else if (cropWidth > 240) {
+                    cropWidth += 5;
+                }
 
-            fiveStarsImgBottom.style.clip = 'rect(0px, ' + cropWidth + 'px, 60px, 0px)';
-            var ratingText = document.getElementById('ratingText');
-            ratingText.textContent = rating.toFixed(1) + '/5'; // Set the rating text
+                fiveStarsImgBottom.style.clip = `rect(0px, ${cropWidth}px, 60px, 0px)`;
+                var ratingText = document.getElementById('ratingText');
+                ratingText.textContent = rating.toFixed(1) + '/5';
+            });
         }
 
     </script>

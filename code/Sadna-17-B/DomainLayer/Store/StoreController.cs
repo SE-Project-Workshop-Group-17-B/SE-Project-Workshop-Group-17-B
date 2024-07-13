@@ -506,13 +506,22 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         {
             foreach (Store store in active_stores.Values)
             {
-                Product product = store.product_by_id(productId);
-                if (product != null)
+                try
                 {
-                    return product;
+                    Product product = store.product_by_id(productId);
+                    if (product != null)
+                    {
+                        return product;
+                    }
+                }
+                catch
+                {
+                    if (store.ID == 5)
+                        throw new Sadna17BException($"No product found with ID: {productId}");
+                    else continue;
                 }
             }
-            throw new Sadna17BException($"No product found with ID: {productId}");
+            return null;
         }
 
         public List<Product> search_products_by_keyword(string[] keywords)

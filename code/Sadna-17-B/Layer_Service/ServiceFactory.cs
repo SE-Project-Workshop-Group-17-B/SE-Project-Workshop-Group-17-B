@@ -58,9 +58,15 @@ namespace Sadna_17_B.ServiceLayer
             UserService.upgrade_admin("admin", "password");
             Response res = UserService.entry_subscriber("admin", "password");
 
+            // ------- Create a subscriber --------------------------
+            UserService.upgrade_subscriber("sub", "password");
+            Response res2 = UserService.entry_subscriber("sub", "password");
+
             // ------- Create 5 stores -------------------------------
 
-            for (int i = 1; i <= 5; i++)
+
+
+            for (int i = 1; i <= 4; i++)
             {
                 var storeName = $"Store{i}";
                 var email = $"store{i}@example.com";
@@ -68,21 +74,40 @@ namespace Sadna_17_B.ServiceLayer
                 var description = $"This is Store{i}, offering a wide variety of products.";
                 var address = $"{i} Market Street, City{i}";
 
-                int sid = (int) StoreService.create_store((res.Data as UserDTO).AccessToken, storeName, email, phoneNumber, description, address).Data;
+                int sid2 = (int) StoreService.create_store((res.Data as UserDTO).AccessToken, storeName, email, phoneNumber, description, address).Data;
                 
 
                 // Add 10 products to each store
                 for (int j = 1; j <= 10; j++)
-                    ((Store) StoreService.store_by_id(sid).Data).add_product($"Product{j}", 10.99 + j, $"category{j % 3}", $"description for Product{j}", j * 10);
+                    ((Store) StoreService.store_by_id(sid2).Data).add_product($"Product{j}", 10.99 + j, $"category{j % 3}", $"description for Product{j}", j * 10);
 
 
-                ((Store)StoreService.store_by_id(sid).Data).add_rating(4.5);
-
+                ((Store)StoreService.store_by_id(sid2).Data).add_rating(4.5);
             }
+
+            var storeName2 = $"Store{5}";
+            var email2 = $"store5@example.com";
+            var phoneNumber2 = $"123-456-78{5:D2}"; // Ensuring unique phone numbers
+            var description2 = $"This is Store{5}, offering a wide variety of products.";
+            var address2 = $"{5} Market Street, City{5}";
+
+            int sid = (int)StoreService.create_store((res2.Data as UserDTO).AccessToken, storeName2, email2, phoneNumber2, description2, address2).Data;
+
+
+            // Add 10 products to each store
+            for (int j = 1; j <= 10; j++)
+                ((Store)StoreService.store_by_id(sid).Data).add_product($"Product{j}", 10.99 + j, $"category{j % 3}", $"description for Product{j}", j * 10);
+
+
+            ((Store)StoreService.store_by_id(sid).Data).add_rating(4.5);
 
             for (int j = 1; j < 2; j++)
                 StoreService.add_product_review(1, j, "Very good");
-            
+
+            // -------  Admin offers manager appointment to sub --------------------------
+
+            UserService.OfferManagerAppointment((res.Data as UserDTO).AccessToken, 2, "sub");
+            UserService.RespondToManagerAppointmentOffer((res2.Data as UserDTO).AccessToken, 2, true);
 
         }
 
