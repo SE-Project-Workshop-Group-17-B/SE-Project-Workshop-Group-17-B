@@ -1,4 +1,5 @@
 ﻿using Sadna_17_B.DomainLayer.Order;
+using Sadna_17_B.Repositories;
 using Sadna_17_B.Utils;
 using System;
 using System.Collections.Generic;
@@ -24,6 +25,8 @@ namespace Sadna_17_B.DomainLayer.User
         private Dictionary<string, Subscriber> subscribers = new Dictionary<string, Subscriber>();
         private Dictionary<string, Admin> admins = new Dictionary<string, Admin>();
 
+        // DAL Repository:
+        IUnitOfWork _unitOfWork = UnitOfWork.GetInstance();
 
         public UserController(OrderSystem orderSystem)
         {
@@ -34,7 +37,18 @@ namespace Sadna_17_B.DomainLayer.User
 
         public void LoadData()
         {
-
+            // Load subscribers from database:
+            IEnumerable<Subscriber> subscribersTable = _unitOfWork.Subscribers.GetAll();
+            foreach (Subscriber subscriber in subscribersTable)
+            {
+                subscribers[subscriber.Username] = subscriber;
+            }
+            // Load admins from database:
+            IEnumerable<Admin> adminsTable = _unitOfWork.Admins.GetAll();
+            foreach (Admin admin in adminsTable)
+            {
+                admins[admin.Username] = admin;
+            }
         }
 
         /// <summary>
@@ -74,6 +88,7 @@ namespace Sadna_17_B.DomainLayer.User
             {
                 Subscriber subscriber = new Subscriber(username, password);
                 subscribers[username] = subscriber;
+                _unitOfWork.Subscribers.Add(subscriber);
                 return;
             }
             throw new Sadna17BException("Given username already exists in the system.");
@@ -90,6 +105,7 @@ namespace Sadna_17_B.DomainLayer.User
             {
                 Admin admin = new Admin(username, password);
                 admins[username] = admin;
+                _unitOfWork.Admins.Add(admin);
                 return;
             }
             throw new Sadna17BException("Given username already exists in the system.");

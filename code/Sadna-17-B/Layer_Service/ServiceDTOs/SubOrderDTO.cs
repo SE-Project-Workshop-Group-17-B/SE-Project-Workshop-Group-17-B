@@ -24,7 +24,7 @@ namespace Sadna_17_B.ServiceLayer.ServiceDTOs
             OrderID = subOrder.OrderID;
             UserID = subOrder.UserID;
             Timestamp = subOrder.Timestamp;
-            cart = subOrder.cart;
+            cart = new Cart(subOrder.cart);
             DestinationAddress = subOrder.DestinationAddress;
             CreditCardInfo = subOrder.CreditCardInfo;
         }

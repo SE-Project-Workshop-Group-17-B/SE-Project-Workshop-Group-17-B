@@ -63,20 +63,21 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         public string Address { get; set; }
 
   
-
+        [NotMapped]
         public  virtual Inventory Inventory { get; set; }
 
-       
-        public  DiscountPolicy DiscountPolicy { get; private set; }
+        [NotMapped]
+        public  DiscountPolicy DiscountPolicy { get; set; }
 
  
-        public  PurchasePolicy PurchasePolicy { get; private set; }
+        public  PurchasePolicy PurchasePolicy { get; set; }
 
 
         public double Rating { get; set; }
 /*        public virtual List<string> Review { get; set; }
         public virtual List<string> Complaints { get; set; }*/
         public virtual ICollection<String> Reviews { get; set; }
+
         public virtual ICollection<String> Complaints { get; set; }
 
 
@@ -85,6 +86,15 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         private int RatingCounter { get; set; }
         private double RatingOverallScore { get; set; }
+
+        public enum Status
+        {
+            Active,
+            TemporaryClosed,
+            PermanentlyClosed
+        }
+
+        public Status status { get; set; }
 
 
         private IUnitOfWork _unitOfWork = UnitOfWork.GetInstance();
@@ -116,6 +126,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             this.Reviews = new List<string>();
             this.Complaints = new List<string>();
 
+            this.status = Status.Active;
 
             this.RatingCounter = 0;
         }
@@ -287,6 +298,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
                 product.locked = false;
             }
+            _unitOfWork.Complete();
         }
 
         public int add_product(string name, double price, string category, string description, int amount)

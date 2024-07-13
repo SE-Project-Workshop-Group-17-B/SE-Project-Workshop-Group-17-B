@@ -32,7 +32,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         [TestInitialize]
         public void SetUp()
         {
-            ApplicationDbContext.isMemoryDB = true; // Disconnect actual database from these tests
+            TestsDbContext.isMemoryDB = true; // Disconnect actual database from these tests
             _storeController = new StoreController();
             _orderSystem = new OrderSystem(_storeController);
             _userController = new UserController(_orderSystem);

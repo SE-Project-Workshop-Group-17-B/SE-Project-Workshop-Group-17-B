@@ -10,7 +10,7 @@ namespace Sadna_17_B.DomainLayer.Order
     public class Order
     {
 
-        [Key]
+        //[Key]
         public int OrderID { get; set; }
         public string UserID { get; set; } // Can be either GuestID or Username, according to the order type
         public bool IsGuestOrder { get; set; }

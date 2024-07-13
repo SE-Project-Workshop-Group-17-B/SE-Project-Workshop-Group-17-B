@@ -43,12 +43,12 @@ namespace Sadna_17_B.DomainLayer.User
         public Basket(Basket basket)
         {
             store_id = basket.store_id;
-            id_to_product = copy_id_dict();
-            category_to_products = copy_category_dict();
+            id_to_product = basket.copy_id_dict();
+            category_to_products = basket.copy_category_dict();
             
         }
 
-        public List<Cart_Product> produts()
+        public List<Cart_Product> products()
         {
             return id_to_product.Values.ToList();
         }

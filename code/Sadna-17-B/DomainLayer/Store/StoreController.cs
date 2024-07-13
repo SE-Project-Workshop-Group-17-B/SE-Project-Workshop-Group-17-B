@@ -31,7 +31,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         private StoreBuilder store_builder;
 
         // DAL Repository:
-        IUnitOfWork repository = UnitOfWork.GetInstance();
+        IUnitOfWork _unitOfWork = UnitOfWork.GetInstance();
 
         public StoreController() {
             active_stores = new Dictionary<int,Store>(); 
@@ -41,13 +41,21 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         public void LoadData()
         {
-            IEnumerable<Store> stores = repository.Stores.GetAll();
+            IEnumerable<Store> stores = _unitOfWork.Stores.GetAll();
             foreach (Store store in stores)
             {
-                //if (store.IsActive)
-                //{
+                if (store.status == Store.Status.Active)
+                {
                     active_stores[store.ID] = store;
-                //}
+                }
+                else if (store.status == Store.Status.TemporaryClosed)
+                {
+                    temporary_closed_stores[store.ID] = store;
+                }
+                else if (store.status == Store.Status.PermanentlyClosed)
+                {
+                    permanently_closed_stores[store.ID] = store;
+                }
             }
         }
 
@@ -137,33 +145,13 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                                    .SetAddress(address)
                                    .Build();
 
-            repository.Stores.Add(store);  // SaveChanges -> Updates the ID according to the Stores Table
+            _unitOfWork.Stores.Add(store);  // SaveChanges -> Updates the ID according to the Stores Table
 
 
             active_stores.Add(store.ID, store);
             return store.ID;
         }
 
-        //public void pushStoreToDB(Store store)
-        //{
-        //    StoreDAO storeDAO = new StoreDAO();
-        //
-        //    StoreDTO storeDTO = new StoreDTO
-        //    {
-        //        Name = store.name,
-        //        Email = store.email,
-        //        PhoneNumber = store.phone_number,
-        //        Description = store.description,
-        //        Address = store.address,
-        //        Rating = store.rating,
-        //        Reviews = "",
-        //        Complaints = ""
-        //    };
-        //
-        //    storeDAO.AddStore(storeDTO);
-        //
-        //
-        //}
         public int create_store(Dictionary<string,string> doc) // doc_doc abstraction implementation
         {
 
@@ -182,9 +170,9 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                                    .SetAddress(addr)
                                    .Build();
 
-            active_stores.Add(store.ID, store);
+            _unitOfWork.Stores.Add(store);  // SaveChanges -> Updates the ID according to the Stores Table
 
-            //pushStoreToDB(store);
+            active_stores.Add(store.ID, store);
 
             return store.ID;
         }
@@ -197,6 +185,8 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                 throw new Sadna17BException("The store with storeID " + storeID + " is already closed.");
 
             temporary_closed_stores.Remove(store.ID);
+            store.status = Store.Status.Active;
+            _unitOfWork.Complete();
             active_stores.Add(store.ID, store);
         }
 
@@ -208,6 +198,8 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                 throw new Sadna17BException("The store with storeID " + storeID + " is already closed.");
 
             temporary_closed_stores.Add(store.ID,store);
+            store.status = Store.Status.TemporaryClosed;
+            _unitOfWork.Complete();
             active_stores.Remove(store.ID);
         }
 

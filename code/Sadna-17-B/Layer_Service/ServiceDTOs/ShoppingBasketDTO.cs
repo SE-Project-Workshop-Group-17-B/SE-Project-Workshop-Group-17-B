@@ -24,7 +24,7 @@ namespace Sadna_17_B.ServiceLayer.ServiceDTOs
         public ShoppingBasketDTO(Basket shoppingBasket)
         {
             ProductQuantities = new Dictionary<ProductDTO, int>();
-            foreach (Cart_Product product in shoppingBasket.produts())
+            foreach (Cart_Product product in shoppingBasket.products())
             {
                 ProductQuantities[new ProductDTO(shoppingBasket.store_id,product)] = product.amount;
             }

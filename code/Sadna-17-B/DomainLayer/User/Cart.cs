@@ -14,7 +14,7 @@ namespace Sadna_17_B.DomainLayer.User
 
         //  --------- variables -----------------------------------------------------------------------------------
 
-        private int counter_id = 0;
+        private static int counter_id = 0;
         [Key]
         public int ID { get; set; }
         public int UserAge { get; set; }
@@ -38,7 +38,7 @@ namespace Sadna_17_B.DomainLayer.User
             ID = -1;
 
             UserAge = 18;
-            Baskets = copy_baskets();
+            Baskets = cart.copy_baskets();
 
         }
 

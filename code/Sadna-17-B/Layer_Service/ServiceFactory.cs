@@ -27,6 +27,11 @@ namespace Sadna_17_B.ServiceLayer
         {
             // Read Configuration File -> isMemory = false / frue
             domainFactory = new DomainFactory();
+            SetUp();
+        }
+
+        public void SetUp()
+        {
             BuildInstances();
             CleanDatabase();
             GenerateData(); // Comment this out in version 3 when we load the data from the database.

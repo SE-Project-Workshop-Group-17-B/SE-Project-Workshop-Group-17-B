@@ -44,7 +44,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         [TestInitialize]
         public void SetUp()
         {
-            ApplicationDbContext.isMemoryDB = true; // Disconnect actual database from these tests
+            TestsDbContext.isMemoryDB = true; // Disconnect actual database from these tests
             ServiceFactory serviceFactory = new ServiceFactory();
             userService = serviceFactory.UserService;
             storeService = serviceFactory.StoreService;

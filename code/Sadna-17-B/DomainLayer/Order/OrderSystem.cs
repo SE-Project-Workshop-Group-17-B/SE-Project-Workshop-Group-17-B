@@ -1,6 +1,7 @@
 ﻿using Sadna_17_B.DomainLayer.StoreDom;
 using Sadna_17_B.DomainLayer.User;
 using Sadna_17_B.ExternalServices;
+using Sadna_17_B.Repositories;
 using Sadna_17_B.Utils;
 using System;
 using System.Collections.Generic;
@@ -34,6 +35,8 @@ namespace Sadna_17_B.DomainLayer.Order
 
         // ------- should move to DAL --------------------------------------------------------------------------------
 
+        // DAL Repository:
+        IUnitOfWork _unitOfWork = UnitOfWork.GetInstance();
 
         public OrderSystem(StoreController storeController)
         {
@@ -54,7 +57,42 @@ namespace Sadna_17_B.DomainLayer.Order
 
         public void LoadData()
         {
+            IEnumerable<Order> orderHistoryTable = new List<Order>(); // _unitOfWork.Orders.GetAll();
+            IEnumerable<SubOrder> subOrdersTable = new List<SubOrder>(); //_unitOfWork.SubOrders.GetAll();
 
+            foreach (Order order in orderHistoryTable)
+            {
+                orderHistory[order.OrderID] = order;
+                if (order.IsGuestOrder)
+                {
+                    int guestId = int.Parse(order.UserID);
+                    if (!guestOrders.ContainsKey(guestId))
+                    {
+                        guestOrders[guestId] = new List<Order>();
+                    }
+                    guestOrders[guestId].Add(order);
+                }
+                else
+                {
+                    if (!subscriberOrders.ContainsKey(order.UserID))
+                    {
+                        subscriberOrders[order.UserID] = new List<Order>();
+                    }
+                    subscriberOrders[order.UserID].Add(order);
+                }
+            }
+
+            foreach (SubOrder subOrder in subOrdersTable)
+            {
+                if (!storeOrders.ContainsKey(subOrder.StoreID))
+                {
+                    storeOrders[subOrder.StoreID] = new List<SubOrder>();
+                }
+                storeOrders[subOrder.StoreID].Add(subOrder);
+                //orderHistory[subOrder.OrderID].AddSubOrder(subOrder); // or AddBasket(new Basket(subOrder));
+            }
+
+            orderCount = orderHistory.Count; // Or 1 + max(orderId)
         }
 
 
@@ -112,8 +150,7 @@ namespace Sadna_17_B.DomainLayer.Order
             paymentSystem.ExecutePayment(credit, order.TotalPrice);
             supplySystem.ExecuteDelivery(destination, order.GetManufacturerProductNumbers());
 
-            add_to_history(order);
-
+            add_to_history(order); // Inserts the Orders and SubOrders to the database as well
         }
 
         public void validate_supply_system_availability(string dest, Order order)
@@ -187,6 +224,9 @@ namespace Sadna_17_B.DomainLayer.Order
                 }
                 subscriberOrders[order.UserID].Add(order);
             }
+
+            //_unitOfWork.Orders.Add(order); // Insert the order into the orders table in database
+
             foreach (SubOrder subOrder in order.GetSubOrders())
             { // insert to store sub-orders history
                 if (!storeOrders.ContainsKey(subOrder.StoreID))
@@ -194,6 +234,7 @@ namespace Sadna_17_B.DomainLayer.Order
                     storeOrders[subOrder.StoreID] = new List<SubOrder>();
                 }
                 storeOrders[subOrder.StoreID].Add(subOrder);
+                //_unitOfWork.SubOrders.Add(subOrder); // Insert the SubOrder into the orders table in database
             }
         }
 

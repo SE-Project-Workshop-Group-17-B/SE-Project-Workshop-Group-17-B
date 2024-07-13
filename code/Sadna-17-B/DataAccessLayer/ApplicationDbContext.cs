@@ -22,15 +22,19 @@ namespace Sadna_17_B.DataAccessLayer
         {
         }
 
+        public ApplicationDbContext(string connectionName) : base(connectionName)
+        {
+        }
+
 
         public DbSet<Store> Stores { get; set; }
-       public DbSet<Inventory> Inventory { get; set; }
+        //public DbSet<Inventory> Inventory { get; set; }
         public DbSet<Product> Products { get; set; }
-        public DbSet<Order> Orders { get; set; }
+        //public DbSet<Order> Orders { get; set; }
+        //public DbSet<SubOrder> SubOrders { get; set; }
+        public DbSet<Subscriber> Subscribers { get; set; }
+        public DbSet<Admin> Admins { get; set; }
 
-   
-
-        //  public DbSet<SubOrder> SubOrders { get; set; }
         //   public DbSet<Subscriber> Subscribers { get; set; }
         //  public DbSet<Guest> Guests { get; set; }
         //   public DbSet<Cart> Carts { get; set; }
@@ -86,10 +90,10 @@ namespace Sadna_17_B.DataAccessLayer
 
 
             // Inventory Configuration
-            modelBuilder.Entity<Inventory>()
-                .HasKey(i => i.StoreId);
-            modelBuilder.Entity<Inventory>()
-                .HasRequired(i => i.Store).WithRequiredDependent(s => s.Inventory);
+            //modelBuilder.Entity<Inventory>()
+            //    .HasKey(i => i.StoreId);
+            //modelBuilder.Entity<Inventory>()
+            //    .HasRequired(i => i.Store).WithRequiredDependent(s => s.Inventory);
 
 
 
@@ -98,11 +102,13 @@ namespace Sadna_17_B.DataAccessLayer
 
         public void DeleteAll()
         {
-            Inventory.RemoveRange(Inventory.ToList());
+            //Inventory.RemoveRange(Inventory.ToList());
             Stores.RemoveRange(Stores.ToList());
-            Orders.RemoveRange(Orders.ToList());
             //SubOrders.RemoveRange(SubOrders.ToList());
+            //Orders.RemoveRange(Orders.ToList());
             Products.RemoveRange(Products.ToList());
+            Subscribers.RemoveRange(Subscribers.ToList());
+            Admins.RemoveRange(Admins.ToList());
             SaveChanges();
         }
     }

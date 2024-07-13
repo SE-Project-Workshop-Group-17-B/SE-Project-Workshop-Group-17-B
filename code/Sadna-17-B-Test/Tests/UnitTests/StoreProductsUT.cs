@@ -47,7 +47,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         [TestInitialize]
         public void SetUp()
         {
-            ApplicationDbContext.isMemoryDB = true; // Disconnect actual database from these tests
+            TestsDbContext.isMemoryDB = true; // Disconnect actual database from these tests
             /*
            * 
            *  Basket:           | name        |  price   | category  | descript  | amount   | total price

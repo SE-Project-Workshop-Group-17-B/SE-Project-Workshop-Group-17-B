@@ -47,7 +47,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         [TestInitialize]
         public void SetUp()
         {
-            ApplicationDbContext.isMemoryDB = true; // Disconnect actual database from these tests
+            TestsDbContext.isMemoryDB = true; // Disconnect actual database from these tests
             ServiceFactory serviceFactory = new ServiceFactory();
             userService = serviceFactory.UserService;
             storeService = serviceFactory.StoreService;
@@ -169,7 +169,8 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
                 [$"price"] = $"{50}",
                 [$"amount"] = $"{10}",
                 [$"category"] = $"category",
-                [$"product store id"] = $"{pid}"
+                [$"product store id"] = $"{pid}",
+                [$"name"] = $"{productName}"
             };
 
         
@@ -203,7 +204,8 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
                 [$"price"] = $"{50}",
                 [$"amount"] = $"{10}",
                 [$"category"] = $"category",
-                [$"product store id"] = $"{pid}"
+                [$"product store id"] = $"{pid}",
+                [$"name"] = $"{productName}"
             };
 
             ignore = userService.cart_add_product(doc);
@@ -242,7 +244,8 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
                 [$"price"] = $"{50}",
                 [$"amount"] = $"{quantity * 2}",
                 [$"category"] = $"category",
-                [$"product store id"] = $"{pid}"
+                [$"product store id"] = $"{pid}",
+                [$"name"] = $"{productName}"
             };
 
             Response ignore = userService.cart_add_product(doc);
@@ -284,7 +287,8 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
                 [$"price"] = $"{50}",
                 [$"amount"] = $"{quantity}",
                 [$"category"] = $"category",
-                [$"product store id"] = $"{pid}"
+                [$"product store id"] = $"{pid}",
+                [$"name"] = $"{productName}"
             };
 
             ignore = userService.cart_add_product(doc);
@@ -334,7 +338,8 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
                 [$"price"] = $"{50}",
                 [$"amount"] = $"{quantity}",
                 [$"category"] = $"category",
-                [$"product store id"] = $"{pid}"
+                [$"product store id"] = $"{pid}",
+                [$"name"] = $"{productName}"
             };
 
             ignore = userService.cart_add_product(doc);
@@ -382,7 +387,8 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
                 [$"price"] = $"{50}",
                 [$"amount"] = $"{quantity}",
                 [$"category"] = $"category",
-                [$"product store id"] = $"{pid}"
+                [$"product store id"] = $"{pid}",
+                [$"name"] = $"{productName}"
             };
 
             ignore = userService.cart_add_product(doc);
@@ -431,7 +437,8 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
                 [$"price"] = $"{50}",
                 [$"amount"] = $"{quantity }",
                 [$"category"] = $"category",
-                [$"product store id"] = $"{pid}"
+                [$"product store id"] = $"{pid}",
+                [$"name"] = $"{productName}"
             };
 
             ignore = userService.cart_add_product(doc);
