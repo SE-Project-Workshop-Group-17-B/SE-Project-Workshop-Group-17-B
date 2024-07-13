@@ -16,6 +16,7 @@ using System.Xml.Linq;
 using Newtonsoft.Json.Linq;
 using Sadna_17_B_Test.Tests.AcceptanceTests;
 using Sadna_17_B.DataAccessLayer;
+using Sadna_17_B.Repositories;
 
 namespace Sadna_17_B_Test.Tests.IntegrationTests
 {
@@ -53,10 +54,12 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
         string creditCardInfo = "45805500";
         int amount2Buy = 5;
 
+        static IUnitOfWork unitOfWork = UnitOfWork.CreateCustomUnitOfWork(new TestsDbContext()); // Creates a different singleton value for the UnitOfWork DB connection
+
         [TestInitialize]
         public void SetUp()
         {
-            TestsDbContext.isMemoryDB = true; // Disconnect actual database from these tests
+            ApplicationDbContext.isMemoryDB = true; // Disconnect actual database from these tests
             // init services
 
             ServiceFactory serviceFactory = new ServiceFactory();

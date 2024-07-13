@@ -204,18 +204,10 @@
   <ItemGroup>
     <Compile Include="DataAccessLayer\ApplicationDbContext.cs" />
     <Compile Include="DataAccessLayer\Repositories\EmptyRepository.cs" />
-    <Compile Include="DataAccessLayer\Repositories\IOrderRepository.cs" />
-    <Compile Include="DataAccessLayer\Repositories\IProductRepository.cs" />
     <Compile Include="DataAccessLayer\Repositories\IRepository.cs" />
-    <Compile Include="DataAccessLayer\Repositories\IStoreRepository.cs" />
     <Compile Include="DataAccessLayer\Repositories\IUnitOfWork.cs" />
-    <Compile Include="DataAccessLayer\Repositories\IUserRepository.cs" />
-    <Compile Include="DataAccessLayer\Repositories\OrderRepository.cs" />
-    <Compile Include="DataAccessLayer\Repositories\ProductRepository.cs" />
     <Compile Include="DataAccessLayer\Repositories\Repository.cs" />
-    <Compile Include="DataAccessLayer\Repositories\StoreRepository.cs" />
     <Compile Include="DataAccessLayer\Repositories\UnitOfWork.cs" />
-    <Compile Include="DataAccessLayer\Repositories\UserRepository.cs" />
     <Compile Include="DomainLayer\DomainFactory.cs" />
     <Compile Include="DomainLayer\Order\Order.cs" />
     <Compile Include="DomainLayer\Order\OrderSystem.cs" />
@@ -245,9 +237,13 @@
     <Compile Include="DomainLayer\User\Subscriber.cs" />
     <Compile Include="DomainLayer\User\User.cs" />
     <Compile Include="DomainLayer\User\UserController.cs" />
-    <Compile Include="Migrations\202407131615457_c.cs" />
-    <Compile Include="Migrations\202407131615457_c.Designer.cs">
-      <DependentUpon>202407131615457_c.cs</DependentUpon>
+    <Compile Include="Migrations\202407131835357_Initial.cs" />
+    <Compile Include="Migrations\202407131835357_Initial.designer.cs">
+      <DependentUpon>202407131835357_Initial.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202407131839291_c.cs" />
+    <Compile Include="Migrations\202407131839291_c.designer.cs">
+      <DependentUpon>202407131839291_c.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Utils_external\ISupplySystem.cs" />
@@ -293,8 +289,11 @@
     <Folder Include="Layer_DataAccess\Repositories\" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\202407131615457_c.resx">
-      <DependentUpon>202407131615457_c.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\202407131835357_Initial.resx">
+      <DependentUpon>202407131835357_Initial.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202407131839291_c.resx">
+      <DependentUpon>202407131839291_c.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

@@ -63,9 +63,8 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         public string Description { get; set; }
         public string Address { get; set; }
 
-
-
-        public  virtual Inventory Inventory { get; set; }
+        [NotMapped]
+        public virtual Inventory Inventory { get; set; }
 
         [NotMapped]
         public  DiscountPolicy DiscountPolicy { get;  set; }

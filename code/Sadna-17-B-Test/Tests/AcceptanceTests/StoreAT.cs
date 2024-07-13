@@ -11,6 +11,7 @@ using Newtonsoft.Json.Linq;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Sadna_17_B.DataAccessLayer;
+using Sadna_17_B.Repositories;
 
 namespace Sadna_17_B_Test.Tests.AcceptanceTests
 {
@@ -40,11 +41,13 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         string productDescription = "very good apple";
         int productAmount = 5;
         //category, description, amount
+        
+        static IUnitOfWork unitOfWork = UnitOfWork.CreateCustomUnitOfWork(new TestsDbContext()); // Creates a different singleton value for the UnitOfWork DB connection
 
         [TestInitialize]
         public void SetUp()
         {
-            TestsDbContext.isMemoryDB = true; // Disconnect actual database from these tests
+            ApplicationDbContext.isMemoryDB = true; // Disconnect actual database from these tests
             ServiceFactory serviceFactory = new ServiceFactory();
             userService = serviceFactory.UserService;
             storeService = serviceFactory.StoreService;

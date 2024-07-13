@@ -16,6 +16,7 @@ using Sadna_17_B.Utils;
 using Sadna_17_B.ServiceLayer;
 using Newtonsoft.Json.Linq;
 using Sadna_17_B.DataAccessLayer;
+using Sadna_17_B.Repositories;
 
 namespace Sadna_17_B_Test.Tests.UnitTests
 {
@@ -115,10 +116,12 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         Func<Basket, bool> cond_product;
         Func<Basket, bool> cond_all;
 
+        static IUnitOfWork unitOfWork = UnitOfWork.CreateCustomUnitOfWork(new TestsDbContext()); // Creates a different singleton value for the UnitOfWork DB connection
+
         [TestInitialize]
         public void SetUp()
         {
-            TestsDbContext.isMemoryDB = true; // Disconnect actual database from these tests
+            ApplicationDbContext.isMemoryDB = true; // Disconnect actual database from these tests
             /*
              * 
              *  Basket:           | name        |  price   | category  | descript  | amount   | total price

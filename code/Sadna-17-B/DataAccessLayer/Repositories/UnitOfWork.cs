@@ -23,13 +23,12 @@ namespace Sadna_17_B.Repositories
         protected UnitOfWork(ApplicationDbContext context)
         {
             _context = context;
-            Stores = new StoreRepository(_context);
-            Products = new ProductRepository(_context);
-            //Orders = new OrderRepository(_context);
+            Stores = new Repository<Store>(_context);
+            Products = new Repository<Product>(_context);
+            //Orders = new Repository<Order>(_context);
             //SubOrders = new Repository<SubOrder>(_context);
             Subscribers = new Repository<Subscriber>(_context);
             Admins = new Repository<Admin>(_context);
-            //     Users = new UserRepository(_context);
         }
 
         public static IUnitOfWork GetInstance()
@@ -77,7 +76,6 @@ namespace Sadna_17_B.Repositories
             Products.ResetAutoIncrementKey();
             //Orders.ResetAutoIncrementKey();
             //SubOrders.ResetAutoIncrementKey();
-            //Users.ResetAutoIncrementKey();
             _context.SaveChanges();
         }
     }

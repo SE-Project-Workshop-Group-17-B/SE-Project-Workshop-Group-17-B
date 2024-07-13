@@ -45,12 +45,12 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         int productAmount = 5;
         //category, description, amount
 
-        //static IUnitOfWork unitOfWork = UnitOfWork.CreateCustomUnitOfWork(new TestsDbContext()); // Creates a different singleton value for the UnitOfWork DB connection
+        static IUnitOfWork unitOfWork = UnitOfWork.CreateCustomUnitOfWork(new TestsDbContext()); // Creates a different singleton value for the UnitOfWork DB connection
 
         [TestInitialize]
         public void SetUp()
         {
-            TestsDbContext.isMemoryDB = true; // Disconnect actual database from these tests
+            ApplicationDbContext.isMemoryDB = true; // Disconnect actual database from these tests - it currently cannot work with an actual database, need to move the tests into the same Backend project assembly
             ServiceFactory serviceFactory = new ServiceFactory();
             userService = serviceFactory.UserService;
             storeService = serviceFactory.StoreService;

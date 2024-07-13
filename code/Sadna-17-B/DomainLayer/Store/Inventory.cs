@@ -16,16 +16,13 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         // ---------------- Variables -------------------------------------------------------------------------------------------
 
-        [Key]
         public int StoreId { get; set; }
-       
-
+        
         public virtual Store Store { get; set; }
 
-        private IUnitOfWork _unitOfWork = UnitOfWork.GetInstance();
-
-        // public virtual Store Store { get; set; }
         public Dictionary<int, Product> id_to_product { get; set; }
+
+        private IUnitOfWork _unitOfWork = UnitOfWork.GetInstance();
 
         // ---------------- Adjust product -------------------------------------------------------------------------------------------
 
