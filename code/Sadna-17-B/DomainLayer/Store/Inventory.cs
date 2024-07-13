@@ -18,7 +18,8 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         [Key]
         public int StoreId { get; set; }
-        [NotMapped]
+       
+
         public virtual Store Store { get; set; }
 
         private IUnitOfWork _unitOfWork = UnitOfWork.GetInstance();

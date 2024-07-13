@@ -245,13 +245,9 @@
     <Compile Include="DomainLayer\User\Subscriber.cs" />
     <Compile Include="DomainLayer\User\User.cs" />
     <Compile Include="DomainLayer\User\UserController.cs" />
-    <Compile Include="Migrations\202407111221459_InitialCreate.cs" />
-    <Compile Include="Migrations\202407111221459_InitialCreate.Designer.cs">
-      <DependentUpon>202407111221459_InitialCreate.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202407111907350_initialCreate2.cs" />
-    <Compile Include="Migrations\202407111907350_initialCreate2.Designer.cs">
-      <DependentUpon>202407111907350_initialCreate2.cs</DependentUpon>
+    <Compile Include="Migrations\202407131615457_c.cs" />
+    <Compile Include="Migrations\202407131615457_c.Designer.cs">
+      <DependentUpon>202407131615457_c.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Utils_external\ISupplySystem.cs" />
@@ -297,11 +293,8 @@
     <Folder Include="Layer_DataAccess\Repositories\" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\202407111221459_InitialCreate.resx">
-      <DependentUpon>202407111221459_InitialCreate.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202407111907350_initialCreate2.resx">
-      <DependentUpon>202407111907350_initialCreate2.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\202407131615457_c.resx">
+      <DependentUpon>202407131615457_c.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
