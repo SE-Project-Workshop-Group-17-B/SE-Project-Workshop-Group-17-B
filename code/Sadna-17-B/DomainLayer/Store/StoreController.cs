@@ -14,7 +14,6 @@ using System.Linq;
 using System.Web;
 using System.Web.UI.WebControls;
 using System.Xml.Linq;
-using StoreDTO = Sadna_17_B.DataAccessLayer.store.StoreDTO;
 using Cart = Sadna_17_B.DomainLayer.User.Cart;
 using System.Linq;
 
@@ -145,26 +144,26 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return store.ID;
         }
 
-        public void pushStoreToDB(Store store)
-        {
-            StoreDAO storeDAO = new StoreDAO();
-
-            StoreDTO storeDTO = new StoreDTO
-            {
-                Name = store.name,
-                Email = store.email,
-                PhoneNumber = store.phone_number,
-                Description = store.description,
-                Address = store.address,
-                Rating = store.rating,
-                Reviews = "",
-                Complaints = ""
-            };
-
-            storeDAO.AddStore(storeDTO);
-
-
-        }
+        //public void pushStoreToDB(Store store)
+        //{
+        //    StoreDAO storeDAO = new StoreDAO();
+        //
+        //    StoreDTO storeDTO = new StoreDTO
+        //    {
+        //        Name = store.name,
+        //        Email = store.email,
+        //        PhoneNumber = store.phone_number,
+        //        Description = store.description,
+        //        Address = store.address,
+        //        Rating = store.rating,
+        //        Reviews = "",
+        //        Complaints = ""
+        //    };
+        //
+        //    storeDAO.AddStore(storeDTO);
+        //
+        //
+        //}
         public int create_store(Dictionary<string,string> doc) // doc_doc abstraction implementation
         {
 

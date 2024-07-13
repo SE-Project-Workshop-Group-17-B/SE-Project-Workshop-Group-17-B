@@ -1,5 +1,4 @@
-﻿using Sadna_17_B.DataAccessLayer.store;
-using Sadna_17_B.DomainLayer.Utils;
+﻿using Sadna_17_B.DomainLayer.Utils;
 using Sadna_17_B.Utils;
 using System;
 using System.Collections.Generic;
@@ -44,30 +43,30 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
             id_to_product[product.ID] = product;
 
-            pushProductToDB(product);
+            //pushProductToDB(product);
 
             return product.ID;
         }
 
-        public void pushProductToDB(Product product)
-        {
-            ProductDAO productDAO = new ProductDAO();
-
-            ProductDTO productDT = new ProductDTO
-            {
-                StoreID = product.ID,
-                Amount = product.amount,
-                Name = product.name,
-                Price = product.price,
-                Rating = product.rating,
-                Category = product.category,
-                Description = product.description,
-                Reviews = "",
-                Locked = false
-            };
-            productDAO.AddProduct(productDT);
-
-        }
+        //public void pushProductToDB(Product product)
+        //{
+        //    ProductDAO productDAO = new ProductDAO();
+        //
+        //    ProductDTO productDT = new ProductDTO
+        //    {
+        //        StoreID = product.ID,
+        //        Amount = product.amount,
+        //        Name = product.name,
+        //        Price = product.price,
+        //        Rating = product.rating,
+        //        Category = product.category,
+        //        Description = product.description,
+        //        Reviews = "",
+        //        Locked = false
+        //    };
+        //    productDAO.AddProduct(productDT);
+        //
+        //}
 
         public bool remove_product(int pid)
         {

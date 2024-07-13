@@ -31,7 +31,7 @@ namespace Sadna_17_B_Frontend.Views
             var store = backendController.get_store_details_by_id(storeId);
             if (store != null)
             {
-                litStoreName.Text = store.name;
+                litStoreName.Text = store.Name;
                 litStoreId.Text = storeId.ToString();
 
                 // Load policies
