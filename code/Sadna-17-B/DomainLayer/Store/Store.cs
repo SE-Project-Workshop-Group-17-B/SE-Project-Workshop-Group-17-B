@@ -15,6 +15,7 @@ using Basket = Sadna_17_B.DomainLayer.User.Basket;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Sadna_17_B.Repositories;
+using Newtonsoft.Json;
 
 
 namespace Sadna_17_B.DomainLayer.StoreDom
@@ -62,22 +63,50 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         public string Description { get; set; }
         public string Address { get; set; }
 
-  
+
 
         public  virtual Inventory Inventory { get; set; }
 
-       
-        public  DiscountPolicy DiscountPolicy { get; private set; }
+        [NotMapped]
+        public  DiscountPolicy DiscountPolicy { get;  set; }
+        /*public string DiscountPolicySerialized
+        {
+            get => JsonConvert.SerializeObject(DiscountPolicy);
+            set => DiscountPolicy = string.IsNullOrEmpty(value) ? new DiscountPolicy() : JsonConvert.DeserializeObject<DiscountPolicy>(value);
+        }*/
 
- 
-        public  PurchasePolicy PurchasePolicy { get; private set; }
+
+        [NotMapped]
+        public PurchasePolicy PurchasePolicy { get; set; }
+       /* public string PurchasePolicySerialized
+        {
+            get => JsonConvert.SerializeObject(PurchasePolicy);
+            set => PurchasePolicy = string.IsNullOrEmpty(value) ? new PurchasePolicy() : JsonConvert.DeserializeObject<PurchasePolicy>(value);
+        }*/
+
 
 
         public double Rating { get; set; }
-/*        public virtual List<string> Review { get; set; }
-        public virtual List<string> Complaints { get; set; }*/
-        public virtual ICollection<String> Reviews { get; set; }
-        public virtual ICollection<String> Complaints { get; set; }
+
+
+        [NotMapped]
+        public virtual ICollection<string> Reviews { get; set; } = new List<string>();
+
+        public string ReviewsSerialized
+        {
+            get => JsonConvert.SerializeObject(Reviews);
+            set => Reviews = string.IsNullOrEmpty(value) ? new List<string>() : JsonConvert.DeserializeObject<List<string>>(value);
+        }
+
+        [NotMapped]
+        public virtual ICollection<string> Complaints { get; set; } = new List<string>();
+
+        public string ComplaintsSerialized
+        {
+            get => JsonConvert.SerializeObject(Complaints);
+            set => Complaints = string.IsNullOrEmpty(value) ? new List<string>() : JsonConvert.DeserializeObject<List<string>>(value);
+        }
+
 
 
         [NotMapped]
@@ -200,6 +229,8 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         public bool validate_purchase_policy(Basket basket)
         {
+            
+
             return PurchasePolicy.validate_purchase_rules(basket);
         }
 
@@ -221,18 +252,18 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                     Discount_Strategy strategy = parse_discount_strategy(doc);
                     Func<Basket, double> relevant_product_lambda = parse_relevant_lambdas(doc);
                     List<Func<Basket, bool>> condition_lambdas = parse_condition_lambdas(doc);
-
+                    _unitOfWork.Complete();
                     return DiscountPolicy.add_discount(ancestor_id, start, end, strategy, relevant_product_lambda, condition_lambdas);
 
 
                 case "remove":
 
                     int id = Parser.parse_int(doc["discount id"]);
-
+                    _unitOfWork.Complete();
                     return DiscountPolicy.remove_discount(id) ? 0 : -1;
 
                 default:
-
+                    _unitOfWork.Complete();
                     throw new Sadna17BException("Store : illegal edit type");
 
             }
@@ -255,20 +286,23 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
                     Purchase_Rule purchase = new Purchase_Rule(rule_lambda, cond_lambdas, name);
 
+                    _unitOfWork.Complete();
                     return PurchasePolicy.add_rule(ancestor_id, purchase);
+
 
 
                 case "remove":
 
                     int purchase_id = Parser.parse_int(doc["purchase rule id"]);
-
+                    _unitOfWork.Complete();
                     return PurchasePolicy.remove_rule(purchase_id) ? 0 : -1;
 
                 default:
-
+                    _unitOfWork.Complete();
                     throw new Sadna17BException("Store : illegal edit type");
 
             }
+          
         }
 
         public void edit_product(Dictionary<string, string> doc) // doc explained on doc_doc.cs
@@ -287,6 +321,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
                 product.locked = false;
             }
+            _unitOfWork.Complete();
         }
 
         public int add_product(string name, double price, string category, string description, int amount)

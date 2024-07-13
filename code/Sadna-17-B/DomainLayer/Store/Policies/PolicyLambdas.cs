@@ -18,7 +18,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
     // ------------------- basket pricing abstract maker -----------------------------------------------------------------------------------------
 
-
+    [Serializable]
     public static class lambda_basket_pricing
     {
 

@@ -1,4 +1,5 @@
 ﻿using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 using Sadna_17_B.DomainLayer.Utils;
 using System;
 using System.Collections.Generic;
@@ -6,6 +7,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Runtime.Remoting.Messaging;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -16,11 +18,11 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
 
 
- 
+
     // ------------ Discount Policy ----------------------------------------------------------------------------------------------------------------------------
 
-
-    public class DiscountPolicy
+    [Serializable]
+    public class DiscountPolicy : ISerializable
     {
 
         // ----------- variables -----------------------------------------------------------
@@ -63,6 +65,31 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             this.discount_to_member = new Dictionary<Discount, HashSet<int>>();
             this.DiscountTree = new Discount_Rule(lambda_discount_rule.numeric.addition(), "addition");
             
+        }
+
+
+        // ---------------- Serialization ------------------------------------------------
+
+        protected DiscountPolicy(SerializationInfo info, StreamingContext context)
+        {
+            ID = info.GetInt32(nameof(ID));
+            PolicyName = info.GetString(nameof(PolicyName));
+            id_to_discount = JsonConvert.DeserializeObject<Dictionary<int, Discount>>(info.GetString(nameof(id_to_discount)));
+            discount_to_products = JsonConvert.DeserializeObject<Dictionary<Discount, HashSet<int>>>(info.GetString(nameof(discount_to_products)));
+            discount_to_categories = JsonConvert.DeserializeObject<Dictionary<Discount, HashSet<int>>>(info.GetString(nameof(discount_to_categories)));
+            discount_to_member = JsonConvert.DeserializeObject<Dictionary<Discount, HashSet<int>>>(info.GetString(nameof(discount_to_member)));
+            DiscountTree = JsonConvert.DeserializeObject<Discount_Rule>(info.GetString(nameof(DiscountTree)));
+        }
+
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            info.AddValue(nameof(ID), ID);
+            info.AddValue(nameof(PolicyName), PolicyName);
+            info.AddValue(nameof(id_to_discount), JsonConvert.SerializeObject(id_to_discount));
+            info.AddValue(nameof(discount_to_products), JsonConvert.SerializeObject(discount_to_products));
+            info.AddValue(nameof(discount_to_categories), JsonConvert.SerializeObject(discount_to_categories));
+            info.AddValue(nameof(discount_to_member), JsonConvert.SerializeObject(discount_to_member));
+            info.AddValue(nameof(DiscountTree), JsonConvert.SerializeObject(DiscountTree));
         }
 
 

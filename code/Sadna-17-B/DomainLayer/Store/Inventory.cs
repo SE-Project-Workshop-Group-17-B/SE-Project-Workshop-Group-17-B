@@ -18,6 +18,8 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         [Key]
         public int StoreId { get; set; }
+       
+
         public virtual Store Store { get; set; }
 
         private IUnitOfWork _unitOfWork = UnitOfWork.GetInstance();
@@ -122,6 +124,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                     
                 product.locked = false;
             }
+            _unitOfWork.Complete();
         }
 
         public void increase_product_amount(int p_id, int increase_amount) 

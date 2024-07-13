@@ -12,8 +12,8 @@
     {
         public Configuration()
         {
-            AutomaticMigrationsEnabled = true; // false;
-            AutomaticMigrationDataLossAllowed = true; // Be careful with this in production
+          AutomaticMigrationsEnabled = true; // false;
+        AutomaticMigrationDataLossAllowed = true; // Be careful with this in production
             //SetSqlGenerator("System.Data.SQLite", new SQLiteMigrationSqlGenerator()); // the Golden Key
         }
 
