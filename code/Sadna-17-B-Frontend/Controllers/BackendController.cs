@@ -453,7 +453,7 @@ namespace Sadna_17_B_Frontend.Controllers
                 foreach (KeyValuePair<ProductDTO, int> p in currProducts)
                 {
                     ProductDTO currP = p.Key;
-                    userService.cart_remove_product(currP, userDTO.AccessToken);                    
+                    userService.cart_remove_product(currP, userDTO.AccessToken);
                 }
             }
 

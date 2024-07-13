@@ -202,6 +202,13 @@ namespace Sadna_17_B.ServiceLayer.Services
             }
         }
 
+        public Response edit_product_amount(int storeID, int productID, int newAmount)
+        {
+            _storeController.edit_product_amount(storeID, productID, newAmount);    
+
+            return new Response("edited product amount", true);
+        }
+
         public Response edit_product_review(int storeID, int productID, string old_review, string new_review)
         {
             try

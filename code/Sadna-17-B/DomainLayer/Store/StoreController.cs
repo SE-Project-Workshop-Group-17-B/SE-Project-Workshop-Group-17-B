@@ -499,6 +499,10 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return active_stores;
         }
 
+        public void edit_product_amount(int sid, int pid, int newAmount)
+        {
+            active_stores[sid].edit_product_amount(pid, newAmount);
+        }
 
 
         // ----------------  product filters  -------------------------------------------------------------------------------------------
@@ -523,22 +527,6 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                 }
             }
             return null;
-                try
-                {
-                    Product product = store.product_by_id(productId);
-                    retProduct = product;
-                    break;
-                }
-                catch {}
-                /*Product product = store.product_by_id(productId);
-                if (product != null)
-                {
-                    return product;
-                }*/
-            }
-            if (retProduct == null)
-                throw new Sadna17BException($"No product found with ID: {productId}");
-            return retProduct;
         }
 
         public List<Product> search_products_by_keyword(string[] keywords)

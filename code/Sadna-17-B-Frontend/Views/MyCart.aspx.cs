@@ -15,7 +15,6 @@ namespace Sadna_17_B_Frontend.Views
     public partial class MyCart : System.Web.UI.Page
     {
         BackendController backendController = BackendController.get_instance();
-
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
@@ -38,6 +37,29 @@ namespace Sadna_17_B_Frontend.Views
                 rptCartItems.DataBind();
                 lblTotalPrice.Text = CalculateTotalPrice(products).ToString("C");
             }
+        }
+
+        private ProductDTO getProduct(int pid)
+        {
+            Dictionary<string, string> doc = new Dictionary<string, string>
+            {
+                ["token"] = $"{backendController.userDTO.AccessToken}"
+            };
+
+            ShoppingCartDTO cart = backendController.get_shoping_cart(doc);
+            if (cart != null)
+            {
+                foreach (var basket in cart.ShoppingBaskets.Values)
+                {
+                    foreach (var kvp in basket.ProductQuantities)
+                    {
+                        var product = kvp.Key;
+                        if (product.Id == pid)
+                            return product;
+                    }
+                }
+            }
+            return null;
         }
 
         private List<dynamic> FlattenProducts(ShoppingCartDTO cart)
@@ -114,13 +136,22 @@ namespace Sadna_17_B_Frontend.Views
 
         protected void rptCartItems_ItemCommand(object source, System.Web.UI.WebControls.RepeaterCommandEventArgs e)
         {
+            int productId = Convert.ToInt32(e.CommandArgument);
+            ProductDTO product = getProduct(productId);
             if (e.CommandName == "Remove")
             {
                 int productIndex = Convert.ToInt32(e.CommandArgument);
                 Response ignore = backendController.remove_from_cart(productIndex);
-
-                LoadCart(); // Reload the cart after removing an item
             }
+            else if (e.CommandName == "Increase" || e.CommandName == "Decrease")
+            {
+                int change = e.CommandName == "Increase" ? 1 : -1;
+
+                // Call your backend method to update the quantity
+                backendController.storeService.edit_product_amount(product.store_id, productId, product.amount+change);
+            }
+            LoadCart(); // Reload the cart after removing an item
+
         }
 
         protected string GetProductImage(string category)
