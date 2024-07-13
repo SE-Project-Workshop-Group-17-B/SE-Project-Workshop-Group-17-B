@@ -98,7 +98,7 @@ namespace Sadna_17_B_Frontend.Views
             Dictionary<string, string> doc = new Dictionary<string, string>
             {
                 ["token"] = $"{backendController.userDTO.AccessToken}",
-                ["store id"] = $"{product.storeId}",
+                ["store id"] = $"{product.store_ID}",
                 ["product store id"] = $"{product.ID}",
                 ["price"] = $"{product.price}",
                 ["amount"] = $"{1}",

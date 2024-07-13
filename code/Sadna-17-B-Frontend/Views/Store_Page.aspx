@@ -200,6 +200,24 @@
             color: #ffc107;
             margin-bottom: 10px;
         }
+        .btn-add-to-cart {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            font-size: 14px;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 10px;
+        }
+        .btn-add-to-cart:hover {
+            background-color: #0056b3;
+        }
+        .product-link {
+            text-decoration: none;
+            color: inherit;
+        }       
     </style>
 
     <!-- Fading messages (is not) implemented rn -->
@@ -329,7 +347,7 @@
                                             <div>Category: <%# Eval("category") %></div>
                                             <div>Store ID: <%# Eval("storeId") %></div>
                                         </asp:LinkButton>
-                                        <asp:Button ID="btnAddToCart2" runat="server" Text="Add to Cart" CssClass="btn-add-to-cart" OnClick="btnAddToCart_Click" CommandArgument='<%# Eval("ID") %>' />
+                                        <asp:Button ID="btnAddToCart" runat="server" Text="Add to Cart" CssClass="btn-add-to-cart" OnClick="btnAddToCart_Click" CommandArgument='<%# Eval("ID") %>' />
                                     </div>
                                 </ItemTemplate>
                             </asp:Repeater>
