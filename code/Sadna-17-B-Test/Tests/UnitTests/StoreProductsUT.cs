@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Sadna_17_B.DataAccessLayer;
 using Sadna_17_B.DomainLayer.StoreDom;
 using Sadna_17_B.DomainLayer.User;
 using Sadna_17_B.DomainLayer.Utils;
@@ -46,6 +47,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         [TestInitialize]
         public void SetUp()
         {
+            ApplicationDbContext.isMemoryDB = true; // Disconnect actual database from these tests
             /*
            * 
            *  Basket:           | name        |  price   | category  | descript  | amount   | total price

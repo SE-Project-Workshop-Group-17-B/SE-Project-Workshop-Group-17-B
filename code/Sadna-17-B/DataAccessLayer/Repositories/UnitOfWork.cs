@@ -7,7 +7,7 @@ namespace Sadna_17_B.Repositories
     {
         private readonly ApplicationDbContext _context;
 
-        private static UnitOfWork instance = null;
+        private static IUnitOfWork instance = null;
 
         public IStoreRepository Stores { get; set; }
         public IProductRepository Products { get; set; }
@@ -23,13 +23,13 @@ namespace Sadna_17_B.Repositories
        //     Users = new UserRepository(_context);
         }
 
-        public static UnitOfWork GetInstance()
+        public static IUnitOfWork GetInstance()
         {
             if (instance == null)
             {
                 if (ApplicationDbContext.isMemoryDB) // or Configuration.IsMemoryDb
                 {
-                    instance = new MemoryUnitOfWork(new ApplicationDbContext());
+                    instance = new MemoryUnitOfWork();
                 } else
                 {
                     instance = new UnitOfWork(new ApplicationDbContext());

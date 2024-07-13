@@ -15,6 +15,7 @@ using Sadna_17_B.DomainLayer.User;
 using System.Xml.Linq;
 using Newtonsoft.Json.Linq;
 using Sadna_17_B_Test.Tests.AcceptanceTests;
+using Sadna_17_B.DataAccessLayer;
 
 namespace Sadna_17_B_Test.Tests.IntegrationTests
 {
@@ -55,6 +56,7 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
         [TestInitialize]
         public void SetUp()
         {
+            ApplicationDbContext.isMemoryDB = true; // Disconnect actual database from these tests
             // init services
 
             ServiceFactory serviceFactory = new ServiceFactory();

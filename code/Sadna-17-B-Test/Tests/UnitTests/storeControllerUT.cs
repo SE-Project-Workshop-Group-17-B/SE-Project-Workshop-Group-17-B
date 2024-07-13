@@ -15,6 +15,7 @@ using Sadna_17_B.ServiceLayer.Services;
 using Sadna_17_B.Utils;
 using Sadna_17_B.ServiceLayer;
 using Newtonsoft.Json.Linq;
+using Sadna_17_B.DataAccessLayer;
 
 namespace Sadna_17_B_Test.Tests.UnitTests
 {
@@ -117,6 +118,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         [TestInitialize]
         public void SetUp()
         {
+            ApplicationDbContext.isMemoryDB = true; // Disconnect actual database from these tests
             /*
              * 
              *  Basket:           | name        |  price   | category  | descript  | amount   | total price

@@ -9,6 +9,7 @@ using Sadna_17_B.DomainLayer.Order;
 using Microsoft.VisualBasic;
 using Sadna_17_B.Utils;
 using System.Security.Cryptography;
+using Sadna_17_B.DataAccessLayer;
 
 namespace Sadna_17_B_Test.Tests.UnitTests
 {
@@ -29,6 +30,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         [TestInitialize]
         public void SetUp()
         {
+            ApplicationDbContext.isMemoryDB = true; // Disconnect actual database from these tests
             _storeController = new StoreController();
             _orderSystem = new OrderSystem(_storeController);
             _userController = new UserController(_orderSystem);

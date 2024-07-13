@@ -3,14 +3,18 @@ using Sadna_17_B.DataAccessLayer.Repositories;
 
 namespace Sadna_17_B.Repositories
 {
-    internal class MemoryUnitOfWork : UnitOfWork
+    internal class MemoryUnitOfWork : IUnitOfWork
     {
-        public MemoryUnitOfWork(ApplicationDbContext context) : base(context)
+        public IStoreRepository Stores => new EmptyRepository();
+
+        public IProductRepository Products => new EmptyRepository();
+
+        public IOrderRepository Orders => new EmptyRepository();
+
+        public IUserRepository Users => new EmptyRepository();
+
+        public MemoryUnitOfWork() : base()
         {
-            Products = new EmptyRepository();
-            Orders = new EmptyRepository();
-            Users = new EmptyRepository();
-            Stores = new EmptyRepository();
         }
 
         public int Complete()
@@ -19,6 +23,10 @@ namespace Sadna_17_B.Repositories
         }
 
         public void Dispose()
+        {
+        }
+
+        public void DeleteAll()
         {
         }
     }
