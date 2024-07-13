@@ -19,7 +19,7 @@ namespace Sadna_17_B.DomainLayer.User
         public int ID { get; set; }
         public int UserAge { get; set; }
 
-        public virtual Dictionary<int, Basket> Baskets { get; set; }
+        public virtual Dictionary<int, Basket> Baskets { get; set; } // StoreID -> Basket
  
 
 

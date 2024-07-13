@@ -181,7 +181,7 @@ namespace Sadna_17_B_Frontend.Views
         {
             int storeId = Convert.ToInt32(Request.QueryString["storeId"]);
 
-            string script = "$('#mymodal-Inventory').modal('show')";
+            string script = "$('#mymodal-inventory').modal('show')";
             ClientScript.RegisterStartupScript(this.GetType(), "Popup", script, true);
             
             Dictionary<string, string> searchDoc = new Documentor.search_doc_builder()

@@ -17,7 +17,7 @@ namespace Sadna_17_B.DataAccessLayer
     {
         public static string ApplicationDbContextName = "RemoteSadna-17-B-DB";
         public static string SQLiteDbContextName = "SQLiteDB";
-        public static bool isMemoryDB = false;
+        public static bool isMemoryDB = true;
         public ApplicationDbContext() : base("RemoteSadna-17-B-DB")
         {
         }
@@ -27,6 +27,7 @@ namespace Sadna_17_B.DataAccessLayer
       //  public DbSet<Inventory> Inventory { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<Order> Orders { get; set; }
+        //public DbSet<SubOrder> SubOrders { get; set; }
         //   public DbSet<Subscriber> Subscribers { get; set; }
         //  public DbSet<Guest> Guests { get; set; }
         //   public DbSet<Cart> Carts { get; set; }
@@ -92,6 +93,7 @@ namespace Sadna_17_B.DataAccessLayer
           //  Inventory.RemoveRange(Inventory.ToList());
             Stores.RemoveRange(Stores.ToList());
             Orders.RemoveRange(Orders.ToList());
+            //SubOrders.RemoveRange(SubOrders.ToList());
             //Products.RemoveRange(Products.ToList());
             SaveChanges();
         }
