@@ -1,4 +1,5 @@
 ﻿using Sadna_17_B.DomainLayer.Utils;
+using Sadna_17_B.Repositories;
 using Sadna_17_B.Utils;
 using System;
 using System.Collections.Generic;
@@ -15,10 +16,11 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         // ---------------- Variables -------------------------------------------------------------------------------------------
 
-        [Key, ForeignKey("Store")]
+        [Key]
         public int StoreId { get; set; }
         public virtual Store Store { get; set; }
 
+        private IUnitOfWork _unitOfWork = UnitOfWork.GetInstance();
 
         // public virtual Store Store { get; set; }
         public Dictionary<int, Product> id_to_product { get; set; }
@@ -27,6 +29,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         public Inventory()
         {
+
             // Parameterless constructor required by EF
         }
        
@@ -43,6 +46,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
             id_to_product[product.ID] = product;
 
+            _unitOfWork.Products.Add(product);
             //pushProductToDB(product);
 
             return product.ID;

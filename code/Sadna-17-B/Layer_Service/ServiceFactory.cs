@@ -76,13 +76,18 @@ namespace Sadna_17_B.ServiceLayer
                     ((Store) StoreService.store_by_id(sid).Data).add_product($"Product{j}", 10.99 + j, $"category{j % 3}", $"description for Product{j}", j * 10);
 
 
+
                 ((Store)StoreService.store_by_id(sid).Data).add_rating(4.5);
 
             }
 
-            for (int j = 1; j < 2; j++)
+            for (int j = 1; j <= 2; j++)
                 StoreService.add_product_review(1, j, "Very good");
-            
+
+            for (int j = 1; j <= 2; j++)
+                StoreService.add_product_rating(1, j,  3);
+
+
 
         }
 

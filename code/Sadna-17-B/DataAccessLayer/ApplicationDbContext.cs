@@ -17,17 +17,20 @@ namespace Sadna_17_B.DataAccessLayer
     {
         public static string ApplicationDbContextName = "RemoteSadna-17-B-DB";
         public static string SQLiteDbContextName = "SQLiteDB";
-        public static bool isMemoryDB = true;
+        public static bool isMemoryDB = false;
         public ApplicationDbContext() : base("RemoteSadna-17-B-DB")
         {
         }
 
 
         public DbSet<Store> Stores { get; set; }
-      //  public DbSet<Inventory> Inventory { get; set; }
+       public DbSet<Inventory> Inventory { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<Order> Orders { get; set; }
-        //public DbSet<SubOrder> SubOrders { get; set; }
+
+   
+
+        //  public DbSet<SubOrder> SubOrders { get; set; }
         //   public DbSet<Subscriber> Subscribers { get; set; }
         //  public DbSet<Guest> Guests { get; set; }
         //   public DbSet<Cart> Carts { get; set; }
@@ -77,24 +80,29 @@ namespace Sadna_17_B.DataAccessLayer
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
-            /*// Store Configuration
+           /* // Store Configuration
             modelBuilder.Entity<Store>()
-                .HasKey(s => s.ID); // Primary Key - Disable Auto Increment (sort of?)
+                .HasKey(s => s.ID); // Primary Key - Disable Auto Increment (sort of?)*/
+
 
             // Inventory Configuration
             modelBuilder.Entity<Inventory>()
-                .HasKey(i => i.storeId); // Primary Key - Disable Auto Increment (sort of?)
+                .HasKey(i => i.StoreId);
+            modelBuilder.Entity<Inventory>()
+                .HasRequired(i => i.Store).WithRequiredDependent(s => s.Inventory);
 
-            base.OnModelCreating(modelBuilder);*/
+
+
+            base.OnModelCreating(modelBuilder);
         }
 
         public void DeleteAll()
         {
-          //  Inventory.RemoveRange(Inventory.ToList());
+            Inventory.RemoveRange(Inventory.ToList());
             Stores.RemoveRange(Stores.ToList());
             Orders.RemoveRange(Orders.ToList());
             //SubOrders.RemoveRange(SubOrders.ToList());
-            //Products.RemoveRange(Products.ToList());
+            Products.RemoveRange(Products.ToList());
             SaveChanges();
         }
     }

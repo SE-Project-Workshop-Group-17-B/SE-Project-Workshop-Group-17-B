@@ -137,8 +137,8 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                                    .SetAddress(address)
                                    .Build();
 
-            repository.Stores.Add(store);
-            repository.Complete(); // SaveChanges -> Updates the ID according to the Stores Table
+            repository.Stores.Add(store);  // SaveChanges -> Updates the ID according to the Stores Table
+
 
             active_stores.Add(store.ID, store);
             return store.ID;

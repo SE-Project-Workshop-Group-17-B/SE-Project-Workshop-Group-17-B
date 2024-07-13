@@ -14,6 +14,7 @@ using System.Web.UI.WebControls;
 using Basket = Sadna_17_B.DomainLayer.User.Basket;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Sadna_17_B.Repositories;
 
 
 namespace Sadna_17_B.DomainLayer.StoreDom
@@ -63,7 +64,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
   
 
-        public  Inventory Inventory { get; set; }
+        public  virtual Inventory Inventory { get; set; }
 
        
         public  DiscountPolicy DiscountPolicy { get; private set; }
@@ -86,7 +87,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         private double RatingOverallScore { get; set; }
 
 
-
+        private IUnitOfWork _unitOfWork = UnitOfWork.GetInstance();
 
         // ---------------- Constructor & store management -------------------------------------------------------------------------------------------
 
@@ -127,6 +128,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             this.RatingCounter++;
             this.RatingOverallScore += ratingInput;
             this.Rating = RatingOverallScore / RatingCounter;
+            _unitOfWork.Complete();
 
             return true;
         }
