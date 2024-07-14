@@ -63,6 +63,11 @@ namespace Sadna_17_B.ServiceLayer
             UserService.upgrade_admin("admin", "password");
             Response res = UserService.entry_subscriber("admin", "password");
 
+            // ------- Create a subscriber -----------------------
+
+            UserService.upgrade_subscriber("sub1", "password");
+            Response res2 = UserService.entry_subscriber("sub1", "password");
+
             // ------- Create 5 stores -------------------------------
 
             for (int i = 1; i <= 5; i++)
@@ -93,8 +98,9 @@ namespace Sadna_17_B.ServiceLayer
                 StoreService.add_product_rating(1, j,  3);
 
 
-
-
+            // Assign "sub1" to be a manager in store 1
+            UserService.OfferManagerAppointment((res.Data as UserDTO).AccessToken, 1, "sub1");
+            UserService.RespondToManagerAppointmentOffer((res2.Data as UserDTO).AccessToken, 1, true);
 
         }
 

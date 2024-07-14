@@ -15,8 +15,8 @@ namespace Sadna_17_B.Repositories
 
         public IRepository<Store> Stores { get; set; }
         public IRepository<Product> Products { get; set; }
-        //public IRepository<Order> Orders { get; set; }
-        //public IRepository<SubOrder> SubOrders { get; set; }
+        public IRepository<Order> Orders { get; set; }
+        public IRepository<SubOrder> SubOrders { get; set; }
         public IRepository<Subscriber> Subscribers { get; set; }
         public IRepository<Admin> Admins { get; set; }
 
@@ -25,8 +25,8 @@ namespace Sadna_17_B.Repositories
             _context = context;
             Stores = new Repository<Store>(_context);
             Products = new Repository<Product>(_context);
-            //Orders = new Repository<Order>(_context);
-            //SubOrders = new Repository<SubOrder>(_context);
+            Orders = new Repository<Order>(_context);
+            SubOrders = new Repository<SubOrder>(_context);
             Subscribers = new Repository<Subscriber>(_context);
             Admins = new Repository<Admin>(_context);
         }

@@ -16,7 +16,6 @@ namespace Sadna_17_B.DataAccessLayer
     public class TestsDbContext : ApplicationDbContext
     {
         public static string TestsDbContextName = "RemoteTestsDB";
-        public static bool isMemoryDB = false;
         public TestsDbContext() : base("RemoteTestsDB")
         {
         }

@@ -1,8 +1,10 @@
-﻿using Sadna_17_B.DomainLayer.StoreDom;
+﻿using Newtonsoft.Json;
+using Sadna_17_B.DomainLayer.StoreDom;
 using Sadna_17_B.Utils;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Web;
@@ -19,9 +21,13 @@ namespace Sadna_17_B.DomainLayer.User
         public int ID { get; set; }
         public int UserAge { get; set; }
 
+        [NotMapped]
         public virtual Dictionary<int, Basket> Baskets { get; set; } // StoreID -> Basket
- 
-
+        public string BasketsReceiptSerialized
+        {
+            get => JsonConvert.SerializeObject(Baskets);
+            set => Baskets = JsonConvert.DeserializeObject<Dictionary<int, Basket>>(value);
+        }
 
 
         public Cart() 
@@ -169,6 +175,10 @@ namespace Sadna_17_B.DomainLayer.User
         public double price { get; set; }
         public string category { get; set; }
         public string name { get; set; }
+
+        public Cart_Product()
+        {
+        }
 
         public Cart_Product(int sid, int amount, double price, string category, int store_product_id, string name)
         {

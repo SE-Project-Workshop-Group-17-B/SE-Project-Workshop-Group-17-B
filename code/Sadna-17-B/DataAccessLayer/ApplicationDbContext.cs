@@ -31,14 +31,18 @@ namespace Sadna_17_B.DataAccessLayer
         public DbSet<Store> Stores { get; set; }
         //public DbSet<Inventory> Inventory { get; set; }
         public DbSet<Product> Products { get; set; }
-        //public DbSet<Order> Orders { get; set; }
-        //public DbSet<SubOrder> SubOrders { get; set; }
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<SubOrder> SubOrders { get; set; }
         public DbSet<Subscriber> Subscribers { get; set; }
         public DbSet<Admin> Admins { get; set; }
+
         public DbSet<Owner> Owners { get; set; }
         public DbSet<Manager> Managers { get; set; }
         public DbSet<OwnershipEntry> OwnershipEntries { get; set; }
         public DbSet<ManagementEntry> ManagementEntries { get; set; }
+
+        public DbSet<Cart> Carts { get; set; }
+
         //   public DbSet<Subscriber> Subscribers { get; set; }
         //  public DbSet<Guest> Guests { get; set; }
         //   public DbSet<Cart> Carts { get; set; }
@@ -158,11 +162,11 @@ namespace Sadna_17_B.DataAccessLayer
 
         public void DeleteAll()
         {
-            //Inventory.RemoveRange(Inventory.ToList());
             Stores.RemoveRange(Stores.ToList());
-            //SubOrders.RemoveRange(SubOrders.ToList());
-            //Orders.RemoveRange(Orders.ToList());
+            SubOrders.RemoveRange(SubOrders.ToList());
+            Orders.RemoveRange(Orders.ToList());
             Products.RemoveRange(Products.ToList());
+            Carts.RemoveRange(Carts.ToList());
             Subscribers.RemoveRange(Subscribers.ToList());
             Admins.RemoveRange(Admins.ToList());
             OwnershipEntries.RemoveRange(OwnershipEntries.ToList());

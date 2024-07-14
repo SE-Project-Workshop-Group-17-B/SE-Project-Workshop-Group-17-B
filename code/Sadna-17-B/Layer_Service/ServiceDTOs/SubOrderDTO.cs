@@ -14,7 +14,7 @@ namespace Sadna_17_B.ServiceLayer.ServiceDTOs
         public string UserID { get; } // Can be either GuestID or Username, according to the order type
         public bool IsGuestOrder { get; }
         public DateTime Timestamp { get; }
-        public Cart cart { get; } // ProductID -> (quantity,unitPrice)
+        public Basket basket { get; } // ProductID -> (quantity,unitPrice)
         public string DestinationAddress { get; }
         public string CreditCardInfo { get; }
 
@@ -24,7 +24,7 @@ namespace Sadna_17_B.ServiceLayer.ServiceDTOs
             OrderID = subOrder.OrderID;
             UserID = subOrder.UserID;
             Timestamp = subOrder.Timestamp;
-            cart = new Cart(subOrder.cart);
+            basket = new Basket(subOrder.basket);
             DestinationAddress = subOrder.DestinationAddress;
             CreditCardInfo = subOrder.CreditCardInfo;
         }
