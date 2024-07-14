@@ -1,0 +1,205 @@
+{
+
+
+  // ------------------- memory ---------------------------------------------------------------------- Config
+
+
+  "isMemoryDB": true,
+
+  "requirements": [
+
+
+
+    // ----------------- set admin u1 --------------------------------- Requirement
+
+    {
+      "req name": "generate admins",
+
+      "actions": [
+
+        {
+          "action name": "register admin",
+
+          "type": "admin",
+          "username": "u1",
+          "password": "hi1"
+        }
+
+      ]
+    },
+
+
+    // ----------------- set subscribers u2,u3,u4,u5 ------------------ Requirement
+
+    {
+      "req name": "generate subscribers",
+
+      "actions": [
+
+        {
+          "action name": "register subscriber",
+          "type": "subscriber",
+          "username": "u2",
+          "password": "hi2"
+        },
+
+        {
+          "action name": "register subscriber",
+          "type": "subscriber",
+          "username": "u3",
+          "password": "hi3"
+        },
+
+        {
+          "action name": "register subscriber",
+          "type": "subscriber",
+          "username": "u4",
+          "password": "hi4"
+        },
+
+        {
+          "action name": "register subscriber",
+          "type": "subscriber",
+          "username": "u5",
+          "password": "hi5"
+        },
+
+        {
+          "action name": "register subscriber",
+          "type": "subscriber",
+          "username": "u6",
+          "password": "hi6"
+        }
+      ]
+    },
+
+
+    // ----------------- u2 login ---> add store ---> add Bamba ------------------- Requirement_user
+
+    {
+
+      "req name": "u2 actions",
+
+      "type": "subscriber",
+      "username": "u2",
+      "password": "hi2",
+
+
+      "actions": [
+
+        {
+          "action name": "open store",
+          "store id": 1,
+          "store email": "s1@gmail.com",
+          "store phone": "0524950349",
+          "store description": "coffee shop: \n food \n drinks",
+          "store address": "Beer Sheva"
+        },
+
+        {
+          "actio name": "add product",
+          "store id": 1,
+          "product name": "Bamba",
+          "product description": "Bamba",
+          "product category": "Snack",
+          "product amount": 20,
+          "product price": 30
+        }
+      ]
+    },
+
+
+    // ----------------- u2 request to assign maneger u3 ------------------- Requirement_user
+
+    {
+      "req name": "assign managers",
+
+      "type": "founder",
+      "username": "u2",
+      "password": "hi2",
+
+      "actions": [
+
+        {
+          "action name": "assign manager",
+          "store id": 1,
+          "new manager": "u3",
+          "authorizations": [ "View", "UpdateSupply" ]
+        }
+
+      ]
+    },
+
+
+    // ----------------- u2 request to assign owners u4,u5 ------------------- Requirement_user
+
+    {
+      "req name": "assign owners",
+
+      "type": "founder",
+      "username": "u2",
+      "password": "hi2",
+
+      "actions": [
+
+        {
+          {
+            "action name": "assign owner",
+            "store id": 1,
+            "new owner": "u4"
+          },
+
+
+          {
+            "action name": "assign owner",
+            "store id": 1,
+            "new owner": "u5"
+          }
+        }
+      ]
+
+    },
+
+
+    // ----------------- u3,u4,u5 approve manager requests ------------------- Requirement_user
+
+
+    {
+      "req name": "approve requests",
+
+      "actions": [
+
+        {
+          "action name": "approve managment",
+
+          "username": "u3",
+          "store id": 1,
+          "offer approval": true,
+          "offer type": "offer"
+        },
+
+        {
+          "action name": "approve ownership",
+
+          "username": "u4",
+          "store id": 1,
+          "offer approval": true,
+          "offer type": "offer"
+        },
+
+        {
+          "action name": "approve ownership",
+
+          "username": "u5",
+          "store id": 1,
+          "offer approval": true,
+          "offer type": "offer"
+        }
+
+      ]
+    }
+
+
+  ]
+
+}

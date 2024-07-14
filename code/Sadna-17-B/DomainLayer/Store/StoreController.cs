@@ -168,10 +168,10 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         {
 
             string name = Parser.parse_string(doc["name"]);
-            string email = Parser.parse_string(doc["Email"]);
+            string email = Parser.parse_string(doc["email"]);
             string phone = Parser.parse_string(doc["phone"]);
-            string descr = Parser.parse_string(doc["descr"]);
-            string addr = Parser.parse_string(doc["addr"]);
+            string descr = Parser.parse_string(doc["description"]);
+            string addr = Parser.parse_string(doc["address"]);
 
             StoreBuilder builder = new StoreBuilder();
 

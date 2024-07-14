@@ -35,8 +35,8 @@ namespace Sadna_17_B_Frontend.Controllers
         private BackendController()
         {
             serviceFactory = new ServiceFactory();
-            userService = serviceFactory.UserService;
-            storeService = serviceFactory.StoreService;
+            userService = serviceFactory.user_service;
+            storeService = serviceFactory.store_service;
 
             entry();
         }

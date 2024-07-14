@@ -160,8 +160,8 @@ namespace Sadna_17_B_Test.Tests.UnitTests
             doc_generator = new Documentor();
             ServiceFactory serviceFactory = new ServiceFactory();
 
-            user_service = (UserService) serviceFactory.UserService;
-            store_service = (StoreService) serviceFactory.StoreService;
+            user_service = (UserService) serviceFactory.user_service;
+            store_service = (StoreService) serviceFactory.store_service;
             store_controller = new StoreController();
 
             Response ignore = user_service.upgrade_subscriber("hihihi", "byebyebye");

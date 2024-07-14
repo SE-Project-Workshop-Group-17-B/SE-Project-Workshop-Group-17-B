@@ -195,6 +195,7 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Layer_Infrastructure\config.txt" />
     <Content Include="Utils_local\zero_stars_rating.png" />
     <Content Include="Web.config" />
   </ItemGroup>
@@ -242,6 +243,8 @@
     <Compile Include="DomainLayer\User\Subscriber.cs" />
     <Compile Include="DomainLayer\User\User.cs" />
     <Compile Include="DomainLayer\User\UserController.cs" />
+    <Compile Include="Layer_Infrastructure\ActionConverter.cs" />
+    <Compile Include="Layer_Infrastructure\Config.cs" />
     <Compile Include="Migrations\202407111221459_InitialCreate.cs" />
     <Compile Include="Migrations\202407111221459_InitialCreate.Designer.cs">
       <DependentUpon>202407111221459_InitialCreate.cs</DependentUpon>
@@ -278,6 +281,7 @@
     <Compile Include="Utils_local\Sadna17BException.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Layer_Infrastructure\config.json" />
     <None Include="packages.config" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>

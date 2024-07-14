@@ -45,6 +45,39 @@ namespace Sadna_17_B.DomainLayer.User
             return Authorizations.Contains(authorization);
         }
 
+        public static HashSet<ManagerAuthorization> deserialize_authorizations(List<string> authorizations)
+        {
+            HashSet < ManagerAuthorization > auths = new HashSet<ManagerAuthorization>();
+
+            foreach (string authorization in authorizations)
+            {
+                switch (authorization)
+                {
+                    case "View":
+                        auths.Add(ManagerAuthorization.View); 
+                        break;
+
+                    case "UpdateSupply":
+                        auths.Add(ManagerAuthorization.UpdateSupply);
+                        break;
+
+                    case "UpdatePurchasePolicy":
+                        auths.Add(ManagerAuthorization.UpdatePurchasePolicy);
+                        break;
+
+                    case "UpdateDiscountPolicy":
+                        auths.Add(ManagerAuthorization.UpdateDiscountPolicy);
+                        break;
+
+                    default:
+                        throw new Sadna17BException(" authorization is not valid ");
+                }
+            }
+
+            return auths;
+        }
+
+
         public enum ManagerAuthorization
         {
             View,
