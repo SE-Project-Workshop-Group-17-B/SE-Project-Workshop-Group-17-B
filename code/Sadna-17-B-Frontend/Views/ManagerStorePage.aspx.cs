@@ -21,6 +21,7 @@ namespace Sadna_17_B_Frontend.Views
                 if (int.TryParse(Request.QueryString["storeId"], out storeId))
                 {
                     LoadStoreData(storeId);
+                    hiddenLabel2.Text = storeId.ToString();
                 }
                 else
                 {
@@ -63,7 +64,7 @@ namespace Sadna_17_B_Frontend.Views
 
         protected void btnPurchaseHistory_Click(object sender, EventArgs e)
         {
-            Response.Redirect($"~/Views/PurchaseHistory.aspx?storeId={storeId}");
+            Response.Redirect($"~/Views/purchasePolicyHistory_page.aspx?storeId={hiddenLabel2.Text}");
         }
 
         protected string GetProductImage(string category)
@@ -86,6 +87,8 @@ namespace Sadna_17_B_Frontend.Views
             TxtDesctBox2.Text = p.description;
             TxtPriceBox2.Text = p.price.ToString();
             TextAmountBox2.Text = p.amount.ToString();
+
+            hiddenLabel.Text = p.ID.ToString();
         }
 
         private void MessageBox(string message)
@@ -99,7 +102,7 @@ namespace Sadna_17_B_Frontend.Views
             int.TryParse(Request.QueryString["storeId"], out storeId);
 
             doc["token"] = backendController.userDTO.AccessToken;
-            doc["product id"] = currProductId.ToString();
+            doc["product id"] = hiddenLabel.Text;
             doc["store id"] = storeId.ToString();
 
             doc["edit type"] = "NONE";

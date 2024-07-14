@@ -159,6 +159,24 @@ namespace Sadna_17_B_Frontend.Views
         protected global::System.Web.UI.WebControls.Repeater rptProducts3;
 
         /// <summary>
+        /// hiddenLabel control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label hiddenLabel;
+
+        /// <summary>
+        /// hiddenLabel2 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label hiddenLabel2;
+
+        /// <summary>
         /// productNameText1 control.
         /// </summary>
         /// <remarks>

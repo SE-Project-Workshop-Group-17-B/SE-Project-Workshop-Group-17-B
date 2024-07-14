@@ -386,6 +386,12 @@
                         <div class="product-image-container">
                             <img src="<%# GetProductImage(Eval("category").ToString()) %>" alt="<%# Eval("name") %>" class="product-image">
                         </div>
+                        <div class ="hideen">
+                            <asp:Label ID="hiddenLabel" runat="server" Style="display: none;"></asp:Label>
+                        </div>
+                        <div class ="hiden">
+                            <asp:Label ID="hiddenLabel2" runat="server" Style="display: none;"></asp:Label>
+                        </div>
                         <div class="product-details">
                         <div class="form-group">
                             <label for="txtProductName">Product Name:</label>
@@ -418,7 +424,7 @@
                 </div>
                 </div>
                 <div class="modal-footer">
-                    <asp:Button ID="SubmitBtn1" runat="server" Text ="+Submit changes" OnClick="btnEditProduct_Click" CssClass="btn btn-primary" />
+                    <asp:Button ID="SubmitBtn1" runat="server" Text ="+Submit changes" OnClick="btnEditProduct_Click" CssClass="btn btn-primary" CommandArgument='<%# Eval("ID") %>'/>
                     <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
                 </div>
             </div>
