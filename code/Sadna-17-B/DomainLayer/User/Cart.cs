@@ -170,6 +170,10 @@ namespace Sadna_17_B.DomainLayer.User
         public string category { get; set; }
         public string name { get; set; }
 
+        public Cart_Product()
+        {
+        }
+
         public Cart_Product(int sid, int amount, double price, string category, int store_product_id, string name)
         {
             count_id += 1;

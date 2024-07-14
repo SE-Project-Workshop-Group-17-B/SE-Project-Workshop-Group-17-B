@@ -19,6 +19,7 @@ namespace Sadna_17_B.DomainLayer.Order
         public DateTime Timestamp { get; set; }
         // public virtual ICollection<SubOrder> SubOrders { get; set; }
         [NotMapped]
+        // This Cart represents the Cart of the user at the moment of purchase.
         public virtual Cart Cart { get; set; } // storeId -> ProductID -> (quantity,unitPrice)
         public string OrderReceiptSerialized
         {

@@ -59,7 +59,7 @@ namespace Sadna_17_B.DataAccessLayer.DBTests
         [TestInitialize]
         public void SetUp()
         {
-            ApplicationDbContext.isMemoryDB = false; // Connect actual database from these tests
+            ApplicationDbContext.isMemoryDB = false; // Connect actual database for these tests
             // init services
 
             ServiceFactory serviceFactory = new ServiceFactory();
