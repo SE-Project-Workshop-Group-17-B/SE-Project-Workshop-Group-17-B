@@ -25,7 +25,7 @@ namespace Sadna_17_B_Frontend.Controllers
 
         private ServiceFactory serviceFactory;
 
-        private UserService userService;
+        public UserService userService;
 
         public StoreService storeService;
         
@@ -333,7 +333,6 @@ namespace Sadna_17_B_Frontend.Controllers
 
         public Response create_store(Dictionary<string, string> doc) // implement with doc_doc documentation
         {
-
             return storeService.create_store(doc);
         }
 

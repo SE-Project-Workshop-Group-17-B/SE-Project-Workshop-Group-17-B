@@ -157,20 +157,23 @@ namespace Sadna_17_B_Frontend.Views
         public void increase_decrease_product_amount_by_1(int productId, int change)
         {
 
-            Product product = backendController.get_product_by_id(productId);
-
+            ProductDTO product = getProduct(productId);
+            int newAmount = product.amount + change;
             Dictionary<string, string> doc = new Dictionary<string, string>
             {
                 ["token"] = $"{backendController.userDTO.AccessToken}",
-                ["store id"] = $"{product.storeId}",
-                ["product store id"] = $"{product.ID}",
-                ["price"] = $"{product.price}",
-                ["amount"] = $"{product.amount}",
-                ["category"] = $"{product.category}",
-                ["name"] = $"{product.name}"
+                ["store id"] = $"{product.store_id}",
+                ["product id"] = $"{product.Id}",
+                ["price"] = $"{product.Price}",
+                ["amount"] = $"{newAmount}",
+                ["category"] = $"{product.Category}",
+                ["name"] = $"{product.Name}"
             };
 
-            backendController.add_product_to_cart(doc,change);
+            if (newAmount == 0)
+                backendController.userService.cart_remove_product(getProduct(productId), backendController.userDTO.AccessToken);
+            else
+                backendController.userService.cart_update_product(doc);
         }
 
         
