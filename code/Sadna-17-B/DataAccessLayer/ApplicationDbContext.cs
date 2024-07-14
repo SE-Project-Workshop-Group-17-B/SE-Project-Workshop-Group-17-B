@@ -34,6 +34,7 @@ namespace Sadna_17_B.DataAccessLayer
         public DbSet<SubOrder> SubOrders { get; set; }
         public DbSet<Subscriber> Subscribers { get; set; }
         public DbSet<Admin> Admins { get; set; }
+        public DbSet<Cart> Carts { get; set; }
 
         //   public DbSet<Subscriber> Subscribers { get; set; }
         //  public DbSet<Guest> Guests { get; set; }
@@ -106,6 +107,7 @@ namespace Sadna_17_B.DataAccessLayer
             SubOrders.RemoveRange(SubOrders.ToList());
             Orders.RemoveRange(Orders.ToList());
             Products.RemoveRange(Products.ToList());
+            Carts.RemoveRange(Carts.ToList());
             Subscribers.RemoveRange(Subscribers.ToList());
             Admins.RemoveRange(Admins.ToList());
             SaveChanges();
