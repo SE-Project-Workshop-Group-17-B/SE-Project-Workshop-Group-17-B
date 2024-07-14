@@ -119,7 +119,20 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                 product.locked = false;
             }
         }
+        public void edit_product_amount(int p_id, int new_amount)
+        {
+            Product product = product_by_id(p_id);
 
+            lock (product)
+            {
+                product.locked = true;
+
+                product.amount = new_amount;
+
+                product.locked = false;
+            }
+
+        }
         public void increase_product_amount(int p_id, int increase_amount) 
         {
             Product product = product_by_id(p_id);

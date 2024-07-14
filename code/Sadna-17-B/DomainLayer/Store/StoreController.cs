@@ -419,7 +419,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return true;
         }
 
-        public bool add_product_rating(int storeID, int productID, int rating)
+        public bool add_product_rating(int storeID, int productID, double rating)
         {
             Store store = store_by_id(storeID);
 
@@ -499,20 +499,34 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return active_stores;
         }
 
+        public void edit_product_amount(int sid, int pid, int newAmount)
+        {
+            active_stores[sid].edit_product_amount(pid, newAmount);
+        }
 
 
         // ----------------  product filters  -------------------------------------------------------------------------------------------
         public Product get_product_by_id(int productId)
         {
+            Product retProduct = null;
             foreach (Store store in active_stores.Values)
             {
-                Product product = store.product_by_id(productId);
-                if (product != null)
+                try
                 {
-                    return product;
+                    Product product = store.product_by_id(productId);
+                    if (product != null)
+                    {
+                        return product;
+                    }
+                }
+                catch
+                {
+                    if (store.ID == 5)
+                        throw new Sadna17BException($"No product found with ID: {productId}");
+                    else continue;
                 }
             }
-            throw new Sadna17BException($"No product found with ID: {productId}");
+            return null;
         }
 
         public List<Product> search_products_by_keyword(string[] keywords)

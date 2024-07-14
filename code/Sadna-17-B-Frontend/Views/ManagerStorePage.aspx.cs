@@ -2,6 +2,9 @@
 using System;
 using System.Web.UI.WebControls;
 using System.Collections.Generic;
+using Sadna_17_B.DomainLayer.StoreDom;
+using Sadna_17_B.Utils;
+using System.Web.UI;
 
 namespace Sadna_17_B_Frontend.Views
 {
@@ -9,6 +12,7 @@ namespace Sadna_17_B_Frontend.Views
     {
         BackendController backendController = BackendController.get_instance();
         private int storeId;
+        private int currProductId;
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -62,9 +66,101 @@ namespace Sadna_17_B_Frontend.Views
             Response.Redirect($"~/Views/PurchaseHistory.aspx?storeId={storeId}");
         }
 
+        protected string GetProductImage(string category)
+        {
+            return "https://via.placeholder.com/200"; // Placeholder image for now
+        }
+
+        protected void btnMngInv_Click(object sender, EventArgs e)
+        {
+            Button btn = (Button)sender;
+            currProductId = Convert.ToInt32(btn.CommandArgument);
+
+            string script = "$('#mymodal-product').modal('show')";
+            ClientScript.RegisterStartupScript(this.GetType(), "Popup", script, true);
+
+            Product p = backendController.get_product_by_id(currProductId);
+
+            productNameText1.Text = p.name;
+            DropDownList1.Text = p.category;
+            TxtDesctBox2.Text = p.description;
+            TxtPriceBox2.Text = p.price.ToString();
+            TextAmountBox2.Text = p.amount.ToString();
+        }
+
+        private void MessageBox(string message)
+        {
+            Response.Write(@"<script language='javascript'>alert('" + message + "')</script>");
+        }
+
+        protected void btnEditProduct_Click(object sender, EventArgs e)
+        {
+            Dictionary<string, string> doc = new Dictionary<string, string>();
+            int.TryParse(Request.QueryString["storeId"], out storeId);
+
+            doc["token"] = backendController.userDTO.AccessToken;
+            doc["product id"] = currProductId.ToString();
+            doc["store id"] = storeId.ToString();
+
+            doc["edit type"] = "NONE";
+            doc["name"] = productNameText1.Text;
+            doc["description"] = TxtDesctBox2.Text;
+            doc["category"] = DropDownList1.Text;
+            doc["price"] = TxtPriceBox2.Text;
+            doc["amount"] = TextAmountBox2.Text;
+
+            Response res = backendController.edit_store_product(doc);
+            if (res.Success)
+            {
+                MessageBox("Succesfully changed details of product");
+            }
+            else
+            {
+                MessageBox($"Encountered with an error while updating product details:{res.Message}");
+            }
+        }
+
+        protected void btnAddProduct_Click(object sender, EventArgs e)
+        {
+            int storeId = Convert.ToInt32(Request.QueryString["storeId"]);
+            Response.Redirect($"addProduct_page.aspx?storeId={storeId}");
+        }
+
+        protected void rptProducts_ItemCommand(object source, RepeaterCommandEventArgs e)
+        {
+            if (e.CommandName == "ViewDetails")
+            {
+                int productId = Convert.ToInt32(e.CommandArgument);
+                Response.Redirect($"ProductDetails.aspx?productId={productId}");
+            }
+        }
+
         protected void btnManageInventory_Click(object sender, EventArgs e)
         {
-            Response.Redirect($"~/Views/ManageInventory.aspx?storeId={storeId}");
+            int storeId = Convert.ToInt32(Request.QueryString["storeId"]);
+
+            string script = "$('#mymodal-inventory').modal('show')";
+            ClientScript.RegisterStartupScript(this.GetType(), "Popup", script, true);
+
+            Dictionary<string, string> searchDoc = new Documentor.search_doc_builder()
+                                                                    .set_search_options(sid: $"{storeId}")
+                                                                    .Build();
+
+
+            Response response = backendController.search_products_by(searchDoc);
+            if (response.Success)
+            {
+                List<Product> productList = response.Data as List<Product>;
+                rptProducts3.DataSource = productList;
+                rptProducts3.DataBind();
+                //lblMessage.Visible = false;
+            }
+            else
+            {
+                rptProducts3.DataSource = new List<Product>();
+                rptProducts3.DataBind();
+
+            }
         }
 
         protected void btnRemoveManager_Click(object sender, EventArgs e)

@@ -11,7 +11,7 @@ namespace Sadna_17_B.ServiceLayer.ServiceDTOs
     {
         public int Id { get; }
         public int store_id { get; }
-        public int amount { get; }
+        public int amount { get; set; }
 
         // Note: Can extend this ProductDTO to hold all product information
         public string Name { get; }

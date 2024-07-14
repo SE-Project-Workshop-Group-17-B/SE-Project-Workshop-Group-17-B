@@ -1,8 +1,7 @@
-﻿<%@ Page Title="Create Store" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="CreateStore.aspx.cs" Inherits="Sadna_17_B_Frontend.Views.CreateStore" %>
-
-<asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="addProduct_page.aspx.cs" Inherits="Sadna_17_B_Frontend.Views.addProduct_page" %>
+<asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
     <style>
-        .create-store-container {
+        .add-product-container {
             max-width: 800px;
             margin: 50px auto;
             padding: 40px;
@@ -10,7 +9,7 @@
             background: linear-gradient(145deg, #ffffff, #f0f0f0);
             box-shadow: 20px 20px 60px #d9d9d9, -20px -20px 60px #ffffff;
         }
-        .create-store-container h2 {
+        .add-product-container h2 {
             text-align: center;
             margin-bottom: 30px;
             font-weight: bold;
@@ -31,7 +30,8 @@
             transition: all 0.3s ease;
         }
         .form-group input,
-        .form-group textarea {
+        .form-group textarea,
+        .form-group select {
             width: 100%;
             padding: 12px;
             border: 2px solid #ddd;
@@ -40,7 +40,8 @@
             font-size: 16px;
         }
         .form-group input:focus,
-        .form-group textarea:focus {
+        .form-group textarea:focus,
+        .form-group select:focus {
             border-color: #4CAF50;
             box-shadow: 0 0 8px rgba(76, 175, 80, 0.4);
         }
@@ -100,34 +101,42 @@
         }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    <div class="create-store-container">
-        <h2><i class="fas fa-store"></i> Create Your Store</h2>
+    <div class="add-product-container">
+        <h2><i class="fas fa-box-open"></i> Add New Product</h2>
         <div class="form-group">
-            <label><i class="fas fa-signature form-icon"></i> Store Name:</label>
-            <asp:TextBox ID="txtStoreName" runat="server" CssClass="form-control" placeholder="Enter store name" />
-            <asp:Literal ID="litStoreNameMessage" runat="server"></asp:Literal>
+            <label><i class="fas fa-tag form-icon"></i> Product Name:</label>
+            <asp:TextBox ID="txtProductName" runat="server" CssClass="form-control" placeholder="Enter product name" />
+            <asp:Literal ID="litProductNameMessage" runat="server"></asp:Literal>
         </div>
         <div class="form-group">
-            <label><i class="fas fa-envelope form-icon"></i> Email:</label>
-            <asp:TextBox ID="txtEmail" runat="server" TextMode="Email" CssClass="form-control" placeholder="Enter email" />
-            <asp:Literal ID="litEmailMessage" runat="server"></asp:Literal>
+            <label><i class="fas fa-list-alt form-icon"></i> Category:</label>
+            <asp:DropDownList ID="ddlCategory" runat="server" placeholder="Select Category" CssClass="form-control">
+                <asp:ListItem Text="-- Select Category --" Value="" />
+                <asp:ListItem Text="Electronics" Value="Electronics" />
+                <asp:ListItem Text="Clothing" Value="Clothing" />
+                <asp:ListItem Text="Books" Value="Books" />
+                <asp:ListItem Text="Home & Garden" Value="HomeGarden" />
+                <asp:ListItem Text="Toys" Value="Toys" />
+            </asp:DropDownList>
+            <asp:Literal ID="litCategoryMessage" runat="server"></asp:Literal>
         </div>
         <div class="form-group">
-            <label><i class="fas fa-phone form-icon"></i> Phone Number:</label>
-            <asp:TextBox ID="txtPhoneNumber" runat="server" TextMode="Phone" CssClass="form-control" placeholder="Enter phone number" />
-            <asp:Literal ID="litPhoneNumberMessage" runat="server"></asp:Literal>
+            <label><i class="fas fa-dollar-sign form-icon"></i> Price:</label>
+            <asp:TextBox ID="txtPrice" runat="server" CssClass="form-control" TextMode="Number" step="0.01" min="0" placeholder="Enter price" />
+            <asp:Literal ID="litPriceMessage" runat="server"></asp:Literal>
         </div>
         <div class="form-group">
-            <label><i class="fas fa-info-circle form-icon"></i> Store Description:</label>
-            <asp:TextBox ID="txtStoreDescription" runat="server" TextMode="MultiLine" CssClass="form-control" placeholder="Enter store description" />
-            <asp:Literal ID="litStoreDescriptionMessage" runat="server"></asp:Literal>
+            <label><i class="fas fa-info-circle form-icon"></i> Product Details:</label>
+            <asp:TextBox ID="txtDetails" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="4" placeholder="Enter product details" />
+            <asp:Literal ID="litDetailsMessage" runat="server"></asp:Literal>
         </div>
         <div class="form-group">
-            <label><i class="fas fa-map-marker-alt form-icon"></i> Address:</label>
-            <asp:TextBox ID="txtAddress" runat="server" CssClass="form-control" placeholder="Enter address" />
-            <asp:Literal ID="litAddressMessage" runat="server"></asp:Literal>
+            <label><i class="fas fa-cubes form-icon"></i> Amount in Stock:</label>
+            <asp:TextBox ID="txtAmount" runat="server" CssClass="form-control" TextMode="Number" min="0" placeholder="Enter amount in stock" />
+            <asp:Literal ID="litAmountMessage" runat="server"></asp:Literal>
         </div>
-        <asp:Button ID="btnCreateStore" runat="server" Text="Create Store" OnClick="btnCreateStore_Click" CssClass="btn-primary" />
+        <asp:Button ID="btnAddProduct" runat="server" Text="Add Product" OnClick="btnAddProduct_Click" CssClass="btn-primary" />
         <asp:Label ID="lblMessage" runat="server" CssClass="alert" Visible="false"></asp:Label>
     </div>
 </asp:Content>
+

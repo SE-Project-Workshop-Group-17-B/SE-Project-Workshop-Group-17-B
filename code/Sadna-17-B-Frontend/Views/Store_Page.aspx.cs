@@ -21,7 +21,9 @@ namespace Sadna_17_B_Frontend.Views
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            if ( int.TryParse(Request.QueryString["storeId"], out storeId) && !IsPostBack)
+            int.TryParse(Request.QueryString["storeId"], out storeId);
+
+            if ( !IsPostBack )
             {
                 LoadStoreData(storeId);
             }
@@ -42,13 +44,7 @@ namespace Sadna_17_B_Frontend.Views
                     storeDescriptionLiteral.Text = storeInfoResponse.Message.Replace("\n", "<br />");
                 }
 
-                // Load and display store rating
-                Response ratingResponse = storeService.get_store_rating(storeId);
-                if (ratingResponse.Success)
-                {
-                    double rating = double.Parse(ratingResponse.Message);
-                    SetStoreRating(rating);
-                }
+                loadStoreRating();
             }
             catch (Exception ex)
             {
@@ -59,7 +55,7 @@ namespace Sadna_17_B_Frontend.Views
 
         private void SetStoreRating(double rating)
         {
-            string script = $"setInitialRating({rating});";
+            string script = $"document.addEventListener('DOMContentLoaded', function() {{ setInitialRating({rating.ToString(System.Globalization.CultureInfo.InvariantCulture)}); }});";
             ClientScript.RegisterStartupScript(this.GetType(), "SetInitialRating", script, true);
         }
 
@@ -68,11 +64,16 @@ namespace Sadna_17_B_Frontend.Views
         {
             string script = "$('#mymodal').modal('show')";
             ClientScript.RegisterStartupScript(this.GetType(), "Popup", script, true);
+
         }
 
         private void MessageBox(string message)
         {
             Response.Write(@"<script language='javascript'>alert('" + message + "')</script>");
+        }
+        protected void btnClose_Click(object sender, EventArgs e) {
+            loadStoreRating();
+
         }
 
         protected void btnsave_Click_rating(object sender, EventArgs e)
@@ -95,6 +96,8 @@ namespace Sadna_17_B_Frontend.Views
             {
                 MessageBox("Failed to submit rating: " + ratingResponse.Message);
             }
+            loadStoreRating();
+
         }
 
         protected void btnsave_Click_complaint(object sender, EventArgs e)
@@ -116,6 +119,21 @@ namespace Sadna_17_B_Frontend.Views
             else
             {
                 MessageBox("Failed to submit complaint: " + complaintResponse.Message);
+            }
+
+            loadStoreRating();
+
+        }
+        protected void loadStoreRating()
+        {
+            // Load and display store rating
+            StoreService storeService = backendController.storeService;
+
+            Response ratingResponse = storeService.get_store_rating(storeId);
+            if (ratingResponse.Success)
+            {
+                double rating = double.Parse(ratingResponse.Message);
+                SetStoreRating(rating);
             }
         }
 
@@ -139,6 +157,8 @@ namespace Sadna_17_B_Frontend.Views
             {
                 MessageBox("Failed to submit Review: " + reviewResponse.Message);
             }
+            loadStoreRating();
+
         }
 
         protected void sendComplaintBtn_Click(object sender, EventArgs e)
@@ -164,7 +184,22 @@ namespace Sadna_17_B_Frontend.Views
             Button btn = (Button)sender;
             int productId = Convert.ToInt32(btn.CommandArgument);
             // Implement add to cart functionality here
-           
+            Product product = backendController.get_product_by_id(productId);
+
+            Dictionary<string, string> doc = new Dictionary<string, string>
+            {
+                ["token"] = $"{backendController.userDTO.AccessToken}",
+                ["store id"] = $"{product.storeId}",
+                ["product store id"] = $"{product.ID}",
+                ["price"] = $"{product.price}",
+                ["amount"] = $"{1}",
+                ["category"] = $"{product.category}",
+                ["name"] = $"{product.name}"
+            };
+
+            backendController.add_product_to_cart(doc,1);
+            loadStoreRating();
+
         }
 
         protected string GetStarRating(double rating)
@@ -223,15 +258,18 @@ namespace Sadna_17_B_Frontend.Views
 
             if (reviewsResponse.Success)
             {
+                string username = backendController.userDTO.Username;
                 List<string> reviews = reviewsResponse.Data as List<string>;
 
-                string script = $"displayReviews({Newtonsoft.Json.JsonConvert.SerializeObject(reviews)}); openReviewsModal();";
+                string script = $"displayReviews({Newtonsoft.Json.JsonConvert.SerializeObject(reviews)},'{username}'); openReviewsModal();";
                 ClientScript.RegisterStartupScript(this.GetType(), "ShowReviews", script, true);
             }
             else
             {
                 MessageBox("Failed to load Review: " + reviewsResponse.Message);
             }
+            loadStoreRating();
+
         }
     }
 }

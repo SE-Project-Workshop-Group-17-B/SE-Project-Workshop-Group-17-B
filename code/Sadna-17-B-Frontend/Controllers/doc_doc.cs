@@ -91,7 +91,8 @@
  * * *  has-roles() / roles()   -       abstract user roles gathering
  *      
  *      "store id"          :       int 
- *      "roles to check"     :      (founder / owner / manager / guest / subscriber / admin) | ... 
+ *      "roles to check"     :      (founder / owner / manager / guest / subscriber / admin
+ *      ) | ... 
  *      
  *      ------------------------------------------------------------------------------
  * 

@@ -107,12 +107,35 @@ namespace Sadna_17_B.DomainLayer.User
             return id_to_product.ContainsKey(pid);
         }
 
+        public bool containsProduct(int pid)
+        {
+            foreach(KeyValuePair<int,Cart_Product> entry in id_to_product)
+            {
+                Cart_Product product = entry.Value;
+                if (product.store_product_id == pid)
+                    return true;
+            }
+            return false;
+        }
+
         // ------------ basket manipulations ----------------------
 
         public Cart_Product product_by_id(int pid)
         {
             if (id_to_product.ContainsKey(pid))
                 return id_to_product[pid];
+
+            throw new Sadna17BException("Cart : no product was found");
+        }
+
+        public Cart_Product productById(int pid)
+        {
+            foreach (KeyValuePair<int, Cart_Product> entry in id_to_product)
+            {
+                Cart_Product product = entry.Value;
+                if (product.store_product_id == pid)
+                    return product;
+            }
 
             throw new Sadna17BException("Cart : no product was found");
         }

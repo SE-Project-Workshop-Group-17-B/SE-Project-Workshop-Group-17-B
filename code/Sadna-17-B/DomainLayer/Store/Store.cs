@@ -35,6 +35,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
 
      
+     
             /*public virtual Inventory Inventory { get; set; }
             public virtual DiscountPolicy DiscountPolicy { get; set; }
             public virtual PurchasePolicy PurchasePolicy { get; set; }
@@ -205,6 +206,10 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         // ---------------- edit ----------------------------------------------------------------------------------------
 
 
+        public void edit_product_amount(int pid, int new_amount)
+        {
+           Inventory.edit_product_amount(pid, new_amount);
+        }
         public int edit_discount_policy(Dictionary<string, string> doc)
         {
             string type = Parser.parse_string(doc["edit type"]);
@@ -282,6 +287,13 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                 product.name = Parser.parse_string(doc["name"]);
                 product.category = Parser.parse_string(doc["category"]);
                 product.description = Parser.parse_string(doc["description"]);
+
+                try
+                {
+                    product.price = Parser.parse_double(doc["price"]);
+                    product.amount = Parser.parse_int(doc["amount"]);
+                }
+                catch { }
 
                 product.locked = false;
             }

@@ -11,97 +11,70 @@ namespace Sadna_17_B_Frontend.Views
 {
 
 
-    public partial class MyCart
+    public partial class addProduct_page
     {
 
         /// <summary>
-        /// lblTotalItems control.
+        /// litProductNameMessage control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblTotalItems;
+        protected global::System.Web.UI.WebControls.Literal litProductNameMessage;
 
         /// <summary>
-        /// rptCartItems control.
+        /// litCategoryMessage control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Repeater rptCartItems;
+        protected global::System.Web.UI.WebControls.Literal litCategoryMessage;
 
         /// <summary>
-        /// lblTotalPrice control.
+        /// litPriceMessage control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblTotalPrice;
+        protected global::System.Web.UI.WebControls.Literal litPriceMessage;
 
         /// <summary>
-        /// btnBuy control.
+        /// litDetailsMessage control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnBuy;
+        protected global::System.Web.UI.WebControls.Literal litDetailsMessage;
 
         /// <summary>
-        /// labelTemp control.
+        /// litAmountMessage control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label labelTemp;
+        protected global::System.Web.UI.WebControls.Literal litAmountMessage;
 
         /// <summary>
-        /// cardNumber control.
+        /// btnAddProduct control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlInputText cardNumber;
+        protected global::System.Web.UI.WebControls.Button btnAddProduct;
 
         /// <summary>
-        /// txtCardExpiryDate control.
+        /// lblMessage control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlInputText txtCardExpiryDate;
-
-        /// <summary>
-        /// txtCardCVVNum control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlInputText txtCardCVVNum;
-
-        /// <summary>
-        /// textDestInfro control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlTextArea textDestInfro;
-
-        /// <summary>
-        /// btnsave control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnsave;
+        protected global::System.Web.UI.WebControls.Label lblMessage;
     }
 }
