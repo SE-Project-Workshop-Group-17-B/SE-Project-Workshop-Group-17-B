@@ -156,7 +156,6 @@ namespace Sadna_17_B_Frontend.Views
                 List<Product> productList = response.Data as List<Product>;
                 rptProducts3.DataSource = productList;
                 rptProducts3.DataBind();
-                //lblMessage.Visible = false;
             }
             else
             {
@@ -175,7 +174,24 @@ namespace Sadna_17_B_Frontend.Views
 
         protected void btnAppointManager_Click(object sender, EventArgs e)
         {
-            // Implement manager appointment logic
+            string script = "$('#mymodal-usernameManager').modal('show')";
+            ClientScript.RegisterStartupScript(this.GetType(), "Popup", script, true);
+        }
+
+        protected void btnSendAppoitmentManager_Click(object sender, EventArgs e)
+        {
+            string token = backendController.userDTO.AccessToken;
+            int storeId = Int32.Parse(hiddenLabel2.Text);
+            string userName = managerTextBox.Text;
+            Response res = backendController.userService.OfferManagerAppointment(token, storeId, userName);
+            if (res.Success)
+            {
+                MessageBox("Succesfully offered management to the user!");
+            }
+            else
+            {
+                MessageBox($"Encountered with an error while offering: {res.Message}");
+            }
         }
 
         protected void btnRemoveOwner_Click(object sender, EventArgs e)
@@ -187,7 +203,24 @@ namespace Sadna_17_B_Frontend.Views
 
         protected void btnAppointOwner_Click(object sender, EventArgs e)
         {
-            // Implement owner appointment logic
+            string script = "$('#mymodal-usernameOwner').modal('show')";
+            ClientScript.RegisterStartupScript(this.GetType(), "Popup", script, true);
+        }
+
+        protected void btnSendAppoitmentOwner_Click(object sender, EventArgs e)
+        {
+            string token = backendController.userDTO.AccessToken;
+            int storeId = Int32.Parse(hiddenLabel2.Text);
+            string userName = managerTextBox.Text;
+            Response res = backendController.userService.OfferOwnerAppointment(token, storeId, userName);
+            if (res.Success)
+            {
+                MessageBox("Succesfully offered ownership to the user!");
+            }
+            else
+            {
+                MessageBox($"Encountered with an error while offering: {res.Message}");
+            }
         }
 
         protected void btnUpdatePurchasePolicy_Click(object sender, EventArgs e)

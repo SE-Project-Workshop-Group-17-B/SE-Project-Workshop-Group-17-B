@@ -434,6 +434,50 @@
 
 
 
+        
+    <div class="username_container">
+    <div class="modal fade" id="mymodal-usernameManager" data-backdrop="false" role="dialog">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <b class="modal-title">Please insert username to appoint</b>                   
+                    <asp:Label ID="Label1" Text="" runat="server" />                   
+                    <asp:Literal runat="server" Text="<br />" />
+                </div>
+                <div class="modal-body">
+                    <asp:TextBox ID="managerTextBox" runat="server" CssClass="form-control" />
+                </div>
+                <div class="modal-footer">
+                    <asp:Button ID="ButtonApp" runat="server" Text="Offer Appoitment" OnClick="btnSendAppoitmentManager_Click" CssClass="btn btn-primary" />
+                </div>
+            </div>
+        </div>
+       </div>                                                                     
+    </div>  
+
+    <div class="username_container">
+    <div class="modal fade" id="mymodal-usernameOwner" data-backdrop="false" role="dialog">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <b class="modal-title">Please insert username to appoint</b>                   
+                    <asp:Label ID="Label3" Text="" runat="server" />                   
+                    <asp:Literal runat="server" Text="<br />" />
+                </div>
+                <div class="modal-body">
+                    <asp:TextBox ID="ownerTextBox" runat="server" CssClass="form-control" />
+                </div>
+                <div class="modal-footer">
+                    <asp:Button ID="Button1" runat="server" Text="Offer Appoitment" OnClick="btnSendAppoitmentOwner_Click" CssClass="btn btn-primary" />
+                </div>
+            </div>
+        </div>
+       </div>                                                                     
+    </div> 
+
+
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js"></script>
     <script>
