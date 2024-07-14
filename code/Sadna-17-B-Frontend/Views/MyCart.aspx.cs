@@ -15,10 +15,10 @@ namespace Sadna_17_B_Frontend.Views
             }
         }
 
-        private async void LoadCart()
+        private void LoadCart()
         {
             BackendController backendController = BackendController.get_instance();
-            ShoppingCartDTO cart = await backendController.get_shoping_cart();
+            ShoppingCartDTO cart = backendController.get_shoping_cart();
 
             if (cart != null)
             {
