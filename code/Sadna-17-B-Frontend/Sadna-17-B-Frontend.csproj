@@ -183,8 +183,10 @@
     <Content Include="Content\store3.png" />
     <Content Include="Content\store4.png" />
     <Content Include="Content\store5.png" />
+    <Content Include="Content\store6.png" />
     <Content Include="Content\zero_stars_rating.png" />
     <Content Include="Views\About.aspx" />
+    <Content Include="Views\addProduct_page.aspx" />
     <Content Include="Views\all_product_page.aspx" />
     <Content Include="Views\Contact.aspx" />
     <Content Include="Content\bootstrap-theme.css" />
@@ -262,6 +264,13 @@
     </Compile>
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Views\addProduct_page.aspx.cs">
+      <DependentUpon>addProduct_page.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Views\addProduct_page.aspx.designer.cs">
+      <DependentUpon>addProduct_page.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Views\all_product_page.aspx.cs">
       <DependentUpon>all_product_page.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

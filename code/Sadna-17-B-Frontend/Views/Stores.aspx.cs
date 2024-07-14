@@ -26,7 +26,7 @@ namespace Sadna_17_B_Frontend.Views
             {
                 // Add ImageName to each store dynamically
                 List<dynamic> storesWithImages = new List<dynamic>();
-                string[] images = { "store1.png", "store2.png", "store3.png", "store4.png" };
+                string[] images = { "store1.png", "store2.png", "store3.png", "store4.png", "store5.png", "store6.png" };
                 int imageIndex = 0;
                 var stores = response.Data as List<Store>;
 
