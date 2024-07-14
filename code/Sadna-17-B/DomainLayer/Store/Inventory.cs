@@ -180,6 +180,12 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return products;
         }
 
+        public Product product_by_index(int index)
+        {
+            return id_to_product.ElementAt(index).Value;
+            //return id_to_product[index];
+        }
+
         public List<Product> products_by_keyword(string[] keyWords)
         {
             // Split the keywords by comma and trim any extra spaces

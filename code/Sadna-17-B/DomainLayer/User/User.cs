@@ -39,6 +39,12 @@ namespace Sadna_17_B.DomainLayer.User
         {
             ShoppingCart.update_product(sid, pid, amount);
         }
-    
+
+        public void CreateNewShoppingCart()
+        {
+            ShoppingCart = new Cart();
+        }
+
+
     }
 }

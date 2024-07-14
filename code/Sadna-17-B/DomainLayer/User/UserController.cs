@@ -528,6 +528,7 @@ namespace Sadna_17_B.DomainLayer.User
             {
                 orderSystem.ProcessOrder(user.ShoppingCart, (user as Subscriber).Username, false, destinationAddress, creditCardInfo);
             }
+            user.CreateNewShoppingCart();
         }
 
         public List<Order.Order> GetOrderHistoryByToken(string token)

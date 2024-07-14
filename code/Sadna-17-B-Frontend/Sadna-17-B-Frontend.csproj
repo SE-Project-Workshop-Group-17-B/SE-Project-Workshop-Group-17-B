@@ -253,6 +253,7 @@
     <Content Include="Views\MyCart.aspx" />
     <Content Include="Views\MyStores.aspx" />
     <Content Include="Views\ProductDetails.aspx" />
+    <Content Include="Views\purchasePolicyHistory_page.aspx" />
     <Content Include="Views\SearchProduct.aspx" />
     <Content Include="Views\SignUp.aspx" />
     <Content Include="Views\Store_Page.aspx" />
@@ -375,6 +376,13 @@
     </Compile>
     <Compile Include="Views\ProductDetails.aspx.designer.cs">
       <DependentUpon>ProductDetails.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Views\purchasePolicyHistory_page.aspx.cs">
+      <DependentUpon>purchasePolicyHistory_page.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Views\purchasePolicyHistory_page.aspx.designer.cs">
+      <DependentUpon>purchasePolicyHistory_page.aspx</DependentUpon>
     </Compile>
     <Compile Include="Views\SearchProduct.aspx.cs">
       <DependentUpon>SearchProduct.aspx</DependentUpon>

@@ -21,6 +21,7 @@ namespace Sadna_17_B_Frontend.Views
                 if (int.TryParse(Request.QueryString["storeId"], out storeId))
                 {
                     LoadStoreData(storeId);
+                    hiddenLabel2.Text = storeId.ToString();
                 }
                 else
                 {
@@ -63,7 +64,7 @@ namespace Sadna_17_B_Frontend.Views
 
         protected void btnPurchaseHistory_Click(object sender, EventArgs e)
         {
-            Response.Redirect($"~/Views/PurchaseHistory.aspx?storeId={storeId}");
+            Response.Redirect($"~/Views/purchasePolicyHistory_page.aspx?storeId={hiddenLabel2.Text}");
         }
 
         protected string GetProductImage(string category)
@@ -86,6 +87,8 @@ namespace Sadna_17_B_Frontend.Views
             TxtDesctBox2.Text = p.description;
             TxtPriceBox2.Text = p.price.ToString();
             TextAmountBox2.Text = p.amount.ToString();
+
+            hiddenLabel.Text = p.ID.ToString();
         }
 
         private void MessageBox(string message)
@@ -99,7 +102,7 @@ namespace Sadna_17_B_Frontend.Views
             int.TryParse(Request.QueryString["storeId"], out storeId);
 
             doc["token"] = backendController.userDTO.AccessToken;
-            doc["product id"] = currProductId.ToString();
+            doc["product id"] = hiddenLabel.Text;
             doc["store id"] = storeId.ToString();
 
             doc["edit type"] = "NONE";
@@ -153,7 +156,6 @@ namespace Sadna_17_B_Frontend.Views
                 List<Product> productList = response.Data as List<Product>;
                 rptProducts3.DataSource = productList;
                 rptProducts3.DataBind();
-                //lblMessage.Visible = false;
             }
             else
             {
@@ -172,7 +174,24 @@ namespace Sadna_17_B_Frontend.Views
 
         protected void btnAppointManager_Click(object sender, EventArgs e)
         {
-            // Implement manager appointment logic
+            string script = "$('#mymodal-usernameManager').modal('show')";
+            ClientScript.RegisterStartupScript(this.GetType(), "Popup", script, true);
+        }
+
+        protected void btnSendAppoitmentManager_Click(object sender, EventArgs e)
+        {
+            string token = backendController.userDTO.AccessToken;
+            int storeId = Int32.Parse(hiddenLabel2.Text);
+            string userName = managerTextBox.Text;
+            Response res = backendController.userService.OfferManagerAppointment(token, storeId, userName);
+            if (res.Success)
+            {
+                MessageBox("Succesfully offered management to the user!");
+            }
+            else
+            {
+                MessageBox($"Encountered with an error while offering: {res.Message}");
+            }
         }
 
         protected void btnRemoveOwner_Click(object sender, EventArgs e)
@@ -184,7 +203,24 @@ namespace Sadna_17_B_Frontend.Views
 
         protected void btnAppointOwner_Click(object sender, EventArgs e)
         {
-            // Implement owner appointment logic
+            string script = "$('#mymodal-usernameOwner').modal('show')";
+            ClientScript.RegisterStartupScript(this.GetType(), "Popup", script, true);
+        }
+
+        protected void btnSendAppoitmentOwner_Click(object sender, EventArgs e)
+        {
+            string token = backendController.userDTO.AccessToken;
+            int storeId = Int32.Parse(hiddenLabel2.Text);
+            string userName = managerTextBox.Text;
+            Response res = backendController.userService.OfferOwnerAppointment(token, storeId, userName);
+            if (res.Success)
+            {
+                MessageBox("Succesfully offered ownership to the user!");
+            }
+            else
+            {
+                MessageBox($"Encountered with an error while offering: {res.Message}");
+            }
         }
 
         protected void btnUpdatePurchasePolicy_Click(object sender, EventArgs e)

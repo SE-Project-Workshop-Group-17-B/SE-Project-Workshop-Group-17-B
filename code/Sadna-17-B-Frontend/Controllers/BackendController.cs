@@ -276,8 +276,7 @@ namespace Sadna_17_B_Frontend.Controllers
 
         public Response edit_store_product(Dictionary<string, string> doc) // not implemented
         {
-            storeService.edit_product_in_store(doc);
-            return new Response(false, "");
+            return storeService.edit_product_in_store(doc);
         }
 
         public Response remove_from_cart(int productIndex)
