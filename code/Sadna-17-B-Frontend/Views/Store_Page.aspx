@@ -424,7 +424,7 @@
         ratingContainer.addEventListener('mousemove', setRating);
         ratingContainer.addEventListener('click', toggleMouseMoveListener);
 
-        function displayReviews(reviews) {
+        function displayReviews(reviews, userName) {
             var reviewsContainer = document.getElementById('allReviewsContainer');
             reviewsContainer.innerHTML = ''; // Clear previous reviews
 
@@ -435,7 +435,7 @@
                 reviewDiv.innerHTML = `
             <div class="user-details">
                 <img src="/Content/emptyProfilePic.png" alt="User Photo">
-                <p>Username</p>
+                <p>${userName}</p>
             </div>
             <div class="user-review">
                 <p>${review}</p>

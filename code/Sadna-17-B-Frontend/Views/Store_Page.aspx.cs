@@ -258,9 +258,10 @@ namespace Sadna_17_B_Frontend.Views
 
             if (reviewsResponse.Success)
             {
+                string username = backendController.userDTO.Username;
                 List<string> reviews = reviewsResponse.Data as List<string>;
 
-                string script = $"displayReviews({Newtonsoft.Json.JsonConvert.SerializeObject(reviews)}); openReviewsModal();";
+                string script = $"displayReviews({Newtonsoft.Json.JsonConvert.SerializeObject(reviews)},'{username}'); openReviewsModal();";
                 ClientScript.RegisterStartupScript(this.GetType(), "ShowReviews", script, true);
             }
             else
