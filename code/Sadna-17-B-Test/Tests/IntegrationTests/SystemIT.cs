@@ -148,7 +148,7 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
 
             StoreController sc = new StoreController();
             sc.create_store("name", "email", "054", "desc", "addr");
-            int sid = sc.store_by_name("name")[0].ID;
+            int sid = sc.store_by_name("name")[0].StoreID;
             int pid = sc.add_store_product(sid, "prd", 5.0, "category", "desc", 10);
 
             Cart cart = new Cart();
@@ -176,7 +176,7 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
 
             StoreController sc = new StoreController();
             sc.create_store("name", "email", "054", "desc", "addr");
-            int sid = sc.store_by_name("name")[0].ID;
+            int sid = sc.store_by_name("name")[0].StoreID;
             int pid = sc.add_store_product(sid, "prd", 5.0, "category", "desc", 10);
 
             Cart cart = new Cart();

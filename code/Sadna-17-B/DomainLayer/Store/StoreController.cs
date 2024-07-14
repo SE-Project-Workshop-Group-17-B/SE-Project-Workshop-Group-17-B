@@ -46,15 +46,15 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             {
                 if (store.status == Store.Status.Active)
                 {
-                    active_stores[store.ID] = store;
+                    active_stores[store.StoreID] = store;
                 }
                 else if (store.status == Store.Status.TemporaryClosed)
                 {
-                    temporary_closed_stores[store.ID] = store;
+                    temporary_closed_stores[store.StoreID] = store;
                 }
                 else if (store.status == Store.Status.PermanentlyClosed)
                 {
-                    permanently_closed_stores[store.ID] = store;
+                    permanently_closed_stores[store.StoreID] = store;
                 }
             }
         }
@@ -145,11 +145,11 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                                    .SetAddress(address)
                                    .Build();
 
-            _unitOfWork.Stores.Add(store);  // SaveChanges -> Updates the ID according to the Stores Table
+            _unitOfWork.Stores.Add(store);  // SaveChanges -> Updates the StoreID according to the Stores Table
 
 
-            active_stores.Add(store.ID, store);
-            return store.ID;
+            active_stores.Add(store.StoreID, store);
+            return store.StoreID;
         }
 
         public int create_store(Dictionary<string,string> doc) // doc_doc abstraction implementation
@@ -170,11 +170,11 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                                    .SetAddress(addr)
                                    .Build();
 
-            _unitOfWork.Stores.Add(store);  // SaveChanges -> Updates the ID according to the Stores Table
+            _unitOfWork.Stores.Add(store);  // SaveChanges -> Updates the StoreID according to the Stores Table
 
-            active_stores.Add(store.ID, store);
+            active_stores.Add(store.StoreID, store);
 
-            return store.ID;
+            return store.StoreID;
         }
 
         public void reopen_store(int storeID)
@@ -184,10 +184,10 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             if (store == null)
                 throw new Sadna17BException("The store with storeID " + storeID + " is already closed.");
 
-            temporary_closed_stores.Remove(store.ID);
+            temporary_closed_stores.Remove(store.StoreID);
             store.status = Store.Status.Active;
             _unitOfWork.Complete();
-            active_stores.Add(store.ID, store);
+            active_stores.Add(store.StoreID, store);
         }
 
         public void close_store(int storeID)
@@ -197,10 +197,10 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             if (store == null)
                 throw new Sadna17BException("The store with storeID " + storeID + " is already closed.");
 
-            temporary_closed_stores.Add(store.ID,store);
+            temporary_closed_stores.Add(store.StoreID,store);
             store.status = Store.Status.TemporaryClosed;
             _unitOfWork.Complete();
-            active_stores.Remove(store.ID);
+            active_stores.Remove(store.StoreID);
         }
 
         public void clear_stores()
@@ -434,7 +434,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             int store_id = Parser.parse_int(doc["store id"]);
 
             foreach (Store store in active_stores.Values)
-                if (store_id == store.ID)
+                if (store_id == store.StoreID)
                     return store.edit_discount_policy(doc);
 
             return -1;
@@ -445,7 +445,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             int store_id = Parser.parse_int(doc["store id"]);
 
             foreach (Store store in active_stores.Values)
-                if (store_id == store.ID)
+                if (store_id == store.StoreID)
                     return store.edit_purchase_policy(doc);
 
             return -1;
@@ -482,7 +482,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             if (active_stores.Keys.Contains(id))
                 return active_stores[id];
 
-            string[] ids = active_stores.Values.Select(s => $"{s.ID}").ToArray();
+            string[] ids = active_stores.Values.Select(s => $"{s.StoreID}").ToArray();
             throw new Sadna17BException("no store found by that id : " + id + $"\nvalid ids :{string.Join(", ", ids)}");
         }
         
@@ -504,7 +504,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                     return product;
                 }
             }
-            throw new Sadna17BException($"No product found with ID: {productId}");
+            throw new Sadna17BException($"No product found with StoreID: {productId}");
         }
 
         public List<Product> search_products_by_keyword(string[] keywords)

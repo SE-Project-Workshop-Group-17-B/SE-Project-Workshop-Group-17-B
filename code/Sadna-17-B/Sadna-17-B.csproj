@@ -237,9 +237,9 @@
     <Compile Include="DomainLayer\User\Subscriber.cs" />
     <Compile Include="DomainLayer\User\User.cs" />
     <Compile Include="DomainLayer\User\UserController.cs" />
-    <Compile Include="Migrations\202407131904488_c.cs" />
-    <Compile Include="Migrations\202407131904488_c.Designer.cs">
-      <DependentUpon>202407131904488_c.cs</DependentUpon>
+    <Compile Include="Migrations\202407141715446_j.cs" />
+    <Compile Include="Migrations\202407141715446_j.Designer.cs">
+      <DependentUpon>202407141715446_j.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Utils_external\ISupplySystem.cs" />
@@ -285,8 +285,8 @@
     <Folder Include="Layer_DataAccess\Repositories\" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\202407131904488_c.resx">
-      <DependentUpon>202407131904488_c.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\202407141715446_j.resx">
+      <DependentUpon>202407141715446_j.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

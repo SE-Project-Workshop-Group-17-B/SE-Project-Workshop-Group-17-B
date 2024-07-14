@@ -2,22 +2,74 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Web;
 
 namespace Sadna_17_B.DomainLayer.User
 {
+
+
+    /// <summary>
+    /// //////////////// class for the database mapping  /////////////////////////////////////////////////////////////////////////////////
+    /// </summary>
+    public class OwnershipEntry
+    {
+        [Key]
+        public string SubscriberUsername { get; set; }
+        public int OwnerID { get; set; }
+        public int StoreID { get; set; }
+
+        public virtual Subscriber Subscriber { get; set; }
+        public virtual Owner Owner { get; set; }
+    }
+
+    public class ManagementEntry
+    {
+        [Key]
+        public int ManagerID { get; set; }
+        public string SubscriberUsername { get; set; }
+        public int StoreID { get; set; }
+        public virtual Subscriber Subscriber { get; set; }
+        public virtual Manager Manager { get; set; }
+    }
+
+
+    /// <summary>
+    /// ///////////////////////////////////////////////////////////////////////////////////////////////////////////// Suscriber class ////////////////////////////
+    /// </summary>
     public class Subscriber : User
     {
         [Key]
         public string Username { get; set; }
         public string PasswordHash { get; set; }
 
-        public Dictionary<int, Owner> Ownerships { get; set; } // storeID -> Owner object
-        public Dictionary<int, Manager> Managements { get; set; } // storeID -> Manager object
+        // This will be used for database mapping
+        public virtual ICollection<OwnershipEntry> OwnershipEntries { get; set; }
+        public virtual ICollection<ManagementEntry> ManagementEntries { get; set; }
+        [NotMapped]
+        public Dictionary<int, Owner> Ownerships
+        {
+            get => OwnershipEntries?.ToDictionary(oe => oe.StoreID, oe => oe.Owner) ?? new Dictionary<int, Owner>();
+            set => OwnershipEntries = value?.Select(kvp => new OwnershipEntry { StoreID = kvp.Key, Owner = kvp.Value, SubscriberUsername = this.Username }).ToList();
+        }
+
+        [NotMapped]
+        public Dictionary<int, Manager> Managements
+        {
+            get => ManagementEntries?.ToDictionary(me => me.StoreID, me => me.Manager) ?? new Dictionary<int, Manager>();
+            set => ManagementEntries = value?.Select(kvp => new ManagementEntry { StoreID = kvp.Key, Manager = kvp.Value, SubscriberUsername = this.Username }).ToList();
+        }
+
+
+
+
+
 
         public Subscriber() : base()
         {
+            OwnershipEntries = new List<OwnershipEntry>();
+            ManagementEntries = new List<ManagementEntry>();
         }
 
         public Subscriber(string username, string password) : base()

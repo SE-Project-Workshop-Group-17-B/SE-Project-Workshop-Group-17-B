@@ -52,7 +52,7 @@ namespace Sadna_17_B.DomainLayer.User
         }
 
         /// <summary>
-        /// Creates a new guest in the system, its corresponding guestID will be the next available ID (integer),
+        /// Creates a new guest in the system, its corresponding guestID will be the next available StoreID (integer),
         /// but the corresponding Guest Token will be returned as a string.
         /// </summary>
         /// <returns></returns>

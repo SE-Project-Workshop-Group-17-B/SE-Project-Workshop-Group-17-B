@@ -212,8 +212,8 @@ namespace Sadna_17_B.DomainLayer.Order
                 }
                 catch (Exception e)
                 {
-                    errorLogger.Log("Invalid Guest ID given when inserting order to history: " + order.UserID);
-                    throw new Sadna17BException("Invalid Guest ID given when inserting order to history: " + order.UserID, e);
+                    errorLogger.Log("Invalid Guest StoreID given when inserting order to history: " + order.UserID);
+                    throw new Sadna17BException("Invalid Guest StoreID given when inserting order to history: " + order.UserID, e);
                 }
             }
             else // Insert to subscribers order history

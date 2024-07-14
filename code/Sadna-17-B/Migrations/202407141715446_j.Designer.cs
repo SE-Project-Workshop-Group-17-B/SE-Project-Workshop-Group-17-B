@@ -7,13 +7,13 @@ namespace Sadna_17_B.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.4.4")]
-    public sealed partial class c : IMigrationMetadata
+    public sealed partial class j : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(c));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(j));
         
         string IMigrationMetadata.Id
         {
-            get { return "202407131904488_c"; }
+            get { return "202407141715446_j"; }
         }
         
         string IMigrationMetadata.Source

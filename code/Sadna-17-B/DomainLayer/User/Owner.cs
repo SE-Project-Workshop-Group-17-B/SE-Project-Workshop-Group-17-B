@@ -3,18 +3,68 @@ using Sadna_17_B.Utils;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace Sadna_17_B.DomainLayer.User
 {
+
+
+    public class OwnerAppointmentEntry
+    {
+        [Key]
+        public int AppointingOwnerID { get; set; }
+        public string AppointedOwnerUsername { get; set; }
+        public virtual Owner AppointingOwner { get; set; }
+        public virtual Owner AppointedOwner { get; set; }
+    }
+
+    public class ManagerAppointmentEntry
+    {
+        [Key]
+        public int AppointingManagerID { get; set; }
+        public string AppointedManagerUsername { get; set; }
+        public virtual Owner AppointingOwner { get; set; }
+        public virtual Manager AppointedManager { get; set; }
+    }
     public class Owner
     {
         // Note: Owner doesn't necessarily have to hold the Owner & Manager objects, right now it can function with the identifier alone,
         // but it could help to hold it too in the future in case we'll need it.
-        public Dictionary<string,Owner> AppointedOwners { get; set; } // username -> Owner object
-        public Dictionary<string,Manager> AppointedManagers { get; set; } // username -> Manager object
+
+
+        public int OwnerID { get; set; }
+
+        public int StoreID { get; set; } //add to constructor
         public bool IsFounder { get; set; }
 
-        public Owner() { }
+
+        public virtual ICollection<OwnerAppointmentEntry> AppointedOwnerEntries { get; set; }
+        public virtual ICollection<ManagerAppointmentEntry> AppointedManagerEntries { get; set; }
+
+        [NotMapped]
+        public Dictionary<string, Owner> AppointedOwners
+        {
+            get => AppointedOwnerEntries?.ToDictionary(ae => ae.AppointedOwnerUsername, ae => ae.AppointedOwner) ?? new Dictionary<string, Owner>();
+            set => AppointedOwnerEntries = value?.Select(kvp => new OwnerAppointmentEntry { AppointedOwnerUsername = kvp.Key, AppointedOwner = kvp.Value, AppointingOwnerID = this.OwnerID }).ToList();
+        }
+
+
+        [NotMapped]
+        public Dictionary<string, Manager> AppointedManagers
+        {
+            get => AppointedManagerEntries?.ToDictionary(ae => ae.AppointedManagerUsername, ae => ae.AppointedManager) ?? new Dictionary<string, Manager>();
+            set => AppointedManagerEntries = value?.Select(kvp => new ManagerAppointmentEntry { AppointedManagerUsername = kvp.Key, AppointedManager = kvp.Value, AppointingManagerID = this.OwnerID }).ToList();
+        }
+
+
+
+        public Owner()
+        {
+            AppointedOwnerEntries = new List<OwnerAppointmentEntry>();
+            AppointedManagerEntries = new List<ManagerAppointmentEntry>();
+                }
+
         public Owner(bool isFounder)
         {
             AppointedOwners = new Dictionary<string, Owner>();

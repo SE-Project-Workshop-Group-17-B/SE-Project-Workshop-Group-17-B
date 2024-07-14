@@ -8,6 +8,7 @@ using System.Data.Entity;
 using System.Data.Entity.Core.Mapping;
 using System.Data.Entity.Core.Metadata.Edm;
 using System.Data.Entity.Infrastructure;
+using System.Data.Entity.ModelConfiguration;
 using System.Linq;
 using System.Web;
 
@@ -34,7 +35,10 @@ namespace Sadna_17_B.DataAccessLayer
         //public DbSet<SubOrder> SubOrders { get; set; }
         public DbSet<Subscriber> Subscribers { get; set; }
         public DbSet<Admin> Admins { get; set; }
-
+        public DbSet<Owner> Owners { get; set; }
+        public DbSet<Manager> Managers { get; set; }
+        public DbSet<OwnershipEntry> OwnershipEntries { get; set; }
+        public DbSet<ManagementEntry> ManagementEntries { get; set; }
         //   public DbSet<Subscriber> Subscribers { get; set; }
         //  public DbSet<Guest> Guests { get; set; }
         //   public DbSet<Cart> Carts { get; set; }
@@ -82,23 +86,75 @@ namespace Sadna_17_B.DataAccessLayer
             return (string)table.MetadataProperties["Table"].Value ?? table.Name;
         }
 
+        /* protected override void OnModelCreating(DbModelBuilder modelBuilder)
+         {
+             // Store Configuration
+             modelBuilder.Entity<Store>()
+                 .HasKey(s => s.StoreID); // Primary Key - Disable Auto Increment (sort of?)
+
+
+
+
+
+             // Inventory Configuration
+             //modelBuilder.Entity<Inventory>()
+             //    .HasKey(i => i.StoreID);
+             //modelBuilder.Entity<Inventory>()
+             //    .HasRequired(i => i.Store).WithRequiredDependent(s => s.Inventory);
+
+
+
+             base.OnModelCreating(modelBuilder);
+         }*/
+
+
+        
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
-            // Store Configuration
+            //base.OnModelCreating(modelBuilder);
+            
+            // ... other configurations ...
+            //
+          //Store Configuration
             modelBuilder.Entity<Store>()
-                .HasKey(s => s.ID); // Primary Key - Disable Auto Increment (sort of?)
+                .HasKey(s => s.StoreID); // Primary Key - Disable Auto Increment (sort of?)
 
 
-            // Inventory Configuration
-            //modelBuilder.Entity<Inventory>()
-            //    .HasKey(i => i.StoreId);
-            //modelBuilder.Entity<Inventory>()
-            //    .HasRequired(i => i.Store).WithRequiredDependent(s => s.Inventory);
+            
+            // OwnershipEntry configuration
+            modelBuilder.Entity<OwnershipEntry>()
+                .HasKey(oe => new { oe.SubscriberUsername, oe.StoreID });
 
+           /* modelBuilder.Entity<OwnershipEntry>()
+                .HasRequired(oe => oe.Subscriber)
+                .WithMany(s => s.OwnershipEntries);*/
+               // .HasForeignKey(oe => oe.SubscriberUsername);
 
+            /*modelBuilder.Entity<OwnershipEntry>()
+                .HasRequired(oe => oe.Owner)
+                .WithMany()
+                .HasForeignKey(oe => new { oe.OwnerID, oe.StoreID });*/
+
+            // ManagementEntry configuration
+            modelBuilder.Entity<ManagementEntry>()
+                .HasKey(me => new { me.SubscriberUsername, me.StoreID });
+/*
+            modelBuilder.Entity<ManagementEntry>()
+                .HasRequired(me => me.Subscriber)
+                .WithMany(s => s.ManagementEntries);
+            //    .HasForeignKey(me => me.SubscriberUsername);
+
+            modelBuilder.Entity<ManagementEntry>()
+                .HasRequired(me => me.Manager)
+                .WithMany()
+                .HasForeignKey(me => new { me.ManagerID, me.StoreID });*/
+
+            // ... other configurations ...
 
             base.OnModelCreating(modelBuilder);
         }
+
 
         public void DeleteAll()
         {
@@ -109,7 +165,12 @@ namespace Sadna_17_B.DataAccessLayer
             Products.RemoveRange(Products.ToList());
             Subscribers.RemoveRange(Subscribers.ToList());
             Admins.RemoveRange(Admins.ToList());
+            OwnershipEntries.RemoveRange(OwnershipEntries.ToList());
+            OwnershipEntries.RemoveRange(OwnershipEntries.ToList());
             SaveChanges();
         }
     }
+
+    
+
 }

@@ -1,6 +1,8 @@
 ﻿using Sadna_17_B.Utils;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Web;
 
@@ -8,8 +10,22 @@ namespace Sadna_17_B.DomainLayer.User
 {
     public class Manager
     {
-        public HashSet<ManagerAuthorization> Authorizations { get; set; }
+        
+        public int ManagerID { get; set; }
+        public int StoreID { get; set; } //add to constructor
 
+
+        public string AuthorizationsString { get; set; }
+
+
+       
+
+        [NotMapped]
+        public HashSet<ManagerAuthorization> Authorizations
+        {
+            get => new HashSet<ManagerAuthorization>(AuthorizationsString?.Split(',').Select(a => (ManagerAuthorization)Enum.Parse(typeof(ManagerAuthorization), a)) ?? new ManagerAuthorization[0]);
+            set => AuthorizationsString = string.Join(",", value.Select(a => a.ToString()));
+        }
         public Manager()
         {
             Authorizations = GetDefaultAuthorizations();
