@@ -74,15 +74,16 @@ namespace Sadna_17_B.ServiceLayer
                 var description = $"This is Store{i}, offering a wide variety of products.";
                 var address = $"{i} Market Street, City{i}";
 
-                int sid2 = (int) StoreService.create_store((res.Data as UserDTO).AccessToken, storeName, email, phoneNumber, description, address).Data;
-                
+                int sid2 = (int)StoreService.create_store((res.Data as UserDTO).AccessToken, storeName, email, phoneNumber, description, address).Data;
+
 
                 // Add 10 products to each store
                 for (int j = 1; j <= 10; j++)
-                    ((Store) StoreService.store_by_id(sid2).Data).add_product($"Product{j}", 10.99 + j, $"category{j % 3}", $"description for Product{j}", j * 10);
+                    ((Store)StoreService.store_by_id(sid2).Data).add_product($"Product{j}", 10.99 + j, $"category{j % 3}", $"description for Product{j}", j * 10);
 
 
                 ((Store)StoreService.store_by_id(sid2).Data).add_rating(4.5);
+
             }
 
             var storeName2 = $"Store{5}";
@@ -101,8 +102,13 @@ namespace Sadna_17_B.ServiceLayer
 
             ((Store)StoreService.store_by_id(sid).Data).add_rating(4.5);
 
+
             for (int j = 1; j < 2; j++)
                 StoreService.add_product_review(1, j, "Very good");
+
+            for (int j = 1; j < 5; j++)
+                for(int i = 1; i < 10; i++)
+                StoreService.add_product_rating(j, (j-1)*10 + i, 3.8);
 
             // -------  Admin offers manager appointment to sub --------------------------
 

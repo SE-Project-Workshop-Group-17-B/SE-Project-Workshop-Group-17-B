@@ -201,7 +201,20 @@ namespace Sadna_17_B.ServiceLayer.Services
 
             }
         }
+        public Response get_product_rating(int product_id)
+        {
+            double rating = 0;
+            try
+            {
+                rating = _storeController.get_product_by_id(product_id).rating;
+                return new Response("" +rating, true);
+            }
+            catch (Sadna17BException ex)
+            {
+                return new Response("" + rating, false);
 
+            }
+        }
         public Response edit_product_amount(int storeID, int productID, int newAmount)
         {
             _storeController.edit_product_amount(storeID, productID, newAmount);    
@@ -309,7 +322,7 @@ namespace Sadna_17_B.ServiceLayer.Services
 
 
 
-        public Response add_product_rating(int storeID, int productID, int rating)
+        public Response add_product_rating(int storeID, int productID, double rating)
         {
             try
             {

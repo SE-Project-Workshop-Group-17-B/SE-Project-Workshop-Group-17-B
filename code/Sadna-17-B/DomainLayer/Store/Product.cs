@@ -18,9 +18,9 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         [NotMapped]
         public static int idCounter = 1;
         [NotMapped]
-        public static int ratingCounter = 0;
+        public int ratingCounter = 0;
         [NotMapped]
-        public static int ratingOverAllScore = 0;
+        public double ratingOverAllScore = 0;
 
         [Key]
         public int ID { get; private set; }
@@ -79,9 +79,9 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         // ---------------- adjust product -------------------------------------------------------------------------------------------
 
-        public bool add_rating(int rating)
+        public bool add_rating(double rating)
         {
-            if (rating < 0 || rating > 10)
+            if (rating < 0 || rating > 5)
                 return false;
             ratingCounter++;
             ratingOverAllScore += rating;

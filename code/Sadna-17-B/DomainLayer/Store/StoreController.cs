@@ -419,7 +419,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return true;
         }
 
-        public bool add_product_rating(int storeID, int productID, int rating)
+        public bool add_product_rating(int storeID, int productID, double rating)
         {
             Store store = store_by_id(storeID);
 
