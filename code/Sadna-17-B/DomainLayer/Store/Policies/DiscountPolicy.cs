@@ -78,7 +78,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             discount_to_products = JsonConvert.DeserializeObject<Dictionary<Discount, HashSet<int>>>(info.GetString(nameof(discount_to_products)));
             discount_to_categories = JsonConvert.DeserializeObject<Dictionary<Discount, HashSet<int>>>(info.GetString(nameof(discount_to_categories)));
             discount_to_member = JsonConvert.DeserializeObject<Dictionary<Discount, HashSet<int>>>(info.GetString(nameof(discount_to_member)));
-            DiscountTree = JsonConvert.DeserializeObject<Discount_Rule>(info.GetString(nameof(DiscountTree)));
+            DiscountTree = new Discount_Rule(lambda_discount_rule.numeric.addition(), "addition"); // Possible use a different deserialization function
         }
 
         public void GetObjectData(SerializationInfo info, StreamingContext context)

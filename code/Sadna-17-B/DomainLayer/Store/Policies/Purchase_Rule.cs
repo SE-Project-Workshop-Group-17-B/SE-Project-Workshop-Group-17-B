@@ -91,8 +91,8 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             price = info.GetDouble(nameof(price));
             conditions = JsonConvert.DeserializeObject<List<Func<Basket, bool>>>(info.GetString(nameof(conditions)));
             purchase_rules = JsonConvert.DeserializeObject<List<Purchase_Rule>>(info.GetString(nameof(purchase_rules)));
-            aggregation_rule = JsonConvert.DeserializeObject <Func<Basket, List<Func<Basket, bool>>, bool>>(info.GetString(nameof(aggregation_rule)));
-            //aggregation_rule = lambda_purchase_rule.and();
+            //aggregation_rule = JsonConvert.DeserializeObject <Func<Basket, List<Func<Basket, bool>>, bool>>(info.GetString(nameof(aggregation_rule)));
+            aggregation_rule = lambda_purchase_rule.and(); // Possible use a different deserialization function
 
 
             /*  var methodName = info.GetString(nameof(aggregation_rule));

@@ -68,20 +68,20 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         [NotMapped]
         public  DiscountPolicy DiscountPolicy { get;  set; }
-        /*public string DiscountPolicySerialized
+        public string DiscountPolicySerialized
         {
             get => JsonConvert.SerializeObject(DiscountPolicy);
             set => DiscountPolicy = string.IsNullOrEmpty(value) ? new DiscountPolicy() : JsonConvert.DeserializeObject<DiscountPolicy>(value);
-        }*/
+        }
 
 
         [NotMapped]
         public PurchasePolicy PurchasePolicy { get; set; }
-       /* public string PurchasePolicySerialized
+        public string PurchasePolicySerialized
         {
             get => JsonConvert.SerializeObject(PurchasePolicy);
             set => PurchasePolicy = string.IsNullOrEmpty(value) ? new PurchasePolicy() : JsonConvert.DeserializeObject<PurchasePolicy>(value);
-        }*/
+        }
 
 
 
