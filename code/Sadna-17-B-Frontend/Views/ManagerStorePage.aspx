@@ -321,7 +321,7 @@
             <asp:Button ID="btnUpdateDiscountPolicy" runat="server" Text="Update Discount Policy" OnClick="btnUpdateDiscountPolicy_Click" CssClass="btn btn-primary" />
         </div>
 
-        <asp:Button ID="btnLeave" runat="server" Text="Leave" OnClick="btnLeave_Click" CssClass="btn btn-primary" />
+        <asp:Button ID="btnLeave" runat="server" Text ="Manager do not have this button" OnClick="btnLeave_Click" CssClass="btn btn-primary" />
     </div>
 
     <div class="inventory_container">

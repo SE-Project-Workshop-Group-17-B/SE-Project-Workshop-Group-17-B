@@ -28,6 +28,17 @@ namespace Sadna_17_B_Frontend.Views
                     // Handle invalid storeId
                     Response.Redirect("~/Views/MyStores.aspx");
                 }
+                string token = backendController.userDTO.AccessToken;
+                Response isOwner = backendController.userService.owner(token, storeId);
+                Response isFounder = backendController.userService.founder(token, storeId);
+                if (isOwner.Success)
+                    btnLeave.Text = "Leave";
+                if (isFounder.Success)
+                    btnLeave.Text = "Close store";
+            }
+            else
+            {
+                storeId = Int32.Parse(hiddenLabel2.Text);
             }
         }
 
@@ -235,8 +246,35 @@ namespace Sadna_17_B_Frontend.Views
 
         protected void btnLeave_Click(object sender, EventArgs e)
         {
-            // Implement leave logic (e.g., redirect to MyStores page)
-            Response.Redirect("~/Views/MyStores.aspx");
+            string token = backendController.userDTO.AccessToken;
+
+            if (btnLeave.Text == "Leave") //owner
+            {
+                Response res = backendController.userService.AbandonOwnership(token, storeId);
+                if (res.Success)
+                {
+                    MessageBox("Succesfully left ownership of this store!");
+                    Response.Redirect("~/Views/MyStores.aspx");
+                }
+                else
+                {
+                    MessageBox($"We had a problem...{res.Message}");
+                    Response.Redirect("~/Views/MyStores.aspx");
+                }
+            } else if (btnLeave.Text == "Close store")
+            {
+                Response res = backendController.storeService.close_store(token, storeId);
+                if (res.Success)
+                {
+                    MessageBox("Succesfully closed this store!");
+                    Response.Redirect("~/Views/MyStores.aspx");
+                }
+                else
+                {
+                    MessageBox($"We had a problem...{res.Message}");
+                    Response.Redirect("~/Views/MyStores.aspx");
+                }
+            }
         }
     }
 }
