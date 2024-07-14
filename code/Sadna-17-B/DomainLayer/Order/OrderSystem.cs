@@ -57,8 +57,8 @@ namespace Sadna_17_B.DomainLayer.Order
 
         public void LoadData()
         {
-            IEnumerable<Order> orderHistoryTable = new List<Order>(); // _unitOfWork.Orders.GetAll();
-            IEnumerable<SubOrder> subOrdersTable = new List<SubOrder>(); //_unitOfWork.SubOrders.GetAll();
+            IEnumerable<Order> orderHistoryTable = _unitOfWork.Orders.GetAll();
+            IEnumerable<SubOrder> subOrdersTable = _unitOfWork.SubOrders.GetAll();
 
             foreach (Order order in orderHistoryTable)
             {
@@ -225,7 +225,7 @@ namespace Sadna_17_B.DomainLayer.Order
                 subscriberOrders[order.UserID].Add(order);
             }
 
-            //_unitOfWork.Orders.Add(order); // Insert the order into the orders table in database
+            _unitOfWork.Orders.Add(order); // Insert the order into the orders table in database
 
             foreach (SubOrder subOrder in order.GetSubOrders())
             { // insert to store sub-orders history
@@ -234,7 +234,7 @@ namespace Sadna_17_B.DomainLayer.Order
                     storeOrders[subOrder.StoreID] = new List<SubOrder>();
                 }
                 storeOrders[subOrder.StoreID].Add(subOrder);
-                //_unitOfWork.SubOrders.Add(subOrder); // Insert the SubOrder into the orders table in database
+                _unitOfWork.SubOrders.Add(subOrder); // Insert the SubOrder into the orders table in database
             }
         }
 

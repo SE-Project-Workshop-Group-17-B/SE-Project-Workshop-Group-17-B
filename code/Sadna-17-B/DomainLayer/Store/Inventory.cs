@@ -43,9 +43,9 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         {
             Product product = new Product(name, price, category, StoreId, description, amount);
 
-            id_to_product[product.ID] = product;
+            _unitOfWork.Products.Add(product); // Insert the product to the products table
 
-            _unitOfWork.Products.Add(product);
+            id_to_product[product.ID] = product;
 
             return product.ID;
         }

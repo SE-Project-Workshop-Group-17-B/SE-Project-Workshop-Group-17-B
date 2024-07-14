@@ -47,6 +47,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
 
         static IUnitOfWork unitOfWork = UnitOfWork.CreateCustomUnitOfWork(new TestsDbContext()); // Creates a different singleton value for the UnitOfWork DB connection
 
+
         [TestInitialize]
         public void SetUp()
         {

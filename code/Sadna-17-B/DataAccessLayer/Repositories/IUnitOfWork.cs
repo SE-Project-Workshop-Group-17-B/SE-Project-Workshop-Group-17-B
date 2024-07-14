@@ -9,8 +9,8 @@ namespace Sadna_17_B.Repositories
     {
         IRepository<Store> Stores { get; }
         IRepository<Product> Products { get; }
-        //IRepository<Order> Orders { get; }
-        //IRepository<SubOrder> SubOrders { get; }
+        IRepository<Order> Orders { get; }
+        IRepository<SubOrder> SubOrders { get; }
         IRepository<Subscriber> Subscribers { get; }
         IRepository<Admin> Admins { get; }
         int Complete();
