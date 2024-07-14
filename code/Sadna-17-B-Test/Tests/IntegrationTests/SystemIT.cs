@@ -99,7 +99,7 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
                 [$"product store id"] = $"{pid}"
             };
 
-            ignore = userService.cart_add_product(doc);
+            ignore = userService.cart_add_product(doc, amount2Buy);
 
             string wrongCreditCardInfo = null;
             Response completeRes = userService.CompletePurchase(token, destAddr, wrongCreditCardInfo);
@@ -125,7 +125,7 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
                 [$"product store id"] = $"{pid}"
             };
 
-            ignore = userService.cart_add_product(doc);
+            ignore = userService.cart_add_product(doc, amount2Buy);
 
             string wrongDestAddrInfo = null;
             Response completeRes = userService.CompletePurchase(token, wrongDestAddrInfo, creditCardInfo);
@@ -207,7 +207,7 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
                 [$"product store id"] = $"{pid}"
             };
 
-            ignore = userService.cart_add_product(doc);
+            ignore = userService.cart_add_product(doc,quantity * 2);
             Response temp = userService.cart_by_token(doc);
 
             ShoppingCartDTO prevCart = temp.Data as ShoppingCartDTO;
@@ -255,7 +255,7 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
                 [$"product store id"] = $"{pid}"
             };
 
-            ignore = userService.cart_add_product(doc);
+            ignore = userService.cart_add_product(doc, quantity * 2);
 
             Response completeRes = userService.CompletePurchase(token, destAddr, creditCardInfo);
             int amount = ((List<Store>)storeService.store_by_name(storeName).Data)[0].amount_by_name(productName);

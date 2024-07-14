@@ -173,7 +173,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
             };
 
         
-            ignore = userService.cart_add_product(doc);
+            ignore = userService.cart_add_product(doc,10);
             Response test2 = userService.cart_by_token(doc);
             ShoppingCartDTO shoppingCart = test2.Data as ShoppingCartDTO;
             ShoppingBasketDTO shoppingBasket = shoppingCart.ShoppingBaskets[sid];
@@ -206,7 +206,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
                 [$"product store id"] = $"{pid}"
             };
 
-            ignore = userService.cart_add_product(doc);
+            ignore = userService.cart_add_product(doc,10);
             Assert.IsTrue(ignore.Success); // The addition to cart does not enforce existence of the product in the store, it can be added later, but it is checked in complete purchase
         }
 
@@ -245,7 +245,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
                 [$"product store id"] = $"{pid}"
             };
 
-            Response ignore = userService.cart_add_product(doc);
+            Response ignore = userService.cart_add_product(doc, quantity * 2);
             Assert.IsTrue(ignore.Success);
         }
 
@@ -287,7 +287,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
                 [$"product store id"] = $"{pid}"
             };
 
-            ignore = userService.cart_add_product(doc);
+            ignore = userService.cart_add_product(doc, quantity);
             
             ignore = userService.CompletePurchase(token, "someAddr", "SomeInfo");
 
@@ -337,7 +337,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
                 [$"product store id"] = $"{pid}"
             };
 
-            ignore = userService.cart_add_product(doc);
+            ignore = userService.cart_add_product(doc, quantity);
             ignore = userService.CompletePurchase(token, "someAddr", "SomeInfo");
 
             Response test = userService.GetMyOrderHistory(token);
@@ -385,7 +385,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
                 [$"product store id"] = $"{pid}"
             };
 
-            ignore = userService.cart_add_product(doc);
+            ignore = userService.cart_add_product(doc, quantity);
             ignore = userService.CompletePurchase(token, "someAddr", "SomeInfo");
 
             Response test = userService.GetStoreOrderHistory(temp1.AccessToken, sid);
@@ -434,7 +434,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
                 [$"product store id"] = $"{pid}"
             };
 
-            ignore = userService.cart_add_product(doc);
+            ignore = userService.cart_add_product(doc, quantity);
             ignore = userService.CompletePurchase(token, "someAddr", "SomeInfo");
 
             Response test = userService.GetStoreOrderHistory(token, sid);
