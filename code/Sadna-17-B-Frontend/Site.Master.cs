@@ -26,6 +26,11 @@ namespace Sadna_17_B_Frontend
                 LblHello.Visible = true;
                 LoginBtn.Visible = false;
                 SignUpBtn.Visible = false;
+                string token = backendController.userDTO.AccessToken;
+                if (backendController.userService.admin(token).Success)
+                    SystemAdminBtn.Visible = true;
+                else
+                    SystemAdminBtn.Visible = false;
                 //_loginLogoutButtons =
                 //   "<ul class=\"nav navbar-nav\" style=\"float: right\">" +
                 //   "<li><a runat=\"server\" onclick=\"Logout_Click\">Log Out</a></li>" +
@@ -36,6 +41,7 @@ namespace Sadna_17_B_Frontend
                 MyStoresBtn.Visible = false;
                 LogoutBtn.Visible = false;
                 LblHello.Visible = false;
+                SystemAdminBtn.Visible = false;
                 LoginBtn.Visible = true;
                 SignUpBtn.Visible = true;
                 //_loginLogoutButtons =
@@ -132,6 +138,12 @@ namespace Sadna_17_B_Frontend
         protected void MyStoresBtn_Click(object sender, EventArgs e)
         {
             Response.Redirect("MyStores");
+        }
+
+        protected void StoreAdminBtn_Click(object sender, EventArgs e)
+        {
+            //TODO: IMPLEMENT
+            Response.Redirect("SystemAdmin");
         }
     }
     public class Notification

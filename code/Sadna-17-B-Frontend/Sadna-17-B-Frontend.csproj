@@ -179,6 +179,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\admin.png" />
     <Content Include="Content\cart-inverted.png" />
     <Content Include="Content\cart.png" />
     <Content Include="Content\emptyProfilePic.png" />

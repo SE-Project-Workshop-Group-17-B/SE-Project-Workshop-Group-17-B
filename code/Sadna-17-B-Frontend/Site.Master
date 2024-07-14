@@ -32,7 +32,13 @@
             background-image: url(/Content/store-inverted.png);
             background-size: contain;
             background-repeat: no-repeat;
-            margin: 10px 5px 0 5px;
+            margin: 10px 10px 0 5px;
+        }
+        .admin-button-with-image{
+            background-image: url(/Content/admin.png);
+            background-size: contain;
+            background-repeat: no-repeat;
+            margin: 15px 0px 0 0px;
         }
         .notifications-button {
             position: relative;
@@ -168,6 +174,7 @@
                     </ul>
                     <ul class="nav navbar-nav" style="float: right" visible="false">
                         <li><asp:LinkButton id="MyStoresBtn" CssClass="stores-button-with-image" runat="server" OnClick="MyStoresBtn_Click"></asp:LinkButton></li>
+                        <li><asp:LinkButton id="SystemAdminBtn" CssClass="admin-button-with-image" runat="server" OnClick="StoreAdminBtn_Click"></asp:LinkButton></li>
                         <li>
                             <asp:LinkButton ID="NotificationsBtn" runat="server" OnClick="NotificationsBtn_Click" CssClass="notifications-button">
                                 <i class="fa fa-bell"></i>
