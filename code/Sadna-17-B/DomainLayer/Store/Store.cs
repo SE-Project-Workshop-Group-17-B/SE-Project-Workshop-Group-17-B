@@ -288,6 +288,13 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                 product.category = Parser.parse_string(doc["category"]);
                 product.description = Parser.parse_string(doc["description"]);
 
+                try
+                {
+                    product.price = Parser.parse_double(doc["price"]);
+                    product.amount = Parser.parse_int(doc["amount"]);
+                }
+                catch { }
+
                 product.locked = false;
             }
         }

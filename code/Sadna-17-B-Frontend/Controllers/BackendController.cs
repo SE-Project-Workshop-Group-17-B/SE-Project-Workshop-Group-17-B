@@ -268,13 +268,15 @@ namespace Sadna_17_B_Frontend.Controllers
 
         // ----------------------------------- store management -----------------------------------------------------------------------
 
-        public Response add_store_product(Dictionary<string,string> doc) // not implemented
+        public Response add_store_product(string token, int sid, string name, double price, string category, string description, int amount) // not implemented
         {
-            return new Response(false, "");
+            Response res = storeService.add_product_to_store(token, sid, name, price, category, description, amount);
+            return res;
         }
 
         public Response edit_store_product(Dictionary<string, string> doc) // not implemented
         {
+            storeService.edit_product_in_store(doc);
             return new Response(false, "");
         }
 
