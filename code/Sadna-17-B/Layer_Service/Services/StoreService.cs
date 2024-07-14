@@ -428,7 +428,7 @@ namespace Sadna_17_B.ServiceLayer.Services
 
             // ---------- subscriber authentication ---------------
 
-            if (!(_userService.owner_internal(token, storeID) || _userService.authorized_internal(token, storeID, DomainLayer.User.Manager.ManagerAuthorization.UpdateSupply)))
+            if (!_userService.owner_internal(token, storeID) && !_userService.authorized_internal(token, storeID, DomainLayer.User.Manager.ManagerAuthorization.UpdateSupply))
             {
                 error_logger.Log("Store Service", " authentication error, user should be owner or founder to edit products");
                 return new Response("product edit : user should be owner or founder to edit products", false);

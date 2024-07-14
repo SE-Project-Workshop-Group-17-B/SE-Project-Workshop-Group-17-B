@@ -16,6 +16,7 @@ namespace Sadna_17_B.DomainLayer.User
         private readonly SymmetricSecurityKey _signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(SecretKey));
         private List<string> invalidatedTokens = new List<string>();
         private Logger errorLogger = ErrorLogger.Instance;
+        public Authenticator() { }
         public string GenerateToken(string username)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
