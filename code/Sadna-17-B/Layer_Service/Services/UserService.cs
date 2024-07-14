@@ -310,11 +310,11 @@ namespace Sadna_17_B.ServiceLayer.Services
         // ----------- cart ------------------------------------------------------------------------------------
 
 
-        public Response cart_add_product(Dictionary<string,string> doc)
+        public Response cart_add_product(Dictionary<string,string> doc, int change)
         {
             try
             {
-                userController.cart_add_product(doc);
+                userController.cart_add_product(doc,change);
                 return new Response(true);
             }
             catch (Sadna17BException e)

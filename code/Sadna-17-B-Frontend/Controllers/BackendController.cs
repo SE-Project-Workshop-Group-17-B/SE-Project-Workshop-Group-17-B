@@ -207,9 +207,9 @@ namespace Sadna_17_B_Frontend.Controllers
             userDTO = response.Data as UserDTO;
         }
 
-        public void add_product_to_cart(Dictionary<string,string> doc)
+        public void add_product_to_cart(Dictionary<string,string> doc,int change)
         {
-            userService.cart_add_product(doc);
+            userService.cart_add_product(doc,change);
         }
       
         public string login(string username, string password)

@@ -106,7 +106,7 @@ namespace Sadna_17_B_Frontend.Views
                 ["name"] = $"{product.name}"
             };
 
-            backendController.add_product_to_cart(doc);
+            backendController.add_product_to_cart(doc,1);
             lblMessage.Text = $"Product {productId} added to cart!";
             lblMessage.Visible = true;
         }

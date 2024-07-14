@@ -76,13 +76,13 @@ namespace Sadna_17_B_Frontend.Views
                 ["name"] = $"{product.name}"
             };
 
-            backendController.add_product_to_cart(doc);
+            backendController.add_product_to_cart(doc,1);
 
         }
 
         private void RefreshPage()
         {
-            // Register a script to refresh the page
+            //  refresh the page
             Response.Redirect(Request.RawUrl);
         }
 

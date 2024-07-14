@@ -148,12 +148,37 @@ namespace Sadna_17_B_Frontend.Views
                 int change = e.CommandName == "Increase" ? 1 : -1;
 
                 // Call your backend method to update the quantity
-                backendController.storeService.edit_product_amount(product.store_id, productId, product.amount+change);
+                increase_decrease_product_amount_by_1(productId, change);
             }
             LoadCart(); // Reload the cart after removing an item
-
+            RefreshPage();
         }
 
+        public void increase_decrease_product_amount_by_1(int productId, int change)
+        {
+
+            Product product = backendController.get_product_by_id(productId);
+
+            Dictionary<string, string> doc = new Dictionary<string, string>
+            {
+                ["token"] = $"{backendController.userDTO.AccessToken}",
+                ["store id"] = $"{product.storeId}",
+                ["product store id"] = $"{product.ID}",
+                ["price"] = $"{product.price}",
+                ["amount"] = $"{product.amount}",
+                ["category"] = $"{product.category}",
+                ["name"] = $"{product.name}"
+            };
+
+            backendController.add_product_to_cart(doc,change);
+        }
+
+        
+        private void RefreshPage()
+        {
+            //  refresh the page
+            Response.Redirect(Request.RawUrl);
+        }
         protected string GetProductImage(string category)
         {
             // You can implement logic to return appropriate image URL based on category

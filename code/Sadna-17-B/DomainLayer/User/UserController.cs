@@ -495,7 +495,7 @@ namespace Sadna_17_B.DomainLayer.User
             u.update_product_in_cart(product.store_id,product.Id,0);
         }
 
-        public void cart_add_product(Dictionary<string,string> doc)
+        public void cart_add_product(Dictionary<string,string> doc,int change)
         {
             string token = Parser.parse_string(doc["token"]);
             int sid = Parser.parse_int(doc["store id"]);
@@ -507,7 +507,7 @@ namespace Sadna_17_B.DomainLayer.User
 
 
             User user = GetUserByToken(token);
-            user.add_to_cart(sid,amount,price,category, psid, name);
+            user.add_to_cart(sid,amount,price,category, psid, name, change);
         }
 
 

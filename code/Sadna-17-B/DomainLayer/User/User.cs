@@ -17,7 +17,7 @@ namespace Sadna_17_B.DomainLayer.User
         }
 
 
-        public void add_to_cart(int sid, int amount, double price, string category, int pid, string name)
+        public void add_to_cart(int sid, int amount, double price, string category, int pid, string name,int change)
         {
             if (!ShoppingCart.Baskets.ContainsKey(sid))
                 ShoppingCart.add_product(sid, amount, price, category, pid, name);
@@ -30,7 +30,7 @@ namespace Sadna_17_B.DomainLayer.User
                 {
                     Cart_Product cp = b.productById(pid);
                     int oldAmount = cp.amount;
-                    update_product_in_cart(sid, cp.ID, oldAmount + 1);
+                    update_product_in_cart(sid, cp.ID, oldAmount + change);
                 }
             }
         }
