@@ -15,6 +15,7 @@ using Basket = Sadna_17_B.DomainLayer.User.Basket;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
+using Newtonsoft.Json;
 
 namespace Sadna_17_B.DomainLayer.StoreDom
 {

@@ -5,14 +5,20 @@ using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using System.Net.Http;
+using System.Threading.Tasks;
+using static System.Net.WebRequestMethods;
+using Newtonsoft.Json;
+using System.Text;
 
 namespace Sadna_17_B_Frontend.Views
 {
+
     public partial class SignUp : System.Web.UI.Page
     {
-        BackendController backendController = BackendController.get_instance();
+        private BackendController backendController = BackendController.get_instance();
 
-        protected void Page_Load(object sender, EventArgs e)
+        protected async void Page_Load(object sender, EventArgs e)
         {
 
         }
@@ -22,7 +28,7 @@ namespace Sadna_17_B_Frontend.Views
             Response.Write(@"<script language='javascript'>alert('" + message + "')</script>");
         }
 
-        protected void btnSignUp_Click(object sender, EventArgs e)
+        protected async void btnSignUp_Click(object sender, EventArgs e)
         {
             string message = "";
             if (txtUsername.Text.Length == 0)
@@ -47,7 +53,7 @@ namespace Sadna_17_B_Frontend.Views
             }
             else
             {
-                message = backendController.sign_up(txtUsername.Text, txtPassword.Text);
+                message = await backendController.signup(txtUsername.Text, txtPassword.Text);
                 if (message != null)
                 {
                     lblMessage.Text = message;
@@ -59,5 +65,7 @@ namespace Sadna_17_B_Frontend.Views
                 }
             }
         }
+
     }
+
 }

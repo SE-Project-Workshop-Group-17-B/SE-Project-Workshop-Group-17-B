@@ -18,10 +18,10 @@ namespace Sadna_17_B_Frontend.Views
             }
         }
 
-        private void LoadStores()
+        private async void LoadStores()
         {
-            var managedStores = backendController.get_managed_store();
-            var ownedStores = backendController.got_owned_stores();
+            var managedStoresResponse = await backendController.get_managed_store(); // Assume this method gets the list of managed stores
+            var ownedStoresResponse = await backendController.got_owned_stores(); // Assume this method gets the list of owned stores
 
             if (managedStores != null && managedStores.Count > 0)
             {
@@ -65,8 +65,11 @@ namespace Sadna_17_B_Frontend.Views
             };
             bool isFounder = backendController.has_roles(doc);
 
-            if (isFounder)
-                Response.Redirect($"~/Views/FounderStorePage.aspx?storeId={storeId}");
+            bool founder = backendController.has_roles(doc).GetAwaiter().GetResult(); // Assume this method checks if the current user is the founder
+
+            if (founder)
+                Response.Redirect("~/Views/FounderStorePage.aspx?storeId=" + sid);
+            
             else
                 Response.Redirect($"~/Views/ManagerStorePage.aspx?storeId={storeId}");
         }

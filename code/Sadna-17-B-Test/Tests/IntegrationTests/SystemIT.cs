@@ -57,7 +57,7 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
             ApplicationDbContext.isMemoryDB = true; // Disconnect actual database from these tests
             // init services
 
-            ServiceFactory serviceFactory = new ServiceFactory();
+            UserController serviceFactory = new ServiceFactory();
             userService = serviceFactory.UserService;
             storeService = serviceFactory.StoreService;
 

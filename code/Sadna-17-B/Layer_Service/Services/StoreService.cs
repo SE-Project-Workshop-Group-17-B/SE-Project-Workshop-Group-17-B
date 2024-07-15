@@ -454,8 +454,22 @@ namespace Sadna_17_B.ServiceLayer.Services
 
         // ---------------- search stores options -------------------------------------------------------------------------------------------
 
-        
-        public Response all_stores() 
+        public Response all_products()              //  --> List < product > 
+        {
+
+            try
+            {
+                List<Product> products = _storeController.all_products();
+
+                return new Response(true, products);
+            }
+            catch (Sadna17BException ex)
+            {
+                error_logger.Log("Store Service", "error during fetching all stores data");
+                return Response.GetErrorResponse(ex);
+            }
+        }
+        public Response all_stores()                //  --> List < store > 
         {
             try
             {

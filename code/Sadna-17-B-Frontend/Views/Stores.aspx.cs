@@ -1,5 +1,6 @@
 ﻿using Microsoft.Ajax.Utilities;
 using Sadna_17_B.DomainLayer.StoreDom;
+using Sadna_17_B.Utils;
 using Sadna_17_B_Frontend.Controllers;
 using System;
 using System.Collections.Generic;
@@ -19,9 +20,9 @@ namespace Sadna_17_B_Frontend.Views
             }
         }
 
-        private void LoadStores()
+        private async void LoadStores()
         {
-            var response = backendController.get_stores(); // Assume this method gets the list of stores
+            Response response = await backendController.get_stores(); // Assume this method gets the list of stores
             if (response.Success)
             {
                 // Add ImageName to each store dynamically

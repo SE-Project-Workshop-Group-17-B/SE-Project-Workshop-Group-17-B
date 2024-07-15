@@ -42,7 +42,7 @@ namespace Sadna_17_B_Frontend.Views
             }
         }
 
-        protected void btnSearch_Click(object sender, EventArgs e)
+        protected async void btnSearch_Click(object sender, EventArgs e)
         {
             string keyword = txtKeyword.Value.Trim();
             string category = txtCategory.Value.Trim();
