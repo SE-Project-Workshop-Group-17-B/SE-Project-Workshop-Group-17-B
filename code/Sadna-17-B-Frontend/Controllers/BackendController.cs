@@ -315,27 +315,45 @@ namespace Sadna_17_B_Frontend.Controllers
             }
         }
 
-        public string sign_up(string username, string password)
+        public async Task<string> sign_up(string username, string password)
         {
-            Response response = userService.upgrade_subscriber(username, password);
-            if (!response.Success)
+            using (HttpClient client = new HttpClient())
             {
-                return response.Message;
+                var user = new UIuserDTOAPI { Username = username, Password = password, AccessToken = "" };
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/signup", user); // add relative path
+                if (response.IsSuccessStatusCode)
+                {
+                    return null; // Sign up successful
+                }
+                else
+                {
+                    string errorMessage = await response.Content.ReadAsStringAsync();
+                    return $"Sign up failed: {errorMessage}";
+                }
             }
-            return null;
         }
 
-        public string logout()
+        public async Task<string> logout()
         {
-            Response response = userService.exit_subscriber(userDTO.AccessToken);
-            if (!response.Success)
+            using (HttpClient client = new HttpClient())
             {
-                return response.Message;
-            }
+                var user = new UIuserDTOAPI { Username = "", Password = "", AccessToken = userDTO.AccessToken };
+                HttpResponseMessage response = client.PostAsJsonAsync(prefix + "/RestAPI/logout", user).GetAwaiter().GetResult();
+                string responseContent = await response.Content.ReadAsStringAsync();
+                Response responseObj = JsonConvert.DeserializeObject<Response>(responseContent);
 
-            userDTO = response.Data as UserDTO;
-            return null;
+                if (!response.IsSuccessStatusCode)
+                {
+                    return responseObj?.Message ?? "Unknown error occurred";
+                }
+                else
+                {
+                    userDTO = JsonConvert.DeserializeObject<UserDTO>(responseObj.Data.ToString());// username = null , accessToken = "%GUEST%"
+                    return null;
+                }
+            }
         }
+
 
         public bool logged_in()
         {
