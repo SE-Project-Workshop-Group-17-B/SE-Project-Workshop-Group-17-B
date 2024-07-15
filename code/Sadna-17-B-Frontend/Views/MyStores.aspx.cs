@@ -54,7 +54,7 @@ namespace Sadna_17_B_Frontend.Views
             string storeId = btn.CommandArgument;
             Response.Redirect($"~/Views/Store_Page.aspx?storeId={storeId}");
         }
-        protected async void btnManage_Click(object sender, EventArgs e)
+        protected void btnManage_Click(object sender, EventArgs e)
         {
             var button = (Button)sender;
             string storeId = button.CommandArgument;
@@ -63,7 +63,7 @@ namespace Sadna_17_B_Frontend.Views
                 ["store id"] = storeId,
                 ["roles to check"] = "founder"
             };
-            bool isFounder = await backendController.has_roles(doc);
+            bool isFounder = backendController.has_roles(doc);
 
             if (isFounder)
                 Response.Redirect($"~/Views/FounderStorePage.aspx?storeId={storeId}");

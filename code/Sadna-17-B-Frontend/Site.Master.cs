@@ -26,11 +26,12 @@ namespace Sadna_17_B_Frontend
                 LblHello.Visible = true;
                 LoginBtn.Visible = false;
                 SignUpBtn.Visible = false;
-                string token = backendController.userDTO.AccessToken;
-                if (backendController.userService.admin(token).Success)
-                    SystemAdminBtn.Visible = true;
-                else
-                    SystemAdminBtn.Visible = false;
+                //bool is_admin = backendController.admin().GetAwaiter().GetResult();
+                //   if (is_admin)
+                //       SystemAdminBtn.Visible = true;
+                //   else
+                //       SystemAdminBtn.Visible = false;
+                CheckAdminStatusAsync();
                 //_loginLogoutButtons =
                 //   "<ul class=\"nav navbar-nav\" style=\"float: right\">" +
                 //   "<li><a runat=\"server\" onclick=\"Logout_Click\">Log Out</a></li>" +
@@ -50,6 +51,11 @@ namespace Sadna_17_B_Frontend
                 //    "<li><a runat=\"server\" href=\"SignUp\"> Sign Up </a></li>" +
                 //    "</ul>";
             }
+        }
+        private void CheckAdminStatusAsync()
+        {
+            bool isAdmin = backendController.admin();
+            SystemAdminBtn.Visible = isAdmin;
         }
         protected void NotificationsBtn_Click(object sender, EventArgs e)
         {

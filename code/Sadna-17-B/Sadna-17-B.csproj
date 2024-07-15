@@ -452,7 +452,6 @@
     <Compile Include="DomainLayer\User\Subscriber.cs" />
     <Compile Include="DomainLayer\User\User.cs" />
     <Compile Include="DomainLayer\User\UserController.cs" />
-    <Compile Include="Layer_API\Controllers\RestAPIController.cs" />
     <Compile Include="Layer_API\Models\FuncStoreDTO.cs" />
     <Compile Include="Layer_API\Models\RoleCheckRequest.cs" />
     <Compile Include="Layer_API\Models\UIStoreDTOAPI.cs" />
@@ -504,6 +503,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Entities\" />
+    <Folder Include="Layer_API\Controllers\" />
     <Folder Include="Layer_DataAccess\Context\" />
     <Folder Include="Layer_DataAccess\Entities\" />
     <Folder Include="Layer_DataAccess\NewFolder1\" />
