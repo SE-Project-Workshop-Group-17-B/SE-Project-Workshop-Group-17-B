@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace Sadna_17_B.Utils_external
+namespace Sadna_17_B_API.Models
 {
     public class paymentDTO
     {
@@ -42,9 +42,4 @@ namespace Sadna_17_B.Utils_external
 
     }
 
-    public class handshakeDTO
-    {
-        public string action_type { get; set; }
-
-    }
 }

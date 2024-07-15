@@ -6,7 +6,11 @@ using Sadna_17_B.ServiceLayer.Services;
 using Sadna_17_B.Utils;
 using Sadna_17_B.DomainLayer.User;
 using Sadna_17_B.ServiceLayer.ServiceDTOs;
-using Sadna_17_B.Utils_external;
+
+using Sadna_17_B_API;
+using Sadna_17_B_API.Models;
+using Sadna_17_B_API.Models.externalDTOs;
+
 
 namespace Sadna_17_B_API.Controllers
 {
@@ -180,31 +184,31 @@ namespace Sadna_17_B_API.Controllers
         [HttpPost("handshake")]
         public Response handshake([FromBody] handshakeDTO handshake )
         {
-            
+            return new Response(true);
         }
 
         [HttpPost("pay")]
         public Response pay([FromBody] paymentDTO payment )
         {
-
+            return new Response(true);
         }
 
         [HttpPost("cancel_pay")]
         public Response cancel_pay([FromBody] cancelDTO cancel )
         {
-
+            return new Response(true);
         }
 
         [HttpPost("supply")]
         public Response supply([FromBody] supplyDTO supply )
         {
-
+            return new Response(true);
         }
 
         [HttpPost("cancel_supply")]
-        public Response cancel_supply([FromBody] cancelDTO cancel )
+        public Response cancel_supply([FromBody] Models.externalDTO cancel )
         {
-
+            return new Response(true);
         }
 
     }

@@ -28,13 +28,13 @@ namespace Sadna_17_B.ExternalServices
 
     public class PaymentSystem
     {
-        public static string prefix = "https://damp-lynna-wsep-1984852e.koyeb.app/";
+        public string url = "https://damp-lynna-wsep-1984852e.koyeb.app/";
 
         public async Task<string> supply(supplytDTO supply)
         {
             using (HttpClient client = new HttpClient())
             {
-                HttpResponseMessage response = await client.PostAsJsonAsync(prefix, payment); // add relative path
+                HttpResponseMessage response = await client.PostAsJsonAsync(url, payment); // add relative path
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -58,7 +58,7 @@ namespace Sadna_17_B.ExternalServices
         {
             using (HttpClient client = new HttpClient())
             {
-                HttpResponseMessage response = await client.PostAsJsonAsync(prefix, cancel); // add relative path
+                HttpResponseMessage response = await client.PostAsJsonAsync(url, cancel); // add relative path
 
                 if (response.IsSuccessStatusCode)
                 {
