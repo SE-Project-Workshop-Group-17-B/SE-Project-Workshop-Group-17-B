@@ -35,9 +35,9 @@ namespace Sadna_17_B_Frontend.Views
             Response.Write(@"<script language='javascript'>alert('" + msg + "')</script>");
         }
 
-        private void createDdl()
+        private async void createDdl()
         {
-            Response res = backendController.get_stores();
+            Response res = await backendController.get_stores();
             if (res.Success)
             {
                 List<Store> stores = res.Data as List<Store>;

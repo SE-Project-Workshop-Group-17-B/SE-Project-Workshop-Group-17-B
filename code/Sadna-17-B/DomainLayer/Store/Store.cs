@@ -67,10 +67,10 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         public  Inventory Inventory { get; set; }
 
        
-        public  DiscountPolicy DiscountPolicy { get; private set; }
+        private  DiscountPolicy DiscountPolicy { get; set; }
 
- 
-        public  PurchasePolicy PurchasePolicy { get; private set; }
+
+        private PurchasePolicy PurchasePolicy { get; set; }
 
 
         public double Rating { get; set; }

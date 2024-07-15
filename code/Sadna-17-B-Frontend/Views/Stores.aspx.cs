@@ -19,9 +19,9 @@ namespace Sadna_17_B_Frontend.Views
             }
         }
 
-        private void LoadStores()
+        private async void LoadStores()
         {
-            var response = backendController.get_stores(); // Assume this method gets the list of stores
+            var response = await backendController.get_stores(); // Assume this method gets the list of stores
             if (response.Success)
             {
                 // Add ImageName to each store dynamically
