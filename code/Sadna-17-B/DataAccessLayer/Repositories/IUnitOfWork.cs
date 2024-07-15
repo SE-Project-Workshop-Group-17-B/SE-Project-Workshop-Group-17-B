@@ -13,6 +13,8 @@ namespace Sadna_17_B.Repositories
         IRepository<SubOrder> SubOrders { get; }
         IRepository<Subscriber> Subscribers { get; }
         IRepository<Admin> Admins { get; }
+        IRepository<Owner> Owners { get; }
+        IRepository<Manager> Managers { get; }
         int Complete();
         void DeleteAll();
     }

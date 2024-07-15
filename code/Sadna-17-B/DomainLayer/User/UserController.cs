@@ -49,6 +49,7 @@ namespace Sadna_17_B.DomainLayer.User
             {
                 admins[admin.Username] = admin;
             }
+            offerSystem.LoadData();
         }
 
         /// <summary>

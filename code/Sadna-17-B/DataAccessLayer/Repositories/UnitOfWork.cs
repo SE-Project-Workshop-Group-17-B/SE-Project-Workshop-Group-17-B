@@ -19,6 +19,8 @@ namespace Sadna_17_B.Repositories
         public IRepository<SubOrder> SubOrders { get; set; }
         public IRepository<Subscriber> Subscribers { get; set; }
         public IRepository<Admin> Admins { get; set; }
+        public IRepository<Owner> Owners { get; set; }
+        public IRepository<Manager> Managers { get; set; }
 
         protected UnitOfWork(ApplicationDbContext context)
         {
@@ -29,6 +31,8 @@ namespace Sadna_17_B.Repositories
             SubOrders = new Repository<SubOrder>(_context);
             Subscribers = new Repository<Subscriber>(_context);
             Admins = new Repository<Admin>(_context);
+            Owners = new Repository<Owner>(_context);
+            Managers = new Repository<Manager>(_context);
         }
 
         public static IUnitOfWork GetInstance()

@@ -26,7 +26,7 @@ namespace Sadna_17_B.DomainLayer.User
         public string BasketsReceiptSerialized
         {
             get => JsonConvert.SerializeObject(Baskets);
-            set => Baskets = JsonConvert.DeserializeObject<Dictionary<int, Basket>>(value);
+            set => Baskets = string.IsNullOrEmpty(value) ? new Dictionary<int, Basket>() : JsonConvert.DeserializeObject<Dictionary<int, Basket>>(value);
         }
 
 

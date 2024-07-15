@@ -35,11 +35,13 @@ namespace Sadna_17_B.DataAccessLayer
         public DbSet<SubOrder> SubOrders { get; set; }
         public DbSet<Subscriber> Subscribers { get; set; }
         public DbSet<Admin> Admins { get; set; }
-
         public DbSet<Owner> Owners { get; set; }
         public DbSet<Manager> Managers { get; set; }
-        public DbSet<OwnershipEntry> OwnershipEntries { get; set; }
+        /*public DbSet<OwnershipEntry> OwnershipEntries { get; set; }
         public DbSet<ManagementEntry> ManagementEntries { get; set; }
+        public DbSet<OwnerAppointmentEntry> OwnerAppointmentEntries { get; set; }
+        public DbSet<ManagerAppointmentEntry> ManagerAppointmentEntries { get; set; }*/
+
 
         public DbSet<Cart> Carts { get; set; }
 
@@ -127,8 +129,8 @@ namespace Sadna_17_B.DataAccessLayer
 
             
             // OwnershipEntry configuration
-            modelBuilder.Entity<OwnershipEntry>()
-                .HasKey(oe => new { oe.SubscriberUsername, oe.StoreID });
+            /*modelBuilder.Entity<OwnershipEntry>()
+                .HasKey(oe => new { oe.SubscriberUsername, oe.StoreID });*/
 
            /* modelBuilder.Entity<OwnershipEntry>()
                 .HasRequired(oe => oe.Subscriber)
@@ -141,8 +143,8 @@ namespace Sadna_17_B.DataAccessLayer
                 .HasForeignKey(oe => new { oe.OwnerID, oe.StoreID });*/
 
             // ManagementEntry configuration
-            modelBuilder.Entity<ManagementEntry>()
-                .HasKey(me => new { me.SubscriberUsername, me.StoreID });
+            /*modelBuilder.Entity<ManagementEntry>()
+                .HasKey(me => new { me.SubscriberUsername, me.StoreID });*/
 /*
             modelBuilder.Entity<ManagementEntry>()
                 .HasRequired(me => me.Subscriber)
@@ -162,15 +164,19 @@ namespace Sadna_17_B.DataAccessLayer
 
         public void DeleteAll()
         {
-            Stores.RemoveRange(Stores.ToList());
             SubOrders.RemoveRange(SubOrders.ToList());
             Orders.RemoveRange(Orders.ToList());
             Products.RemoveRange(Products.ToList());
-            Carts.RemoveRange(Carts.ToList());
+            /*OwnerAppointmentEntries.RemoveRange(OwnerAppointmentEntries.ToList());
+            ManagerAppointmentEntries.RemoveRange(ManagerAppointmentEntries.ToList());
+            OwnershipEntries.RemoveRange(OwnershipEntries.ToList());
+            ManagementEntries.RemoveRange(ManagementEntries.ToList());*/
+            Owners.RemoveRange(Owners.ToList());
+            Managers.RemoveRange(Managers.ToList());
             Subscribers.RemoveRange(Subscribers.ToList());
             Admins.RemoveRange(Admins.ToList());
-            OwnershipEntries.RemoveRange(OwnershipEntries.ToList());
-            OwnershipEntries.RemoveRange(OwnershipEntries.ToList());
+            Carts.RemoveRange(Carts.ToList());
+            Stores.RemoveRange(Stores.ToList());
             SaveChanges();
         }
     }

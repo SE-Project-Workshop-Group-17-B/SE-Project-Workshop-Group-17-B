@@ -17,6 +17,11 @@ namespace Sadna_17_B.DomainLayer.User
             managerAppointmentOffers = new Dictionary<Tuple<int, string>, Tuple<string, HashSet<Manager.ManagerAuthorization>>>();
         }
 
+        public void LoadData()
+        {
+            // Implement
+        }
+
         public void AddOwnerAppointmentOffer(int storeID, string subscriberUsername, string appointerUsername)
         {
             if (HasOwnerAppointmentOffer(storeID, subscriberUsername))

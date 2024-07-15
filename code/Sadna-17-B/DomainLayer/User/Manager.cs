@@ -13,27 +13,40 @@ namespace Sadna_17_B.DomainLayer.User
         
         public int ManagerID { get; set; }
         public int StoreID { get; set; } //add to constructor
+        public string ManagerUsername { get; set; }
 
-
-        public string AuthorizationsString { get; set; }
+        //public string AuthorizationsString { get; set; }
 
 
        
-
         [NotMapped]
         public HashSet<ManagerAuthorization> Authorizations
-        {
-            get => new HashSet<ManagerAuthorization>(AuthorizationsString?.Split(',').Select(a => (ManagerAuthorization)Enum.Parse(typeof(ManagerAuthorization), a)) ?? new ManagerAuthorization[0]);
-            set => AuthorizationsString = string.Join(",", value.Select(a => a.ToString()));
+        { get; set;
+            //get => new HashSet<ManagerAuthorization>(AuthorizationsString?.Split(',').Select(a => (ManagerAuthorization)Enum.Parse(typeof(ManagerAuthorization), a)) ?? new ManagerAuthorization[0]);
+            //set => AuthorizationsString = string.Join(",", value.Select(a => a.ToString()));
         }
+
         public Manager()
         {
             Authorizations = GetDefaultAuthorizations();
+        }
+        public Manager(int storeID, string managerUsername)
+        {
+            Authorizations = GetDefaultAuthorizations();
+            this.StoreID = storeID;
+            this.ManagerUsername = managerUsername;
         }
 
         public Manager(HashSet<ManagerAuthorization> authorizations)
         {
             Authorizations = new HashSet<ManagerAuthorization>(authorizations); // Makes a copy of the given hashset
+        }
+
+        public Manager(HashSet<ManagerAuthorization> authorizations, int storeID, string managerUsername)
+        {
+            Authorizations = new HashSet<ManagerAuthorization>(authorizations); // Makes a copy of the given hashset
+            this.StoreID = storeID;
+            this.ManagerUsername = managerUsername;
         }
 
         public static HashSet<ManagerAuthorization> GetDefaultAuthorizations()

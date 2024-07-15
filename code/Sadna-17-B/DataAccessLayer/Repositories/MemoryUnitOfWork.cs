@@ -19,6 +19,8 @@ namespace Sadna_17_B.Repositories
         public IRepository<Subscriber> Subscribers => new EmptyRepository<Subscriber>();
 
         public IRepository<Admin> Admins => new EmptyRepository<Admin>();
+        public IRepository<Owner> Owners => new EmptyRepository<Owner>();
+        public IRepository<Manager> Managers => new EmptyRepository<Manager>();
 
         public MemoryUnitOfWork() : base()
         {
