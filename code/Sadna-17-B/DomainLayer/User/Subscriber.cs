@@ -41,14 +41,19 @@ namespace Sadna_17_B.DomainLayer.User
             return PasswordHash == Cryptography.HashString(password);
         }
 
+        /*public static bool IsValidUsername(string username)
+        {
+            return username != null && username.Length >= 1 && username.All(char.IsLetterOrDigit) & username.Any(char.IsLetter);
+        }*/
+
         public static bool IsValidUsername(string username)
         {
-            return username != null && username.Length >= 4 && username.All(char.IsLetterOrDigit) & username.Any(char.IsLetter);
+            return username != null && username.Length >= 1 ;
         }
 
         public static bool IsValidPassword(string password)
         {
-            return password != null && password.Length >= 6;
+            return password != null && password.Length >= 1;
         }
 
         public void CreateFounder(int storeID)

@@ -116,7 +116,7 @@ namespace Sadna_17_B.ServiceLayer
 
         public void generate_config_data()
         {
-            string config_string = File.ReadAllText(Path.GetFullPath(@"Layer_Infrastructure/config.json"));
+            string config_string = File.ReadAllText(Path.GetFullPath(@"Layer_Infrastructure/config_ours.json"));
             Config config = JsonSerializer.Deserialize<Config>(config_string);
             config.set_services(user_service, store_service);
             config.execute_requirements();
