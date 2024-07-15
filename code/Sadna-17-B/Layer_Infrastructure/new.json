@@ -1,3 +1,13 @@
 {
+  
+  "classes" :[
+    {
+      "name": "a",
+      "class a": "hi"
+    },
+    {
+      "name": "b",
+      "class b": "bye"
+    }
 
 }
