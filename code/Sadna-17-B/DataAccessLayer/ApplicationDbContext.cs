@@ -11,6 +11,7 @@ using System.Data.Entity.Infrastructure;
 using System.Data.Entity.ModelConfiguration;
 using System.Linq;
 using System.Web;
+using static Sadna_17_B.DomainLayer.User.OfferSystem;
 
 namespace Sadna_17_B.DataAccessLayer
 {
@@ -37,6 +38,8 @@ namespace Sadna_17_B.DataAccessLayer
         public DbSet<Admin> Admins { get; set; }
         public DbSet<Owner> Owners { get; set; }
         public DbSet<Manager> Managers { get; set; }
+        public DbSet<OwnerAppointmentOffer> OwnerAppointmentOffers { get; set; }
+        public DbSet<ManagerAppointmentOffer> ManagerAppointmentOffers { get; set; }
         /*public DbSet<OwnershipEntry> OwnershipEntries { get; set; }
         public DbSet<ManagementEntry> ManagementEntries { get; set; }
         public DbSet<OwnerAppointmentEntry> OwnerAppointmentEntries { get; set; }
@@ -126,16 +129,24 @@ namespace Sadna_17_B.DataAccessLayer
             modelBuilder.Entity<Store>()
                 .HasKey(s => s.StoreID); // Primary Key - Disable Auto Increment (sort of?)
 
+            // OwnerAppointmentOffer Configuration - Composite Primary Key
+            modelBuilder.Entity<OwnerAppointmentOffer>()
+                .HasKey(o => new { o.AppointmentStoreID, o.SubscriberUsername });
 
-            
+            // ManagerAppointmentOffer Configuration - Composite Primary Key
+            modelBuilder.Entity<ManagerAppointmentOffer>()
+                .HasKey(o => new { o.AppointmentStoreID, o.SubscriberUsername });
+
+
+
             // OwnershipEntry configuration
             /*modelBuilder.Entity<OwnershipEntry>()
                 .HasKey(oe => new { oe.SubscriberUsername, oe.StoreID });*/
 
-           /* modelBuilder.Entity<OwnershipEntry>()
-                .HasRequired(oe => oe.Subscriber)
-                .WithMany(s => s.OwnershipEntries);*/
-               // .HasForeignKey(oe => oe.SubscriberUsername);
+            /* modelBuilder.Entity<OwnershipEntry>()
+                 .HasRequired(oe => oe.Subscriber)
+                 .WithMany(s => s.OwnershipEntries);*/
+            // .HasForeignKey(oe => oe.SubscriberUsername);
 
             /*modelBuilder.Entity<OwnershipEntry>()
                 .HasRequired(oe => oe.Owner)
@@ -145,16 +156,16 @@ namespace Sadna_17_B.DataAccessLayer
             // ManagementEntry configuration
             /*modelBuilder.Entity<ManagementEntry>()
                 .HasKey(me => new { me.SubscriberUsername, me.StoreID });*/
-/*
-            modelBuilder.Entity<ManagementEntry>()
-                .HasRequired(me => me.Subscriber)
-                .WithMany(s => s.ManagementEntries);
-            //    .HasForeignKey(me => me.SubscriberUsername);
+            /*
+                        modelBuilder.Entity<ManagementEntry>()
+                            .HasRequired(me => me.Subscriber)
+                            .WithMany(s => s.ManagementEntries);
+                        //    .HasForeignKey(me => me.SubscriberUsername);
 
-            modelBuilder.Entity<ManagementEntry>()
-                .HasRequired(me => me.Manager)
-                .WithMany()
-                .HasForeignKey(me => new { me.ManagerID, me.StoreID });*/
+                        modelBuilder.Entity<ManagementEntry>()
+                            .HasRequired(me => me.Manager)
+                            .WithMany()
+                            .HasForeignKey(me => new { me.ManagerID, me.StoreID });*/
 
             // ... other configurations ...
 
@@ -171,6 +182,8 @@ namespace Sadna_17_B.DataAccessLayer
             ManagerAppointmentEntries.RemoveRange(ManagerAppointmentEntries.ToList());
             OwnershipEntries.RemoveRange(OwnershipEntries.ToList());
             ManagementEntries.RemoveRange(ManagementEntries.ToList());*/
+            OwnerAppointmentOffers.RemoveRange(OwnerAppointmentOffers.ToList());
+            ManagerAppointmentOffers.RemoveRange(ManagerAppointmentOffers.ToList());
             Owners.RemoveRange(Owners.ToList());
             Managers.RemoveRange(Managers.ToList());
             Subscribers.RemoveRange(Subscribers.ToList());

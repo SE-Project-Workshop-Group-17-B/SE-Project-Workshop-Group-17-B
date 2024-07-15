@@ -4,6 +4,7 @@ using Sadna_17_B.DomainLayer.StoreDom;
 using Sadna_17_B.DomainLayer.User;
 using Sadna_17_B.Repositories.Implementations;
 using System.Data.Entity;
+using static Sadna_17_B.DomainLayer.User.OfferSystem;
 
 namespace Sadna_17_B.Repositories
 {
@@ -21,6 +22,8 @@ namespace Sadna_17_B.Repositories
         public IRepository<Admin> Admins { get; set; }
         public IRepository<Owner> Owners { get; set; }
         public IRepository<Manager> Managers { get; set; }
+        public IRepository<OwnerAppointmentOffer> OwnerAppointmentOffers { get; set; }
+        public IRepository<ManagerAppointmentOffer> ManagerAppointmentOffers { get; set; }
 
         protected UnitOfWork(ApplicationDbContext context)
         {
@@ -33,6 +36,8 @@ namespace Sadna_17_B.Repositories
             Admins = new Repository<Admin>(_context);
             Owners = new Repository<Owner>(_context);
             Managers = new Repository<Manager>(_context);
+            OwnerAppointmentOffers = new Repository<OwnerAppointmentOffer>(_context);
+            ManagerAppointmentOffers = new Repository<ManagerAppointmentOffer>(_context);
         }
 
         public static IUnitOfWork GetInstance()
