@@ -51,6 +51,15 @@ namespace Sadna_17_B.DomainLayer.User
             userNotifications = new Dictionary<string, UserNotifications>();
         }
 
+        public void LoadData()
+        {
+            IEnumerable<UserNotifications> userNotificationsTable = _unitOfWork.UserNotifications.GetAll();
+            foreach (UserNotifications userNotification in userNotificationsTable)
+            {
+                userNotifications[userNotification.Username] = userNotification;
+            }
+        }
+
         public void Notify(string usernameToNotify, string message)
         {
             Notification notification = new Notification(message);
