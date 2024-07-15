@@ -10,6 +10,7 @@ using Microsoft.VisualBasic;
 using Sadna_17_B.Utils;
 using Newtonsoft.Json.Linq;
 using Sadna_17_B.DataAccessLayer;
+using Sadna_17_B.Repositories;
 
 namespace Sadna_17_B_Test.Tests.UnitTests
 {
@@ -28,6 +29,8 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         int productId = 1;
         string token;
         string token2;
+
+        static IUnitOfWork unitOfWork = UnitOfWork.CreateCustomUnitOfWork(new TestsDbContext()); // Creates a different singleton value for the UnitOfWork DB connection
 
         [TestInitialize]
         public void SetUp()

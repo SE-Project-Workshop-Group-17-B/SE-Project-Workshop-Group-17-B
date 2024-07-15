@@ -10,6 +10,7 @@ using Sadna_17_B.DataAccessLayer;
 using Sadna_17_B.DomainLayer.StoreDom;
 using Sadna_17_B.DomainLayer.User;
 using Sadna_17_B.DomainLayer.Utils;
+using Sadna_17_B.Repositories;
 using Sadna_17_B.Utils;
 
 namespace Sadna_17_B_Test.Tests.UnitTests
@@ -43,6 +44,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         Func<Basket, bool> condition_product;
         Func<Basket, bool> condition_all;
 
+        static IUnitOfWork unitOfWork = UnitOfWork.CreateCustomUnitOfWork(new TestsDbContext()); // Creates a different singleton value for the UnitOfWork DB connection
 
         [TestInitialize]
         public void SetUp()

@@ -41,7 +41,12 @@ namespace Sadna_17_B.ServiceLayer
         public ServiceFactory()
         {
             // Read Configuration File -> isMemory = false / frue
-            domain_factory = new DomainFactory();
+            domainFactory = new DomainFactory();
+            SetUp();
+        }
+
+        public void SetUp()
+        {
             BuildInstances();
             Config config = generate_config_data(); // Updates the ApplicationDBContext.IsMemoryDB static variable
             if (config.loadFromDB)
@@ -86,6 +91,11 @@ namespace Sadna_17_B.ServiceLayer
             user_service.upgrade_admin("admin", "password");
             Response res = user_service.entry_subscriber("admin", "password");
 
+            // ------- Create a subscriber -----------------------
+
+            UserService.upgrade_subscriber("sub1", "password");
+            Response res2 = UserService.entry_subscriber("sub1", "password");
+
             // ------- Create 5 stores -------------------------------
 
             for (int i = 1; i <= 5; i++)
@@ -103,13 +113,20 @@ namespace Sadna_17_B.ServiceLayer
                 for (int j = 1; j <= 10; j++)
                     ((Store)store_service.store_by_id(sid).Data).add_product($"Product{j}", 10.99 + j, $"category{j % 3}", $"description for Product{j}", j * 10);
 
-
-                ((Store)store_service.store_by_id(sid).Data).add_rating(4.5);
+                ((Store)StoreService.store_by_id(sid).Data).add_rating(4.5);
 
             }
 
-            for (int j = 1; j < 2; j++)
-                store_service.add_product_review(1, j, "Very good");
+            for (int j = 1; j <= 2; j++)
+                StoreService.add_product_review(1, j, "Very good");
+
+            for (int j = 1; j <= 2; j++)
+                StoreService.add_product_rating(1, j,  3);
+
+
+            // Assign "sub1" to be a manager in store 1
+            UserService.OfferManagerAppointment((res.Data as UserDTO).AccessToken, 1, "sub1");
+            UserService.RespondToManagerAppointmentOffer((res2.Data as UserDTO).AccessToken, 1, true);
 
 
         }

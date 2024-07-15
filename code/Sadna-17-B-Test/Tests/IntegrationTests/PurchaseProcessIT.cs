@@ -16,6 +16,7 @@ using System.Xml.Linq;
 using Newtonsoft.Json.Linq;
 using Sadna_17_B_Test.Tests.AcceptanceTests;
 using Sadna_17_B.DataAccessLayer;
+using Sadna_17_B.Repositories;
 
 namespace Sadna_17_B_Test.Tests.IntegrationTests
 {
@@ -52,6 +53,8 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
         string destAddr = "BGU Beer sheva";
         string creditCardInfo = "45805500";
         int amount2Buy = 5;
+
+        static IUnitOfWork unitOfWork = UnitOfWork.CreateCustomUnitOfWork(new TestsDbContext()); // Creates a different singleton value for the UnitOfWork DB connection
 
         [TestInitialize]
         public void SetUp()
@@ -98,7 +101,8 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
                 [$"price"] = $"{50}",
                 [$"amount"] = $"{amount2Buy}",
                 [$"category"] = "category",
-                [$"product store id"] = $"{pid}"
+                [$"product store id"] = $"{pid}",
+                [$"name"] = $"{productName}"
             };
 
             ignore = userService.cart_add_product(doc);
@@ -138,8 +142,8 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
                 [$"price"] = $"{50}",
                 [$"amount"] = $"{quantity*2}",
                 [$"category"] = "category",
-                [$"product store id"] = $"{pid}"
-
+                [$"product store id"] = $"{pid}",
+                [$"name"] = $"{productName}"
             };
 
             ignore = userService.cart_add_product(doc);
@@ -167,7 +171,8 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
                 [$"price"] = $"{50}",
                 [$"amount"] = $"{amount2Buy}",
                 [$"category"] = "category",
-                ["product store id"] = $"{pid}"
+                ["product store id"] = $"{pid}",
+                [$"name"] = $"{productName}"
             };
 
             Dictionary<string, string> doc1 = new Dictionary<string, string>()
@@ -177,7 +182,8 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
                 [$"price"] = $"{50}",
                 [$"amount"] = $"{amount2Buy}",
                 [$"category"] = "category",
-                ["product store id"] = $"{pid}"
+                ["product store id"] = $"{pid}",
+                [$"name"] = $"{productName}"
             };
 
 
@@ -226,8 +232,8 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
                 [$"price"] = $"{50}",
                 [$"category"] = $"category",
                 [$"amount"] = $"{quantity*2}",
-                [$"product store id"] = $"{pid}"
-
+                [$"product store id"] = $"{pid}",
+                [$"name"] = $"{productName}"
             };
 
 

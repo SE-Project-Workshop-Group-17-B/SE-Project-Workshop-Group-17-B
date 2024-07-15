@@ -14,6 +14,8 @@ using System.Web.UI.WebControls;
 using Basket = Sadna_17_B.DomainLayer.User.Basket;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Sadna_17_B.Repositories;
+using Newtonsoft.Json;
 
 
 namespace Sadna_17_B.DomainLayer.StoreDom
@@ -52,7 +54,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 */
 
         [Key]
-        public int ID { get; set; }  // Change here: { get; private set; } to { get; set; }
+        public int StoreID { get; set; }  // Change here: { get; private set; } to { get; set; }
 
         public string Name { get; set; }
         public string Email { get; set; }
@@ -61,22 +63,49 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         public string Description { get; set; }
         public string Address { get; set; }
 
-  
+        [NotMapped]
+        public virtual Inventory Inventory { get; set; }
 
-        public  Inventory Inventory { get; set; }
+        [NotMapped]
+        public  DiscountPolicy DiscountPolicy { get;  set; }
+        public string DiscountPolicySerialized
+        {
+            get => JsonConvert.SerializeObject(DiscountPolicy);
+            set => DiscountPolicy = string.IsNullOrEmpty(value) ? new DiscountPolicy() : JsonConvert.DeserializeObject<DiscountPolicy>(value);
+        }
 
-       
-        public  DiscountPolicy DiscountPolicy { get; private set; }
 
- 
-        public  PurchasePolicy PurchasePolicy { get; private set; }
+        [NotMapped]
+        public PurchasePolicy PurchasePolicy { get; set; }
+        public string PurchasePolicySerialized
+        {
+            get => JsonConvert.SerializeObject(PurchasePolicy);
+            set => PurchasePolicy = string.IsNullOrEmpty(value) ? new PurchasePolicy() : JsonConvert.DeserializeObject<PurchasePolicy>(value);
+        }
+
 
 
         public double Rating { get; set; }
-/*        public virtual List<string> Review { get; set; }
-        public virtual List<string> Complaints { get; set; }*/
-        public virtual ICollection<String> Reviews { get; set; }
-        public virtual ICollection<String> Complaints { get; set; }
+
+
+        [NotMapped]
+        public virtual ICollection<string> Reviews { get; set; } = new List<string>();
+
+        public string ReviewsSerialized
+        {
+            get => JsonConvert.SerializeObject(Reviews);
+            set => Reviews = string.IsNullOrEmpty(value) ? new List<string>() : JsonConvert.DeserializeObject<List<string>>(value);
+        }
+
+        [NotMapped]
+        public virtual ICollection<string> Complaints { get; set; } = new List<string>();
+
+        public string ComplaintsSerialized
+        {
+            get => JsonConvert.SerializeObject(Complaints);
+            set => Complaints = string.IsNullOrEmpty(value) ? new List<string>() : JsonConvert.DeserializeObject<List<string>>(value);
+        }
+
 
 
         [NotMapped]
@@ -85,8 +114,17 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         private int RatingCounter { get; set; }
         private double RatingOverallScore { get; set; }
 
+        public enum Status
+        {
+            Active,
+            TemporaryClosed,
+            PermanentlyClosed
+        }
+
+        public Status status { get; set; }
 
 
+        private IUnitOfWork _unitOfWork = UnitOfWork.GetInstance();
 
         // ---------------- Constructor & store management -------------------------------------------------------------------------------------------
 
@@ -98,7 +136,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         public Store(string name, string email, string phone_number, string store_description, string address)
         {
-            this.ID = IdCounter++;
+            this.StoreID = IdCounter++;
 
             this.Name = name;
             this.Email = email;
@@ -106,7 +144,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             this.Description = store_description;
             this.Address = address;
 
-            this.Inventory = new Inventory(ID);
+            this.Inventory = new Inventory(StoreID);
             this.DiscountPolicy = new DiscountPolicy("default policy");
             this.PurchasePolicy = new PurchasePolicy();
 
@@ -115,6 +153,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             this.Reviews = new List<string>();
             this.Complaints = new List<string>();
 
+            this.status = Status.Active;
 
             this.RatingCounter = 0;
         }
@@ -127,6 +166,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             this.RatingCounter++;
             this.RatingOverallScore += ratingInput;
             this.Rating = RatingOverallScore / RatingCounter;
+            _unitOfWork.Complete();
 
             return true;
         }
@@ -198,6 +238,8 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         public bool validate_purchase_policy(Basket basket)
         {
+            
+
             return PurchasePolicy.validate_purchase_rules(basket);
         }
 
@@ -219,18 +261,18 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                     Discount_Strategy strategy = parse_discount_strategy(doc);
                     Func<Basket, double> relevant_product_lambda = parse_relevant_lambdas(doc);
                     List<Func<Basket, bool>> condition_lambdas = parse_condition_lambdas(doc);
-
+                    _unitOfWork.Complete();
                     return DiscountPolicy.add_discount(ancestor_id, start, end, strategy, relevant_product_lambda, condition_lambdas);
 
 
                 case "remove":
 
                     int id = Parser.parse_int(doc["discount id"]);
-
+                    _unitOfWork.Complete();
                     return DiscountPolicy.remove_discount(id) ? 0 : -1;
 
                 default:
-
+                    _unitOfWork.Complete();
                     throw new Sadna17BException("Store : illegal edit type");
 
             }
@@ -253,20 +295,23 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
                     Purchase_Rule purchase = new Purchase_Rule(rule_lambda, cond_lambdas, name);
 
+                    _unitOfWork.Complete();
                     return PurchasePolicy.add_rule(ancestor_id, purchase);
+
 
 
                 case "remove":
 
                     int purchase_id = Parser.parse_int(doc["purchase rule id"]);
-
+                    _unitOfWork.Complete();
                     return PurchasePolicy.remove_rule(purchase_id) ? 0 : -1;
 
                 default:
-
+                    _unitOfWork.Complete();
                     throw new Sadna17BException("Store : illegal edit type");
 
             }
+          
         }
 
         public void edit_product(Dictionary<string, string> doc) // doc explained on doc_doc.cs
@@ -285,6 +330,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
                 product.locked = false;
             }
+            _unitOfWork.Complete();
         }
 
         public int add_product(string name, double price, string category, string description, int amount)

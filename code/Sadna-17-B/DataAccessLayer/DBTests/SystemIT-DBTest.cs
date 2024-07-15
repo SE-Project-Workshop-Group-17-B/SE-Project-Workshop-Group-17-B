@@ -1,4 +1,4 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using Sadna_17_B.ServiceLayer;
 using Sadna_17_B.ServiceLayer.Services;
@@ -7,7 +7,6 @@ using Sadna_17_B.Utils;
 using System.Runtime.CompilerServices;
 using Sadna_17_B.DomainLayer.StoreDom;
 using System.Collections.Generic;
-using Moq;
 using Sadna_17_B.ExternalServices;
 using Sadna_17_B.DomainLayer.Order;
 using Sadna_17_B.DomainLayer;
@@ -15,11 +14,13 @@ using Sadna_17_B.DomainLayer.User;
 using System.Xml.Linq;
 using Sadna_17_B.DataAccessLayer;
 using Sadna_17_B.Repositories;
+using System.Linq;
+using System.Web;
 
-namespace Sadna_17_B_Test.Tests.IntegrationTests
+namespace Sadna_17_B.DataAccessLayer.DBTests
 {
     [TestClass]
-    public class SystemIT
+    public class SystemIT_DBTest
     {
         UserService userService;
         StoreService storeService;
@@ -47,7 +48,7 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
         string descr = "test store for testing";
         string addr = "BGU Beer sheva st.3";
 
-        
+
         string destAddr = "BGU Beer sheva";
         string creditCardInfo = "45805500";
         int amount2Buy = 5;
@@ -57,12 +58,12 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
         [TestInitialize]
         public void SetUp()
         {
-            ApplicationDbContext.isMemoryDB = true; // Disconnect actual database from these tests
+            ApplicationDbContext.isMemoryDB = false; // Connect actual database for these tests
             // init services
 
             ServiceFactory serviceFactory = new ServiceFactory();
-            userService = serviceFactory.user_service;
-            storeService = serviceFactory.store_service;
+            userService = serviceFactory.UserService;
+            storeService = serviceFactory.StoreService;
 
             // init user
 
@@ -83,7 +84,7 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
             product = store.Inventory.product_by_id(pid);
         }
 
-        
+
 
         [TestMethod]
         public void TestPaymentServiceError_Fail()
@@ -137,62 +138,6 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
             int amount = ((List<Store>)storeService.store_by_name(storeName).Data)[0].amount_by_name(productName);
             Assert.IsFalse(completeRes.Success);
             Assert.AreEqual(amount, quantity);
-        }       
-
-        [TestMethod]
-        public void TestSupplySystem_FailThrowException()
-        {
-            var testObject = new Mock<ISupplySystem>();
-            testObject.Setup(arg => arg.IsValidDelivery(" ", null)).Returns(false);
-            testObject.Setup(arg => arg.ExecuteDelivery(" ", null)).Returns(false);
-
-            StoreController sc = new StoreController();
-            sc.create_store("name", "email", "054", "desc", "addr");
-            int sid = sc.store_by_name("name")[0].StoreID;
-            int pid = sc.add_store_product(sid, "prd", 5.0, "category", "desc", 10);
-
-            Cart cart = new Cart();
-            cart.add_product(new Cart_Product(sid, 10, 5.0, "category", pid, "product1"));
-
-            OrderSystem os = new OrderSystem(sc, testObject.Object);
-            try
-            {
-                //should throw exception
-                os.ProcessOrder(cart, "1", false, "some", "some");
-                Assert.IsTrue(false);
-            }
-            catch
-            {
-                Assert.IsTrue(true);
-            }
-        }
-
-        [TestMethod]
-        public void TestPaymentSystem_FailThrowException()
-        {
-            var testObject = new Mock<IPaymentSystem>();
-            testObject.Setup(arg => arg.IsValidPayment(" ", 0)).Returns(false);
-            testObject.Setup(arg => arg.ExecutePayment(" ", 0)).Returns(false);
-
-            StoreController sc = new StoreController();
-            sc.create_store("name", "email", "054", "desc", "addr");
-            int sid = sc.store_by_name("name")[0].StoreID;
-            int pid = sc.add_store_product(sid, "prd", 5.0, "category", "desc", 10);
-
-            Cart cart = new Cart();
-            cart.add_product(new Cart_Product(sid,20, 10, "category", pid, "product1"));
-
-            OrderSystem os = new OrderSystem(sc, testObject.Object);
-            try
-            {
-                //should throw exception
-                os.ProcessOrder(cart, "1", false, "some", "some");
-                Assert.IsTrue(false);
-            }
-            catch
-            {
-                Assert.IsTrue(true);
-            }
         }
 
         [TestMethod]
@@ -237,7 +182,7 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
                     foreach (KeyValuePair<ProductDTO, int> entry3 in newSbd.ProductQuantities)
                     {
                         Assert.AreEqual(entry2.Key.Id, entry3.Key.Id);
-                        Assert.AreEqual(entry2.Value,entry3.Value);
+                        Assert.AreEqual(entry2.Value, entry3.Value);
                     }
                 }
             }

@@ -1,4 +1,5 @@
 ﻿using Sadna_17_B.DomainLayer.Utils;
+using Sadna_17_B.Repositories;
 using Sadna_17_B.Utils;
 using System;
 using System.Collections.Generic;
@@ -15,18 +16,19 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         // ---------------- Variables -------------------------------------------------------------------------------------------
 
-        [Key, ForeignKey("Store")]
         public int StoreId { get; set; }
+        
         public virtual Store Store { get; set; }
 
-
-        // public virtual Store Store { get; set; }
         public Dictionary<int, Product> id_to_product { get; set; }
+
+        private IUnitOfWork _unitOfWork = UnitOfWork.GetInstance();
 
         // ---------------- Adjust product -------------------------------------------------------------------------------------------
 
         public Inventory()
         {
+
             // Parameterless constructor required by EF
         }
        
@@ -41,32 +43,12 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         {
             Product product = new Product(name, price, category, StoreId, description, amount);
 
-            id_to_product[product.ID] = product;
+            _unitOfWork.Products.Add(product); // Insert the product to the products table
 
-            //pushProductToDB(product);
+            id_to_product[product.ID] = product;
 
             return product.ID;
         }
-
-        //public void pushProductToDB(Product product)
-        //{
-        //    ProductDAO productDAO = new ProductDAO();
-        //
-        //    ProductDTO productDT = new ProductDTO
-        //    {
-        //        StoreID = product.ID,
-        //        Amount = product.amount,
-        //        Name = product.name,
-        //        Price = product.price,
-        //        Rating = product.rating,
-        //        Category = product.category,
-        //        Description = product.description,
-        //        Reviews = "",
-        //        Locked = false
-        //    };
-        //    productDAO.AddProduct(productDT);
-        //
-        //}
 
         public bool remove_product(int pid)
         {
@@ -81,6 +63,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
                 product.locked = false;
             }
+            _unitOfWork.Complete();
 
             return removed;
         }
@@ -96,6 +79,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
                 product.locked = false;
             }
+            _unitOfWork.Complete();
             return true;
         }
 
@@ -118,6 +102,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                     
                 product.locked = false;
             }
+            _unitOfWork.Complete();
         }
 
         public void increase_product_amount(int p_id, int increase_amount) 
@@ -132,6 +117,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
                 product.locked = false;
             }
+            _unitOfWork.Complete();
         }
             
 

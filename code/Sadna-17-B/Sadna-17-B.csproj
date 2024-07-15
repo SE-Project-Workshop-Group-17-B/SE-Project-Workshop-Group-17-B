@@ -1,4 +1,5 @@
 ﻿<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="packages\MSTest.TestAdapter.3.4.3\build\net462\MSTest.TestAdapter.props" Condition="Exists('packages\MSTest.TestAdapter.3.4.3\build\net462\MSTest.TestAdapter.props')" />
   <Import Project="packages\EntityFramework.6.4.4\build\EntityFramework.props" Condition="Exists('packages\EntityFramework.6.4.4\build\EntityFramework.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -120,6 +121,15 @@
     <Reference Include="Microsoft.VisualStudio.TestPlatform.ObjectModel, Version=15.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>packages\Microsoft.TestPlatform.ObjectModel.17.5.0\lib\net462\Microsoft.VisualStudio.TestPlatform.ObjectModel.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.VisualStudio.TestPlatform.TestFramework, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>packages\MSTest.TestFramework.3.4.3\lib\net462\Microsoft.VisualStudio.TestPlatform.TestFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>packages\MSTest.TestFramework.3.4.3\lib\net462\Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="NuGet.Frameworks, Version=5.11.3.1, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>packages\NuGet.Frameworks.5.11.3\lib\net472\NuGet.Frameworks.dll</HintPath>
     </Reference>
@@ -200,19 +210,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataAccessLayer\ApplicationDbContext.cs" />
+    <Compile Include="DataAccessLayer\DBTests\PurchaseProcessDBTest.cs" />
+    <Compile Include="DataAccessLayer\DBTests\SystemIT-DBTest.cs" />
+    <Compile Include="DataAccessLayer\DBTests\TestsDBConfig\TestsDbContext.cs" />
+    <Compile Include="DataAccessLayer\DBTests\UserAT-DBTest.cs" />
     <Compile Include="DataAccessLayer\Repositories\EmptyRepository.cs" />
-    <Compile Include="DataAccessLayer\Repositories\IOrderRepository.cs" />
-    <Compile Include="DataAccessLayer\Repositories\IProductRepository.cs" />
     <Compile Include="DataAccessLayer\Repositories\IRepository.cs" />
-    <Compile Include="DataAccessLayer\Repositories\IStoreRepository.cs" />
     <Compile Include="DataAccessLayer\Repositories\IUnitOfWork.cs" />
-    <Compile Include="DataAccessLayer\Repositories\IUserRepository.cs" />
-    <Compile Include="DataAccessLayer\Repositories\OrderRepository.cs" />
-    <Compile Include="DataAccessLayer\Repositories\ProductRepository.cs" />
     <Compile Include="DataAccessLayer\Repositories\Repository.cs" />
-    <Compile Include="DataAccessLayer\Repositories\StoreRepository.cs" />
     <Compile Include="DataAccessLayer\Repositories\UnitOfWork.cs" />
-    <Compile Include="DataAccessLayer\Repositories\UserRepository.cs" />
     <Compile Include="DomainLayer\DomainFactory.cs" />
     <Compile Include="DomainLayer\Order\Order.cs" />
     <Compile Include="DomainLayer\Order\OrderSystem.cs" />
@@ -245,13 +251,9 @@
     <Compile Include="Layer_Infrastructure\Config.cs" />
     <Content Include="Layer_Infrastructure\config_generate.json" />
     <None Include="Layer_Infrastructure\config_ours.json" />
-    <Compile Include="Migrations\202407111221459_InitialCreate.cs" />
-    <Compile Include="Migrations\202407111221459_InitialCreate.Designer.cs">
-      <DependentUpon>202407111221459_InitialCreate.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202407111907350_initialCreate2.cs" />
-    <Compile Include="Migrations\202407111907350_initialCreate2.Designer.cs">
-      <DependentUpon>202407111907350_initialCreate2.cs</DependentUpon>
+    <Compile Include="Migrations\202407141715446_j.cs" />
+    <Compile Include="Migrations\202407141715446_j.Designer.cs">
+      <DependentUpon>202407141715446_j.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Utils_external\ISupplySystem.cs" />
@@ -298,11 +300,8 @@
     <Folder Include="Layer_DataAccess\Repositories\" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\202407111221459_InitialCreate.resx">
-      <DependentUpon>202407111221459_InitialCreate.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202407111907350_initialCreate2.resx">
-      <DependentUpon>202407111907350_initialCreate2.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\202407141715446_j.resx">
+      <DependentUpon>202407141715446_j.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
@@ -346,9 +345,12 @@
     <Error Condition="!Exists('packages\EntityFramework.6.4.4\build\EntityFramework.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\EntityFramework.6.4.4\build\EntityFramework.props'))" />
     <Error Condition="!Exists('packages\EntityFramework.6.4.4\build\EntityFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\EntityFramework.6.4.4\build\EntityFramework.targets'))" />
     <Error Condition="!Exists('packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.118.0\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.118.0\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets'))" />
+    <Error Condition="!Exists('packages\MSTest.TestAdapter.3.4.3\build\net462\MSTest.TestAdapter.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\MSTest.TestAdapter.3.4.3\build\net462\MSTest.TestAdapter.props'))" />
+    <Error Condition="!Exists('packages\MSTest.TestAdapter.3.4.3\build\net462\MSTest.TestAdapter.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\MSTest.TestAdapter.3.4.3\build\net462\MSTest.TestAdapter.targets'))" />
   </Target>
   <Import Project="packages\EntityFramework.6.4.4\build\EntityFramework.targets" Condition="Exists('packages\EntityFramework.6.4.4\build\EntityFramework.targets')" />
   <Import Project="packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.118.0\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets" Condition="Exists('packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.118.0\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets')" />
+  <Import Project="packages\MSTest.TestAdapter.3.4.3\build\net462\MSTest.TestAdapter.targets" Condition="Exists('packages\MSTest.TestAdapter.3.4.3\build\net462\MSTest.TestAdapter.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

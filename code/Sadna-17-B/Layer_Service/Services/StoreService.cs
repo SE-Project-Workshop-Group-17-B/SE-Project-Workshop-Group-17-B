@@ -638,7 +638,7 @@ namespace Sadna_17_B.ServiceLayer.Services
             string store_info = _storeController.get_store_info(storeID);
 
             if (store_info == null)
-                return new Response("Failed to return Info about store ID: " + storeID, false);
+                return new Response("Failed to return Info about store StoreID: " + storeID, false);
 
             return new Response(store_info, true);
         }
@@ -653,7 +653,7 @@ namespace Sadna_17_B.ServiceLayer.Services
             string store_info = _storeController.get_store_inventory(storeID);
 
             if (store_info == null)
-                return new Response("Failed to return Inventory for store ID: " + storeID, false);
+                return new Response("Failed to return Inventory for store StoreID: " + storeID, false);
 
             return new Response(store_info, true);
         }

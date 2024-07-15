@@ -14,10 +14,10 @@ using System.Threading.Tasks;
 using Sadna_17_B.DataAccessLayer;
 using Sadna_17_B.Repositories;
 
-namespace Sadna_17_B_Test.Tests.AcceptanceTests
+namespace Sadna_17_B.DataAccessLayer.DBTests
 {
     [TestClass]
-    public class UserAT
+    public class UserAT_DBTest
     {
         UserService userService;
         StoreService storeService;
@@ -50,10 +50,10 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         [TestInitialize]
         public void SetUp()
         {
-            ApplicationDbContext.isMemoryDB = true; // Disconnect actual database from these tests
+            ApplicationDbContext.isMemoryDB = false; // Connect actual database for these tests
             ServiceFactory serviceFactory = new ServiceFactory();
-            userService = serviceFactory.user_service;
-            storeService = serviceFactory.store_service;
+            userService = serviceFactory.UserService;
+            storeService = serviceFactory.StoreService;
             Response ignore = userService.upgrade_subscriber(username1, password1);
         }
 
@@ -81,7 +81,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
             userDTO = res.Data as UserDTO;
             Response res2 = userService.exit_subscriber(userDTO.AccessToken);
             Assert.IsTrue(res2.Success);
-        }       
+        }
 
         [TestMethod]
         public void TestSuccessfullGuestEntry()
@@ -128,11 +128,11 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
             Response res = userService.upgrade_admin(username1, password1);
 
             Assert.IsFalse(res.Success);
-        }       
+        }
 
         [TestMethod]
         public void TestBadCaseRegisterSameUserTwice()
-        {          
+        {
             Response ignore = userService.upgrade_subscriber(username1, password1);
             Response res = userService.upgrade_subscriber(username1, password1);
             Assert.IsFalse(res.Success);
@@ -176,7 +176,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
                 [$"name"] = $"{productName}"
             };
 
-        
+
             ignore = userService.cart_add_product(doc);
             Response test2 = userService.cart_by_token(doc);
             ShoppingCartDTO shoppingCart = test2.Data as ShoppingCartDTO;
@@ -188,12 +188,12 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
 
         [TestMethod]
         public void TestBadCaseAddToCartWrongProduct()
-        {          
+        {
             Response ignore = userService.upgrade_subscriber(username1, password1);
             ignore = userService.entry_subscriber(username1, password1);
             UserDTO temp = ignore.Data as UserDTO;
-            sid = (int) storeService.create_store(temp.AccessToken, name, email, phonenumber, storeDescr, addr).Data;
-            
+            sid = (int)storeService.create_store(temp.AccessToken, name, email, phonenumber, storeDescr, addr).Data;
+
             ignore = userService.upgrade_subscriber(username2, password2);
             Response res = userService.entry_subscriber(username2, password2);
             userDTO = res.Data as UserDTO;
@@ -229,11 +229,11 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
             // init store service
 
             Response store_response = storeService.create_store(temp1.AccessToken, name, email, phonenumber, storeDescr, addr);
-            int sid = (int) store_response.Data;
-            Store store = (Store) storeService.store_by_id(sid).Data;
+            int sid = (int)store_response.Data;
+            Store store = (Store)storeService.store_by_id(sid).Data;
 
             Response product_response = storeService.add_product_to_store(temp1.AccessToken, sid, productName, productPrice, productCategory, "description", quantity);
-            int pid = (int) product_response.Data;
+            int pid = (int)product_response.Data;
             Product product = store.Inventory.product_by_id(pid);
 
 
@@ -276,7 +276,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
             Response product_response = storeService.add_product_to_store(temp1.AccessToken, sid, productName, productPrice, productCategory, "description", quantity);
             int pid = (int)product_response.Data;
             Product product = store.Inventory.product_by_id(pid);
-            
+
             // rest
 
             Response ignore = userService.upgrade_subscriber(username2, password2);
@@ -295,7 +295,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
             };
 
             ignore = userService.cart_add_product(doc);
-            
+
             ignore = userService.CompletePurchase(token, "someAddr", "SomeInfo");
 
             Response test = userService.GetMyOrderHistory(token);
@@ -450,6 +450,6 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
             Response test = userService.GetStoreOrderHistory(token, sid);
 
             Assert.IsFalse(test.Success);
-        }      
+        }
     }
 }

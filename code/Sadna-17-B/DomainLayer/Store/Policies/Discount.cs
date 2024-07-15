@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using Sadna_17_B.DomainLayer.Utils;
 using System;
 using System.Collections.Generic;
@@ -6,6 +7,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.Remoting.Messaging;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -19,8 +21,8 @@ namespace Sadna_17_B.DomainLayer.StoreDom
     // ----------- Base Discount Class ------------------------------------------------------------------------------------------------------------------  
 
 
-
-    public abstract class Discount 
+    [Serializable]
+    public abstract class Discount : ISerializable
     {
 
 
@@ -63,9 +65,28 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         }
 
-       
+        // ----------- Serialization --------------------------------------------------------
+        protected Discount(SerializationInfo info, StreamingContext context)
+        {
+            ID = info.GetInt32(nameof(ID));
+            StartDate = info.GetDateTime(nameof(StartDate));
+            EndDate = info.GetDateTime(nameof(EndDate));
+            strategy = (Discount_Strategy)info.GetValue(nameof(strategy), typeof(Discount_Strategy));
+            discount_condition_lambdas = JsonConvert.DeserializeObject<List<Func<Basket, bool>>>(info.GetString(nameof(discount_condition_lambdas)));
+            discount_pricing_lambda = JsonConvert.DeserializeObject<Func<Basket, double>>(info.GetString(nameof(discount_pricing_lambda)));
+        }
 
-        
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            info.AddValue(nameof(ID), ID);
+            info.AddValue(nameof(StartDate), StartDate);
+            info.AddValue(nameof(EndDate), EndDate);
+            info.AddValue(nameof(strategy), strategy);
+            info.AddValue(nameof(discount_condition_lambdas), JsonConvert.SerializeObject(discount_condition_lambdas));
+            info.AddValue(nameof(discount_pricing_lambda), JsonConvert.SerializeObject(discount_pricing_lambda));
+        }
+
+
         // ----------- Expiration --------------------------------------------------------  
 
         public double days_in_total()

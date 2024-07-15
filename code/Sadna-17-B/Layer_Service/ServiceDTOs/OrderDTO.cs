@@ -22,7 +22,7 @@ namespace Sadna_17_B.ServiceLayer.ServiceDTOs
             OrderID = order.OrderID;
             UserID = order.UserID;
             Timestamp = order.Timestamp;
-            cart = new Cart(cart);
+            cart = new Cart(order.Cart);
             DestinationAddress = order.DestinationAddress;
             CreditCardInfo = order.CreditCardInfo;
         }
