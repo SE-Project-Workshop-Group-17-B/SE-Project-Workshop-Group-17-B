@@ -3,12 +3,18 @@ using Sadna_17_B.DomainLayer.StoreDom;
 using Sadna_17_B.Repositories;
 using Sadna_17_B.ServiceLayer.ServiceDTOs;
 using Sadna_17_B.ServiceLayer.Services;
+using Sadna_17_B.ServiceLayer;
 using Sadna_17_B.Utils;
+using Sadna_17_B.Layer_Infrastructure;
+
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Web;
+using System.IO;
+using Sadna_17_B.DataAccessLayer;
 
 namespace Sadna_17_B.ServiceLayer
 {
@@ -18,10 +24,19 @@ namespace Sadna_17_B.ServiceLayer
     /// </summary>
     public class ServiceFactory
     {
-        public UserService UserService { get; set; }
-        public StoreService StoreService { get; set; }
 
-        private DomainFactory domainFactory;
+        // --------- variables ---------------------------------------------------------
+
+
+        public UserService user_service { get; set; }
+
+        public StoreService store_service { get; set; }
+
+        private DomainFactory domain_factory;
+
+
+        // --------- constructor ---------------------------------------------------------
+
 
         public ServiceFactory()
         {
@@ -33,10 +48,23 @@ namespace Sadna_17_B.ServiceLayer
         public void SetUp()
         {
             BuildInstances();
-            CleanDatabase();
-            GenerateData(); // Comment this out in version 3 when we load the data from the database.
-            //LoadData(); // Will be used to load the data from the database in version 3.
+            Config config = generate_config_data(); // Updates the ApplicationDBContext.IsMemoryDB static variable
+            if (config.loadFromDB)
+            {
+                LoadData();
+            }
+            else if (config.generateData) // generate = true, loadFromDB = false
+            {
+                CleanDatabase();
+                GenerateData();   // generate data from primitives
+            }
         }
+
+
+
+
+        // --------- data management ---------------------------------------------------------
+
 
         public void CleanDatabase()
         {
@@ -45,7 +73,7 @@ namespace Sadna_17_B.ServiceLayer
 
         public void LoadData()
         {
-            domainFactory.LoadData();
+            domain_factory.LoadData();
         }
 
         public void GenerateData()
@@ -60,8 +88,8 @@ namespace Sadna_17_B.ServiceLayer
 
             // ------- Create an admin --------------------------
 
-            UserService.upgrade_admin("admin", "password");
-            Response res = UserService.entry_subscriber("admin", "password");
+            user_service.upgrade_admin("admin", "password");
+            Response res = user_service.entry_subscriber("admin", "password");
 
             // ------- Create a subscriber -----------------------
 
@@ -78,14 +106,12 @@ namespace Sadna_17_B.ServiceLayer
                 var description = $"This is Store{i}, offering a wide variety of products.";
                 var address = $"{i} Market Street, City{i}";
 
-                int sid = (int) StoreService.create_store((res.Data as UserDTO).AccessToken, storeName, email, phoneNumber, description, address).Data;
-                
+                int sid = (int)store_service.create_store((res.Data as UserDTO).AccessToken, storeName, email, phoneNumber, description, address).Data;
+
 
                 // Add 10 products to each store
                 for (int j = 1; j <= 10; j++)
-                    ((Store) StoreService.store_by_id(sid).Data).add_product($"Product{j}", 10.99 + j, $"category{j % 3}", $"description for Product{j}", j * 10);
-
-
+                    ((Store)store_service.store_by_id(sid).Data).add_product($"Product{j}", 10.99 + j, $"category{j % 3}", $"description for Product{j}", j * 10);
 
                 ((Store)StoreService.store_by_id(sid).Data).add_rating(4.5);
 
@@ -102,17 +128,33 @@ namespace Sadna_17_B.ServiceLayer
             UserService.OfferManagerAppointment((res.Data as UserDTO).AccessToken, 1, "sub1");
             UserService.RespondToManagerAppointmentOffer((res2.Data as UserDTO).AccessToken, 1, true);
 
+
         }
 
-
-        /// <summary>
-        /// Builds the service instances, injects all dependencies in the their constructors.
-        /// </summary>
         private void BuildInstances()
         {
-            UserService us = new UserService(domainFactory.UserController);
-            UserService = us;
-            StoreService = new StoreService(us, domainFactory.StoreController);
+            user_service = new UserService(domain_factory.UserController); ;
+            store_service = new StoreService(user_service, domain_factory.StoreController);
         }
+
+        public Config generate_config_data()
+        {
+            string config_string = File.ReadAllText(Path.GetFullPath(Config.config_file_path)); // config.requirements.json
+            Config config = JsonSerializer.Deserialize<Config>(config_string);
+            config.set_services(user_service, store_service);
+            ApplicationDbContext.isMemoryDB = config.is_memory;
+            config.execute_requirements();
+            Console.WriteLine("Config file loaded successfully.");
+            return config;
+        }
+
+
+        public void validate_config(Config config)
+        {
+            if (config == null)
+                throw new Sadna17BException(" config is null ");
+
+        }
+
     }
 }

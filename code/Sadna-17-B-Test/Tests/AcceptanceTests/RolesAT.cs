@@ -53,8 +53,8 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         {
             ApplicationDbContext.isMemoryDB = true; // Disconnect actual database from these tests - it currently cannot work with an actual database, need to move the tests into the same Backend project assembly
             ServiceFactory serviceFactory = new ServiceFactory();
-            userService = serviceFactory.UserService;
-            storeService = serviceFactory.StoreService;
+            userService = serviceFactory.user_service;
+            storeService = serviceFactory.store_service;
             Response ignore = userService.upgrade_subscriber(username1, password1);
         }
 

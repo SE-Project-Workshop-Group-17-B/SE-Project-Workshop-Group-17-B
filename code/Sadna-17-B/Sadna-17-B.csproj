@@ -248,6 +248,9 @@
     <Compile Include="DomainLayer\User\Subscriber.cs" />
     <Compile Include="DomainLayer\User\User.cs" />
     <Compile Include="DomainLayer\User\UserController.cs" />
+    <Compile Include="Layer_Infrastructure\Config.cs" />
+    <Content Include="Layer_Infrastructure\config_generate.json" />
+    <None Include="Layer_Infrastructure\config_ours.json" />
     <Compile Include="Migrations\202407141715446_j.cs" />
     <Compile Include="Migrations\202407141715446_j.Designer.cs">
       <DependentUpon>202407141715446_j.cs</DependentUpon>
@@ -280,6 +283,7 @@
     <Compile Include="Utils_local\Sadna17BException.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Layer_Infrastructure\config_requirements.json" />
     <None Include="packages.config" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>

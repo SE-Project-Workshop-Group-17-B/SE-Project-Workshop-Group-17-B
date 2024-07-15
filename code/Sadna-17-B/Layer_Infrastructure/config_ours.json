@@ -1,0 +1,289 @@
+﻿{
+  "generateData": false,
+  "loadFromDB": false,
+  "isMemoryDB": true,
+  "register admins": {
+    "req name": "requirement : generate admins",
+    "actions": [
+      {
+        "action name": "register admin",
+        "registration type": "admin",
+        "username": "admin1",
+        "password": "secureAdminPassword1"
+      }
+    ]
+  },
+  "register subscribers": {
+    "req name": "generate subscribers",
+    "actions": [
+      {
+        "action name": "register subscriber",
+        "registration type": "subscriber",
+        "username": "user1",
+        "password": "UserPassword123!"
+      },
+      {
+        "action name": "register subscriber",
+        "registration type": "subscriber",
+        "username": "user2",
+        "password": "UserPassword234!"
+      },
+      {
+        "action name": "register subscriber",
+        "registration type": "subscriber",
+        "username": "user3",
+        "password": "UserPassword345!"
+      },
+      {
+        "action name": "register subscriber",
+        "registration type": "subscriber",
+        "username": "user4",
+        "password": "UserPassword456!"
+      },
+      {
+        "action name": "register subscriber",
+        "registration type": "subscriber",
+        "username": "user5",
+        "password": "UserPassword567!"
+      },
+      {
+        "action name": "register subscriber",
+        "registration type": "subscriber",
+        "username": "user6",
+        "password": "UserPassword678!"
+      },
+      {
+        "action name": "register subscriber",
+        "registration type": "subscriber",
+        "username": "user7",
+        "password": "UserPassword789!"
+      },
+      {
+        "action name": "register subscriber",
+        "registration type": "subscriber",
+        "username": "user8",
+        "password": "UserPassword890!"
+      },
+      {
+        "action name": "register subscriber",
+        "registration type": "subscriber",
+        "username": "user9",
+        "password": "UserPassword901!"
+      },
+      {
+        "action name": "register subscriber",
+        "registration type": "subscriber",
+        "username": "user10",
+        "password": "UserPassword012!"
+      },
+      {
+        "action name": "register subscriber",
+        "registration type": "subscriber",
+        "username": "user11",
+        "password": "UserPassword1234!"
+      },
+      {
+        "action name": "register subscriber",
+        "registration type": "subscriber",
+        "username": "user12",
+        "password": "UserPassword2345!"
+      },
+      {
+        "action name": "register subscriber",
+        "registration type": "subscriber",
+        "username": "user13",
+        "password": "UserPassword3456!"
+      },
+      {
+        "action name": "register subscriber",
+        "registration type": "subscriber",
+        "username": "user14",
+        "password": "UserPassword4567!"
+      },
+      {
+        "action name": "register subscriber",
+        "registration type": "subscriber",
+        "username": "user15",
+        "password": "UserPassword5678!"
+      },
+      {
+        "action name": "register subscriber",
+        "registration type": "subscriber",
+        "username": "user16",
+        "password": "UserPassword6789!"
+      },
+      {
+        "action name": "register subscriber",
+        "registration type": "subscriber",
+        "username": "user17",
+        "password": "UserPassword7890!"
+      },
+      {
+        "action name": "register subscriber",
+        "registration type": "subscriber",
+        "username": "user18",
+        "password": "UserPassword8901!"
+      },
+      {
+        "action name": "register subscriber",
+        "registration type": "subscriber",
+        "username": "user19",
+        "password": "UserPassword9012!"
+      },
+      {
+        "action name": "register subscriber",
+        "registration type": "subscriber",
+        "username": "user20",
+        "password": "UserPassword0123!"
+      }
+    ]
+  },
+  "open stores": [
+    {
+      "req name": "open stores",
+      "username": "user1",
+      "password": "UserPassword123!",
+      "actions": [
+        {
+          "action name": "open store",
+          "store name": "Gourmet Shop",
+          "store email": "gourmetshop@example.com",
+          "store phone": "123-456-7890",
+          "store description": "A shop specializing in gourmet foods and ingredients.",
+          "store address": "123 Culinary St, Food City"
+        },
+        {
+          "action name": "open store",
+          "store name": "Tech World",
+          "store email": "techworld@example.com",
+          "store phone": "123-456-7891",
+          "store description": "A store offering the latest in electronics and gadgets.",
+          "store address": "456 Silicon Ave, Tech City"
+        }
+      ]
+    },
+
+    {
+      "req name": "open stores",
+      "username": "user2",
+      "password": "UserPassword234!",
+      "actions": [
+        {
+          "action name": "open store",
+          "store name": "Book Haven",
+          "store email": "bookhaven@example.com",
+          "store phone": "123-456-7892",
+          "store description": "A haven for book lovers with a wide range of genres.",
+          "store address": "789 Literature Blvd, Book City"
+        }
+      ]
+    }
+  ],
+  "add products": [
+    {
+      "req name": "add products",
+      "user type": "subscriber",
+      "username": "user1",
+      "password": "UserPassword123!",
+      "store name": "Gourmet Shop",
+      "actions": [
+        {
+          "action name": "add product",
+          "product name": "Truffle Oil",
+          "product description": "Premium truffle oil for gourmet cooking.",
+          "product category": "Food",
+          "product amount": 10,
+          "product price": 20
+        },
+        {
+          "action name": "add product",
+          "product name": "Saffron",
+          "product description": "High-quality saffron threads.",
+          "product category": "Spice",
+          "product amount": 15,
+          "product price": 25
+        },
+        {
+          "action name": "add product",
+          "product name": "Gourmet Chocolate",
+          "product description": "Artisanal dark chocolate bars.",
+          "product category": "Dessert",
+          "product amount": 20,
+          "product price": 30
+        },
+        {
+          "action name": "add product",
+          "product name": "Olive Oil",
+          "product description": "Extra virgin olive oil from Italy.",
+          "product category": "Oil",
+          "product amount": 25,
+          "product price": 35
+        },
+        {
+          "action name": "add product",
+          "product name": "Balsamic Vinegar",
+          "product description": "Aged balsamic vinegar from Modena.",
+          "product category": "Condiment",
+          "product amount": 30,
+          "product price": 40
+        },
+        {
+          "action name": "add product",
+          "product name": "Caviar",
+          "product description": "Luxurious caviar for special occasions.",
+          "product category": "Seafood",
+          "product amount": 35,
+          "product price": 45
+        }
+      ]
+    }
+  ],
+  "assign managers": {
+    "req name": "assign managers",
+    "user type": "subscriber",
+    "username": "user1",
+    "password": "UserPassword123!",
+    "actions": [
+      {
+        "action name": "assign manager",
+        "store name": "Gourmet Shop",
+        "new manager": "user4",
+        "authorizations": [
+          "View",
+          "UpdateSupply"
+        ]
+      }
+    ]
+  },
+  "assign owners": {
+    "req name": "assign owners",
+    "user type": "founder",
+    "username": "user1",
+    "password": "UserPassword123!",
+    "actions": [
+      {
+        "action name": "assign owner",
+        "store name": "Gourmet Shop",
+        "new owner": "user5"
+      },
+      {
+        "action name": "assign owner",
+        "store name": "Gourmet Shop",
+        "new owner": "user6"
+      }
+    ]
+  },
+  "logout users": {
+    "req name": "logout users",
+    "actions": [
+      {
+        "action name": "logout user",
+        "username": "user2"
+      },
+      {
+        "action name": "logout user",
+        "username": "user6"
+      }
+    ]
+  }
+}
