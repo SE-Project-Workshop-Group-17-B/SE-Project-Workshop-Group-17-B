@@ -424,7 +424,10 @@ namespace Sadna_17_B_Frontend.Controllers
             }
             return userDTO.Username;
         }
-
+        public void add_product_to_cart(Dictionary<string, string> doc, int change)
+        {
+            userService.cart_add_product(doc, change);
+        }
 
 
         // ----------------------------------- store management -----------------------------------------------------------------------

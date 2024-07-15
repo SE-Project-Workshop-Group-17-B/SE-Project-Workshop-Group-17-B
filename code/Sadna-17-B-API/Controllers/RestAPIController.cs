@@ -16,7 +16,7 @@ namespace Sadna_17_B_API.Controllers
     public class RestAPIController : ControllerBase
     {
         private readonly ServiceFactory _serviceFactory;
-        private readonly IUserService _userService;
+        private readonly UserService _userService;
         private readonly StoreService _storeService;
 
         public RestAPIController(ServiceFactory serviceFactory)
@@ -29,7 +29,7 @@ namespace Sadna_17_B_API.Controllers
         [HttpPost("entry")]
         public Response Entry()
         {
-            var response = _userService.GuestEntry();
+            var response = _userService.entry_guest();
             return response;
         }
 
@@ -38,7 +38,7 @@ namespace Sadna_17_B_API.Controllers
         {
             // Validate userDto (consider adding data annotations to your UserDto)
 
-            var response = _userService.CreateSubscriber(userDto.Username, userDto.Password);
+            var response = _userService.upgrade_subscriber(userDto.Username, userDto.Password);
 
             if (response.Success)
             {
@@ -54,7 +54,7 @@ namespace Sadna_17_B_API.Controllers
         {
             // Validate userDto
 
-            var response = _userService.Login(userDto.Username, userDto.Password);
+            var response = _userService.entry_subscriber(userDto.Username, userDto.Password);
 
             if (response.Success)
             {
@@ -69,7 +69,7 @@ namespace Sadna_17_B_API.Controllers
         [HttpPost("logout")]
         public Response Logout([FromBody] UIuserDTOAPI user)
         {
-            var response = _userService.Logout(user.AccessToken);
+            var response = _userService.exit_subscriber(user.AccessToken);
             return response;
         }
 
@@ -82,42 +82,42 @@ namespace Sadna_17_B_API.Controllers
         [HttpPost("isFounder")]
         public Response IsFounder([FromBody] RoleCheckRequest request)
         {
-            var response = _userService.IsFounder(request.AccessToken, request.StoreId);
+            var response = _userService.founder(request.AccessToken, request.StoreId);
             return response;
         }
 
         [HttpPost("isOwner")]
         public Response IsOwner([FromBody] RoleCheckRequest request)
         {
-            var response = _userService.IsOwner(request.AccessToken, request.StoreId);
+            var response = _userService.owner(request.AccessToken, request.StoreId);
             return response;
         }
 
         [HttpPost("isManager")]
         public Response IsManager([FromBody] RoleCheckRequest request)
         {
-            var response = _userService.IsManager(request.AccessToken, request.StoreId);
+            var response = _userService.manager(request.AccessToken, request.StoreId);
             return response;
         }
 
         [HttpPost("isGuest")]
         public Response IsGuest([FromBody] RoleCheckRequest request)
         {
-            var response = _userService.IsGuest(request.AccessToken);
+            var response = _userService.guest(request.AccessToken);
             return response;
         }
 
         [HttpPost("isSubscriber")]
         public Response IsSubscriber([FromBody] RoleCheckRequest request)
         {
-            var response = _userService.IsSubscriber(request.AccessToken);
+            var response = _userService.subscriber(request.AccessToken);
             return response;
         }
 
         [HttpPost("isAdmin")]
         public Response IsAdmin([FromBody] RoleCheckRequest request)
         {
-            var response = _userService.IsAdmin(request.AccessToken);
+            var response = _userService.admin(request.AccessToken);
             return response;
         }
 
@@ -129,16 +129,16 @@ namespace Sadna_17_B_API.Controllers
         }
 
         [HttpPost("process_store_order")]
-        public Response ProcessStoreOrder([FromBody] FuncStoreDTO data)
+        public Response ProcessStoreOrder([FromBody] Basket data)
         {
-            var response = _storeService.calculate_products_prices(data.storeId, data.quantities);
+            var response = _storeService.calculate_products_prices(data);
             return response;
         }
 
         [HttpPost("get_shoping_cart")]
-        public Response getShopingCart([FromBody] UIuserDTOAPI user)
+        public Response getShopingCart([FromBody] Dictionary<string,string> doc_shopping_cart)
         {
-            var response = _userService.GetShoppingCart(user.AccessToken);
+            var response = _userService.cart_by_token(doc_shopping_cart);
             return response;
         }
 

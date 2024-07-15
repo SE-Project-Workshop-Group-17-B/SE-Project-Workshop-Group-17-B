@@ -212,7 +212,7 @@ namespace Sadna_17_B_Frontend.Views
             return stars;
         }
 
-        protected void toStoreInventory_Click(object sender, EventArgs e)
+        protected async void toStoreInventory_Click(object sender, EventArgs e)
         {
             int storeId = Convert.ToInt32(Request.QueryString["storeId"]);
 
@@ -224,7 +224,7 @@ namespace Sadna_17_B_Frontend.Views
                                                                     .Build();
          
 
-            Response response = backendController.search_products_by(searchDoc);
+            Response response = await backendController.search_products_by(searchDoc);
             if (response.Success)
             {
                 productList = response.Data as List<Product>;

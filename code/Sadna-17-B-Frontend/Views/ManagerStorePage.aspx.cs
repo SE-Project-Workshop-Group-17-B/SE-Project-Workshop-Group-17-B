@@ -31,9 +31,9 @@ namespace Sadna_17_B_Frontend.Views
             }
         }
 
-        private void LoadStoreData(int storeId)
+        private async void LoadStoreData(int storeId)
         {
-            var store = backendController.get_store_details_by_id(storeId);
+            var store = await backendController.get_store_details_by_id(storeId);
             if (store != null)
             {
                 storeNameLiteral.Text = store.Name;
@@ -138,7 +138,7 @@ namespace Sadna_17_B_Frontend.Views
             }
         }
 
-        protected void btnManageInventory_Click(object sender, EventArgs e)
+        protected async void btnManageInventory_Click(object sender, EventArgs e)
         {
             int storeId = Convert.ToInt32(Request.QueryString["storeId"]);
 
@@ -150,7 +150,7 @@ namespace Sadna_17_B_Frontend.Views
                                                                     .Build();
 
 
-            Response response = backendController.search_products_by(searchDoc);
+            Response response = await backendController.search_products_by(searchDoc);
             if (response.Success)
             {
                 List<Product> productList = response.Data as List<Product>;

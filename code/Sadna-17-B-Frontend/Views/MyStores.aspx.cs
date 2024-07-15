@@ -23,9 +23,9 @@ namespace Sadna_17_B_Frontend.Views
             var managedStoresResponse = await backendController.get_managed_store(); // Assume this method gets the list of managed stores
             var ownedStoresResponse = await backendController.got_owned_stores(); // Assume this method gets the list of owned stores
 
-            if (managedStores != null && managedStores.Count > 0)
+            if (managedStoresResponse != null && managedStoresResponse.Count > 0)
             {
-                rptManagedStores.DataSource = managedStores;
+                rptManagedStores.DataSource = managedStoresResponse;
                 rptManagedStores.DataBind();
             }
             else
@@ -33,9 +33,9 @@ namespace Sadna_17_B_Frontend.Views
                 litNoManagedStores.Visible = true;
             }
 
-            if (ownedStores != null && ownedStores.Count > 0)
+            if (ownedStoresResponse != null && ownedStoresResponse.Count > 0)
             {
-                rptOwnedStores.DataSource = ownedStores;
+                rptOwnedStores.DataSource = ownedStoresResponse;
                 rptOwnedStores.DataBind();
             }
             else
@@ -54,7 +54,7 @@ namespace Sadna_17_B_Frontend.Views
             string storeId = btn.CommandArgument;
             Response.Redirect($"~/Views/Store_Page.aspx?storeId={storeId}");
         }
-        protected void btnManage_Click(object sender, EventArgs e)
+        protected async void btnManage_Click(object sender, EventArgs e)
         {
             var button = (Button)sender;
             string storeId = button.CommandArgument;
@@ -63,12 +63,12 @@ namespace Sadna_17_B_Frontend.Views
                 ["store id"] = storeId,
                 ["roles to check"] = "founder"
             };
-            bool isFounder = backendController.has_roles(doc);
+            bool isFounder = await backendController.has_roles(doc);
 
             bool founder = backendController.has_roles(doc).GetAwaiter().GetResult(); // Assume this method checks if the current user is the founder
 
             if (founder)
-                Response.Redirect("~/Views/FounderStorePage.aspx?storeId=" + sid);
+                Response.Redirect("~/Views/FounderStorePage.aspx?storeId=" + storeId);
             
             else
                 Response.Redirect($"~/Views/ManagerStorePage.aspx?storeId={storeId}");

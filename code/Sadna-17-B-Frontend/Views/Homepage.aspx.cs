@@ -24,12 +24,12 @@ namespace Sadna_17_B_Frontend
             //}
             Response response = await backendController.get_stores();
             List<Store> stores =response.Data as List<Store>;// herer we will need to makith into the same change :)
-            store1Name.Text = stores[0].name;
-            store1Description.Text = stores[0].description;
-            store2Name.Text = stores[1].name;
-            store2Description.Text = stores[1].description;
-            store3Name.Text = stores[2].name;
-            store3Description.Text = stores[2].description;
+            store1Name.Text = stores[0].Name;
+            store1Description.Text = stores[0].Description;
+            store2Name.Text = stores[1].Name;
+            store2Description.Text = stores[1].Description;
+            store3Name.Text = stores[2].Name;
+            store3Description.Text = stores[2].Description;
         }
 
         private void MessageBox(string message)
