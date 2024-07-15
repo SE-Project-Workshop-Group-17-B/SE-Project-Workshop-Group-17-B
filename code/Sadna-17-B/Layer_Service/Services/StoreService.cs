@@ -193,7 +193,7 @@ namespace Sadna_17_B.ServiceLayer.Services
             try
             {
                 rating = _storeController.get_store_rating(storeID);
-                return new Response("" + rating, true);
+                return new Response($"{rating}",true);
             }
             catch (Sadna17BException ex)
             {

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using System.Threading.Tasks;
 
 namespace Sadna_17_B_Frontend.Views
 {
@@ -18,11 +19,11 @@ namespace Sadna_17_B_Frontend.Views
         {
             if (!IsPostBack)
             {
-            //    LoadAllProducts();
+                //    LoadAllProducts().GetAwaiter().GetResult();
             }
         }
 
-        private void LoadAllProducts()
+        private async Task LoadAllProducts()
         {
             Dictionary<string, string> emptySearch = new Dictionary<string, string>
             {
@@ -33,7 +34,7 @@ namespace Sadna_17_B_Frontend.Views
                 {"store rating", ""},
                 {"product price", ""}
             };
-            Response response = backendController.search_products_by(emptySearch);
+            Response response = await backendController.search_products_by(emptySearch);
             if (response.Success)
             {
                 productList = response.Data as List<Product>;
@@ -42,7 +43,7 @@ namespace Sadna_17_B_Frontend.Views
             }
         }
 
-        protected void btnSearch_Click(object sender, EventArgs e)
+        protected async Task btnSearch_Click(object sender, EventArgs e)
         {
             string keyword = txtKeyword.Value.Trim();
             string category = txtCategory.Value.Trim();
@@ -62,7 +63,7 @@ namespace Sadna_17_B_Frontend.Views
                 {"product price", $"{minPrice}|{maxPrice}"}
             };
 
-            Response response = backendController.search_products_by(searchDoc);
+            Response response = await backendController.search_products_by(searchDoc);
             if (response.Success)
             {
                 productList = response.Data as List<Product>;
@@ -88,12 +89,12 @@ namespace Sadna_17_B_Frontend.Views
             }
         }
 
-        protected void btnAddToCart_Click(object sender, EventArgs e)
+        protected async Task btnAddToCart_Click(object sender, EventArgs e)
         {
             Button btn = (Button)sender;
             int productId = Convert.ToInt32(btn.CommandArgument);
             // Implement add to cart functionality here
-            Product product =  backendController.get_product_by_id(productId);
+            Product product =  await backendController.get_product_by_id(productId);
 
             Dictionary<string, string> doc = new Dictionary<string, string>
             {

@@ -159,7 +159,6 @@ namespace Sadna_17_B_API.Controllers
         }
 
         [HttpPost("get_stores_by_id")]
-
         public Response getStoresById([FromBody] FuncStoreDTO store)
         {
             var response = _storeService.store_by_id(store.storeId);
@@ -172,5 +171,76 @@ namespace Sadna_17_B_API.Controllers
             var response = _storeService.create_store(storeDTO.AccessToken, storeDTO.Name, storeDTO.Email, storeDTO.PhoneNumber, storeDTO.StoreDescription, storeDTO.Address);
             return response;
         }
+
+        [HttpPost("get_store_details")]
+        public Response getStoreDetails([FromBody] int storeId)
+        {
+            var response = _storeService.get_store_info(storeId);
+            return response;
+        }
+
+        [HttpPost("get_store_name")]
+        public Response getStoreName([FromBody] int storeId)
+        {
+            var response = _storeService.get_store_name(storeId);
+            return response;
+        }
+
+        [HttpPost("get_store_rating_by_id")]
+        public Response getStoreRatingById([FromBody] int storeId)
+        {
+            var response = _storeService.get_store_rating(storeId);
+            return response;
+        }
+
+        [HttpPost("add_store_rating")]
+        public Response addStoreRating([FromBody] tempDTO storeDTO)
+        {
+            var response = _storeService.add_store_rating(storeDTO.ID, double.Parse(storeDTO.Data));
+            return response;
+        }
+
+        [HttpPost("add_store_complaint")]
+        public Response addStoreComplaint([FromBody] tempDTO storeDTO)
+        {
+            var response = _storeService.add_store_complaint(storeDTO.ID, storeDTO.Data);
+            return response;
+        }
+
+        [HttpPost("add_store_review")]
+        public Response addStoreReview([FromBody] tempDTO storeDTO)
+        {
+            var response = _storeService.add_store_review(storeDTO.ID, storeDTO.Data);
+            return response;
+        }
+
+        [HttpPost("get_product_by_id")]
+        public Response getProductById([FromBody] int productId)
+        {
+            var response = _storeService.get_product_by_id(productId);
+            return response;
+        }
+
+        [HttpPost("cart_add_product")]
+        public Response cartAddProduct([FromBody] Add2CartDTO dto)
+        {
+            var response = _userService.cart_add_product(dto.Doc, dto.Change);
+            return response;
+        }
+
+        [HttpPost("search_product_by")]
+        public Response searchProductBy([FromBody] Dictionary<string,string> doc)
+        {
+            var response = _storeService.search_product_by(doc);
+            return response;
+        }
+
+        [HttpPost("get_store_reviews_by_ID")]
+        public Response seargetStoreReviewsByIdchProductBy([FromBody] int storeId)
+        {
+            var response = _storeService.get_store_reviews_by_ID(storeId);
+            return response;
+        }
+
     }
 }

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Sadna_17_B.DomainLayer.StoreDom;
 using Sadna_17_B.Utils;
 using System.Web.UI;
+using System.Threading.Tasks;
 
 namespace Sadna_17_B_Frontend.Views
 {
@@ -20,7 +21,7 @@ namespace Sadna_17_B_Frontend.Views
             {
                 if (int.TryParse(Request.QueryString["storeId"], out storeId))
                 {
-                    LoadStoreData(storeId);
+                    LoadStoreData(storeId).GetAwaiter().GetResult();
                     hiddenLabel2.Text = storeId.ToString();
                 }
                 else
@@ -42,12 +43,13 @@ namespace Sadna_17_B_Frontend.Views
             }
         }
 
-        private void LoadStoreData(int storeId)
+        private async Task LoadStoreData(int storeId)
         {
-            var store = backendController.get_store_details_by_id(storeId);
+            var store = await backendController.get_store_details_by_id(storeId);
             if (store != null)
             {
-                storeNameLiteral.Text = store.Name;
+                Store s = store.Data as Store;
+                storeNameLiteral.Text = s.Name;
                 storeIdLiteral.Text = storeId.ToString();
 
                 // Load policies
@@ -83,7 +85,7 @@ namespace Sadna_17_B_Frontend.Views
             return "https://via.placeholder.com/200"; // Placeholder image for now
         }
 
-        protected void btnMngInv_Click(object sender, EventArgs e)
+        protected async Task btnMngInv_Click(object sender, EventArgs e)
         {
             Button btn = (Button)sender;
             currProductId = Convert.ToInt32(btn.CommandArgument);
@@ -91,7 +93,7 @@ namespace Sadna_17_B_Frontend.Views
             string script = "$('#mymodal-product').modal('show')";
             ClientScript.RegisterStartupScript(this.GetType(), "Popup", script, true);
 
-            Product p = backendController.get_product_by_id(currProductId);
+            Product p = await backendController.get_product_by_id(currProductId);
 
             productNameText1.Text = p.name;
             DropDownList1.Text = p.category;
@@ -149,7 +151,7 @@ namespace Sadna_17_B_Frontend.Views
             }
         }
 
-        protected void btnManageInventory_Click(object sender, EventArgs e)
+        protected async Task btnManageInventory_Click(object sender, EventArgs e)
         {
             int storeId = Convert.ToInt32(Request.QueryString["storeId"]);
 
@@ -161,7 +163,7 @@ namespace Sadna_17_B_Frontend.Views
                                                                     .Build();
 
 
-            Response response = backendController.search_products_by(searchDoc);
+            Response response = await backendController.search_products_by(searchDoc);
             if (response.Success)
             {
                 List<Product> productList = response.Data as List<Product>;

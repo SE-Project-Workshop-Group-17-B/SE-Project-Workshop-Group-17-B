@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.WebPages;
 using Sadna_17_B_API.Controllers;
+using Sadna_17_B_Frontend.Views;
 
 namespace Sadna_17_B_Frontend.Controllers
 {
@@ -216,52 +217,105 @@ namespace Sadna_17_B_Frontend.Controllers
             }
         }
 
-        public List<Store> got_owned_stores()
+        public async Task<List<Store>> got_owned_stores()
         {
             Response response = userService.GetMyOwnedStores(userDTO.AccessToken);
             if (response.Success)
             {
                 List<int> storeIds = response.Data as List<int>;
-                return get_store_details(storeIds);
+                return await get_store_details(storeIds);
             }
             return new List<Store>();
         }
 
-        public List<Store> get_managed_store()
+        public async Task<List<Store>> get_managed_store()
         {
             Response response = userService.GetMyManagedStores(userDTO.AccessToken);
             if (response.Success)
             {
                 List<int> storeIds = response.Data as List<int>;
-                return get_store_details(storeIds);
+                return await get_store_details(storeIds);
             }
             return new List<Store>();
         }
 
-        private List<Store> get_store_details(List<int> storeIds)
+        private async Task<List<Store>> get_store_details(List<int> storeIds)
         {
             List<Store> storeDetailsList = new List<Store>();
             foreach (int storeId in storeIds)
             {
-                var storeDetails = get_store_details_by_id(storeId);
+                var storeDetails = await get_store_details_by_id(storeId);
                 if (storeDetails != null)
                 {
-                    storeDetailsList.Add(storeDetails);
+                    storeDetailsList.Add(storeDetails.Data as Store);
                 }
             }
             return storeDetailsList;
         }
 
-        public Store get_store_details_by_id(int storeId)
+        public async Task<Response> get_store_details_by_id(int storeId)
         {
-            Response response = storeService.store_by_id(storeId);
-            if (response.Success)
+            using (HttpClient client = new HttpClient())
             {
-                return response.Data as Store;
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/get_store_details",storeId);
+                string response1 = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                return JsonConvert.DeserializeObject<Response>(response1);
             }
-            return null;
         }
 
+        public async Task<Response> get_store_name(int storeId)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/get_store_name", storeId);
+                string response1 = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                return JsonConvert.DeserializeObject<Response>(response1);
+            }
+        }
+
+        public async Task<Response> get_store_rating_by_id(int storeId)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/get_store_rating_by_id", storeId);
+                string response1 = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                return JsonConvert.DeserializeObject<Response>(response1);
+            }
+        }
+
+        public async Task<Response> add_store_rating(int storeId, double rating)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                var payload = new { ID = storeId, Data = rating.ToString() };
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/add_store_rating", payload);
+                string response1 = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                return JsonConvert.DeserializeObject<Response>(response1);
+            }
+        }
+
+        public async Task<Response> add_store_complaint(int storeId, string complaint)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                var payload = new { ID = storeId, Data = complaint };
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/add_store_complaint", payload);
+                string response1 = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                return JsonConvert.DeserializeObject<Response>(response1);
+            }
+        }
+
+        public async Task<Response> add_store_review(int storeId, string review)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                //review saved as complaint for more nice code
+                var payload = new { ID = storeId, Data = review };
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/add_store_review", payload);
+                string response1 = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                return JsonConvert.DeserializeObject<Response>(response1);
+            }
+        }
 
 
         // ----------------------------------- authentication system -----------------------------------------------------------------------
@@ -285,9 +339,15 @@ namespace Sadna_17_B_Frontend.Controllers
             }
         }
 
-        public void add_product_to_cart(Dictionary<string,string> doc,int change)
+        public async Task add_product_to_cart(Dictionary<string,string> doc,int change)
         {
-            userService.cart_add_product(doc,change);
+            using (HttpClient client = new HttpClient())
+            {
+                //id saved as change cause not enough time
+                var payload = new { Doc = doc, Change = change };
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/cart_add_product", payload);
+            }
+            
         }
 
         public async Task<string> login(string username, string password)
@@ -518,9 +578,24 @@ namespace Sadna_17_B_Frontend.Controllers
             }
         }
 
-        public Response search_products_by(Dictionary<string, string> doc) // implement with doc_doc documentation
+        public async Task<Response> search_products_by(Dictionary<string, string> doc) // implement with doc_doc documentation
         {
-            return storeService.search_product_by(doc);
+            using (HttpClient client = new HttpClient())
+            {
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/search_product_by", doc);
+                string response1 = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                return JsonConvert.DeserializeObject<Response>(response1);
+            }
+        }
+
+        public async Task<Response> get_store_reviews_by_ID(int storeId)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/get_store_reviews_by_ID", storeId);
+                string response1 = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                return JsonConvert.DeserializeObject<Response>(response1);
+            }
         }
 
         public Response show_cart(Dictionary<string, string> doc) // not implemented 
@@ -578,14 +653,17 @@ namespace Sadna_17_B_Frontend.Controllers
 
 
 
-        public Product get_product_by_id(int productId)
+        public async Task<Product> get_product_by_id(int productId)
         {
-            Response response = storeService.get_product_by_id(productId);
-            if (response.Success)
+            using (HttpClient client = new HttpClient())
             {
-                return response.Data as Product;
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/get_product_by_id", productId);
+                string response1 = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                Response response2 = JsonConvert.DeserializeObject<Response>(response1);
+                if (response2.Success)
+                    return JsonConvert.DeserializeObject<Product>(response2.Data.ToString());
+                return null;
             }
-            return null;
         }
 
   

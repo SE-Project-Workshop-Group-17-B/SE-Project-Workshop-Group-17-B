@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using System.Threading.Tasks;
 
 namespace Sadna_17_B_Frontend.Views
 {
@@ -14,14 +15,14 @@ namespace Sadna_17_B_Frontend.Views
         {
             if (!IsPostBack)
             {
-                LoadStores();
+                LoadStores().GetAwaiter().GetResult();
             }
         }
 
-        private void LoadStores()
+        private async Task LoadStores()
         {
-            var managedStores = backendController.get_managed_store();
-            var ownedStores = backendController.got_owned_stores();
+            var managedStores = await backendController.get_managed_store();
+            var ownedStores = await backendController.got_owned_stores();
 
             if (managedStores != null && managedStores.Count > 0)
             {

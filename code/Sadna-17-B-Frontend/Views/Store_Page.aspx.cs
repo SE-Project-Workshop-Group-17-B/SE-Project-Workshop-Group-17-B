@@ -9,6 +9,8 @@ using System.Web;
 using System.Web.Razor.Tokenizer.Symbols;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace Sadna_17_B_Frontend.Views
 {
@@ -25,23 +27,22 @@ namespace Sadna_17_B_Frontend.Views
 
             if ( !IsPostBack )
             {
-                LoadStoreData(storeId);
+                 LoadStoreData(storeId);
             }
         }
 
-        private void LoadStoreData(int storeId)
+        private async void LoadStoreData(int storeId)
         {
             try
             {
-                StoreService storeService = backendController.storeService;
-
                 // Load store info
-                Response storeInfoResponse = storeService.get_store_info(storeId);
-                if (storeInfoResponse.Success)
+                Response storeInfo = await backendController.get_store_details_by_id(storeId);
+                if (storeInfo.Success)
                 {
-                    string storeNameLine = storeService.get_store_name(storeId).Message;
+                    Response res = await backendController.get_store_name(storeId);
+                    string storeNameLine = res.Data as string;
                     storeNameLiteral.Text = storeNameLine;
-                    storeDescriptionLiteral.Text = storeInfoResponse.Message.Replace("\n", "<br />");
+                    storeDescriptionLiteral.Text = storeInfo.Message.Replace("\n", "<br />");
                 }
 
                 loadStoreRating();
@@ -71,91 +72,83 @@ namespace Sadna_17_B_Frontend.Views
         {
             Response.Write(@"<script language='javascript'>alert('" + message + "')</script>");
         }
+
         protected void btnClose_Click(object sender, EventArgs e) {
             loadStoreRating();
-
         }
 
-        protected void btnsave_Click_rating(object sender, EventArgs e)
+        protected async void btnsave_Click_rating(object sender, EventArgs e)
         {
             // Retrieve the rating value from the hidden field
             double rating = Convert.ToDouble(ratingValueHidden.Value);
 
-            // Retrieve the complaint value from the hidden field
-
-            StoreService storeService = backendController.storeService;
-
             // Add store rating
-            Response ratingResponse = storeService.add_store_rating(storeId, rating);
+            Response res = await backendController.add_store_rating(storeId, rating);
 
-            if (ratingResponse.Success)
+            if (res.Success)
             {
                 MessageBox("rating submitted successfully!");
             }
             else
             {
-                MessageBox("Failed to submit rating: " + ratingResponse.Message);
+                MessageBox("Failed to submit rating: " + res.Message);
             }
+
             loadStoreRating();
 
         }
 
-        protected void btnsave_Click_complaint(object sender, EventArgs e)
+        protected async void btnsave_Click_complaint(object sender, EventArgs e)
         {
             // Retrieve the rating value from the hidden field
             string complaint = Convert.ToString(complaintTextBox.Text);
 
             // Retrieve the complaint value from the hidden field
 
-            StoreService storeService = backendController.storeService;
-
             // Add store rating
-            Response complaintResponse = storeService.add_store_complaint(storeId, complaint);
+            Response res = await backendController.add_store_complaint(storeId, complaint);
 
-            if (complaintResponse.Success)
+            if (res.Success)
             {
                 MessageBox("complaint submitted successfully!");
             }
             else
             {
-                MessageBox("Failed to submit complaint: " + complaintResponse.Message);
+                MessageBox("Failed to submit complaint: " + res.Message);
             }
 
             loadStoreRating();
 
         }
-        protected void loadStoreRating()
+        protected async void loadStoreRating()
         {
             // Load and display store rating
-            StoreService storeService = backendController.storeService;
-
-            Response ratingResponse = storeService.get_store_rating(storeId);
-            if (ratingResponse.Success)
+            Response storeInfo = await backendController.get_store_rating_by_id(storeId);
+            if (storeInfo.Success)
             {
-                double rating = double.Parse(ratingResponse.Message);
+                double rating = double.Parse(storeInfo.Message);
                 SetStoreRating(rating);
             }
         }
 
-        protected void btnsave_Click_postReview(object sender, EventArgs e)
+        protected async void btnsave_Click_postReview(object sender, EventArgs e)
         {
             // Retrieve the rating value from the hidden field
             string review = reviewTextBox.Text;
 
             // Retrieve the complaint value from the hidden field
 
-            StoreService storeService = backendController.storeService;
 
             // Add store rating
-            Response reviewResponse = storeService.add_store_review(storeId, review);
+            Response res = await backendController.add_store_review(storeId, review);
 
-            if (reviewResponse.Success)
+            if (res.Success)
             {
                 MessageBox("Review submitted successfully!");
             }
             else
             {
-                MessageBox("Failed to submit Review: " + reviewResponse.Message);
+                MessageBox("Failed to submit Review: " + res.Message);
             }
             loadStoreRating();
 
@@ -179,12 +172,12 @@ namespace Sadna_17_B_Frontend.Views
             return "https://via.placeholder.com/200"; // Placeholder image for now
         }
 
-        protected void btnAddToCart_Click(object sender, EventArgs e)
+        protected async void btnAddToCart_Click(object sender, EventArgs e)
         {
             Button btn = (Button)sender;
             int productId = Convert.ToInt32(btn.CommandArgument);
             // Implement add to cart functionality here
-            Product product = backendController.get_product_by_id(productId);
+            Product product = await backendController.get_product_by_id(productId);
 
             Dictionary<string, string> doc = new Dictionary<string, string>
             {
@@ -197,7 +190,7 @@ namespace Sadna_17_B_Frontend.Views
                 ["name"] = $"{product.name}"
             };
 
-            backendController.add_product_to_cart(doc,1);
+            await backendController.add_product_to_cart(doc,1);
             loadStoreRating();
 
         }
@@ -212,7 +205,7 @@ namespace Sadna_17_B_Frontend.Views
             return stars;
         }
 
-        protected void toStoreInventory_Click(object sender, EventArgs e)
+        protected async void toStoreInventory_Click(object sender, EventArgs e)
         {
             int storeId = Convert.ToInt32(Request.QueryString["storeId"]);
 
@@ -224,10 +217,10 @@ namespace Sadna_17_B_Frontend.Views
                                                                     .Build();
          
 
-            Response response = backendController.search_products_by(searchDoc);
+            Response response = await backendController.search_products_by(searchDoc);
             if (response.Success)
             {
-                productList = response.Data as List<Product>;
+                productList = JsonConvert.DeserializeObject<List<Product>>(response.Data.ToString());
                 rptProducts2.DataSource = productList;
                 rptProducts2.DataBind();
                 //lblMessage.Visible = false;
@@ -249,17 +242,16 @@ namespace Sadna_17_B_Frontend.Views
             }
         }
 
-        protected void viewReviewsBtn_Click(object sender, EventArgs e)
+        protected async void viewReviewsBtn_Click(object sender, EventArgs e)
         {
-            StoreService storeService = backendController.storeService;
 
             // Fetch store Review
-            Response reviewsResponse = storeService.get_store_reviews_by_ID(storeId);
+            Response reviewsResponse = await backendController.get_store_reviews_by_ID(storeId);
 
             if (reviewsResponse.Success)
             {
-                string username = backendController.userDTO.Username;
-                List<string> reviews = reviewsResponse.Data as List<string>;
+                string username = backendController.get_username();
+                List<string> reviews = JsonConvert.DeserializeObject<List<string>>(reviewsResponse.Data.ToString());
 
                 string script = $"displayReviews({Newtonsoft.Json.JsonConvert.SerializeObject(reviews)},'{username}'); openReviewsModal();";
                 ClientScript.RegisterStartupScript(this.GetType(), "ShowReviews", script, true);

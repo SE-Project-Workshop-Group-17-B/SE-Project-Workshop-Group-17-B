@@ -1,4 +1,4 @@
-﻿<%@ Page Title="My Stores" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="MyStores.aspx.cs" Inherits="Sadna_17_B_Frontend.Views.MyStores" %>
+﻿<%@ Page Title="My Stores" Language="C#" Async="true" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="MyStores.aspx.cs" Inherits="Sadna_17_B_Frontend.Views.MyStores" %>
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
 <style>
     :root {
