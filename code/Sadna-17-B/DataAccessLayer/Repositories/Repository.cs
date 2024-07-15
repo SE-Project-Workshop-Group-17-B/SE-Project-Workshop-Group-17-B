@@ -37,7 +37,6 @@ namespace Sadna_17_B.Repositories.Implementations
         {
             DbSet.Add(entity);
             Context.SaveChanges();
-
         }
 
         public void AddRange(IEnumerable<TEntity> entities)

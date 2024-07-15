@@ -63,8 +63,8 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
             // init services
 
             ServiceFactory serviceFactory = new ServiceFactory();
-            userService = serviceFactory.user_service;
-            storeService = serviceFactory.store_service;
+            userService = serviceFactory.UserService;
+            storeService = serviceFactory.StoreService;
 
             // init user
 

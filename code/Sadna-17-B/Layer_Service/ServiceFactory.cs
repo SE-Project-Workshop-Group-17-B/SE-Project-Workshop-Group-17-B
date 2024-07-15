@@ -28,11 +28,11 @@ namespace Sadna_17_B.ServiceLayer
         // --------- variables ---------------------------------------------------------
 
 
-        public UserService user_service { get; set; }
+        public UserService UserService { get; set; }
 
-        public StoreService store_service { get; set; }
+        public StoreService StoreService { get; set; }
 
-        private DomainFactory domain_factory;
+        private DomainFactory domainFactory;
 
 
         // --------- constructor ---------------------------------------------------------
@@ -49,15 +49,6 @@ namespace Sadna_17_B.ServiceLayer
         {
             BuildInstances();
             Config config = generate_config_data(); // Updates the ApplicationDBContext.IsMemoryDB static variable
-            if (config.loadFromDB)
-            {
-                LoadData();
-            }
-            else if (config.generateData) // generate = true, loadFromDB = false
-            {
-                CleanDatabase();
-                GenerateData();   // generate data from primitives
-            }
         }
 
 
@@ -73,7 +64,7 @@ namespace Sadna_17_B.ServiceLayer
 
         public void LoadData()
         {
-            domain_factory.LoadData();
+            domainFactory.LoadData();
         }
 
         public void GenerateData()
@@ -88,8 +79,8 @@ namespace Sadna_17_B.ServiceLayer
 
             // ------- Create an admin --------------------------
 
-            user_service.upgrade_admin("admin", "password");
-            Response res = user_service.entry_subscriber("admin", "password");
+            UserService.upgrade_admin("admin", "password");
+            Response res = UserService.entry_subscriber("admin", "password");
 
             // ------- Create a subscriber -----------------------
 
@@ -106,12 +97,12 @@ namespace Sadna_17_B.ServiceLayer
                 var description = $"This is Store{i}, offering a wide variety of products.";
                 var address = $"{i} Market Street, City{i}";
 
-                int sid = (int)store_service.create_store((res.Data as UserDTO).AccessToken, storeName, email, phoneNumber, description, address).Data;
+                int sid = (int)StoreService.create_store((res.Data as UserDTO).AccessToken, storeName, email, phoneNumber, description, address).Data;
 
 
                 // Add 10 products to each store
                 for (int j = 1; j <= 10; j++)
-                    ((Store)store_service.store_by_id(sid).Data).add_product($"Product{j}", 10.99 + j, $"category{j % 3}", $"description for Product{j}", j * 10);
+                    ((Store)StoreService.store_by_id(sid).Data).add_product($"Product{j}", 10.99 + j, $"category{j % 3}", $"description for Product{j}", j * 10);
 
                 ((Store)StoreService.store_by_id(sid).Data).add_rating(4.5);
 
@@ -124,28 +115,45 @@ namespace Sadna_17_B.ServiceLayer
                 StoreService.add_product_rating(1, j,  3);
 
 
-            // Assign "sub1" to be a manager in store 1
-            UserService.OfferManagerAppointment((res.Data as UserDTO).AccessToken, 1, "sub1");
+            // Assign "sub" to be a manager in store 1
+            UserService.OfferManagerAppointment((res.Data as UserDTO).AccessToken, 1, "sub");
             UserService.RespondToManagerAppointmentOffer((res2.Data as UserDTO).AccessToken, 1, true);
-
 
         }
 
         private void BuildInstances()
         {
-            user_service = new UserService(domain_factory.UserController); ;
-            store_service = new StoreService(user_service, domain_factory.StoreController);
+            UserService = new UserService(domainFactory.UserController); ;
+            StoreService = new StoreService(UserService, domainFactory.StoreController);
         }
 
         public Config generate_config_data()
         {
             string config_string = File.ReadAllText(Path.GetFullPath(Config.config_file_path)); // config.requirements.json
             Config config = JsonSerializer.Deserialize<Config>(config_string);
-            config.set_services(user_service, store_service);
-            ApplicationDbContext.isMemoryDB = config.is_memory;
-            config.execute_requirements();
+            config.set_services(UserService, StoreService);
+            InitializeSystemFromConfig(config);
             Console.WriteLine("Config file loaded successfully.");
             return config;
+        }
+
+        public void InitializeSystemFromConfig(Config config)
+        {
+            ApplicationDbContext.isMemoryDB = config.is_memory;
+            if (config.loadFromDB)
+            {
+                LoadData();
+            }
+            else
+            {
+                CleanDatabase();
+            }
+            if (config.generateData) // generate = true, loadFromDB = false
+            {
+                CleanDatabase();
+                GenerateData();   // generate data from primitives
+            }
+            config.execute_requirements();
         }
 
 

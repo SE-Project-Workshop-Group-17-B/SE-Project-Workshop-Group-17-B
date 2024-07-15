@@ -15,7 +15,7 @@ namespace Sadna_17_B.Layer_Infrastructure
 
     public class Config
     {
-        public static string config_file_path = @"Layer_Infrastructure/config_ours.json";
+        public static string config_file_path = @"Layer_Infrastructure/config_requirements.json";
 
         // --------- json variables -------------------------------------------------------------------------
 
@@ -345,7 +345,7 @@ namespace Sadna_17_B.Layer_Infrastructure
                 user_service.OfferOwnerAppointment(token_appointer, storeNam_to_id[store_name], new_owner_username);
 
                 string token_appointed = user_to_token[new_owner_username];
-                user_service.RespondToManagerAppointmentOffer(token_appointed, storeNam_to_id[store_name], true);
+                user_service.RespondToOwnerAppointmentOffer(token_appointed, storeNam_to_id[store_name], true);
             }
         }
 
