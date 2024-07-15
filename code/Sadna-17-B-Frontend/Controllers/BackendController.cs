@@ -15,6 +15,8 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.WebPages;
 using Sadna_17_B_API.Controllers;
+using Sadna_17_B_API.Models;
+using System.Diagnostics.Contracts;
 
 namespace Sadna_17_B_Frontend.Controllers
 {
@@ -553,6 +555,21 @@ namespace Sadna_17_B_Frontend.Controllers
         }
 
 
+
+        // ---------- external services ---------------------------------------------------
+
+
+        public Response supply_details(string card_holder, string card_number, string exp_year, string exp_month, string cvv, string id)
+        {
+            return null;
+        }
+
+        public Response payment_details(string month, string name, string address, string city, string country, string zip)
+        {
+            return null;
+        }
+
+
         // ---------- produt -----------------------------------
 
 
@@ -568,19 +585,6 @@ namespace Sadna_17_B_Frontend.Controllers
             return null;
         }
 
-  
-
-
-/*
-        // Todo impliment 
-        public Response add_to_cart(int productId)
-        {
-            //  return userService.AddToCart(userDTO.AccessToken, productId);
-            return new Response("succes", true);
-        }*/
-
-
-       
 
         public Response add_product_rating(int storeID, int productID, int rating)
         {

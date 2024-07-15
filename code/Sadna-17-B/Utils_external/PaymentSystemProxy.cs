@@ -1,13 +1,14 @@
 ﻿using Newtonsoft.Json;
 using Sadna_17_B.ServiceLayer.ServiceDTOs;
 using Sadna_17_B.Utils;
-using Sadna_17_B.Utils_external;
+using Sadna_17_B_API.Controllers;
 using Sadna_17_B_API.Controllers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Sadna_17_B_API.Models;
 using System.Web;
 
 namespace Sadna_17_B.ExternalServices
@@ -36,7 +37,7 @@ namespace Sadna_17_B.ExternalServices
         {
             using (HttpClient client = new HttpClient())
             {
-                HttpResponseMessage response = await client.    PostAsJsonAsync(prefix, payment); // add relative path
+                HttpResponseMessage response = await client.PostAsync(prefix, payment); // add relative path
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -60,7 +61,7 @@ namespace Sadna_17_B.ExternalServices
         {
             using (HttpClient client = new HttpClient())
             {
-                HttpResponseMessage response = await client.PostAsJsonAsync(prefix, cancel); // add relative path
+                HttpResponseMessage response = await client.PostAsync(prefix, cancel); // add relative path
 
                 if (response.IsSuccessStatusCode)
                 {

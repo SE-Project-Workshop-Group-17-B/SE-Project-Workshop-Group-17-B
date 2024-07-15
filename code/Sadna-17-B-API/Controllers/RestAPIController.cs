@@ -9,7 +9,7 @@ using Sadna_17_B.ServiceLayer.ServiceDTOs;
 
 using Sadna_17_B_API;
 using Sadna_17_B_API.Models;
-using Sadna_17_B_API.Models.externalDTOs;
+
 
 
 namespace Sadna_17_B_API.Controllers
@@ -82,6 +82,7 @@ namespace Sadna_17_B_API.Controllers
             var response = _storeService.all_stores();
             return response;
         }
+        
         [HttpPost("isFounder")]
         public Response IsFounder([FromBody] RoleCheckRequest request)
         {
@@ -206,7 +207,7 @@ namespace Sadna_17_B_API.Controllers
         }
 
         [HttpPost("cancel_supply")]
-        public Response cancel_supply([FromBody] Models.externalDTO cancel )
+        public Response cancel_supply([FromBody] cancelDTO cancel )
         {
             return new Response(true);
         }

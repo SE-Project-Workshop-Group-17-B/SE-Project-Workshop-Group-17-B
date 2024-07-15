@@ -1,10 +1,11 @@
-﻿using Sadna_17_B.Utils_external;
+﻿
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web;
+using Sadna_17_B_API.Models;
 
 namespace Sadna_17_B.ExternalServices
 {
@@ -26,7 +27,7 @@ namespace Sadna_17_B.ExternalServices
     }
 
 
-    public class PaymentSystem
+    public class SupplySystem
     {
         public string url = "https://damp-lynna-wsep-1984852e.koyeb.app/";
 
@@ -34,7 +35,7 @@ namespace Sadna_17_B.ExternalServices
         {
             using (HttpClient client = new HttpClient())
             {
-                HttpResponseMessage response = await client.PostAsJsonAsync(url, payment); // add relative path
+                HttpResponseMessage response = await client.PostAsync(url, supply); // add relative path
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -54,11 +55,11 @@ namespace Sadna_17_B.ExternalServices
             }
         }
 
-        public async Task<string> cancel_supply(canceltDTO cancel)
+        public async Task<string> cancel_supply(cancelDTO cancel)
         {
             using (HttpClient client = new HttpClient())
             {
-                HttpResponseMessage response = await client.PostAsJsonAsync(url, cancel); // add relative path
+                HttpResponseMessage response = await client.PostAsync(url, cancel); // add relative path
 
                 if (response.IsSuccessStatusCode)
                 {
