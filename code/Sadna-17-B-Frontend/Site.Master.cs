@@ -138,7 +138,7 @@ namespace Sadna_17_B_Frontend
 
         protected void MyCartBtn_Click(object sender, EventArgs e)
         {
-            Response.Redirect("MyCart");
+            Response.Redirect("MyCart", false);
         }
 
         protected void MyStoresBtn_Click(object sender, EventArgs e)

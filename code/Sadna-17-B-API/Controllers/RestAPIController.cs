@@ -172,5 +172,17 @@ namespace Sadna_17_B_API.Controllers
             var response = _storeService.create_store(storeDTO.AccessToken, storeDTO.Name, storeDTO.Email, storeDTO.PhoneNumber, storeDTO.StoreDescription, storeDTO.Address);
             return response;
         }
+        [HttpPost("remove_from_cart")]
+        public Response removeFromCart([FromBody] RemoveFromCartRequest request)
+        {
+            var response = _userService.cart_remove_product(new ProductDTO(request.ProductId), request.Token);
+            return response;
+        }
+        [HttpPost("completePurchase")]
+        public Response CompletePurchase([FromBody] PurchaseDTO purchaseDetails)
+        {
+            var response = _userService.CompletePurchase(purchaseDetails.AccessToken, purchaseDetails.DestinationAddress, purchaseDetails.CreditCardInfo);
+            return response;
+        }
     }
 }
