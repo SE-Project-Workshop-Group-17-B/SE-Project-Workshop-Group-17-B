@@ -243,6 +243,7 @@
     <Compile Include="DomainLayer\User\User.cs" />
     <Compile Include="DomainLayer\User\UserController.cs" />
     <Compile Include="Layer_Infrastructure\Config.cs" />
+    <Content Include="Layer_Infrastructure\config_generate.json" />
     <None Include="Layer_Infrastructure\config_ours.json" />
     <Compile Include="Migrations\202407111221459_InitialCreate.cs" />
     <Compile Include="Migrations\202407111221459_InitialCreate.Designer.cs">

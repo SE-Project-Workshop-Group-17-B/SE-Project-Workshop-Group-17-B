@@ -14,6 +14,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Web;
 using System.IO;
+using Sadna_17_B.DataAccessLayer;
 
 namespace Sadna_17_B.ServiceLayer
 {
@@ -42,11 +43,16 @@ namespace Sadna_17_B.ServiceLayer
             // Read Configuration File -> isMemory = false / frue
             domain_factory = new DomainFactory();
             BuildInstances();
-            CleanDatabase();
-            generate_config_data();
-
-            //GenerateData();   // generate data from primitives
-            //LoadData();       // Will be used to load the data from the database in version 3.
+            Config config = generate_config_data(); // Updates the ApplicationDBContext.IsMemoryDB static variable
+            if (config.loadFromDB)
+            {
+                LoadData();
+            }
+            else if (config.generateData) // generate = true, loadFromDB = false
+            {
+                CleanDatabase();
+                GenerateData();   // generate data from primitives
+            }
         }
 
 
@@ -114,13 +120,15 @@ namespace Sadna_17_B.ServiceLayer
             store_service = new StoreService(user_service, domain_factory.StoreController);
         }
 
-        public void generate_config_data()
+        public Config generate_config_data()
         {
-            string config_string = File.ReadAllText(Path.GetFullPath(@"Layer_Infrastructure/config_requirements.json"));
+            string config_string = File.ReadAllText(Path.GetFullPath(Config.config_file_path)); // config.requirements.json
             Config config = JsonSerializer.Deserialize<Config>(config_string);
             config.set_services(user_service, store_service);
+            ApplicationDbContext.isMemoryDB = config.is_memory;
             config.execute_requirements();
-            Console.WriteLine();
+            Console.WriteLine("Config file loaded successfully.");
+            return config;
         }
 
 

@@ -11,11 +11,11 @@ using Sadna_17_B.ServiceLayer.ServiceDTOs;
 
 namespace Sadna_17_B.Layer_Infrastructure
 {
-
     
 
     public class Config
     {
+        public static string config_file_path = @"Layer_Infrastructure/config_ours.json";
 
         // --------- json variables -------------------------------------------------------------------------
 
@@ -74,30 +74,35 @@ namespace Sadna_17_B.Layer_Infrastructure
 
         public void execute_requirements()
         {
+            if (register_admins != null)
+                foreach (Action_register action in register_admins.actions)
+                    action.apply_action(user_service, store_service, register_admins);
 
-            foreach (Action_register action in register_admins.actions)
-                action.apply_action(user_service, store_service, register_admins);
+            if (register_subscribers != null)
+                foreach (Action_register action in register_subscribers.actions)
+                    action.apply_action(user_service, store_service, register_subscribers);
 
-            foreach (Action_register action in register_subscribers.actions)
-                action.apply_action(user_service, store_service, register_subscribers);
+            if (open_stores != null)
+                foreach (Requirement_open_store requirement in open_stores)
+                    foreach (Action_open_store action in requirement.actions)
+                        action.apply_action(user_service, store_service, requirement);
 
-            foreach (Requirement_open_store reqirement in open_stores)
-                foreach (Action_open_store action in reqirement.actions)
-                    action.apply_action(user_service, store_service, reqirement);
+            if (add_products != null)
+                foreach (Requirement_add_product requirement in add_products)
+                    foreach (Action_add_product action in requirement.actions)
+                        action.apply_action(user_service, store_service, requirement);
 
-            foreach (Requirement_add_product reqirement in add_products)
-                foreach (Action_add_product action in reqirement.actions)
-                    action.apply_action(user_service, store_service, reqirement);
+            if (assign_managers != null)
+                foreach (Action_assign_manager action in assign_managers.actions)
+                    action.apply_action(user_service, store_service, assign_managers);
 
-            foreach (Action_assign_manager action in assign_managers.actions)
-                action.apply_action(user_service, store_service, assign_managers);
+            if (assign_owners != null)
+                foreach (Action_assign_owner action in assign_owners.actions)
+                    action.apply_action(user_service, store_service, assign_owners);
 
-            foreach (Action_assign_owner action in assign_owners.actions)
-                action.apply_action(user_service, store_service, assign_owners);
-
-            foreach (Action_logout action in logout_users.actions)
-                action.apply_action(user_service, store_service, assign_owners);
-
+            if (logout_users != null)
+                foreach (Action_logout action in logout_users.actions)
+                    action.apply_action(user_service, store_service, assign_owners);
 
         }
 
@@ -328,7 +333,7 @@ namespace Sadna_17_B.Layer_Infrastructure
         {
 
             [JsonPropertyName("new owner")]
-            public string new_manger_username { get; set; }
+            public string new_owner_username { get; set; }
 
             [JsonPropertyName("store name")]
             public string store_name { get; set; }
@@ -337,9 +342,9 @@ namespace Sadna_17_B.Layer_Infrastructure
             public void apply_action(UserService user_service, StoreService store_service, Requirement_assign_owners requirement)
             {
                 string token_appointer = user_to_token[requirement.username];
-                user_service.OfferOwnerAppointment(token_appointer, storeNam_to_id[store_name], new_manger_username);
+                user_service.OfferOwnerAppointment(token_appointer, storeNam_to_id[store_name], new_owner_username);
 
-                string token_appointed = user_to_token[new_manger_username];
+                string token_appointed = user_to_token[new_owner_username];
                 user_service.RespondToManagerAppointmentOffer(token_appointed, storeNam_to_id[store_name], true);
             }
         }

@@ -185,10 +185,10 @@
       "user type": "subscriber",
       "username": "user1",
       "password": "UserPassword123!",
-      "store id": 1,
+      "store name": "Gourmet Shop",
       "actions": [
         {
-          "actio name": "add product",
+          "action name": "add product",
           "product name": "Truffle Oil",
           "product description": "Premium truffle oil for gourmet cooking.",
           "product category": "Food",
@@ -196,7 +196,7 @@
           "product price": 20
         },
         {
-          "actio name": "add product",
+          "action name": "add product",
           "product name": "Saffron",
           "product description": "High-quality saffron threads.",
           "product category": "Spice",
@@ -204,7 +204,7 @@
           "product price": 25
         },
         {
-          "actio name": "add product",
+          "action name": "add product",
           "product name": "Gourmet Chocolate",
           "product description": "Artisanal dark chocolate bars.",
           "product category": "Dessert",
@@ -212,7 +212,7 @@
           "product price": 30
         },
         {
-          "actio name": "add product",
+          "action name": "add product",
           "product name": "Olive Oil",
           "product description": "Extra virgin olive oil from Italy.",
           "product category": "Oil",
@@ -220,7 +220,7 @@
           "product price": 35
         },
         {
-          "actio name": "add product",
+          "action name": "add product",
           "product name": "Balsamic Vinegar",
           "product description": "Aged balsamic vinegar from Modena.",
           "product category": "Condiment",
@@ -228,7 +228,7 @@
           "product price": 40
         },
         {
-          "actio name": "add product",
+          "action name": "add product",
           "product name": "Caviar",
           "product description": "Luxurious caviar for special occasions.",
           "product category": "Seafood",
@@ -246,7 +246,7 @@
     "actions": [
       {
         "action name": "assign manager",
-        "store id": 1,
+        "store name": "Gourmet Shop",
         "new manager": "user4",
         "authorizations": [
           "View",
@@ -263,20 +263,18 @@
     "actions": [
       {
         "action name": "assign owner",
-        "store id": 1,
+        "store name": "Gourmet Shop",
         "new owner": "user5"
       },
       {
         "action name": "assign owner",
-        "store id": 1,
+        "store name": "Gourmet Shop",
         "new owner": "user6"
       }
     ]
   },
   "logout users": {
     "req name": "logout users",
-
-
     "actions": [
       {
         "action name": "logout user",
