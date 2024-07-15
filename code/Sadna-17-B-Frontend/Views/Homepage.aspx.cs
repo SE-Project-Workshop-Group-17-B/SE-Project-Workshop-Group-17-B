@@ -15,13 +15,6 @@ namespace Sadna_17_B_Frontend
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            // Testing login
-            //string message = backendController.Login("admin", "password");
-            //if (message != null)
-            //{
-            //    MessageBox(message);
-            //}
-
             List<Store> stores = backendController.get_stores().Data as List<Store>;
             store1Name.Text = stores[0].Name;
             store1Description.Text = stores[0].Description;
@@ -29,11 +22,8 @@ namespace Sadna_17_B_Frontend
             store2Description.Text = stores[1].Description;
             store3Name.Text = stores[2].Name;
             store3Description.Text = stores[2].Description;
-        }
-
-        private void MessageBox(string message)
-        {
-            Response.Write(@"<script language='javascript'>alert('" + message + "')</script>");
+            if (!backendController.logged_in())
+                backendController.userService.entry_guest();
         }
     }
 }

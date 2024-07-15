@@ -472,7 +472,7 @@ namespace Sadna_17_B.DomainLayer.User
 
         public Cart cart_by_token(string token)
         {
-            infoLogger.Log($"Getting shopping cart - Subscriber: {GetSubscriberByToken(token).Username}");
+            infoLogger.Log($"Getting shopping cart");
             User user = GetUserByToken(token);
             return user.ShoppingCart;
         }

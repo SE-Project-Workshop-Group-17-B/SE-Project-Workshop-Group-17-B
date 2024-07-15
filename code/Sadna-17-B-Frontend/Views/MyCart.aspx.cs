@@ -126,7 +126,7 @@ namespace Sadna_17_B_Frontend.Views
             }
             else
             {
-                string script = "alert('Payment Failed, please check if you vave money on your account...');";
+                string script = $"alert('Payment Failed, {res.Message}');";
                 ScriptManager.RegisterStartupScript(this, GetType(), "ServerControlScript", script, true);
             }
 
