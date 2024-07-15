@@ -6,6 +6,7 @@ using Sadna_17_B.ServiceLayer.Services;
 using Sadna_17_B.Utils;
 using Sadna_17_B.DomainLayer.User;
 using Sadna_17_B.ServiceLayer.ServiceDTOs;
+using Sadna_17_B.Utils_external;
 
 namespace Sadna_17_B_API.Controllers
 {
@@ -172,5 +173,39 @@ namespace Sadna_17_B_API.Controllers
             var response = _storeService.create_store(storeDTO.AccessToken, storeDTO.Name, storeDTO.Email, storeDTO.PhoneNumber, storeDTO.StoreDescription, storeDTO.Address);
             return response;
         }
+
+
+        // ----------- external services ------------------------------------------------------------
+
+        [HttpPost("handshake")]
+        public Response handshake([FromBody] handshakeDTO handshake )
+        {
+            
+        }
+
+        [HttpPost("pay")]
+        public Response pay([FromBody] paymentDTO payment )
+        {
+
+        }
+
+        [HttpPost("cancel_pay")]
+        public Response cancel_pay([FromBody] cancelDTO cancel )
+        {
+
+        }
+
+        [HttpPost("supply")]
+        public Response supply([FromBody] supplyDTO supply )
+        {
+
+        }
+
+        [HttpPost("cancel_supply")]
+        public Response cancel_supply([FromBody] cancelDTO cancel )
+        {
+
+        }
+
     }
 }
