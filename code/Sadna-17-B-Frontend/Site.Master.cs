@@ -143,7 +143,7 @@ namespace Sadna_17_B_Frontend
         protected void StoreAdminBtn_Click(object sender, EventArgs e)
         {
             //TODO: IMPLEMENT
-            Response.Redirect("SystemAdmin");
+            Response.Redirect("SystemAdmin_page");
         }
     }
     public class Notification

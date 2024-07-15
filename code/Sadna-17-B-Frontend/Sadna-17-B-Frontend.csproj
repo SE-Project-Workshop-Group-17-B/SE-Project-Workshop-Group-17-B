@@ -254,11 +254,13 @@
     <Content Include="Views\MyCart.aspx" />
     <Content Include="Views\MyStores.aspx" />
     <Content Include="Views\ProductDetails.aspx" />
+    <Content Include="Views\PurchaseHistoryUser_page.aspx" />
     <Content Include="Views\purchasePolicyHistory_page.aspx" />
     <Content Include="Views\SearchProduct.aspx" />
     <Content Include="Views\SignUp.aspx" />
     <Content Include="Views\Store_Page.aspx" />
     <Content Include="Views\Stores.aspx" />
+    <Content Include="Views\SystemAdmin_page.aspx" />
     <Content Include="Web.config" />
     <Content Include="Bundle.config" />
     <Content Include="Site.Mobile.Master" />
@@ -378,6 +380,13 @@
     <Compile Include="Views\ProductDetails.aspx.designer.cs">
       <DependentUpon>ProductDetails.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Views\PurchaseHistoryUser_page.aspx.cs">
+      <DependentUpon>PurchaseHistoryUser_page.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Views\PurchaseHistoryUser_page.aspx.designer.cs">
+      <DependentUpon>PurchaseHistoryUser_page.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Views\purchasePolicyHistory_page.aspx.cs">
       <DependentUpon>purchasePolicyHistory_page.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -412,6 +421,13 @@
     </Compile>
     <Compile Include="Views\Stores.aspx.designer.cs">
       <DependentUpon>Stores.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SystemAdmin_page.aspx.cs">
+      <DependentUpon>SystemAdmin_page.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Views\SystemAdmin_page.aspx.designer.cs">
+      <DependentUpon>SystemAdmin_page.aspx</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup />

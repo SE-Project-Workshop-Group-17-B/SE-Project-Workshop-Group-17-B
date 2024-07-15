@@ -665,7 +665,7 @@ namespace Sadna_17_B.ServiceLayer.Services
 
         public Response get_store_name(int storeID)
         {
-            return new Response(_storeController.get_store_name(storeID), true);
+            return new Response(true, _storeController.get_store_name(storeID));
         }
 
         public Response get_store_inventory(int storeID)
