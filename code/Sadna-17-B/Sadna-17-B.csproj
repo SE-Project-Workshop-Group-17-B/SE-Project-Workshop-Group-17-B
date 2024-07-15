@@ -280,7 +280,7 @@
     <Compile Include="Utils_local\Sadna17BException.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Layer_Infrastructure\config_argaman.json" />
+    <Content Include="Layer_Infrastructure\config_requirements.json" />
     <None Include="packages.config" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>

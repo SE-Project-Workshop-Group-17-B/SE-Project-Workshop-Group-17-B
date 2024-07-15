@@ -19,7 +19,11 @@ namespace Sadna_17_B.Layer_Infrastructure
 
         // --------- json variables -------------------------------------------------------------------------
 
+        [JsonPropertyName("generateData")]
+        public bool generateData { get; set; }
 
+        [JsonPropertyName("loadFromDB")]
+        public bool loadFromDB { get; set; }
 
         [JsonPropertyName("isMemoryDB")]
         public bool is_memory { get; set; }
@@ -42,6 +46,9 @@ namespace Sadna_17_B.Layer_Infrastructure
         [JsonPropertyName("assign owners")]
         public Requirement_assign_owners assign_owners { get; set; }
 
+        [JsonPropertyName("logout users")]
+        public Requirement_logout logout_users { get; set; }
+
 
 
         // --------- local variables -------------------------------------------------------------------------
@@ -51,6 +58,7 @@ namespace Sadna_17_B.Layer_Infrastructure
         public static UserService user_service;
         public static StoreService store_service;
         public static Dictionary<string, string> user_to_token = new Dictionary<string, string>();
+        public static Dictionary<string, int> storeNam_to_id = new Dictionary<string, int>();
 
 
 
@@ -85,6 +93,9 @@ namespace Sadna_17_B.Layer_Infrastructure
                 action.apply_action(user_service, store_service, assign_managers);
 
             foreach (Action_assign_owner action in assign_owners.actions)
+                action.apply_action(user_service, store_service, assign_owners);
+
+            foreach (Action_logout action in logout_users.actions)
                 action.apply_action(user_service, store_service, assign_owners);
 
 
@@ -123,6 +134,13 @@ namespace Sadna_17_B.Layer_Infrastructure
             public List<Action_register> actions { get; set; }
         }
 
+        public class Requirement_logout : Requirement
+        {
+
+            [JsonPropertyName("actions")]
+            public List<Action_logout> actions { get; set; }
+        }
+
         public class Requirement_open_store : Requirement_login
         {
             [JsonPropertyName("actions")]
@@ -131,8 +149,8 @@ namespace Sadna_17_B.Layer_Infrastructure
 
         public class Requirement_add_product : Requirement_login
         {
-            [JsonPropertyName("store id")]
-            public int store_id { get; set; }
+            [JsonPropertyName("store name")]
+            public string store_name { get; set; }
 
             [JsonPropertyName("actions")]
             public List<Action_add_product> actions { get; set; }
@@ -162,6 +180,19 @@ namespace Sadna_17_B.Layer_Infrastructure
         }
 
 
+        public class Action_logout : Action
+        {
+
+            [JsonPropertyName("username")]
+            public string username { get; set; }
+
+            public void apply_action(UserService user_service, StoreService store_service, Requirement requirement)
+            {
+                user_service.exit_subscriber(username); // guest token returned
+
+                user_to_token.Remove(username);
+            }
+        }
 
         public class Action_login : Action
         {
@@ -229,6 +260,8 @@ namespace Sadna_17_B.Layer_Infrastructure
                 string token = user_to_token[requirement.username];
 
                 Response response = store_service.create_store(token, store_name, store_email, store_phone, store_description, store_address);
+                storeNam_to_id[store_name] = (int)response.Data; 
+            
             }
 
         }
@@ -259,7 +292,7 @@ namespace Sadna_17_B.Layer_Infrastructure
             {
                 string token = user_to_token[requirement.username];
 
-                store_service.add_product_to_store(token, requirement.store_id, product_name, product_price, product_category, product_description, product_amount);
+                store_service.add_product_to_store(token, storeNam_to_id[requirement.store_name], product_name, product_price, product_category, product_description, product_amount);
             }
         }
 
@@ -270,8 +303,8 @@ namespace Sadna_17_B.Layer_Infrastructure
             [JsonPropertyName("new manager")]
             public string new_manger_username { get; set; }
 
-            [JsonPropertyName("store id")]
-            public int store_to_manage { get; set; }
+            [JsonPropertyName("store name")]
+            public string store_name { get; set; }
 
             [JsonPropertyName("authorizations")]
             public List<string> new_manager_authorizations { get; set; }
@@ -282,10 +315,10 @@ namespace Sadna_17_B.Layer_Infrastructure
                 string token_appointer = user_to_token[requirement.username];
                 HashSet<Manager.ManagerAuthorization> authorizations_deserialized = Manager.deserialize_authorizations(new_manager_authorizations);
                 
-                user_service.OfferManagerAppointment(token_appointer, store_to_manage, new_manger_username, authorizations_deserialized);
+                user_service.OfferManagerAppointment(token_appointer, storeNam_to_id[store_name], new_manger_username, authorizations_deserialized);
 
                 string token_appointed = user_to_token[new_manger_username];
-                user_service.RespondToManagerAppointmentOffer(token_appointed, store_to_manage, true);
+                user_service.RespondToManagerAppointmentOffer(token_appointed, storeNam_to_id[store_name], true);
             }
         }
 
@@ -297,17 +330,17 @@ namespace Sadna_17_B.Layer_Infrastructure
             [JsonPropertyName("new owner")]
             public string new_manger_username { get; set; }
 
-            [JsonPropertyName("store id")]
-            public int store_to_manage { get; set; }
+            [JsonPropertyName("store name")]
+            public string store_name { get; set; }
 
 
             public void apply_action(UserService user_service, StoreService store_service, Requirement_assign_owners requirement)
             {
                 string token_appointer = user_to_token[requirement.username];
-                user_service.OfferOwnerAppointment(token_appointer, store_to_manage, new_manger_username);
+                user_service.OfferOwnerAppointment(token_appointer, storeNam_to_id[store_name], new_manger_username);
 
                 string token_appointed = user_to_token[new_manger_username];
-                user_service.RespondToManagerAppointmentOffer(token_appointed, store_to_manage, true);
+                user_service.RespondToManagerAppointmentOffer(token_appointed, storeNam_to_id[store_name], true);
             }
         }
 

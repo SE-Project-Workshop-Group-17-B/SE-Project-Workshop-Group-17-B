@@ -1,4 +1,6 @@
 {
+  "generateData": false,
+  "loadFromDB": false,
   "isMemoryDB": true,
   "register admins": {
     "req name": "requirement : generate admins",
@@ -63,25 +65,26 @@
       ]
     }
   ],
-    "add products": [
-      {
-        "req name": "add products",
-        "user type": "subscriber",
-        "username": "u2",
-        "password": "hi2",
-        "actions": [
-          {
-            "actio name": "add product",
-            "store id": 1,
-            "product name": "Bamba",
-            "product description": "Bamba",
-            "product category": "Snack",
-            "product amount": 20,
-            "product price": 30
-          }
-        ]
-      }
-    ],
+  "add products": [
+    {
+      "req name": "add products",
+      "user type": "subscriber",
+      "store name": "s1",
+      "username": "u2",
+      "password": "hi2",
+      "actions": [
+        {
+          "action name": "add product",
+          "store name": "s1",
+          "product name": "Bamba",
+          "product description": "Bamba",
+          "product category": "Snack",
+          "product amount": 20,
+          "product price": 30
+        }
+      ]
+    }
+  ],
   "assign managers": {
     "req name": "assign managers",
     "user type": "founder",
@@ -90,7 +93,7 @@
     "actions": [
       {
         "action name": "assign manager",
-        "store id": 1,
+        "store name": "s1",
         "new manager": "u3",
         "authorizations": [
           "View",
@@ -107,14 +110,25 @@
     "actions": [
       {
         "action name": "assign owner",
-        "store id": 1,
+        "store name": "s1",
         "new owner": "u4"
       },
       {
         "action name": "assign owner",
-        "store id": 1,
+        "store name": "s1",
         "new owner": "u5"
       }
+    ]
+  },
+  "logout users": {
+    "req name": "logout users",
+
+    "actions": [
+      {
+        "action name": "logout user",
+        "username": "u2"
+      }
+
     ]
   }
 }

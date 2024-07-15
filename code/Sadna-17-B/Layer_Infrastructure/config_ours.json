@@ -1,4 +1,6 @@
 ﻿{
+  "generateData": false,
+  "loadFromDB": false,
   "isMemoryDB": true,
   "register admins": {
     "req name": "requirement : generate admins",
@@ -268,6 +270,21 @@
         "action name": "assign owner",
         "store id": 1,
         "new owner": "user6"
+      }
+    ]
+  },
+  "logout users": {
+    "req name": "logout users",
+
+
+    "actions": [
+      {
+        "action name": "logout user",
+        "username": "user2"
+      },
+      {
+        "action name": "logout user",
+        "username": "user6"
       }
     ]
   }
