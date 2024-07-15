@@ -16,7 +16,7 @@ namespace Sadna_17_B.DomainLayer.User
 
         //  --------- variables -----------------------------------------------------------------------------------
 
-        private static int counter_id = 0;
+        //private static int counter_id = 0;
         [Key]
         public int ID { get; set; }
         public int UserAge { get; set; }
@@ -33,8 +33,8 @@ namespace Sadna_17_B.DomainLayer.User
         public Cart() 
         {
             Baskets = new Dictionary<int, Basket>();
-            counter_id++;
-            ID = counter_id;
+            //counter_id++;
+            ID = -1; //counter_id;
 
             UserAge = 18; 
         }

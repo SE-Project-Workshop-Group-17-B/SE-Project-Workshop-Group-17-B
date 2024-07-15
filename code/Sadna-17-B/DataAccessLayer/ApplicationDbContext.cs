@@ -11,6 +11,7 @@ using System.Data.Entity.Infrastructure;
 using System.Data.Entity.ModelConfiguration;
 using System.Linq;
 using System.Web;
+using static Sadna_17_B.DomainLayer.User.NotificationSystem;
 using static Sadna_17_B.DomainLayer.User.OfferSystem;
 
 namespace Sadna_17_B.DataAccessLayer
@@ -40,6 +41,8 @@ namespace Sadna_17_B.DataAccessLayer
         public DbSet<Manager> Managers { get; set; }
         public DbSet<OwnerAppointmentOffer> OwnerAppointmentOffers { get; set; }
         public DbSet<ManagerAppointmentOffer> ManagerAppointmentOffers { get; set; }
+        public DbSet<UserNotifications> UserNotifications { get; set; }
+
         /*public DbSet<OwnershipEntry> OwnershipEntries { get; set; }
         public DbSet<ManagementEntry> ManagementEntries { get; set; }
         public DbSet<OwnerAppointmentEntry> OwnerAppointmentEntries { get; set; }
@@ -182,6 +185,7 @@ namespace Sadna_17_B.DataAccessLayer
             ManagerAppointmentEntries.RemoveRange(ManagerAppointmentEntries.ToList());
             OwnershipEntries.RemoveRange(OwnershipEntries.ToList());
             ManagementEntries.RemoveRange(ManagementEntries.ToList());*/
+            UserNotifications.RemoveRange(UserNotifications.ToList());
             OwnerAppointmentOffers.RemoveRange(OwnerAppointmentOffers.ToList());
             ManagerAppointmentOffers.RemoveRange(ManagerAppointmentOffers.ToList());
             Owners.RemoveRange(Owners.ToList());

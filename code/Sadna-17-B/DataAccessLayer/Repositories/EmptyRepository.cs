@@ -49,6 +49,10 @@ namespace Sadna_17_B.DataAccessLayer.Repositories
         {
         }
 
+        public void Update(TEntity entity)
+        {
+        }
+
         public void DeleteAll()
         {
         }

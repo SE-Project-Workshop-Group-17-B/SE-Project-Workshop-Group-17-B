@@ -4,6 +4,7 @@ using Sadna_17_B.DomainLayer.StoreDom;
 using Sadna_17_B.DomainLayer.User;
 using Sadna_17_B.Repositories.Implementations;
 using System.Data.Entity;
+using static Sadna_17_B.DomainLayer.User.NotificationSystem;
 using static Sadna_17_B.DomainLayer.User.OfferSystem;
 
 namespace Sadna_17_B.Repositories
@@ -24,7 +25,9 @@ namespace Sadna_17_B.Repositories
         public IRepository<Manager> Managers { get; set; }
         public IRepository<OwnerAppointmentOffer> OwnerAppointmentOffers { get; set; }
         public IRepository<ManagerAppointmentOffer> ManagerAppointmentOffers { get; set; }
-
+        public IRepository<UserNotifications> UserNotifications { get; set; }
+        public IRepository<Cart> Carts { get; set; }
+        
         protected UnitOfWork(ApplicationDbContext context)
         {
             _context = context;
@@ -38,6 +41,8 @@ namespace Sadna_17_B.Repositories
             Managers = new Repository<Manager>(_context);
             OwnerAppointmentOffers = new Repository<OwnerAppointmentOffer>(_context);
             ManagerAppointmentOffers = new Repository<ManagerAppointmentOffer>(_context);
+            UserNotifications = new Repository<UserNotifications>(_context);
+            Carts = new Repository<Cart>(_context);
         }
 
         public static IUnitOfWork GetInstance()
@@ -85,6 +90,7 @@ namespace Sadna_17_B.Repositories
             Products.ResetAutoIncrementKey();
             //Orders.ResetAutoIncrementKey();
             //SubOrders.ResetAutoIncrementKey();
+            Carts.ResetAutoIncrementKey();
             _context.SaveChanges();
         }
     }

@@ -3,6 +3,7 @@ using Sadna_17_B.DataAccessLayer.Repositories;
 using Sadna_17_B.DomainLayer.Order;
 using Sadna_17_B.DomainLayer.StoreDom;
 using Sadna_17_B.DomainLayer.User;
+using static Sadna_17_B.DomainLayer.User.NotificationSystem;
 using static Sadna_17_B.DomainLayer.User.OfferSystem;
 
 namespace Sadna_17_B.Repositories
@@ -24,6 +25,8 @@ namespace Sadna_17_B.Repositories
         public IRepository<Manager> Managers => new EmptyRepository<Manager>();
         public IRepository<OwnerAppointmentOffer> OwnerAppointmentOffers => new EmptyRepository<OwnerAppointmentOffer>();
         public IRepository<ManagerAppointmentOffer> ManagerAppointmentOffers => new EmptyRepository<ManagerAppointmentOffer>();
+        public IRepository<UserNotifications> UserNotifications => new EmptyRepository<UserNotifications>();
+        public IRepository<Cart> Carts => new EmptyRepository<Cart>();
 
         public MemoryUnitOfWork() : base()
         {

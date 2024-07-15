@@ -58,6 +58,22 @@ namespace Sadna_17_B.Repositories.Implementations
             Context.SaveChanges();
         }
 
+        public void Update(TEntity entity)
+        {
+            DbSet.Remove(entity);
+            Context.SaveChanges();
+            DbSet.Add(entity);
+            Context.SaveChanges();
+        }
+
+        // Implementing the Update method differently
+        /*public void Update(TEntity entity)
+        {
+            DbSet.Attach(entity);
+            Context.Entry(entity).State = EntityState.Modified;
+            Context.SaveChanges();
+        }*/
+
         public void DeleteAll()
         {
             var allEntities = DbSet.ToList();
