@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace Sadna_17_B_API.Controllers
+namespace Sadna_17_B_API.Models
 {
     public class UIuserDTOAPI
     {

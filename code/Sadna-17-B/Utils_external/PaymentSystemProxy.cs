@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Sadna_17_B_API.Models;
 using System.Web;
 
 namespace Sadna_17_B.ExternalServices
@@ -37,7 +36,7 @@ namespace Sadna_17_B.ExternalServices
         {
             using (HttpClient client = new HttpClient())
             {
-                HttpResponseMessage response = await client.PostAsync(prefix, payment); // add relative path
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix, payment); // add relative path
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -57,7 +56,7 @@ namespace Sadna_17_B.ExternalServices
             }
         }
 
-        public async Task<string> cancel_payment(canceltDTO cancel)
+        public async Task<string> cancel_payment(cancelDTO cancel)
         {
             using (HttpClient client = new HttpClient())
             {
