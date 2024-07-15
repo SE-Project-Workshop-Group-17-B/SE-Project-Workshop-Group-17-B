@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using Sadna_17_B_Backend.Controllers;
 
 namespace Sadna_17_B_Frontend.Views
 {

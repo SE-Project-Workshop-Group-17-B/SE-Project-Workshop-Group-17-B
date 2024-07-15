@@ -1,6 +1,6 @@
 ﻿namespace Sadna_17_B_API.Models
 {
-    public class StoreDTO
+    public class FuncStoreDTO
     {
         public Dictionary<string,string> doc { get; set; }
         public int storeId { get; set; }

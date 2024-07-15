@@ -1,10 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Sadna_17_B_API.Models;
 using Sadna_17_B;
+using Sadna_17_B_Frontend;
 using Sadna_17_B.ServiceLayer;
 using Sadna_17_B.ServiceLayer.Services;
 using Sadna_17_B.Utils;
 using Sadna_17_B.DomainLayer.User;
+using Sadna_17_B.ServiceLayer.ServiceDTOs;
+using Sadna_17_B_Frontend.Controllers;
 
 namespace Sadna_17_B_API.Controllers
 {
@@ -31,7 +34,7 @@ namespace Sadna_17_B_API.Controllers
         }
 
         [HttpPost("signup")]
-        public IActionResult SignUp([FromBody] UserDto userDto)
+        public IActionResult SignUp([FromBody] UIuserDTOAPI userDto)
         {
             // Validate userDto (consider adding data annotations to your UserDto)
 
@@ -47,7 +50,7 @@ namespace Sadna_17_B_API.Controllers
             }
         }
         [HttpPost("login")]
-        public IActionResult Login([FromBody] UserDto userDto)
+        public IActionResult Login([FromBody] UIuserDTOAPI userDto)
         {
             // Validate userDto
 
@@ -64,7 +67,7 @@ namespace Sadna_17_B_API.Controllers
         }
 
         [HttpPost("logout")]
-        public Response Logout([FromBody] UserDto user)
+        public Response Logout([FromBody] UIuserDTOAPI user)
         {
             var response = _userService.Logout(user.AccessToken);
             return response;
@@ -118,43 +121,36 @@ namespace Sadna_17_B_API.Controllers
             return response;
         }
 
-        [HttpPost("create_store")]
-        public Response CreateStore([FromBody] StoreDTO storeData)
-        {
-            var response = _storeService.create_store(storeData.doc);
-            return response;
-        }
-
         [HttpPost("search_product")]
-        public Response SearchProduct([FromBody] StoreDTO storeData)
+        public Response SearchProduct([FromBody] FuncStoreDTO storeData)
         {
             var response = _storeService.search_product_by(storeData.doc);
             return response;
         }
 
         [HttpPost("process_store_order")]
-        public Response ProcessStoreOrder([FromBody] StoreDTO data)
+        public Response ProcessStoreOrder([FromBody] FuncStoreDTO data)
         {
             var response = _storeService.calculate_products_prices(data.storeId, data.quantities);
             return response;
         }
 
         [HttpPost("get_shoping_cart")]
-        public Response getShopingCart([FromBody] UserDto user)
+        public Response getShopingCart([FromBody] UIuserDTOAPI user)
         {
             var response = _userService.GetShoppingCart(user.AccessToken);
             return response;
         }
 
         [HttpPost("get_owned_stores")]
-        public Response getOwnedStores([FromBody] UserDto user)
+        public Response getOwnedStores([FromBody] UIuserDTOAPI user)
         {
             var response = _userService.GetMyOwnedStores(user.AccessToken);
             return response;
         }
 
         [HttpPost("get_managed_stores")]
-        public Response getManagedStores([FromBody] UserDto user)
+        public Response getManagedStores([FromBody] UIuserDTOAPI user)
         {
             var response = _userService.GetMyManagedStores(user.AccessToken);
             return response;
@@ -162,9 +158,16 @@ namespace Sadna_17_B_API.Controllers
 
         [HttpPost("get_stores_by_id")]
 
-        public Response getStoresById([FromBody] StoreDTO store)
+        public Response getStoresById([FromBody] FuncStoreDTO store)
         {
             var response = _storeService.store_by_id(store.storeId);
+            return response;
+        }
+
+        [HttpPost("create_store")]
+        public Response CreateStore([FromBody] UIStoreDTOAPI storeDTO)
+        {
+            var response = _storeService.create_store(storeDTO.AccessToken, storeDTO.Name, storeDTO.Email, storeDTO.PhoneNumber, storeDTO.StoreDescription, storeDTO.Address);
             return response;
         }
     }

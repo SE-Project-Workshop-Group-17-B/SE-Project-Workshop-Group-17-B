@@ -11,7 +11,7 @@ using System.Xml.Linq;
 using System.Data;
 using Sadna_17_B.Utils;
 using System.Web.UI.WebControls;
-
+using Newtonsoft.Json;
 
 namespace Sadna_17_B.DomainLayer.StoreDom
 {
@@ -49,8 +49,6 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
 
         // ---------------- Constructor & store management -------------------------------------------------------------------------------------------
-
-
         public Store(string name, string email, string phone_number, string store_description, string address)
         {
             this.ID = idCounter++;

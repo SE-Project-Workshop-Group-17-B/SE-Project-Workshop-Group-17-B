@@ -19,7 +19,7 @@ namespace Sadna_17_B_Frontend.Views
             lblMessage.Visible = true;
         }
 
-        protected void btnCreateStore_Click(object sender, EventArgs e)
+        protected  async void btnCreateStore_Click(object sender, EventArgs e)
         {
             bool hasErrors = false;
 
@@ -81,12 +81,12 @@ namespace Sadna_17_B_Frontend.Views
             // Proceed if no errors
             if (!hasErrors)
             {
-                Tuple<string, int> response = backendController.create_store(txtStoreName.Text, txtEmail.Text, txtPhoneNumber.Text, txtStoreDescription.Text, txtAddress.Text);
+                Tuple<string, int> response = await backendController.create_store(txtStoreName.Text, txtEmail.Text, txtPhoneNumber.Text, txtStoreDescription.Text, txtAddress.Text);
 
                 if (response.Item1 == null)
                 {
                     DisplayMessage("Store created successfully. StoreID = " + response.Item2, true);
-                    Response.Redirect("~/Views/StoreDetails.aspx?storeId=" + response.Item2); // Ensure the URL is correct
+                    Response.Redirect($"~/Views/Store_Page.aspx?storeId={response.Item2}"); // Ensure the URL is correct
                 }
                 else
                 {

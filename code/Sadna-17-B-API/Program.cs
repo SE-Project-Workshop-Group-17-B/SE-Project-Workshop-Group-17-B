@@ -14,7 +14,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 // Register your IUserService and its implementation UserService
 //builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<ServiceFactory>();
+builder.Services.AddSingleton<ServiceFactory>();
 //builder.Services.AddScoped<UserController>();
 //builder.Services.AddScoped<OrderSystem>();
 //builder.Services.AddScoped<StoreController>();

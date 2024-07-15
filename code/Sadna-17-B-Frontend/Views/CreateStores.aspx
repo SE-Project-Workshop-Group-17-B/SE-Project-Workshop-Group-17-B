@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Create Store" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="CreateStore.aspx.cs" Inherits="Sadna_17_B_Frontend.Views.CreateStore" %>
+﻿<%@ Page Title="Create Store" Async ="true" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="CreateStore.aspx.cs" Inherits="Sadna_17_B_Frontend.Views.CreateStore" %>
 
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
     <style>

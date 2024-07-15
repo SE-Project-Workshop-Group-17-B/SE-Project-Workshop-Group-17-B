@@ -7,7 +7,7 @@ using Sadna_17_B.ServiceLayer;
 using Sadna_17_B.ServiceLayer.ServiceDTOs;
 using Sadna_17_B.ServiceLayer.Services;
 using Sadna_17_B.Utils;
-using Sadna_17_B_Backend.Controllers;
+using Sadna_17_B_API.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -54,6 +54,18 @@ namespace Sadna_17_B_Frontend.Controllers
                 instance = new BackendController();
             }
             return instance;
+        }
+        private Response GetResponse(string responseContent) // response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+        {
+            Response responseObj = JsonConvert.DeserializeObject<Response>(responseContent);
+            return responseObj;
+        }
+
+        private T GetReturnValue<T>(string responseContent) // response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+        {
+            Response responseObj = GetResponse(responseContent);
+            T value = JsonConvert.DeserializeObject<T>(responseObj.Data.ToString());
+            return value;
         }
 
 
@@ -316,7 +328,7 @@ namespace Sadna_17_B_Frontend.Controllers
         {
             using (HttpClient client = new HttpClient())
             {
-                var user = new UserDto { Username = username, Password = password, AccessToken = "" };
+                var user = new UIuserDTO { Username = username, Password = password, AccessToken = "" };
                 
                 HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/login", user); // add relative path
                 
@@ -349,7 +361,7 @@ namespace Sadna_17_B_Frontend.Controllers
         {
             using (HttpClient client = new HttpClient())
             {
-                var user = new UserDto { Username = username, Password = password, AccessToken = "" };
+                var user = new UIuserDTO { Username = username, Password = password, AccessToken = "" };
                 HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/signup", user); // add relative path
                 if (response.IsSuccessStatusCode)
                 {
@@ -363,13 +375,13 @@ namespace Sadna_17_B_Frontend.Controllers
             }
         }
 
-        public string logout()
+        public async Task<string> logout()
         {
             using (HttpClient client = new HttpClient())
             {
-                var payload = new { AccessToken = userDTO.AccessToken };
-                HttpResponseMessage response = client.PostAsJsonAsync(prefix + "/RestAPI/logout", payload).GetAwaiter().GetResult();
-                string responseContent = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                var user = new UIuserDTO { Username = "", Password = "", AccessToken = userDTO.AccessToken};
+                HttpResponseMessage response = client.PostAsJsonAsync(prefix + "/RestAPI/logout", user).GetAwaiter().GetResult();
+                string responseContent = await response.Content.ReadAsStringAsync();
                 Response responseObj = JsonConvert.DeserializeObject<Response>(responseContent);
 
                 if (!response.IsSuccessStatusCode)
@@ -378,7 +390,7 @@ namespace Sadna_17_B_Frontend.Controllers
                 }
                 else
                 {
-                    userDTO = responseObj.Data as UserDTO;
+                    userDTO = JsonConvert.DeserializeObject<UserDTO>(responseObj.Data.ToString());// username = null , accessToken = "%GUEST%"
                     return null;
                 }
             }
@@ -419,38 +431,32 @@ namespace Sadna_17_B_Frontend.Controllers
 
         // ---------- status -----------------------------------
 
-        public Tuple<string, int> create_store(string name, string email, string phoneNumber, string storeDescription, string address) // upgrade to create_store by doc_doc
+        public async Task<Tuple<string, int>> create_store(string name, string email, string phoneNumber, string storeDescription, string address) // upgrade to create_store by doc_doc
         {
             //NOT SURE IF NEEDED
-            Response response = storeService.create_store(userDTO.AccessToken, name, email, phoneNumber, storeDescription, address);
-            if (!response.Success)
-            {
-                return new Tuple<string, int>(response.Message, -1);
-            }
-            return new Tuple<string, int>(null, (int)(response.Data));
-        }
-
-        public async Task<Response> create_store(Dictionary<string, string> doc)
-        {
             using (HttpClient client = new HttpClient())
             {
-                object payload = new { doc = doc };
-                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/create_store", payload); // add relative path
-
-                if (response.IsSuccessStatusCode)
+                var store = new UIStoreDTO { AccessToken = userDTO.AccessToken, Address = address, Name = name, Email = email, PhoneNumber = phoneNumber, StoreDescription = storeDescription };
+                // Replace "prefix" with your actual API prefix
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/create_store", store);
+                string responseContent = await response.Content.ReadAsStringAsync();
+                Response responseObj = JsonConvert.DeserializeObject<Response>(responseContent);
+                if (!response.IsSuccessStatusCode || !responseObj.Success)
                 {
-                    string response1 = await response.Content.ReadAsStringAsync();
-                    Response response2 = JsonConvert.DeserializeObject<Response>(response1);
-                    var storeId = JsonConvert.DeserializeObject<int>(response2.Data.ToString());
-                    return new Response("Succesfully created new store", true, storeId);
+                    return new Tuple<string, int>(responseObj?.Message ?? "Unknown error occurred", -1);
                 }
                 else
                 {
-                    string errorMessage = await response.Content.ReadAsStringAsync();
-                    return new Response("An error occurred while creating new store: " + errorMessage, false, null);
+                    return new Tuple<string, int>(null, (int)(responseObj.Data));
                 }
 
             }
+            //Response response = storeService.create_store(userDTO.AccessToken, name, email, phoneNumber, storeDescription, address);
+            //if (!response.Success)
+            //{
+              //  return new Tuple<string, int>(response.Message, -1);
+            //}
+            //return new Tuple<string, int>(null, (int)(response.Data));
         }
 
         public Response reopen_store(int store_id) // not implemented

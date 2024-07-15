@@ -250,7 +250,6 @@
     <Compile Include="ExternalServices\SupplySystemProxy.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ServiceLayer\Controllers\RestAPI.cs" />
     <Compile Include="ServiceLayer\ServiceDTOs\OrderDTO.cs" />
     <Compile Include="ServiceLayer\ServiceDTOs\ProductDTO.cs" />
     <Compile Include="ServiceLayer\ServiceDTOs\ShoppingBasketDTO.cs" />

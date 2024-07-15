@@ -7,11 +7,9 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Net.Http;
 using System.Threading.Tasks;
-using System.Web.UI;
 using static System.Net.WebRequestMethods;
 using Newtonsoft.Json;
 using System.Text;
-using Sadna_17_B_Backend.Controllers;
 
 namespace Sadna_17_B_Frontend.Views
 {

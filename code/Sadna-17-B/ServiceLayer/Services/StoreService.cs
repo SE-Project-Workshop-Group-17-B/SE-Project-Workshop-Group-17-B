@@ -462,7 +462,6 @@ namespace Sadna_17_B.ServiceLayer.Services
                 return Response.GetErrorResponse(ex);
             }
         }
-
         public Response all_stores()                //  --> List < store > 
         {
             try
