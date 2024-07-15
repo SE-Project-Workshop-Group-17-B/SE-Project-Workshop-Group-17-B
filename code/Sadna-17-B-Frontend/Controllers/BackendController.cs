@@ -14,7 +14,6 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.WebPages;
-using Sadna_17_B_API.Controllers;
 
 namespace Sadna_17_B_Frontend.Controllers
 {
@@ -274,7 +273,7 @@ namespace Sadna_17_B_Frontend.Controllers
         {
             using (HttpClient client = new HttpClient())
             {
-                var user = new UIuserDTOAPI { Username = username, Password = password, AccessToken = "" };
+                var user = new { Username = username, Password = password, AccessToken = "" };
 
                 HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/login", user); // add relative path
 
