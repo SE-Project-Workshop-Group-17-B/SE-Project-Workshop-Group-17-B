@@ -88,8 +88,6 @@ namespace Sadna_17_B.Repositories.Implementations
             var tableName = Context.GetTableName(typeof(TEntity));
             Context.Database.ExecuteSqlCommand($"DBCC CHECKIDENT('{tableName}', RESEED, 0)");
             Context.SaveChanges();
-
         }
-
     }
 }

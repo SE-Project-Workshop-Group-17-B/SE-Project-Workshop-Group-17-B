@@ -11,15 +11,10 @@ namespace Sadna_17_B.Repositories
     internal class MemoryUnitOfWork : IUnitOfWork
     {
         public IRepository<Store> Stores => new EmptyRepository<Store>();
-
         public IRepository<Product> Products => new EmptyRepository<Product>();
-
         public IRepository<Order> Orders => new EmptyRepository<Order>();
-        
         public IRepository<SubOrder> SubOrders => new EmptyRepository<SubOrder>();
-
         public IRepository<Subscriber> Subscribers => new EmptyRepository<Subscriber>();
-
         public IRepository<Admin> Admins => new EmptyRepository<Admin>();
         public IRepository<Owner> Owners => new EmptyRepository<Owner>();
         public IRepository<Manager> Managers => new EmptyRepository<Manager>();

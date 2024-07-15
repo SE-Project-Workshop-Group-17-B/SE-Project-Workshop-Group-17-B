@@ -1,4 +1,5 @@
-﻿using Sadna_17_B.Utils;
+﻿using Newtonsoft.Json;
+using Sadna_17_B.Utils;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -15,21 +16,23 @@ namespace Sadna_17_B.DomainLayer.User
         public int StoreID { get; set; } //add to constructor
         public string ManagerUsername { get; set; }
 
-        //public string AuthorizationsString { get; set; }
-
-
-       
-        [NotMapped]
-        public HashSet<ManagerAuthorization> Authorizations
-        { get; set;
-            //get => new HashSet<ManagerAuthorization>(AuthorizationsString?.Split(',').Select(a => (ManagerAuthorization)Enum.Parse(typeof(ManagerAuthorization), a)) ?? new ManagerAuthorization[0]);
-            //set => AuthorizationsString = string.Join(",", value.Select(a => a.ToString()));
+        public string AuthorizationsSerialized
+        {
+            get => JsonConvert.SerializeObject(Authorizations);
+            set => Authorizations = string.IsNullOrEmpty(value) ? GetDefaultAuthorizations() : JsonConvert.DeserializeObject<HashSet<ManagerAuthorization>>(value);
         }
+
+
+        [NotMapped]
+        public HashSet<ManagerAuthorization> Authorizations;
 
         public Manager()
         {
             Authorizations = GetDefaultAuthorizations();
+            ManagerID = -1;
+            StoreID = -1;
         }
+
         public Manager(int storeID, string managerUsername)
         {
             Authorizations = GetDefaultAuthorizations();

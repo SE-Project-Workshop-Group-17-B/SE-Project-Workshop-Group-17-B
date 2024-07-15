@@ -5,28 +5,46 @@ using System.Linq;
 using System.Web;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using Sadna_17_B.Repositories;
+using Newtonsoft.Json;
 
 namespace Sadna_17_B.DomainLayer.User
 {
 
 
-    /*public class OwnerAppointmentEntry
+    public class OwnerAppointmentEntry
     {
         [Key]
-        public int AppointingOwnerID { get; set; }
         public string AppointedOwnerUsername { get; set; }
-        public virtual Owner AppointingOwner { get; set; }
-        public virtual Owner AppointedOwner { get; set; }
+        public int AppointedOwnerID { get; set; }
+
+        public OwnerAppointmentEntry()
+        {
+        }
+
+        public OwnerAppointmentEntry(string appointedOwnerUsername, int appointedOwnerID)
+        {
+            this.AppointedOwnerUsername = appointedOwnerUsername;
+            this.AppointedOwnerID = appointedOwnerID;
+        }
     }
 
     public class ManagerAppointmentEntry
     {
         [Key]
-        public int AppointingManagerID { get; set; }
         public string AppointedManagerUsername { get; set; }
-        public virtual Owner AppointingOwner { get; set; }
-        public virtual Manager AppointedManager { get; set; }
-    }*/
+        public int AppointedManagerID { get; set; }
+
+        public ManagerAppointmentEntry()
+        {
+        }
+
+        public ManagerAppointmentEntry(string appointedManagerUsername, int appointedManagerID)
+        {
+            this.AppointedManagerUsername = appointedManagerUsername;
+            this.AppointedManagerID = appointedManagerID;
+        }
+    }
     public class Owner
     {
         // Note: Owner doesn't necessarily have to hold the Owner & Manager objects, right now it can function with the identifier alone,
@@ -34,36 +52,72 @@ namespace Sadna_17_B.DomainLayer.User
 
 
         public int OwnerID { get; set; }
-
+        public string OwnerUsername { get; set; }
         public int StoreID { get; set; } //add to constructor
         public bool IsFounder { get; set; }
-        public string OwnerUsername { get; set; }
 
-
-        //public virtual ICollection<OwnerAppointmentEntry> AppointedOwnerEntries { get; set; }
-        //public virtual ICollection<ManagerAppointmentEntry> AppointedManagerEntries { get; set; }
-
-        [NotMapped]
-        public Dictionary<string, Owner> AppointedOwners
-        { get; set;
-            //get => AppointedOwnerEntries?.ToDictionary(ae => ae.AppointedOwnerUsername, ae => ae.AppointedOwner) ?? new Dictionary<string, Owner>();
-            //set => AppointedOwnerEntries = value?.Select(kvp => new OwnerAppointmentEntry { AppointedOwnerUsername = kvp.Key, AppointedOwner = kvp.Value, AppointingOwnerID = this.OwnerID }).ToList();
+        public string AppointedOwnersSerialized
+        {
+            get
+            {
+                List<OwnerAppointmentEntry> entries = new List<OwnerAppointmentEntry>();
+                foreach (Owner owner in AppointedOwners.Values)
+                {
+                    entries.Add(new OwnerAppointmentEntry(owner.OwnerUsername, owner.OwnerID));
+                }
+                return JsonConvert.SerializeObject(entries);
+            }
+            set
+            {
+                Dictionary<string, Owner> newAppointedOwners = new Dictionary<string, Owner>();
+                List<OwnerAppointmentEntry> entries = JsonConvert.DeserializeObject<List<OwnerAppointmentEntry>>(value);
+                foreach (OwnerAppointmentEntry entry in entries)
+                {
+                    newAppointedOwners[entry.AppointedOwnerUsername] = _unitOfWork.Owners.Get(entry.AppointedOwnerID);
+                }
+                AppointedOwners = newAppointedOwners;
+            }
         }
 
-
-        [NotMapped]
-        public Dictionary<string, Manager> AppointedManagers
-        { get; set;
-            //get => AppointedManagerEntries?.ToDictionary(ae => ae.AppointedManagerUsername, ae => ae.AppointedManager) ?? new Dictionary<string, Manager>();
-            //set => AppointedManagerEntries = value?.Select(kvp => new ManagerAppointmentEntry { AppointedManagerUsername = kvp.Key, AppointedManager = kvp.Value, AppointingManagerID = this.OwnerID }).ToList();
+        public string AppointedManagersSerialized
+        {
+            get
+            {
+                List<ManagerAppointmentEntry> entries = new List<ManagerAppointmentEntry>();
+                foreach (Manager manager in AppointedManagers.Values)
+                {
+                    entries.Add(new ManagerAppointmentEntry(manager.ManagerUsername, manager.ManagerID));
+                }
+                return JsonConvert.SerializeObject(entries);
+            }
+            set
+            {
+                Dictionary<string, Manager> newAppointedManagers = new Dictionary<string, Manager>();
+                List<ManagerAppointmentEntry> entries = JsonConvert.DeserializeObject<List<ManagerAppointmentEntry>>(value);
+                foreach (ManagerAppointmentEntry entry in entries)
+                {
+                    newAppointedManagers[entry.AppointedManagerUsername] = _unitOfWork.Managers.Get(entry.AppointedManagerID);
+                }
+                AppointedManagers = newAppointedManagers;
+            }
         }
 
+        [NotMapped]
+        public Dictionary<string, Owner> AppointedOwners { get; set; } // appointedOwnerUsername -> Owner object
 
+
+        [NotMapped]
+        public Dictionary<string, Manager> AppointedManagers { get; set; } // appointedManagerUsername -> Manager object
+
+        private IUnitOfWork _unitOfWork = UnitOfWork.GetInstance();
 
         public Owner()
         {
-            //AppointedOwnerEntries = new List<OwnerAppointmentEntry>();
-            //AppointedManagerEntries = new List<ManagerAppointmentEntry>();
+            AppointedOwners = new Dictionary<string, Owner>();
+            AppointedManagers = new Dictionary<string, Manager>();
+            IsFounder = false;
+            this.StoreID = -1;
+            this.OwnerUsername = null;
         }
 
         public Owner(bool isFounder, int storeID, string ownerUsername)

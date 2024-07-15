@@ -1,4 +1,5 @@
-﻿using Sadna_17_B.Repositories;
+﻿using Newtonsoft.Json;
+using Sadna_17_B.Repositories;
 using Sadna_17_B.Utils;
 using System;
 using System.Collections.Generic;
@@ -14,26 +15,46 @@ namespace Sadna_17_B.DomainLayer.User
     /// <summary>
     /// //////////////// class for the database mapping  /////////////////////////////////////////////////////////////////////////////////
     /// </summary>
-    /*public class OwnershipEntry
+    [Serializable]
+    public class OwnershipEntry
     {
-        [Key]
+        [Key, Column(Order=1)]
+        public int StoreID { get; set; }
+        [Key, Column(Order=2)]
         public string SubscriberUsername { get; set; }
         public int OwnerID { get; set; }
-        public int StoreID { get; set; }
 
-        public virtual Subscriber Subscriber { get; set; }
-        public virtual Owner Owner { get; set; }
+        public OwnershipEntry()
+        {
+        }
+
+        public OwnershipEntry(int storeID, string subscriberUsername, int ownerID)
+        {
+            this.StoreID = storeID;
+            this.SubscriberUsername = subscriberUsername;
+            this.OwnerID = ownerID;
+        }
     }
 
+    [Serializable]
     public class ManagementEntry
     {
-        [Key]
-        public int ManagerID { get; set; }
-        public string SubscriberUsername { get; set; }
+        [Key, Column(Order=1)]
         public int StoreID { get; set; }
-        public virtual Subscriber Subscriber { get; set; }
-        public virtual Manager Manager { get; set; }
-    }*/
+        [Key, Column(Order=2)]
+        public string SubscriberUsername { get; set; }
+        public int ManagerID { get; set; }
+        
+        public ManagementEntry()
+        {
+        }
+        public ManagementEntry(int storeID, string subscriberUsername, int managerID)
+        {
+            this.StoreID = storeID;
+            this.SubscriberUsername = subscriberUsername;
+            this.ManagerID = managerID;
+        }
+    }
 
 
     /// <summary>
@@ -45,31 +66,56 @@ namespace Sadna_17_B.DomainLayer.User
         public string Username { get; set; }
         public string PasswordHash { get; set; }
 
-        // This will be used for database mapping
-        /*public virtual ICollection<OwnershipEntry> OwnershipEntries
+        public string OwnershipsSerialized
         {
-            get => Ownerships.Select(kvp => new OwnershipEntry { StoreID = kvp.Key, Owner = kvp.Value, SubscriberUsername = this.Username }).ToList();
-            set => Ownerships = value?.ToDictionary(oe => oe.StoreID, oe => oe.Owner) ?? new Dictionary<int, Owner>(); 
+            get  {
+                List<OwnershipEntry> entries = new List<OwnershipEntry>();
+                foreach (Owner ownership in Ownerships.Values)
+                {
+                    entries.Add(new OwnershipEntry(ownership.StoreID,ownership.OwnerUsername,ownership.OwnerID));
+                }
+                return JsonConvert.SerializeObject(entries);
+            }
+            set
+            {
+                Dictionary<int, Owner> newOwnerships = new Dictionary<int, Owner>();
+                List<OwnershipEntry> entries = JsonConvert.DeserializeObject<List<OwnershipEntry>>(value);
+                foreach (OwnershipEntry ownershipEntry in entries)
+                {
+                    newOwnerships[ownershipEntry.StoreID] = _unitOfWork.Owners.Get(ownershipEntry.OwnerID);
+                }
+                Ownerships = newOwnerships;
+            }
         }
-        public virtual ICollection<ManagementEntry> ManagementEntries
+
+        public string ManagementsSerialized
         {
-            get => Managements.Select(kvp => new ManagementEntry { StoreID = kvp.Key, Manager = kvp.Value, SubscriberUsername = this.Username }).ToList();
-            set => Managements = value?.ToDictionary(me => me.StoreID, me => me.Manager) ?? new Dictionary<int, Manager>(); 
-        }*/
+            get
+            {
+                List<ManagementEntry> entries = new List<ManagementEntry>();
+                foreach (Manager management in Managements.Values)
+                {
+                    entries.Add(new ManagementEntry(management.StoreID, management.ManagerUsername, management.ManagerID));
+                }
+                return JsonConvert.SerializeObject(entries);
+            }
+            set
+            {
+                Dictionary<int, Manager> newManagements = new Dictionary<int, Manager>();
+                List<ManagementEntry> entries = JsonConvert.DeserializeObject<List<ManagementEntry>>(value);
+                foreach (ManagementEntry managementEntry in entries)
+                {
+                    newManagements[managementEntry.StoreID] = _unitOfWork.Managers.Get(managementEntry.ManagerID);
+                }
+                Managements = newManagements;
+            }
+        }
 
-        //[NotMapped]
+        [NotMapped]
         public Dictionary<int, Owner> Ownerships { get; set; }
-        /*{
-            get => OwnershipEntries?.ToDictionary(oe => oe.StoreID, oe => oe.Owner) ?? new Dictionary<int, Owner>();
-            set => OwnershipEntries = value?.Select(kvp => new OwnershipEntry { StoreID = kvp.Key, Owner = kvp.Value, SubscriberUsername = this.Username }).ToList();
-        }*/
 
-        //[NotMapped]
+        [NotMapped]
         public Dictionary<int, Manager> Managements { get; set; }
-        /*{
-            get => ManagementEntries?.ToDictionary(me => me.StoreID, me => me.Manager) ?? new Dictionary<int, Manager>();
-            set => ManagementEntries = value?.Select(kvp => new ManagementEntry { StoreID = kvp.Key, Manager = kvp.Value, SubscriberUsername = this.Username }).ToList();
-        }*/
 
         private IUnitOfWork _unitOfWork = UnitOfWork.GetInstance();
 
@@ -242,10 +288,8 @@ namespace Sadna_17_B.DomainLayer.User
             else
             {
                 Manager manager = Managements[storeID];
-                // Updates the manager object in the database
-                _unitOfWork.Managers.Remove(manager);
                 manager.AddAuthorization(authorization);
-                _unitOfWork.Managers.Add(manager);
+                _unitOfWork.Managers.Update(manager); // Updates the manager object in the database
             }
         }
 
@@ -257,11 +301,9 @@ namespace Sadna_17_B.DomainLayer.User
             }
             else
             {
-                // Updates the manager object in the database
                 Manager manager = Managements[storeID];
-                _unitOfWork.Managers.Remove(manager);
                 manager.Authorizations = authorizations;
-                _unitOfWork.Managers.Add(manager);
+                _unitOfWork.Managers.Update(manager); // Updates the manager object in the database
             }
         }
 

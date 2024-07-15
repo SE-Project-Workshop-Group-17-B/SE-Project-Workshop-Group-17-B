@@ -20,7 +20,7 @@ namespace Sadna_17_B.DataAccessLayer
     {
         public static string ApplicationDbContextName = "RemoteSadna-17-B-DB";
         public static string SQLiteDbContextName = "SQLiteDB";
-        public static bool isMemoryDB = false;
+        public static bool isMemoryDB = false; // Controls whether the actual database is connected or not
         public ApplicationDbContext() : base("RemoteSadna-17-B-DB")
         {
         }
@@ -29,9 +29,7 @@ namespace Sadna_17_B.DataAccessLayer
         {
         }
 
-
         public DbSet<Store> Stores { get; set; }
-        //public DbSet<Inventory> Inventory { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<SubOrder> SubOrders { get; set; }
@@ -42,23 +40,7 @@ namespace Sadna_17_B.DataAccessLayer
         public DbSet<OwnerAppointmentOffer> OwnerAppointmentOffers { get; set; }
         public DbSet<ManagerAppointmentOffer> ManagerAppointmentOffers { get; set; }
         public DbSet<UserNotifications> UserNotifications { get; set; }
-
-        /*public DbSet<OwnershipEntry> OwnershipEntries { get; set; }
-        public DbSet<ManagementEntry> ManagementEntries { get; set; }
-        public DbSet<OwnerAppointmentEntry> OwnerAppointmentEntries { get; set; }
-        public DbSet<ManagerAppointmentEntry> ManagerAppointmentEntries { get; set; }*/
-
-
         public DbSet<Cart> Carts { get; set; }
-
-        //   public DbSet<Subscriber> Subscribers { get; set; }
-        //  public DbSet<Guest> Guests { get; set; }
-        //   public DbSet<Cart> Carts { get; set; }
-        //   public DbSet<Cart_Product> CartProducts { get; set; }
-        //     public DbSet<DiscountPolicy> DiscountPolicies { get; set; }
-        //     public DbSet<PurchasePolicy> PurchasePolicies { get; set; }
-        // public DbSet<Notification> Notifications { get; set; }
-        // public DbSet<Offer> Offers { get; set; }
 
         // Add DbSet properties for other entities
 
@@ -181,10 +163,6 @@ namespace Sadna_17_B.DataAccessLayer
             SubOrders.RemoveRange(SubOrders.ToList());
             Orders.RemoveRange(Orders.ToList());
             Products.RemoveRange(Products.ToList());
-            /*OwnerAppointmentEntries.RemoveRange(OwnerAppointmentEntries.ToList());
-            ManagerAppointmentEntries.RemoveRange(ManagerAppointmentEntries.ToList());
-            OwnershipEntries.RemoveRange(OwnershipEntries.ToList());
-            ManagementEntries.RemoveRange(ManagementEntries.ToList());*/
             UserNotifications.RemoveRange(UserNotifications.ToList());
             OwnerAppointmentOffers.RemoveRange(OwnerAppointmentOffers.ToList());
             ManagerAppointmentOffers.RemoveRange(ManagerAppointmentOffers.ToList());
