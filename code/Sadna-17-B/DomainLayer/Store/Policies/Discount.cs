@@ -34,11 +34,16 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         public static int discount_counter;
 
         [NotMapped]
-        public List<Func<Basket, bool>> discount_condition_lambdas = new List<Func<Basket, bool>>();
-        [NotMapped]
         protected Func<Basket, double> discount_pricing_lambda { get; set; }
+        
+        [NotMapped]
+        public List<Func<Basket, bool>> discount_condition_lambdas = new List<Func<Basket, bool>>();
+        
 
-    
+        public string serialize_pricing { get; set; }
+        public List<string> serialize_conoditions { get; set; }
+
+
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public Discount_Strategy strategy { get; set; }
@@ -220,8 +225,10 @@ namespace Sadna_17_B.DomainLayer.StoreDom
     public class Discount_Rule : Discount
 
     {
+        [NotMapped]
         public List<Discount> discounts = new List<Discount>();
-        public string composite_name { get; private set; }
+
+        public string serialize_aggregation_rule { get; set; }
 
 
         public Func<Basket, List<Discount>, Mini_Checkout> aggregation_rule { get; private set; }
@@ -229,7 +236,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         public Discount_Rule(Func<Basket, List<Discount>, Mini_Checkout> aggregation, string name) 
         { 
             aggregation_rule = aggregation;
-            composite_name = name;
+            serialize_aggregation_rule = name;
         }
 
         public override Mini_Checkout apply_discount(Basket basket)
@@ -276,7 +283,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         {
             StringBuilder sb = new StringBuilder();
             
-            string discount_string = $"\n{tabs(depth)}{ID};{composite_name}";
+            string discount_string = $"\n{tabs(depth)}{ID};{serialize_aggregation_rule}";
 
             sb.AppendLine(indent + discount_string);
             foreach (var discount in discounts)

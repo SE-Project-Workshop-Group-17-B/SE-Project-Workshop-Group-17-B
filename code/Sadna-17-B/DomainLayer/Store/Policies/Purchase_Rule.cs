@@ -33,7 +33,10 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         public string Name { get; set; } = "";
         protected double price { get; set; }
 
-        
+
+        public string serialize_aggregation_rule { get; set; }
+        public List<string> serialize_conodition { get; set; }
+
 
         public virtual List<Func<Basket, bool>> conditions { get; set; } = new List<Func<Basket, bool>>();
 
