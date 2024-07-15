@@ -90,6 +90,7 @@ namespace Sadna_17_B.Repositories
             Products.ResetAutoIncrementKey();
             //Orders.ResetAutoIncrementKey();
             //SubOrders.ResetAutoIncrementKey();
+            Carts.DeleteAll(); // Used for deleting the remaining carts after deleting the other tables
             Carts.ResetAutoIncrementKey();
             _context.SaveChanges();
         }
