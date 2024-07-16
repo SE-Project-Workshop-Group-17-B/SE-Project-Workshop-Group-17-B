@@ -34,7 +34,7 @@ namespace Sadna_17_B_Frontend.Views
                 {
                     storesWithImages.Add(new
                     {
-                        ID = store.StoreID,
+                        ID = store.ID,
                         Name = store.Name,
                         Description = store.Description,
                         ImageName = images[imageIndex % images.Length]

@@ -2,7 +2,6 @@
 using Sadna_17_B.DomainLayer.StoreDom;
 using Sadna_17_B.DomainLayer.User;
 using Sadna_17_B.Layer_Service.ServiceDTOs;
-using Sadna_17_B.ExternalServices;
 using Sadna_17_B.Repositories;
 using Sadna_17_B.Utils;
 using System;

@@ -112,7 +112,7 @@ namespace Sadna_17_B.DataAccessLayer
             //
           //Store Configuration
             modelBuilder.Entity<Store>()
-                .HasKey(s => s.StoreID); // Primary Key - Disable Auto Increment (sort of?)
+                .HasKey(s => s.ID); // Primary Key - Disable Auto Increment (sort of?)
 
             // OwnerAppointmentOffer Configuration - Composite Primary Key
             modelBuilder.Entity<OwnerAppointmentOffer>()

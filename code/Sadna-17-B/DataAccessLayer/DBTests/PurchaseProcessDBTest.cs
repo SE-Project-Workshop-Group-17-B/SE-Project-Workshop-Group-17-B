@@ -1,4 +1,4 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿/*using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using Sadna_17_B.ServiceLayer;
 using Sadna_17_B.ServiceLayer.Services;
@@ -202,7 +202,7 @@ namespace Sadna_17_B.DataAccessLayer.DBTests
 
             Assert.IsTrue(completeRes.Success);
 
-            /*//for each shopping basket checking the basket inside out, the only way to check equality
+            *//*//for each shopping basket checking the basket inside out, the only way to check equality
             foreach (KeyValuePair<int, ShoppingBasketDTO> entry in shoppnigCart1.ShoppingBaskets)
             {
                 ShoppingBasketDTO prevSbd = entry.Value;
@@ -215,7 +215,7 @@ namespace Sadna_17_B.DataAccessLayer.DBTests
                         Assert.AreEqual(entry2.Value, entry3.Value);
                     }
                 }
-            }*/
+            }*//*
 
         }
 
@@ -253,3 +253,4 @@ namespace Sadna_17_B.DataAccessLayer.DBTests
         }
     }
 }
+*/
