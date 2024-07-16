@@ -6,8 +6,8 @@ using Sadna_17_B.ServiceLayer.Services;
 using Sadna_17_B.Utils;
 using Sadna_17_B.DomainLayer.User;
 using Sadna_17_B.ServiceLayer.ServiceDTOs;
+using Newtonsoft.Json;
 using Sadna_17_B.DomainLayer.StoreDom;
-using Sadna_17_B_API.Models;
 
 namespace Sadna_17_B_API.Controllers
 {
@@ -182,7 +182,7 @@ namespace Sadna_17_B_API.Controllers
         }
 
         [HttpPost("get_shoping_cart")]
-        public Response getShopingCart([FromBody] UIuserDTOAPI user)
+        public IActionResult getShopingCart([FromBody] UIuserDTOAPI user)
         {
             Dictionary<string, string> doc = new Dictionary<string, string>()
             {
