@@ -11,6 +11,7 @@ using System.Net;
 using System.Text;
 using Newtonsoft.Json;
 using Sadna_17_B.DomainLayer.StoreDom;
+using Newtonsoft.Json;
 
 namespace Sadna_17_B_API.Controllers
 {
@@ -52,6 +53,30 @@ namespace Sadna_17_B_API.Controllers
                 return BadRequest(response.Message);
             }
         }
+        [HttpPost("isAdmin")]
+        public Response IsAdmin([FromBody] RoleCheckRequest request)
+        {
+            var response = _userService.admin(request.AccessToken);
+            return response;
+        }
+
+        [HttpPost("get_notifications")]
+        public IActionResult getNotifications([FromBody] UIuserDTOAPI userDto)
+        {
+            // Validate userDto (consider adding data annotations to your UserDto)
+
+            var response = _userService.GetMyNotifications(userDto.AccessToken);
+
+            if (response.Success)
+            {
+                return Ok(response);
+            }
+            else
+            {
+                return BadRequest(response.Message);
+            }
+        }
+
         [HttpPost("login")]
         public IActionResult Login([FromBody] UIuserDTOAPI userDto)
         {
@@ -68,11 +93,32 @@ namespace Sadna_17_B_API.Controllers
                 return BadRequest(response.Message);
             }
         }
-
         [HttpPost("logout")]
         public Response Logout([FromBody] UIuserDTOAPI user)
         {
             var response = _userService.exit_subscriber(user.AccessToken);
+            return response;
+        }
+
+        [HttpPost("Owner_Appointment")]
+        public Response Owner_Appointment([FromBody] RespondOfferDTO respond)
+        {
+            var response = _userService.RespondToOwnerAppointmentOffer(respond.accessToken, respond.storeId, respond.decision);
+            return response;
+        }
+
+        [HttpPost("Manager_Appointment")]
+        public Response Manager_Appointment([FromBody] RespondOfferDTO respond)
+        {
+            var response = _userService.RespondToManagerAppointmentOffer(respond.accessToken, respond.storeId, respond.decision);
+            return response;
+        }
+
+
+        [HttpPost("get_managed_stores")]
+        public Response getManagedStores([FromBody] UIuserDTOAPI user)
+        {
+            var response = _userService.GetMyManagedStores(user.AccessToken);
             return response;
         }
 
@@ -117,12 +163,6 @@ namespace Sadna_17_B_API.Controllers
             return response;
         }
 
-        [HttpPost("isAdmin")]
-        public Response IsAdmin([FromBody] RoleCheckRequest request)
-        {
-            var response = _userService.admin(request.AccessToken);
-            return response;
-        }
 
         [HttpGet("get_product_by_id/{productId}")]
         public Response GetProductById(int productId)
@@ -262,12 +302,7 @@ namespace Sadna_17_B_API.Controllers
             return Ok(response);
         }
 
-        [HttpPost("get_managed_stores")]
-        public Response getManagedStores([FromBody] UIuserDTOAPI user)
-        {
-            var response = _userService.GetMyManagedStores(user.AccessToken);
-            return response;
-        }
+      
 
         [HttpPost("get_stores_by_id")]
 

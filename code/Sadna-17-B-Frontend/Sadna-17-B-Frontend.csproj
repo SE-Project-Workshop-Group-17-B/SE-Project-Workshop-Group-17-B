@@ -253,6 +253,7 @@
     <Content Include="Views\ManagerStorePage.aspx" />
     <Content Include="Views\MyCart.aspx" />
     <Content Include="Views\MyStores.aspx" />
+    <Content Include="Views\Notifications.aspx" />
     <Content Include="Views\ProductDetails.aspx" />
     <Content Include="Views\PurchaseHistoryUser_page.aspx" />
     <Content Include="Views\purchasePolicyHistory_page.aspx" />
@@ -271,6 +272,7 @@
     <Compile Include="Controllers\doc_doc.cs" />
     <Content Include="Scripts\script.js" />
     <Compile Include="Controllers\ProductSearchDTO.cs" />
+    <Compile Include="Controllers\RespondOfferDTO.cs" />
     <Compile Include="Views\About.aspx.cs">
       <DependentUpon>About.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -375,6 +377,13 @@
     </Compile>
     <Compile Include="Views\MyStores.aspx.designer.cs">
       <DependentUpon>MyStores.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Notifications.aspx.cs">
+      <DependentUpon>Notifications.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Views\Notifications.aspx.designer.cs">
+      <DependentUpon>Notifications.aspx</DependentUpon>
     </Compile>
     <Compile Include="Views\ProductDetails.aspx.cs">
       <DependentUpon>ProductDetails.aspx</DependentUpon>
