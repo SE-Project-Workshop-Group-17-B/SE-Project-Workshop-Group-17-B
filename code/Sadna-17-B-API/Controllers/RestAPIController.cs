@@ -6,6 +6,8 @@ using Sadna_17_B.ServiceLayer.Services;
 using Sadna_17_B.Utils;
 using Sadna_17_B.DomainLayer.User;
 using Sadna_17_B.ServiceLayer.ServiceDTOs;
+using Sadna_17_B.DomainLayer.StoreDom;
+using Sadna_17_B_API.Models;
 
 namespace Sadna_17_B_API.Controllers
 {
@@ -119,12 +121,58 @@ namespace Sadna_17_B_API.Controllers
             return response;
         }
 
-        [HttpPost("search_product")]
-        public Response SearchProduct([FromBody] FuncStoreDTO storeData)
+        [HttpGet("get_product_by_id/{productId}")]
+        public Response GetProductById(int productId)
         {
-            var response = _storeService.search_product_by(storeData.doc);
+            var response = _storeService.get_product_by_id(productId);
             return response;
         }
+
+        [HttpPost("add_product_to_cart")]
+        public Response AddProductToCart([FromBody] AddToCartDTO addToCartDTO)
+        {
+            var response = _userService.cart_add_product(addToCartDTO.Doc, addToCartDTO.Change);
+            return response;
+        }
+
+        [HttpPost("search_product")]
+        public Response SearchProduct([FromBody] ProductSearchDTO searchDTO)
+        {
+            var response = _storeService.search_product_by(searchDTO.SearchCriteria);
+            if (response.Success)
+            {
+                var products = response.Data as List<Product>;
+                var productDTOs = products.Select(p => new ProductDTOAPI
+                {
+                    ID = p.ID,
+                    name = p.name,
+                    price = p.price,
+                    description = p.description,
+                    category = p.category,
+                    amount = p.amount,
+                    storeId = p.storeId,
+                    rating = p.rating,
+                    // Map other properties
+                }).ToList();
+                return new Response("Products found", true, productDTOs);
+            }
+            else
+            {
+                return new Response("Error while searching for products", false);
+            }
+        }
+
+
+        public static T GetPropertyValue<T>(object obj, string propertyName)
+        {
+            var property = obj.GetType().GetProperty(propertyName);
+            if (property != null && property.PropertyType == typeof(T))
+            {
+                return (T)property.GetValue(obj);
+            }
+            return default(T);
+        }
+
 
         [HttpPost("process_store_order")]
         public Response ProcessStoreOrder([FromBody] Basket data)
@@ -173,4 +221,5 @@ namespace Sadna_17_B_API.Controllers
             return response;
         }
     }
+
 }
