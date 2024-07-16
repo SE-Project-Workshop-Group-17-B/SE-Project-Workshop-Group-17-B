@@ -186,6 +186,10 @@ namespace Sadna_17_B.DomainLayer.User
             this.store_product_id = store_product_id;
             this.name = name;
         }
+        public Cart_Product() 
+        {
+            
+        }
 
         public Cart_Product(Cart_Product product)
         {

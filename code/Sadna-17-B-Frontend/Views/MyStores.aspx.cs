@@ -66,9 +66,9 @@ namespace Sadna_17_B_Frontend.Views
             bool isFounder = backendController.has_roles(doc);
 
             if (isFounder)
-                Response.Redirect($"~/Views/FounderStorePage.aspx?storeId={storeId}");
+                Response.Redirect($"~/Views/FounderStorePage.aspx?storeId={storeId}",false);
             else
-                Response.Redirect($"~/Views/ManagerStorePage.aspx?storeId={storeId}");
+                Response.Redirect($"~/Views/ManagerStorePage.aspx?storeId={storeId}",false);
         }
     }
 }
