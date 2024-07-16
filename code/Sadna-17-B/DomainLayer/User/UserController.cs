@@ -1,4 +1,5 @@
 ﻿using Sadna_17_B.DomainLayer.Order;
+using Sadna_17_B.Repositories;
 using Sadna_17_B.ServiceLayer.ServiceDTOs;
 using Sadna_17_B.Utils;
 using System;
@@ -26,6 +27,8 @@ namespace Sadna_17_B.DomainLayer.User
         private Dictionary<string, Subscriber> subscribers = new Dictionary<string, Subscriber>();
         private Dictionary<string, Admin> admins = new Dictionary<string, Admin>();
 
+        // DAL Repository:
+        IUnitOfWork _unitOfWork = UnitOfWork.GetInstance();
 
         public UserController(OrderSystem orderSystem)
         {
@@ -36,11 +39,24 @@ namespace Sadna_17_B.DomainLayer.User
 
         public void LoadData()
         {
-
+            // Load subscribers from database:
+            IEnumerable<Subscriber> subscribersTable = _unitOfWork.Subscribers.GetAll();
+            foreach (Subscriber subscriber in subscribersTable)
+            {
+                subscribers[subscriber.Username] = subscriber;
+            }
+            // Load admins from database:
+            IEnumerable<Admin> adminsTable = _unitOfWork.Admins.GetAll();
+            foreach (Admin admin in adminsTable)
+            {
+                admins[admin.Username] = admin;
+            }
+            offerSystem.LoadData();
+            notificationSystem.LoadData();
         }
 
         /// <summary>
-        /// Creates a new guest in the system, its corresponding guestID will be the next available ID (integer),
+        /// Creates a new guest in the system, its corresponding guestID will be the next available StoreID (integer),
         /// but the corresponding Guest Token will be returned as a string.
         /// </summary>
         /// <returns></returns>
@@ -76,6 +92,7 @@ namespace Sadna_17_B.DomainLayer.User
             {
                 Subscriber subscriber = new Subscriber(username, password);
                 subscribers[username] = subscriber;
+                _unitOfWork.Subscribers.Add(subscriber);
                 return;
             }
             throw new Sadna17BException("Given username already exists in the system.");
@@ -92,6 +109,7 @@ namespace Sadna_17_B.DomainLayer.User
             {
                 Admin admin = new Admin(username, password);
                 admins[username] = admin;
+                _unitOfWork.Admins.Add(admin);
                 return;
             }
             throw new Sadna17BException("Given username already exists in the system.");
@@ -333,7 +351,7 @@ namespace Sadna_17_B.DomainLayer.User
                 throw new Sadna17BException("The user with the given username is already a manager of the store with the given storeID.");
             }
             offerSystem.AddOwnerAppointmentOffer(storeID, newOwnerUsername, requestingSubscriber.Username);
-            notificationSystem.Notify(newOwnerUsername, "A new owner appointment offer of store " + storeID + " has been received from " + requestingSubscriber.Username);
+            notificationSystem.Notify(newOwnerUsername, "A new owner appointment offer has been received from " + requestingSubscriber.Username + ", store: " + storeID);
         }
 
         public void OfferManagerAppointment(string token, int storeID, string newManagerUsername)
@@ -359,7 +377,7 @@ namespace Sadna_17_B.DomainLayer.User
                 throw new Sadna17BException("The requesting subscriber is not a store owner of the store with the given storeID, so cannot appoint new owners.");
             }
             offerSystem.AddManagerAppointmentOffer(storeID, newManagerUsername, requestingSubscriber.Username, authorizations);
-            notificationSystem.Notify(newManagerUsername, "A new manager appointment offer of store " + storeID + " has been received from " + requestingSubscriber.Username); ;
+            notificationSystem.Notify(newManagerUsername, "A new manager appointment offer has been received from " + requestingSubscriber.Username + ", store: " + storeID);
         }
 
         public void RespondToOwnerAppointmentOffer(string token, int storeID, bool offerResponse)
@@ -375,12 +393,12 @@ namespace Sadna_17_B.DomainLayer.User
                 AddOwnership(respondingSubscriber.Username, storeID);
                 requestingSubscriber.AppointOwner(storeID, respondingSubscriber.Username, respondingSubscriber.GetOwnership(storeID));
                 offerSystem.RemoveOwnerAppointmentOffer(storeID, respondingSubscriber.Username);
-                notificationSystem.Notify(appointerUsername, respondingSubscriber.Username + " has accepted your owner appointment offer in store " + storeID);
+                notificationSystem.Notify(appointerUsername, respondingSubscriber.Username + " has accepted your owner appointment offer in store: " + storeID);
             }
             else
             {
                 offerSystem.RemoveOwnerAppointmentOffer(storeID, respondingSubscriber.Username);
-                notificationSystem.Notify(requestingSubscriber.Username, respondingSubscriber.Username + " has rejected your owner appointment offer in store " + storeID);
+                notificationSystem.Notify(requestingSubscriber.Username, respondingSubscriber.Username + " has rejected your owner appointment offer in store: " + storeID);
             }
         }
 
@@ -398,13 +416,13 @@ namespace Sadna_17_B.DomainLayer.User
                 AddManagement(respondingSubscriber.Username, storeID, authorizations);
                 requestingSubscriber.AppointManager(storeID, respondingSubscriber.Username, respondingSubscriber.GetManagement(storeID));
                 offerSystem.RemoveManagerAppointmentOffer(storeID, respondingSubscriber.Username);
-                notificationSystem.Notify(appointerUsername, respondingSubscriber.Username + " has accepted your manager appointment offer in store " + storeID);
+                notificationSystem.Notify(appointerUsername, respondingSubscriber.Username + " has accepted your manager appointment offer in store: " + storeID);
 
             }
             else
             {
                 offerSystem.RemoveManagerAppointmentOffer(storeID, respondingSubscriber.Username);
-                notificationSystem.Notify(appointerUsername, respondingSubscriber.Username + " has rejected your manager appointment offer in store " + storeID);
+                notificationSystem.Notify(appointerUsername, respondingSubscriber.Username + " has rejected your manager appointment offer in store: " + storeID);
             }
         }
 
@@ -669,14 +687,14 @@ namespace Sadna_17_B.DomainLayer.User
             {
                 if (!username.Equals(user.Username))
                 {
-                    notificationSystem.Notify(user.Username, "The store " + storeID + " you own has been closed by " + user.Username);
+                    notificationSystem.Notify(user.Username, "The store " + storeID + " you own has been closed by " + user.Username + ", store: " + storeID);
                 }
             }
             foreach (string username in storeOwnersAndManagers.Item2) // Managers
             {
                 if (!username.Equals(user.Username))
                 {
-                    notificationSystem.Notify(user.Username, "The store " + storeID + " you manage has been closed by " + user.Username);
+                    notificationSystem.Notify(user.Username, "The store " + storeID + " you manage has been closed by " + user.Username + ", store: " + storeID);
                 }
             }
         }

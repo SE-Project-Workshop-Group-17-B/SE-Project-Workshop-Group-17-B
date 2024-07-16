@@ -491,7 +491,7 @@ namespace Sadna_17_B_Frontend.Controllers
         {
             using (HttpClient client = new HttpClient())
             {
-                var user = new UIuserDTOAPI { Username = username, Password = password, AccessToken = "" };
+                var user = new { Username = username, Password = password, AccessToken = "" };
 
                 HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/login", user); // add relative path
 

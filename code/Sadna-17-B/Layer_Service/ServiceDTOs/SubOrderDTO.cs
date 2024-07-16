@@ -9,6 +9,7 @@ namespace Sadna_17_B.ServiceLayer.ServiceDTOs
 {
     public class SubOrderDTO
     {
+
         public int StoreID { get; set; }
         public int OrderID { get; set; }
         public string UserID { get; set; } // Can be either GuestID or Username, according to the order type
@@ -17,17 +18,18 @@ namespace Sadna_17_B.ServiceLayer.ServiceDTOs
         public Basket basket { get; set; } // ProductID -> (quantity,unitPrice)
         public string DestinationAddress { get; set; }
         public string CreditCardInfo { get; set; }
+      
         public SubOrderDTO()
         {
-
         }
+      
         public SubOrderDTO(SubOrder subOrder)
         {
             StoreID = subOrder.StoreID;
             OrderID = subOrder.OrderID;
             UserID = subOrder.UserID;
             Timestamp = subOrder.Timestamp;
-            basket = subOrder.basket;
+            basket = new Basket(subOrder.basket);
             DestinationAddress = subOrder.DestinationAddress;
             CreditCardInfo = subOrder.CreditCardInfo;
         }
