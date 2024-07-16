@@ -41,13 +41,13 @@ namespace Sadna_17_B_Frontend.Views
                 {
                     ["store id"] = storeId.ToString()
                 };
-                var purchasePolicyResponse = backendController.storeService.show_purchase_policy(doc);
+                var purchasePolicyResponse = await backendController.show_purchase_policy(doc);
                 if (purchasePolicyResponse.Success)
                 {
                     txtPurchasePolicy.Text = purchasePolicyResponse.Data as string;
                 }
 
-                var discountPolicyResponse = backendController.storeService.show_discount_policy(doc);
+                var discountPolicyResponse = await backendController.show_discount_policy(doc);
                 if (discountPolicyResponse.Success)
                 {
                     txtDiscountPolicy.Text = discountPolicyResponse.Data as string;

@@ -197,6 +197,14 @@
                 <div class="modal-body">
                     <asp:Label ID="labelTemp" CssClass="text-danger mb-3 d-block" Text="" runat="server" />
                     <div class="form-group">
+                        <label for="cardHolderName">Card Holder Name</label>
+                        <input type="text" id="cardHolderName" placeholder="John Doe" class="form-control" runat="server">
+                    </div>
+                    <div class="form-group">
+                        <label for="cardHolderId">Card Holder ID</label>
+                        <input type="text" id="cardHolderId" placeholder="123456789" class="form-control" runat="server">
+                    </div>
+                    <div class="form-group">
                         <label for="cardNumber">Card Number</label>
                         <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" class="form-control" runat="server">
                     </div>
@@ -208,9 +216,26 @@
                         <label for="txtCardCVVNum">CVV</label>
                         <input type="text" id="txtCardCVVNum" placeholder="123" class="form-control" runat="server">
                     </div>
+                    <b5>Shipping Address</b5>
                     <div class="form-group">
-                        <label for="textDestInfro">Shipping Address</label>
-                        <textarea id="textDestInfro" placeholder="Enter your full shipping address" class="form-control" rows="3" runat="server"></textarea>
+                        <label for="shippingName">Name</label>
+                        <input type="text" id="shippingName" placeholder="John Doe" class="form-control" runat="server">
+                    </div>
+                    <div class="form-group">
+                        <label for="shippingStreet">Street</label>
+                        <input type="text" id="shippingStreet" placeholder="123 Main St" class="form-control" runat="server">
+                    </div>
+                    <div class="form-group">
+                        <label for="shippingCity">City</label>
+                        <input type="text" id="shippingCity" placeholder="New York" class="form-control" runat="server">
+                    </div>
+                    <div class="form-group">
+                        <label for="shippingCountry">Country</label>
+                        <input type="text" id="shippingCountry" placeholder="USA" class="form-control" runat="server">
+                    </div>
+                    <div class="form-group">
+                        <label for="shippingZipCode">Zip Code</label>
+                        <input type="text" id="shippingZipCode" placeholder="10001" class="form-control" runat="server">
                     </div>
                 </div>
                 <div class="modal-footer">

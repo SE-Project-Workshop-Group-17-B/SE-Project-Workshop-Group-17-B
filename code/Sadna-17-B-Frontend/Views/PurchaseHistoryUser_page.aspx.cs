@@ -1,74 +1,81 @@
-﻿using Sadna_17_B.DomainLayer.StoreDom;
-using Sadna_17_B_Frontend.Controllers;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Linq;
-using System.Web;
 using System.Web.UI;
-using System.Web.UI.WebControls;
-using Sadna_17_B.Utils;
 using Sadna_17_B.ServiceLayer.ServiceDTOs;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Sadna_17_B.DomainLayer.User;
+using Sadna_17_B.Utils;
+using Sadna_17_B_Frontend.Controllers;
+using System.Web.UI.WebControls;
 
 namespace Sadna_17_B_Frontend.Views
 {
     public partial class PurchaseHistoryUser_page : System.Web.UI.Page
     {
-
         BackendController backendController = BackendController.get_instance();
         string username;
 
-        protected void Page_Load(object sender, EventArgs e)
+        protected async void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
             {
-                username = Request.QueryString["username"];
-                string token = backendController.userDTO.AccessToken;
-                Response res = backendController.userService.GetUserOrderHistory(token, username);
-                if (res.Success)
-                {
-                    List<OrderDTO> userOrders = res.Data as List<OrderDTO>;
-                    PurchaseHistoryRepeater.DataSource = userOrders;
-                    PurchaseHistoryRepeater.DataBind();
-                }
-                else
-                {
-                    MessageBox(res.Message);
-                }
+                await LoadPurchaseHistoryAsync();
+            }
+        }
+
+        private async Task LoadPurchaseHistoryAsync()
+        {
+            username = Request.QueryString["username"];
+            Response res = await backendController.GetUserOrderHistory(username);
+            if (res.Success)
+            {
+                List<OrderDTO> userOrders = JsonConvert.DeserializeObject<List<OrderDTO>>(res.Data.ToString());
+                PurchaseHistoryRepeater.DataSource = userOrders;
+                PurchaseHistoryRepeater.DataBind();
+            }
+            else
+            {
+                MessageBox(res.Message);
+            }
+        }
+
+        protected async void PurchaseHistoryRepeater_ItemDataBound(object sender, RepeaterItemEventArgs e)
+        {
+            if (e.Item.ItemType == ListItemType.Item || e.Item.ItemType == ListItemType.AlternatingItem)
+            {
+                var orderDTO = (OrderDTO)e.Item.DataItem;
+                var cartRepeater = (Repeater)e.Item.FindControl("CartRepeater");
+                var cartItems = await GetCartItemsAsync(orderDTO);
+                cartRepeater.DataSource = cartItems;
+                cartRepeater.DataBind();
             }
         }
 
         private void MessageBox(string msg)
         {
-            Response.Write(@"<script language='javascript'>alert('" + msg + "')</script>");
+            ScriptManager.RegisterStartupScript(this, GetType(), "alertMessage", $"alert('{msg}');", true);
         }
 
-        protected List<CartItemViewDto> GetCartItems(object dataItem)
+        private async Task<List<CartItemViewDto>> GetCartItemsAsync(OrderDTO order)
         {
-            var order = (OrderDTO)dataItem;
             var cartItems = new List<CartItemViewDto>();
-
             var baskets = order.cart.Baskets;
             foreach (KeyValuePair<int, Basket> entry in baskets)
             {
                 int storeId = entry.Key;
                 Basket b = entry.Value;
-                Response nameRes = backendController.storeService.get_store_name(storeId);
-
+                Response nameRes = await backendController.get_store_name(storeId);
                 if (nameRes.Success)
                 {
                     string storeName = nameRes.Data as string;
                     Dictionary<int, Cart_Product> items = b.id_to_product;
-
                     foreach (KeyValuePair<int, Cart_Product> item in items)
                     {
                         int productId = item.Key;
                         Cart_Product product = item.Value;
-
                         int quantity = product.amount;
                         double unitPrice = product.price;
-
                         cartItems.Add(new CartItemViewDto
                         {
                             StoreName = storeName,
@@ -76,7 +83,7 @@ namespace Sadna_17_B_Frontend.Views
                             Quantity = quantity,
                             UnitPrice = unitPrice,
                             Total = quantity * unitPrice
-                        }); ;
+                        });
                     }
                 }
                 else
@@ -84,10 +91,10 @@ namespace Sadna_17_B_Frontend.Views
                     MessageBox(nameRes.Message);
                 }
             }
-
             return cartItems;
         }
     }
+
     public class CartItemViewDto
     {
         public string StoreName { get; set; }
