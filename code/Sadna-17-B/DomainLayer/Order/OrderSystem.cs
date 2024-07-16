@@ -22,9 +22,10 @@ namespace Sadna_17_B.DomainLayer.Order
         private Logger infoLogger = InfoLogger.Instance;
         private Logger errorLogger = ErrorLogger.Instance;
 
-        
+
         // ------- should move to DAL --------------------------------------------------------------------------------
 
+        private Dictionary<string, Order> pending_order = new Dictionary<string, Order>();                  // uid -> Order
 
         private Dictionary<int, Order> orderHistory = new Dictionary<int, Order>();                         // OrderId -> Order
         private Dictionary<int, List<Order>> guestOrders = new Dictionary<int, List<Order>>();              // GuestID -> List<Order>
@@ -99,54 +100,34 @@ namespace Sadna_17_B.DomainLayer.Order
 
             Order order = new Order(orderCount, userID, isGuest, cart, destination, credit, cart_price_with_discount);
 
-            
+
             // ------- before -------------------------------------------------------------------------------
 
-          /*  validate_supply_system_availability(destination, order);
-            validate_payment_system_availability(credit, order);
-            validate_price(cart_price_with_discount);
+            /*  validate_supply_system_availability(destination, order);
+              validate_payment_system_availability(credit, order);
+              validate_price(cart_price_with_discount);
 
-            paymentSystem.ExecutePayment(credit, order.TotalPrice);
-            supplySystem.ExecuteDelivery(destination, order.GetManufacturerProductNumbers());
-*/
+              paymentSystem.ExecutePayment(credit, order.TotalPrice);
+              supplySystem.ExecuteDelivery(destination, order.GetManufacturerProductNumbers());
+  */
             // ------- now -------------------------------------------------------------------------------
 
-            /*payDTO payment = new payDTO
-            {
-                action_type = "pay",
-                amount = $"{order.TotalPrice}",
-                currency = "$",
-                card_number = credit.Substring(16),
-                month = credit.Substring(16,18),
-                year = credit.Substring(18, 22),
-                holder = $"{userID}",
-                cvv = credit.Substring(22,25),
-                ID = $"{userID}"
-            };
-
-            supplyDTO supply = new supplyDTO
-            {
-                action_type = "supply",
-                name = $"{userID}",
-                address = "rager",
-                city = "beer sheva",
-                country = "israel",
-                zip = "555",
-            };
-
-            Task<int> transaction_id_payment = paymentSystem.pay(payment);
-            Task<int> transaction_id_supply = supplySystem.supply(supply);*/
+        
 
 
-            reduce_cart(cart);
-            add_to_history(order);
+            pending_order.Add(userID, order);
+            
 
         }
 
-        public void reduce_cart(Cart cart)
+        public void reduce_cart(string uid, Cart cart)
         {
+          
             foreach (var basket in cart.baskets())
                 storeController.decrease_products_amount(basket);
+
+            add_to_history(pending_order[uid]);
+            pending_order.Remove(uid);
         }
 
         

@@ -229,52 +229,7 @@ namespace Sadna_17_B_API.Controllers
         {
             var response = _userService.cart_remove_product(tempObj.p, tempObj.AccessToken);
             return response;
-        }
-
-        [HttpPost("pay_for_cart")]
-        public async Task<Response> payCart([FromBody] payDTO payment)
-        {
-
-            using (HttpClient client = new HttpClient())
-            {
-                HttpResponseMessage response = await client.PostAsJsonAsync("https://damp-lynna-wsep-1984852e.koyeb.app/", payment); // add relative path
-
-                if (response.IsSuccessStatusCode)
-                {
-                    string responseContent = response.Content.ReadAsStringAsync().Result;
-                    int transaction_id = JsonConvert.DeserializeObject<int>(responseContent);
-                    return new Response("Transaction successfull",true,transaction_id);
-                }
-
-                else
-                {
-                    string errorMessage = await response.Content.ReadAsStringAsync();
-                    return new Response(errorMessage,false);
-                }
-            }
-        }
-
-        [HttpPost("supply_cart")]
-        public async Task<Response> supplyCart([FromBody] supplyDTO supply)
-        {
-            using (HttpClient client = new HttpClient())
-            {
-                HttpResponseMessage response = await client.PostAsJsonAsync("https://damp-lynna-wsep-1984852e.koyeb.app/", supply); // add relative path
-
-                if (response.IsSuccessStatusCode)
-                {
-                    string responseContent = response.Content.ReadAsStringAsync().Result;
-                    int transaction_id = JsonConvert.DeserializeObject<int>(responseContent);
-                    return new Response("Transaction successfull", true, transaction_id);
-                }
-
-                else
-                {
-                    string errorMessage = await response.Content.ReadAsStringAsync();
-                    return new Response(errorMessage,false);
-                }
-            }
-        }
+        }        
 
 
         [HttpPost("remove_from_cart")]
@@ -314,9 +269,15 @@ namespace Sadna_17_B_API.Controllers
         [HttpPost("completePurchase")]
         public IActionResult CompletePurchase([FromBody] PurchaseDTO purchaseDetails)
         {
-
             var response = _userService.CompletePurchase(purchaseDetails.AccessToken, purchaseDetails.DestinationAddress, purchaseDetails.CreditCardInfo);
             return Ok(response);
+        }
+
+        [HttpPost("reduce_order")]
+        public Response reduce_order(PurchaseDTO purchase_details)
+        {
+            var response = _userService.reduce_cart(purchase_details.AccessToken);
+            return response;
         }
 
         [HttpPost("get_managed_stores")]

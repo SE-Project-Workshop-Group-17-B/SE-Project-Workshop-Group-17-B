@@ -812,128 +812,139 @@ namespace Sadna_17_B_Frontend.Controllers
             return 0;
         }
 
-        public async Task<Response> completePurchase( string destAddr, string creditCardInfo)
+        public async /*   ???   */ Task<Response> completePurchase( supplyDTO supply, payDTO payment)
+        {
+            Response response;
+
+            response = await process_order();                     // backend
+            if (!response.Success)
+                return response;
+
+            response = await supply_order(supply);                // external
+            if (!response.Success)
+                return response;
+
+            response = await pay_order(payment);                  // external
+            if (!response.Success)
+                return response;
+
+            response = await reduce_order();                     // backend
+            if (!response.Success)
+                return response;
+
+            return new Response("Purchase Completed Successfully", true);
+        }
+
+        public async /*   ???   */ Task<Response> process_order()
         {
             using (HttpClient client = new HttpClient())
             {
                 string token = userDTO.AccessToken;
                 var purchaseDetails = new
                 {
-                    DestinationAddress = destAddr,
-                    CreditCardInfo = creditCardInfo,
                     AccessToken = userDTO.AccessToken
                 };
+
                 HttpResponseMessage response = client.PostAsJsonAsync(prefix + "/RestAPI/completePurchase", purchaseDetails).GetAwaiter().GetResult();
                 string responseContent = await response.Content.ReadAsStringAsync();
                 Response responseObj = JsonConvert.DeserializeObject<Response>(responseContent);
 
-                payDTO payment = new payDTO
-                {
-                    action_type = "pay",
-                    amount = $"20",
-                    currency = "$",
-                    card_number = creditCardInfo.Substring(16),
-                    month = creditCardInfo.Substring(16, 18),
-                    year = creditCardInfo.Substring(18, 22),
-                    holder = $"user",
-                    cvv = creditCardInfo.Substring(22, 25),
-                    ID = $"user"
-                };
-
-                response = client.PostAsJsonAsync(prefix + "/RestAPI/pay_for_cart", payment).GetAwaiter().GetResult();
-                responseContent = await response.Content.ReadAsStringAsync();
-                int transaction_id_payment = JsonConvert.DeserializeObject<int>(responseContent);
-
-
-                supplyDTO supply = new supplyDTO
-                {
-                    action_type = "supply",
-                    name = $"user",
-                    address = "rager",
-                    city = "beer sheva",
-                    country = "israel",
-                    zip = "555",
-
-                };
-
-                response = client.PostAsJsonAsync(prefix + "/RestAPI/supply_cart", supply).GetAwaiter().GetResult();
-                responseContent = await response.Content.ReadAsStringAsync();
-                int transaction_id_supply = JsonConvert.DeserializeObject<int>(responseContent);
-
-                if (transaction_id_payment < 0 || transaction_id_supply < 0)
-                    return new Response("Purchase Failed", false);
-
-                return new Response("Purchase Successful",true);
+                return responseObj;
             }
+
+            
         }
 
 
-
-
-        public async Task<int> supply(supplyDTO supply)
+        public async /*   int   */ Task<Response> pay_order(payDTO payment)
         {
             using (HttpClient client = new HttpClient())
             {
-                HttpResponseMessage response = await client.PostAsJsonAsync(prefix, supply); // add relative path
+                HttpResponseMessage response = await client.PostAsJsonAsync("https://damp-lynna-wsep-1984852e.koyeb.app/", payment); // add relative path
 
                 if (response.IsSuccessStatusCode)
                 {
                     string responseContent = response.Content.ReadAsStringAsync().Result;
                     int transaction_id = JsonConvert.DeserializeObject<int>(responseContent);
-                    return transaction_id;
+                    return new Response("Transaction Completed", transaction_id != -1, transaction_id);
                 }
 
                 else
                 {
                     string errorMessage = await response.Content.ReadAsStringAsync();
-                    throw new Sadna17BException(errorMessage);
+                    return new Response(errorMessage, false);
                 }
             }
         }
 
-        public async Task<int> cancel_supply(cancel_supply_DTO cancel)
+        public async /*   int   */ Task<Response> supply_order(supplyDTO supply)
         {
             using (HttpClient client = new HttpClient())
             {
-                HttpResponseMessage response = await client.PostAsJsonAsync(prefix, cancel); // add relative path
-
-                if (response.IsSuccessStatusCode)
-                {
-                    string responseContent = response.Content.ReadAsStringAsync().Result;
-                    int cancelation_status = JsonConvert.DeserializeObject<int>(responseContent);
-                    return cancelation_status;
-                }
-
-                else
-                {
-                    string errorMessage = await response.Content.ReadAsStringAsync();
-                    throw new Sadna17BException(errorMessage);
-                }
-            }
-        }
-
-        public async Task<int> pay(payDTO payment)
-        {
-            using (HttpClient client = new HttpClient())
-            {
-                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/pay_for_cart", payment); // add relative path
+                HttpResponseMessage response = await client.PostAsJsonAsync("https://damp-lynna-wsep-1984852e.koyeb.app/", supply); // add relative path
 
                 if (response.IsSuccessStatusCode)
                 {
                     string responseContent = response.Content.ReadAsStringAsync().Result;
                     int transaction_id = JsonConvert.DeserializeObject<int>(responseContent);
-                    return transaction_id;
+                    return new Response("Transaction Completed", transaction_id != -1, transaction_id); 
                 }
 
                 else
                 {
                     string errorMessage = await response.Content.ReadAsStringAsync();
-                    throw new Sadna17BException(errorMessage);
+                    return new Response(errorMessage, false);
                 }
             }
         }
 
-        public async Task<int> cancel_payment(cancel_pay_DTO cancel)
+        public async /*   bool  */ Task<Response> reduce_order()
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/reduce_order", ""); // add relative path
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseContent = response.Content.ReadAsStringAsync().Result;
+                    bool success_status = JsonConvert.DeserializeObject<bool>(responseContent);
+                    return new Response(" Order Completed !", success_status);
+                }
+
+                else
+                {
+                    string errorMessage = await response.Content.ReadAsStringAsync();
+                    return new Response("reduction was not successful", false);
+                }
+            }
+        }
+
+
+        public async Task<Response> handshake()
+        {
+            using (HttpClient client = new HttpClient())
+            {
+
+                handshakeDTO handshake = new handshakeDTO();
+
+                HttpResponseMessage response = await client.PostAsJsonAsync("https://damp-lynna-wsep-1984852e.koyeb.app/", handshake); // add relative path
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseContent = response.Content.ReadAsStringAsync().Result;
+                    string success_status = JsonConvert.DeserializeObject<string>(responseContent);
+                    return new Response(success_status, success_status == "OK");
+                }
+
+                else
+                {
+                    string errorMessage = await response.Content.ReadAsStringAsync();
+                    return new Response(errorMessage, false);
+                }
+            }
+        }
+
+        public async Task<Response> cancel_supply(cancel_supply_DTO cancel)
         {
             using (HttpClient client = new HttpClient())
             {
@@ -943,13 +954,34 @@ namespace Sadna_17_B_Frontend.Controllers
                 {
                     string responseContent = response.Content.ReadAsStringAsync().Result;
                     int cancelation_status = JsonConvert.DeserializeObject<int>(responseContent);
-                    return cancelation_status;
+                    return new Response("",cancelation_status != -1,cancelation_status);
                 }
 
                 else
                 {
                     string errorMessage = await response.Content.ReadAsStringAsync();
-                    throw new Sadna17BException(errorMessage);
+                    return new Response(errorMessage, false);
+                }
+            }
+        }
+
+        public async Task<Response> cancel_payment(cancel_pay_DTO cancel)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                HttpResponseMessage response = await client.PostAsJsonAsync("https://damp-lynna-wsep-1984852e.koyeb.app/", cancel); // add relative path
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseContent = response.Content.ReadAsStringAsync().Result;
+                    int cancelation_status = JsonConvert.DeserializeObject<int>(responseContent);
+                    return new Response("", cancelation_status != -1, cancelation_status);
+                }
+
+                else
+                {
+                    string errorMessage = await response.Content.ReadAsStringAsync();
+                    return new Response(errorMessage, false);
                 }
             }
         }

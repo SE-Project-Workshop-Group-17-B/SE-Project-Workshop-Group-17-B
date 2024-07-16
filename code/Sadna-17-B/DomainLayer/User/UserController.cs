@@ -7,6 +7,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Security.Cryptography;
 using System.Web;
+using System.Web.UI.WebControls.WebParts;
 using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 using static Sadna_17_B.DomainLayer.User.Notification;
 
@@ -530,6 +531,22 @@ namespace Sadna_17_B.DomainLayer.User
             }
             user.CreateNewShoppingCart();
         }
+
+        public void reduce_cart(string token)
+        {
+            infoLogger.Log($"Attempting to purchase - Subscriber: {GetSubscriberByToken(token).Username}");
+            User user = GetUserByToken(token); // Throws an exception if the token is invalid
+            if (user is Guest)
+            {
+                orderSystem.reduce_cart((user as Guest).GuestID.ToString(), user.ShoppingCart );
+            }
+            else if (user is Subscriber)
+            {
+                orderSystem.reduce_cart((user as Subscriber).Username, user.ShoppingCart);
+            }
+            
+        }
+
 
         public List<Order.Order> GetOrderHistoryByToken(string token)
         {
