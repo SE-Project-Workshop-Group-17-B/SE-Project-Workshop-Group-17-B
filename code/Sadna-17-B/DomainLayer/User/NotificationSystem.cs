@@ -45,6 +45,21 @@ namespace Sadna_17_B.DomainLayer.User
 
         }
 
+        public void MarkAsRead(string username,string message)
+        {
+            if (notifications.ContainsKey(username))
+            {
+                foreach (Notification notification in notifications[username])
+                {
+                    if (notification.Message.Equals(message))
+                    {
+                        notification.MarkAsRead();
+                        break;
+                    }
+                }
+            }
+        }
+
         public List<Notification> ReadNewNotifications(string username)
         {
             if (!notifications.ContainsKey(username))

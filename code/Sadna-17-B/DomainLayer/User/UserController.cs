@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Security.Cryptography;
+using System.Security.Policy;
 using System.Web;
 using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 using static Sadna_17_B.DomainLayer.User.Notification;
@@ -332,7 +333,7 @@ namespace Sadna_17_B.DomainLayer.User
                 throw new Sadna17BException("The user with the given username is already a manager of the store with the given storeID.");
             }
             offerSystem.AddOwnerAppointmentOffer(storeID, newOwnerUsername, requestingSubscriber.Username);
-            notificationSystem.Notify(newOwnerUsername, "A new owner appointment offer of store " + storeID + " has been received from " + requestingSubscriber.Username);
+            notificationSystem.Notify(newOwnerUsername, "A new owner appointment offer has been received from " + requestingSubscriber.Username + ", store: " + storeID);
         }
 
         public void OfferManagerAppointment(string token, int storeID, string newManagerUsername)
@@ -358,7 +359,7 @@ namespace Sadna_17_B.DomainLayer.User
                 throw new Sadna17BException("The requesting subscriber is not a store owner of the store with the given storeID, so cannot appoint new owners.");
             }
             offerSystem.AddManagerAppointmentOffer(storeID, newManagerUsername, requestingSubscriber.Username, authorizations);
-            notificationSystem.Notify(newManagerUsername, "A new manager appointment offer of store " + storeID + " has been received from " + requestingSubscriber.Username); ;
+            notificationSystem.Notify(newManagerUsername, "A new manager appointment offer has been received from " + requestingSubscriber.Username + ", store: " + storeID ); ;
         }
 
         public void RespondToOwnerAppointmentOffer(string token, int storeID, bool offerResponse)
@@ -622,6 +623,12 @@ namespace Sadna_17_B.DomainLayer.User
         {
             Subscriber user = GetSubscriberByToken(token);
             return notificationSystem.ReadNewNotifications(user.Username);
+        }
+
+        public void MarkAsRead(string token, string message)
+        {
+            Subscriber user = GetSubscriberByToken(token);
+            notificationSystem.MarkAsRead(user.Username, message);
         }
 
         public void NotifyStoreClosing(string token, int storeID)
