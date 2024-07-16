@@ -56,7 +56,7 @@ namespace Sadna_17_B.DomainLayer
                     }
                 }
             }
-            catch (Exception ignored) { }
+            catch (Exception ignored) { Console.WriteLine("error"); }
         }
 
         public async void Notify(string usernameToNotify, Notification notification)

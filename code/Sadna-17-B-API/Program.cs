@@ -59,9 +59,10 @@ app.Map("/ws", async context =>
         NotificationsHandler notificationsHandler = NotificationsHandler.getInstance();
         if (count == 0)
         {
+            count++;
             Task.Run(() =>
             {
-                count++;
+               
                 Thread.Sleep(8000);
                 int index = 0;
                 while (true)
