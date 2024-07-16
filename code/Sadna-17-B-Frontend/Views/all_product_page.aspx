@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" MasterPageFile="~/Site.Master" CodeBehind="all_product_page.aspx.cs" Inherits="Sadna_17_B_Frontend.Views.all_product_page" %>
+﻿<%@ Page Language="C#" Async="true" AutoEventWireup="true" MasterPageFile="~/Site.Master" CodeBehind="all_product_page.aspx.cs" Inherits="Sadna_17_B_Frontend.Views.all_product_page" %>
 <%@ MasterType VirtualPath="~/Site.Master" %>
 
 

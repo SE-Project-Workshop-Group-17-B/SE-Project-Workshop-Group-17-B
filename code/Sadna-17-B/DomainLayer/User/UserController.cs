@@ -8,6 +8,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Security.Cryptography;
 using System.Web;
+using System.Web.UI.WebControls.WebParts;
 using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 using static Sadna_17_B.DomainLayer.User.Notification;
 
@@ -534,7 +535,7 @@ namespace Sadna_17_B.DomainLayer.User
 
 
 
-        public void CompletePurchase(string token, string destinationAddress, string creditCardInfo)
+        /*public void CompletePurchase(string token, string destinationAddress, string creditCardInfo)
         {
             infoLogger.Log($"Attempting to purchase - Subscriber: {GetSubscriberByToken(token).Username}");
             User user = GetUserByToken(token); // Throws an exception if the token is invalid
@@ -547,7 +548,43 @@ namespace Sadna_17_B.DomainLayer.User
                 orderSystem.ProcessOrder(user.ShoppingCart, (user as Subscriber).Username, false, destinationAddress, creditCardInfo);
             }
             user.CreateNewShoppingCart();
+        }*/
+
+        public double processOrder(string token, Dictionary<string, string> supply, Dictionary<string, string> payment)
+        {
+            infoLogger.Log($"Attempting to purchase - Subscriber: {GetSubscriberByToken(token).Username}");
+            User user = GetUserByToken(token); // Throws an exception if the token is invalid
+            double priceToPay = 0;
+
+            if (user is Guest)
+            {
+                priceToPay = orderSystem.ProcessOrder(user.ShoppingCart, (user as Guest).GuestID.ToString(), true, supply, payment);
+            }
+            else if (user is Subscriber)
+            {
+
+                priceToPay = orderSystem.ProcessOrder(user.ShoppingCart, (user as Subscriber).Username, false, supply, payment);
+            }            
+
+            return priceToPay;
         }
+
+        public void reduce_cart(string token)
+        {
+            infoLogger.Log($"Attempting to purchase - Subscriber: {GetSubscriberByToken(token).Username}");
+            User user = GetUserByToken(token); // Throws an exception if the token is invalid
+            if (user is Guest)
+            {
+                orderSystem.reduce_cart((user as Guest).GuestID.ToString(), user.ShoppingCart );
+            }
+            else if (user is Subscriber)
+            {
+                orderSystem.reduce_cart((user as Subscriber).Username, user.ShoppingCart);
+            }
+
+            user.CreateNewShoppingCart();
+        }
+
 
         public List<Order.Order> GetOrderHistoryByToken(string token)
         {

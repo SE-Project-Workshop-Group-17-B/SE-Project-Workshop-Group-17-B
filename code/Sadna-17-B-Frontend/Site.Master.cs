@@ -26,11 +26,12 @@ namespace Sadna_17_B_Frontend
                 LblHello.Visible = true;
                 LoginBtn.Visible = false;
                 SignUpBtn.Visible = false;
-                string token = backendController.userDTO.AccessToken;
-                if (backendController.userService.admin(token).Success)
-                    SystemAdminBtn.Visible = true;
-                else
-                    SystemAdminBtn.Visible = false;
+                //bool is_admin = backendController.admin().GetAwaiter().GetResult();
+                //   if (is_admin)
+                //       SystemAdminBtn.Visible = true;
+                //   else
+                //       SystemAdminBtn.Visible = false;
+                CheckAdminStatusAsync();
                 //_loginLogoutButtons =
                 //   "<ul class=\"nav navbar-nav\" style=\"float: right\">" +
                 //   "<li><a runat=\"server\" onclick=\"Logout_Click\">Log Out</a></li>" +
@@ -50,6 +51,11 @@ namespace Sadna_17_B_Frontend
                 //    "<li><a runat=\"server\" href=\"SignUp\"> Sign Up </a></li>" +
                 //    "</ul>";
             }
+        }
+        private void CheckAdminStatusAsync()
+        {
+            bool isAdmin = backendController.admin();
+            SystemAdminBtn.Visible = isAdmin;
         }
         protected void NotificationsBtn_Click(object sender, EventArgs e)
         {
@@ -117,33 +123,33 @@ namespace Sadna_17_B_Frontend
             Response.Write(@"<script language='javascript'>alert('" + message + "')</script>");
         }
 
-        protected void Logout_Click(object sender, EventArgs e)
+        protected async void Logout_Click(object sender, EventArgs e)
         {
-            string message = backendController.logout();
+            string message = await backendController.logout();
             if (message != null)
             {
                 MessageBox(message);
             }
             else
             {
-                Response.Redirect("Homepage"); // Redirects back to the home page after logging out
+                Response.Redirect("Homepage", false); // Redirects back to the home page after logging out
             }
         }
 
         protected void MyCartBtn_Click(object sender, EventArgs e)
         {
-            Response.Redirect("MyCart");
+            Response.Redirect("MyCart", false);
         }
 
         protected void MyStoresBtn_Click(object sender, EventArgs e)
         {
-            Response.Redirect("MyStores");
+            Response.Redirect("MyStores", false);
         }
 
         protected void StoreAdminBtn_Click(object sender, EventArgs e)
         {
             //TODO: IMPLEMENT
-            Response.Redirect("SystemAdmin_page");
+            Response.Redirect("SystemAdmin_page", false);
         }
     }
     public class Notification

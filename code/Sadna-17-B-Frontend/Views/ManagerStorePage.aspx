@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Manager Store Page" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="ManagerStorePage.aspx.cs" Inherits="Sadna_17_B_Frontend.Views.ManagerStorePage" %>
+﻿<%@ Page Title="Manager Store Page" Async="true" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="ManagerStorePage.aspx.cs" Inherits="Sadna_17_B_Frontend.Views.ManagerStorePage" %>
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
     <style>
         :root {
@@ -311,7 +311,7 @@
 
         <div class="card">
             <h2><i class="fas fa-file-alt"></i> Update Purchase Policy</h2>
-            <asp:TextBox ID="txtPurchasePolicy" runat="server" TextMode="MultiLine" Rows="5" CssClass="form-control"></asp:TextBox>
+            <asp:TextBox ID="txtPurchasePolicy" runat="server" TextMode="MultiLine" Rows="5" CssClass="form-control" OnTextChanged="txtPurchasePolicy_TextChanged"></asp:TextBox>
             <asp:Button ID="btnUpdatePurchasePolicy" runat="server" Text="Update Purchase Policy" OnClick="btnUpdatePurchasePolicy_Click" CssClass="btn btn-primary" />
         </div>
 

@@ -299,10 +299,6 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         public void decrease_products_amount(Basket basket)
         {
-            int i = 1;
-            string purchase_result = "";
-            string restore_message = ""; 
-
             Dictionary<int, int> to_retrieve = new Dictionary<int, int>();
 
             Store store = store_by_id(basket.store_id);

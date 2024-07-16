@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Search Products" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="SearchProduct.aspx.cs" Inherits="Sadna_17_B_Frontend.Views.SearchProduct" %>
+﻿<%@ Page Title="Search Products" Async="true" EnableEventValidation="false" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="SearchProduct.aspx.cs" Inherits="Sadna_17_B_Frontend.Views.SearchProduct" %>
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">
 <style>
     .search-container {
@@ -41,6 +41,11 @@
         border-radius: 5px;
         margin-bottom: 10px;
     }
+    .product-ID {
+        font-weight: bold;
+        margin-bottom: 5px;
+        visibility:hidden;
+    }   
     .product-name {
         font-weight: bold;
         margin-bottom: 5px;
@@ -120,6 +125,7 @@
                 <div class="product-card">
                     <asp:LinkButton ID="lnkProductDetails" runat="server" CssClass="product-link" CommandName="ViewDetails" CommandArgument='<%# Eval("ID") %>'>
                         <img src="<%# GetProductImage(Eval("category").ToString()) %>" alt="<%# Eval("name") %>" class="product-image">
+                        <div class="product-ID"><%# Eval("ID") %></div>
                         <div class="product-name"><%# Eval("name") %></div>
                         <div class="product-price">$<%# Eval("price", "{0:F2}") %></div>
                         <div class="product-rating">

@@ -267,7 +267,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\BundleConfig.cs" />
+    <Compile Include="Controllers\AddToCartDTO.cs" />
     <Compile Include="Controllers\doc_doc.cs" />
+    <Compile Include="Controllers\PaymentSystem.cs" />
+    <Compile Include="Controllers\ProductSearchDTO.cs" />
+    <Compile Include="Controllers\SupplySystem.cs" />
     <Compile Include="Views\About.aspx.cs">
       <DependentUpon>About.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

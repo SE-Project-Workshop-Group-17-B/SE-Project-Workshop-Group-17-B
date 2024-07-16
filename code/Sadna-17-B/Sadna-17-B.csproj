@@ -470,6 +470,7 @@
     <Compile Include="DomainLayer\User\Subscriber.cs" />
     <Compile Include="DomainLayer\User\User.cs" />
     <Compile Include="DomainLayer\User\UserController.cs" />
+    <Compile Include="Layer_Service\ServiceDTOs\externalDTOS.cs" />
     <Compile Include="Layer_Infrastructure\Config.cs" />
     <Content Include="Layer_Infrastructure\config_generate.json" />
     <None Include="Layer_Infrastructure\config_ours.json" />
@@ -516,6 +517,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Entities\" />
+    <Folder Include="Layer_API\Controllers\" />
     <Folder Include="Layer_DataAccess\Context\" />
     <Folder Include="Layer_DataAccess\Entities\" />
     <Folder Include="Layer_DataAccess\NewFolder1\" />

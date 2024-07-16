@@ -14,7 +14,16 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.WebPages;
-//using Sadna_17_B_API.Controllers;
+using Sadna_17_B_API.Controllers;
+using Sadna_17_B_API.Models;
+using System.Web.Caching;
+using Sadna_17_B_Frontend.Views;
+
+using Sadna_17_B.Layer_Service.ServiceDTOs;
+using Sadna_17_B.DomainLayer.Order;
+
+using System.Text;
+
 
 namespace Sadna_17_B_Frontend.Controllers
 {
@@ -27,11 +36,11 @@ namespace Sadna_17_B_Frontend.Controllers
 
         private static BackendController instance = null;
 
-        private ServiceFactory serviceFactory;
+        //private ServiceFactory serviceFactory;
 
-        public UserService userService;
+        //public UserService userService;
 
-        public StoreService storeService;
+        //public StoreService storeService;
         
         public UserDTO userDTO;
 
@@ -58,16 +67,16 @@ namespace Sadna_17_B_Frontend.Controllers
 
         // ----------------------------------- user classifications -----------------------------------------------------------------------
 
-        public async Task<string[]> roles(Dictionary<string, string> doc)
+        public string[] roles(Dictionary<string, string> doc)
         {
             int storeId = Parser.parse_int(doc["store id"]);
 
-            string s = (await founder(storeId) ? "|founder " : "") +
-                       (await owner(storeId) ? "|owner " : "") +
-                       (await manager(storeId) ? "|manager " : "") +
-                       (await guest() ? "|guest " : "") +
-                       (await subscriber() ? "|subscriber " : "") +
-                       (await admin() ? "|admin " : "");
+            string s = (founder(storeId) ? "|founder " : "") +
+                       (owner(storeId) ? "|owner " : "") +
+                       (manager(storeId) ? "|manager " : "") +
+                       (guest() ? "|guest " : "") +
+                       (subscriber() ? "|subscriber " : "") +
+                       (admin() ? "|admin " : "");
 
             if (string.IsNullOrEmpty(s))
             {
@@ -78,10 +87,10 @@ namespace Sadna_17_B_Frontend.Controllers
         }
 
 
-        public async Task<bool> has_roles(Dictionary<string, string> doc) // return true if given roles applied. - doc_doc -
+        public bool has_roles(Dictionary<string, string> doc) // return true if given roles applied. - doc_doc -
         {
             string[] check_roles = Parser.parse_array<string>(doc["roles to check"]);
-            string[] actual_roles = await roles(doc);
+            string[] actual_roles = roles(doc);
 
             foreach (string role in check_roles)
             {
@@ -94,47 +103,67 @@ namespace Sadna_17_B_Frontend.Controllers
             return true;
         }
 
-        private async Task<bool> founder(int storeId)
+        public bool founder(int storeId)
         {
             var payload = new { AccessToken = userDTO.AccessToken, StoreId = storeId };
-            Response response = await CheckRoleAsync(prefix + "/RestAPI/isFounder", payload);
+            Response response = CheckRole(prefix + "/RestAPI/isFounder", payload);
             return response.Success;
         }
 
-        private async Task<bool> owner(int storeId)
+        public bool owner(int storeId)
         {
             var payload = new { AccessToken = userDTO.AccessToken, StoreId = storeId };
-            Response response = await CheckRoleAsync(prefix + "/RestAPI/isOwner", payload);
+            Response response = CheckRole(prefix + "/RestAPI/isOwner", payload);
             return response.Success;
         }
 
-        private async Task<bool> manager(int storeId)
+        public bool manager(int storeId)
         {
             var payload = new { AccessToken = userDTO.AccessToken, StoreId = storeId };
-            Response response = await CheckRoleAsync(prefix + "/RestAPI/isManager", payload);
+            Response response = CheckRole(prefix + "/RestAPI/isManager", payload);
             return response.Success;
         }
 
-        private async Task<bool> guest()
+        public bool guest()
         {
             var payload = new { AccessToken = userDTO.AccessToken };
-            Response response = await CheckRoleAsync(prefix + "/RestAPI/isGuest", payload);
+            Response response = CheckRole(prefix + "/RestAPI/isGuest", payload);
             return response.Success;
         }
 
-        private async Task<bool> subscriber()
+        public bool subscriber()
         {
             var payload = new { AccessToken = userDTO.AccessToken };
-            Response response = await CheckRoleAsync(prefix + "/RestAPI/isSubscriber", payload);
+            Response response = CheckRole(prefix + "/RestAPI/isSubscriber", payload);
+            return response.Success;
+        }
+        public bool admin()
+        {
+            var payload = new { AccessToken = userDTO.AccessToken };
+            Response response = CheckRole(prefix + "/RestAPI/isAdmin", payload);
             return response.Success;
         }
 
-        private async Task<bool> admin()
+        private Response CheckRole(string endpoint, object payload)
         {
-            var payload = new { AccessToken = userDTO.AccessToken };
-            Response response = await CheckRoleAsync(prefix + "/RestAPI/isAdmin", payload);
-            return response.Success;
-        }
+            using (HttpClient client = new HttpClient())
+            {
+                HttpResponseMessage response = client.PostAsJsonAsync(endpoint, payload).Result;
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseContent = response.Content.ReadAsStringAsync().Result;
+                    Response responseObject = JsonConvert.DeserializeObject<Response>(responseContent);
+                    return responseObject;
+                }
+                else
+                {
+                    string errorMessage = response.Content.ReadAsStringAsync().Result;
+                    return new Response("An error occurred: " + errorMessage, false, null);
+                }
+            }
+        } 
+    
         private async Task<Response> CheckRoleAsync(string endpoint, object payload)
         {
             using (HttpClient client = new HttpClient())
@@ -158,15 +187,45 @@ namespace Sadna_17_B_Frontend.Controllers
 
         // ----------------------------------- store information -----------------------------------------------------------------------
 
-        public ShoppingCartDTO get_shoping_cart(Dictionary<string,string> doc)
+        public async Task<ShoppingCartDTO> get_shoping_cart()
         {
-
-            Response response = userService.cart_by_token(doc);
-            if (response.Success)
+            using (HttpClient client = new HttpClient())
             {
-                return (response.Data as ShoppingCartDTO);
+                var user = new UIuserDTOAPI { Username = "", Password = "", AccessToken = userDTO.AccessToken };
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/get_shoping_cart", user); // add relative path
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string response1 = await response.Content.ReadAsStringAsync();
+                    return JsonConvert.DeserializeObject<ShoppingCartDTO>(response1);
+                }
+                else
+                {
+                    return null;
+                }
             }
-            return null;
+
+        }
+
+        public async Task<List<ItemDTO>> get_shoping_cart_products()
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                var user = new UIuserDTOAPI { Username = "", Password = "", AccessToken = userDTO.AccessToken };
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/get_shoping_cart", user); // add relative path
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string response1 = await response.Content.ReadAsStringAsync();
+                    List<ItemDTO> res = JsonConvert.DeserializeObject<List<ItemDTO>>(response1);
+                    return res;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+
         }
 
         public async Task<Response> get_stores()
@@ -196,52 +255,178 @@ namespace Sadna_17_B_Frontend.Controllers
             }
         }
 
-        public List<Store> got_owned_stores()
+        public async Task<Response> search_products_async(Dictionary<string, string> searchDoc)
         {
-            Response response = userService.GetMyOwnedStores(userDTO.AccessToken);
-            if (response.Success)
+            using (HttpClient client = new HttpClient())
             {
-                List<int> storeIds = response.Data as List<int>;
-                return get_store_details(storeIds);
+                try
+                {
+                    var searchDTO = new ProductSearchDTO
+                    {
+                        AccessToken = userDTO.AccessToken, 
+                        SearchCriteria = searchDoc
+                    };
+
+                    HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/search_product", searchDTO);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        string responseContent = await response.Content.ReadAsStringAsync();
+                        Response responseObject = JsonConvert.DeserializeObject<Response>(responseContent);
+                        return responseObject;
+                    }
+                    else
+                    {
+                        string errorMessage = await response.Content.ReadAsStringAsync();
+                        return new Response($"An error occurred while searching for products: {errorMessage}", false, null);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    return new Response($"An exception occurred while searching for products: {ex.Message}", false, null);
+                }
             }
-            return new List<Store>();
+        }
+        //rewrite the following functions 
+        //Elay Dadon
+        public async Task<List<Store>> got_owned_stores()
+        {
+            //var user = new UIuserDTOAPI { Username = username, Password = password, AccessToken = "" };
+            using (HttpClient client = new HttpClient())
+            {
+                var user = new UIuserDTOAPI { Username = "", Password = "", AccessToken = userDTO.AccessToken };
+
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/get_owned_stores", user); // add relative path
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseString = await response.Content.ReadAsStringAsync();
+                    Response responseObj = JsonConvert.DeserializeObject<Response>(responseString);
+                    List<int> storeIds = JsonConvert.DeserializeObject<List<int>>(responseObj.Data.ToString());
+                    return await get_store_details(storeIds);
+                }
+                else
+                {
+                    return new List<Store>();
+                }
+            }
         }
 
-        public List<Store> get_managed_store()
+        public async Task<List<Store>> get_managed_store()
         {
-            Response response = userService.GetMyManagedStores(userDTO.AccessToken);
-            if (response.Success)
+            using (HttpClient client = new HttpClient())
             {
-                List<int> storeIds = response.Data as List<int>;
-                return get_store_details(storeIds);
+                var user = new UIuserDTOAPI { Username = "", Password = "", AccessToken = userDTO.AccessToken };
+
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/get_managed_stores", user); // add relative path
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseString = await response.Content.ReadAsStringAsync();
+                    Response responseObj = JsonConvert.DeserializeObject<Response>(responseString);
+                    List<int> storeIds = JsonConvert.DeserializeObject<List<int>>(responseObj.Data.ToString());
+
+                    if (storeIds == null || storeIds.Count == 0)
+                    {
+                        return new List<Store>();
+                    }
+
+                    return await get_store_details(storeIds);
+                }
+                else
+                {
+                    return new List<Store>();
+                }
             }
-            return new List<Store>();
         }
 
-        private List<Store> get_store_details(List<int> storeIds)
+        private async Task<List<Store>> get_store_details(List<int> storeIds)
         {
             List<Store> storeDetailsList = new List<Store>();
             foreach (int storeId in storeIds)
             {
-                var storeDetails = get_store_details_by_id(storeId);
+                var storeDetails = await get_store_details_by_id(storeId);
                 if (storeDetails != null)
                 {
-                    storeDetailsList.Add(storeDetails);
+                    string breakup = storeDetails.Message;
+                    string[] lines = breakup.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+
+                    // Extracting the specific information
+                    string email = lines.FirstOrDefault(line => line.Contains("Email is"))?.Split(' ').Last();
+                    string phoneNumber = lines.FirstOrDefault(line => line.Contains("please call"))?.Split(' ').Last();
+                    string address = lines.FirstOrDefault(line => line.Contains("Located at"))?.Split(new[] { "at " }, StringSplitOptions.None).Last().Split(new[] { " feel" }, StringSplitOptions.None).First();
+                    string description = lines.FirstOrDefault(line => line.Contains("A little about us"));
+                    string storeName = lines.FirstOrDefault(line => line.Contains("This is"))?.Split(' ')[2];
+                    Store t = new Store(storeName,email,phoneNumber, description, address, storeId);
+                    storeDetailsList.Add(t);
                 }
             }
             return storeDetailsList;
         }
 
-        public Store get_store_details_by_id(int storeId)
+        public async Task<Response> get_store_details_by_id(int storeId)
         {
-            Response response = storeService.store_by_id(storeId);
-            if (response.Success)
+            using (HttpClient client = new HttpClient())
             {
-                return response.Data as Store;
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/get_store_details", storeId);
+                string response1 = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<Response>(response1);
             }
-            return null;
         }
 
+        public async Task<Response> get_store_name(int storeId)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/get_store_name", storeId);
+                string response1 = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<Response>(response1);
+            }
+        }
+
+        public async Task<Response> get_store_rating_by_id(int storeId)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/get_store_rating_by_id", storeId);
+                string response1 = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<Response>(response1);
+            }
+        }
+
+        public async Task<Response> add_store_rating(int storeId, double rating)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                var payload = new { ID = storeId, Data = rating.ToString() };
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/add_store_rating", payload);
+                string response1 = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<Response>(response1);
+            }
+        }
+
+        public async Task<Response> add_store_complaint(int storeId, string complaint)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                var payload = new { ID = storeId, Data = complaint };
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/add_store_complaint", payload);
+                string response1 = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<Response>(response1);
+            }
+        }
+
+        public async Task<Response> add_store_review(int storeId, string review)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                //review saved as complaint for more nice code
+                var payload = new { ID = storeId, Data = review };
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/add_store_review", payload);
+                string response1 = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<Response>(response1);
+            }
+        }
 
 
         // ----------------------------------- authentication system -----------------------------------------------------------------------
@@ -265,10 +450,42 @@ namespace Sadna_17_B_Frontend.Controllers
             }
         }
 
-        public void add_product_to_cart(Dictionary<string,string> doc,int change)
+        public async Task add_product_to_cart(Dictionary<string,string> doc,int change)
         {
-            userService.cart_add_product(doc,change);
+            using (HttpClient client = new HttpClient())
+            {
+                //id saved as change cause not enough time
+                var payload = new { Doc = doc, Change = change };
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/cart_add_product", payload);
+            }
+            
         }
+        public async Task<Response> OfferOwnerAppointment(int storeId, string userName)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                var appointmentDetails = new
+                {
+                    StoreId = storeId,
+                    UserName = userName,
+                    AccessToken = userDTO.AccessToken
+                };
+
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/offerOwnerAppointment", appointmentDetails);
+                string responseContent = await response.Content.ReadAsStringAsync();
+                Response responseObj = JsonConvert.DeserializeObject<Response>(responseContent);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    return responseObj;
+                }
+                else
+                {
+                    return responseObj;
+                }
+            }
+        }
+
 
         public async Task<string> login(string username, string password)
         {
@@ -295,27 +512,45 @@ namespace Sadna_17_B_Frontend.Controllers
             }
         }
 
-        public string sign_up(string username, string password)
+        public async Task<string> sign_up(string username, string password)
         {
-            Response response = userService.upgrade_subscriber(username, password);
-            if (!response.Success)
+            using (HttpClient client = new HttpClient())
             {
-                return response.Message;
+                var user = new UIuserDTOAPI { Username = username, Password = password, AccessToken = "" };
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/signup", user); // add relative path
+                if (response.IsSuccessStatusCode)   
+                {
+                    return null; // Sign up successful
+                }
+                else
+                {
+                    string errorMessage = await response.Content.ReadAsStringAsync();
+                    return $"Sign up failed: {errorMessage}";
+                }
             }
-            return null;
         }
 
-        public string logout()
+        public async Task<string> logout()
         {
-            Response response = userService.exit_subscriber(userDTO.AccessToken);
-            if (!response.Success)
+            using (HttpClient client = new HttpClient())
             {
-                return response.Message;
-            }
+                var user = new UIuserDTOAPI { Username = "", Password = "", AccessToken = userDTO.AccessToken };
+                HttpResponseMessage response = client.PostAsJsonAsync(prefix + "/RestAPI/logout", user).GetAwaiter().GetResult();
+                string responseContent = await response.Content.ReadAsStringAsync();
+                Response responseObj = JsonConvert.DeserializeObject<Response>(responseContent);
 
-            userDTO = response.Data as UserDTO;
-            return null;
+                if (!response.IsSuccessStatusCode)
+                {
+                    return responseObj?.Message ?? "Unknown error occurred";
+                }
+                else
+                {
+                    userDTO = JsonConvert.DeserializeObject<UserDTO>(responseObj.Data.ToString());// username = null , accessToken = "%GUEST%"
+                    return null;
+                }
+            }
         }
+
 
         public bool logged_in()
         {
@@ -338,194 +573,301 @@ namespace Sadna_17_B_Frontend.Controllers
 
 
         // ----------------------------------- store management -----------------------------------------------------------------------
-
-        public Response add_store_product(string token, int sid, string name, double price, string category, string description, int amount) // not implemented
+        //Elay Dadon 2
+        public async Task<Response> add_store_product(string token, int sid, string name, double price, string category, string description, int amount)
         {
-            Response res = storeService.add_product_to_store(token, sid, name, price, category, description, amount);
-            return res;
-        }
-
-        public Response edit_store_product(Dictionary<string, string> doc) // not implemented
-        {
-            return storeService.edit_product_in_store(doc);
-        }
-
-        public Response remove_from_cart(int productIndex)
-        {
-            string tempAccToken = userDTO.AccessToken;
-            Dictionary<string, string> cartDoc = new Dictionary<string, string>();
-            cartDoc["token"] = tempAccToken;
-            ShoppingCartDTO cart = get_shoping_cart(cartDoc);
-            Dictionary<int, ShoppingBasketDTO> temp = cart.ShoppingBaskets;
-
-            foreach (KeyValuePair<int, ShoppingBasketDTO> element in temp)
+            using (HttpClient client = new HttpClient())
             {
-                ShoppingBasketDTO currBasket = element.Value;
-                Dictionary<ProductDTO, int> currProducts = currBasket.ProductQuantities;
-
-                foreach (KeyValuePair<ProductDTO, int> p in currProducts)
+                var dto = new
                 {
-                    ProductDTO currP = p.Key;
-                    if (productIndex == currP.Id)
-                    {
-                        return userService.cart_remove_product(currP, userDTO.AccessToken);
-                    }
+                    Token = token,
+                    Sid = sid,
+                    Name = name,
+                    Price = price,
+                    Category = category,
+                    Description = description,
+                    Amount = amount
+                };
+
+                // Send the POST request
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/add_store_product", dto); // add relative path
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseString = await response.Content.ReadAsStringAsync();
+                    Response responseObj = JsonConvert.DeserializeObject<Response>(responseString);
+                    return responseObj;
+                }
+                else
+                {
+                    string errorMessage = await response.Content.ReadAsStringAsync();
+                    throw new Exception("An error occurred while adding store product: " + errorMessage);
                 }
             }
-
-            return new Response("Faield to find the product", false);
         }
 
-        private void updateCart(Dictionary<string,string> doc) 
+
+        public async Task<Response> edit_store_product(Dictionary<string, string> doc)
         {
-            ShoppingCartDTO cart = get_shoping_cart(doc);
-            foreach (KeyValuePair<int, ShoppingBasketDTO> element in cart.ShoppingBaskets)
+            using (HttpClient client = new HttpClient())
             {
-                checkIfDeleteBasket(element.Key, doc);
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/editProduct", doc);
+                string responseContent = await response.Content.ReadAsStringAsync();
+                Response responseObj = JsonConvert.DeserializeObject<Response>(responseContent);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    return responseObj;
+                }
+                else
+                {
+                    return responseObj;
+                }
             }
         }
 
-        private bool checkIfDeleteBasket(int storeId, Dictionary<string, string> doc)
+
+        public async Task<Response> remove_from_cart(int productIndex)
         {
-            ShoppingBasketDTO basket = get_shoping_cart(doc).ShoppingBaskets[storeId];
-            return false;
+            string tempAccToken = userDTO.AccessToken;
+            var Cart = await get_shoping_cart_products();
+            if (Cart != null)
+            {
+                int counter = 0;
+                foreach (ItemDTO item in Cart)
+                {
+                    counter++;
+                    if (productIndex == item.ID)
+                    {
+                        var payload = new
+                        {
+                            token = tempAccToken,
+                            productId = item.ID,
+                            Item = item
+                        };
+
+                        using (HttpClient client = new HttpClient())
+                        {
+                            HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/remove_from_cart", payload);
+
+                            if (response.IsSuccessStatusCode)
+                            {
+                                string responseContent = await response.Content.ReadAsStringAsync();
+                                return JsonConvert.DeserializeObject<Response>(responseContent);
+                            }
+                            else
+                            {
+                                string errorMessage = await response.Content.ReadAsStringAsync();
+                                return new Response($"Failed to remove the product: {errorMessage}", false);
+                            }
+                        }
+                    }
+                }
+            }           
+
+            return new Response("Failed to find the product", false);
+        }
+
+
+        private async void updateCart(Dictionary<string,string> doc) 
+        {
+            ShoppingCartDTO cart = await get_shoping_cart();
+            foreach (KeyValuePair<int, ShoppingBasketDTO> element in cart.ShoppingBaskets)
+            {
+                await checkIfDeleteBasket(element.Key, doc);
+            }
+        }
+
+        public async Task<bool> checkIfDeleteBasket(int storeId, Dictionary<string, string> doc)
+        {
+            try
+            {
+                ShoppingCartDTO cart = await get_shoping_cart();
+                if (cart.ShoppingBaskets.TryGetValue(storeId, out ShoppingBasketDTO basket))
+                {
+                    // Implement your logic to check if the basket should be deleted
+                    return false; // Placeholder return value
+                }
+                else
+                {
+                    throw new KeyNotFoundException($"Basket with ID {storeId} not found.");
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"An error occurred: {ex.Message}");
+            }
         }
 
         // ---------- status -----------------------------------
 
-        public Tuple<string, int> create_store(string name, string email, string phoneNumber, string storeDescription, string address) // upgrade to create_store by doc_doc
+        public async Task<Tuple<string, int>> create_store(string name, string email, string phoneNumber, string storeDescription, string address)
         {
-            Response response = storeService.create_store(userDTO.AccessToken, name, email, phoneNumber, storeDescription, address);
-            if (!response.Success)
+            using (HttpClient client = new HttpClient())
             {
-                return new Tuple<string, int>(response.Message, -1);
+                var storeDetails = new
+                {
+                    Name = name,
+                    Email = email,
+                    PhoneNumber = phoneNumber,
+                    StoreDescription = storeDescription,
+                    Address = address,
+                    AccessToken = userDTO.AccessToken
+                };
+
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/createStore", storeDetails);
+                string responseContent = await response.Content.ReadAsStringAsync();
+                Response responseObj = JsonConvert.DeserializeObject<Response>(responseContent);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    return new Tuple<string, int>(responseObj?.Message ?? "Unknown error occurred", -1);
+                }
+                else
+                {
+                    return new Tuple<string, int>(null, (int)(responseObj.Data));
+                }
             }
-            return new Tuple<string, int>(null, (int)(response.Data));
-        }
+        }       
 
-        public Response create_store(Dictionary<string, string> doc) // implement with doc_doc documentation
+        public async Task<Response> search_products_by(Dictionary<string, string> doc) // implement with doc_doc documentation
         {
-            return storeService.create_store(doc);
-        }
-
-        public Response reopen_store(int store_id) // not implemented
-        {
-            return new Response("", true);
-        }
-
-        public Response close_store(int store_id) // not implemented
-        {
-            return new Response("", true);
-        }
-
-
-        // ---------- order -----------------------------------
-
-        public Response search_products(string keyword, string category, int minPrice, int maxPrice, int minRating, int minStoreRating, int storeId) // upgrade to search_products_by doc_doc
-        {
-            try
+            using (HttpClient client = new HttpClient())
             {
-                List<Product> products = storeService.all_products().Data as List<Product>;
-
-                // Determine the initial set of products based on keyword or category.
-                if (!string.IsNullOrEmpty(keyword))
-                {
-                    var response = storeService.search_product_by(new Dictionary<string, string>());
-                    if (!response.Success)
-                    {
-                        products = new List<Product>();
-                    }
-
-                    products = response.Data as List<Product>;
-                }
-                else if (!string.IsNullOrEmpty(category))
-                {
-                    var response = storeService.search_product_by(new Dictionary<string, string>());
-                    if (!response.Success)
-                    {
-                        products = new List<Product>();
-                    }
-                    products = response.Data as List<Product>;
-                }
-
-                // Filter by Store ID if provided
-                //if (storeId != -1 && products != null)
-                //{
-                //    var response = storeService.filter_search_by_store_id(products, storeId);
-                //    if (!response.Success) return response;
-                //    products = response.Data as Dictionary<Product, int>;
-                //}
-
-                // Filter by price range if valid
-                else if ((minPrice > 0 || maxPrice > 0) && products != null)
-                {
-                    var response = storeService.search_product_by(new Dictionary<string, string>());
-                    if (!response.Success)
-                    {
-                        products = new List<Product>();
-                    }
-                    products = response.Data as List<Product>;
-                }
-
-                //// Filter by product rating if valid
-                //if (minRating != -1 && products != null)
-                //{
-                //    var response = storeService.filter_search_by_product_rating(products, minRating);
-                //    if (!response.Success) return response;
-                //    products = response.Data as Dictionary<Product, int>;
-                //}
-
-                //// Filter by store rating if valid
-                //if (minStoreRating != -1 && products != null)
-                //{
-                //    var response = storeService.filter_search_by_store_rating(products, minStoreRating);
-                //    if (!response.Success) return response;
-                //    products = response.Data as Dictionary<Product, int>;
-                //}
-
-                // Final check if any products are found after all filters
-                if (products == null || products.Count == 0)
-                {
-                    return new Response("No products found with the specified filters.", false, null);
-                }
-
-                return new Response("Products found successfully.", true, products);
-            }
-            catch (Exception ex)
-            {
-                // Log exception details here to diagnose issues.
-                return new Response("An error occurred while searching for products: " + ex.Message, false, null);
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/search_product_by", doc);
+                string response1 = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                return JsonConvert.DeserializeObject<Response>(response1);
             }
         }
 
-        public Response search_products_by(Dictionary<string, string> doc) // implement with doc_doc documentation
+        public async Task<Response> cart_remove_product(ProductDTO product)
         {
-            return storeService.search_product_by(doc);
+            string token = userDTO.AccessToken;
+            using (HttpClient client = new HttpClient())
+            {
+                var payload = new { p = product, AccessToken = token };
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/cart_remove_product", payload);
+                string response1 = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                return JsonConvert.DeserializeObject<Response>(response1);
+            }
+        }
+        public async Task<Response> OfferManagerAppointment(int storeId, string userName)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                var appointmentDetails = new
+                {
+                    StoreId = storeId,
+                    UserName = userName,
+                    AccessToken = userDTO.AccessToken
+                };
+
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/offerManagerAppointment", appointmentDetails);
+                string responseContent = await response.Content.ReadAsStringAsync();
+                Response responseObj = JsonConvert.DeserializeObject<Response>(responseContent);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    return responseObj;
+                }
+                else
+                {
+                    return responseObj;
+                }
+            }
         }
 
+        public async Task<Response> AbandonOwnership(int storeId)
+
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                var requestDetails = new { StoreId = storeId, AccessToken = userDTO.AccessToken };
+
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/abandonOwnership", requestDetails);
+                string responseContent = await response.Content.ReadAsStringAsync();
+                Response responseObj = JsonConvert.DeserializeObject<Response>(responseContent);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    return responseObj;
+                }
+                else
+                {
+                    return responseObj;
+                }
+            }
+        }
+        public async Task<Response> CloseStore(int storeId)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                var requestDetails = new { StoreId = storeId, AccessToken = userDTO.AccessToken };
+
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/closeStore", requestDetails);
+                string responseContent = await response.Content.ReadAsStringAsync();
+                Response responseObj = JsonConvert.DeserializeObject<Response>(responseContent);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    return responseObj;
+                }
+                else
+                {
+                    return responseObj;
+                }
+            }
+        }
+
+
+
+        
+            
+
+       
+        public async Task<Response> cart_update_product(Dictionary<string, string> doc)
+        {
+            string token = userDTO.AccessToken;
+            using (HttpClient client = new HttpClient())
+            {
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/cart_update_product", doc);
+                string response1 = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                return JsonConvert.DeserializeObject<Response>(response1);
+            }
+        }
+
+        public async Task<Response> get_store_reviews_by_ID(int storeId)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/get_store_reviews_by_ID", storeId);
+                string response1 = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                return JsonConvert.DeserializeObject<Response>(response1);
+            }
+        }
+
+        //this is not working
         public Response show_cart(Dictionary<string, string> doc) // not implemented 
         {
-            return new Response(true, "");
+            return new Response(true, ""); 
         }
 
-        public Response clean_cart()
+        public async Task<Response> clean_cart()
         {
-
             string tempAccToken = userDTO.AccessToken;
             Dictionary<string, string> cartDoc = new Dictionary<string, string>();
             cartDoc["token"] = tempAccToken;
-            ShoppingCartDTO cart = get_shoping_cart(cartDoc);
-            Dictionary<int, ShoppingBasketDTO> temp = cart.ShoppingBaskets;
+            List<ItemDTO> cart = await get_shoping_cart_products();
 
-            foreach (KeyValuePair<int, ShoppingBasketDTO> element in temp)
+            foreach(ItemDTO item in cart)
             {
-                ShoppingBasketDTO currBasket = element.Value;
-                Dictionary<ProductDTO, int> currProducts = currBasket.ProductQuantities;
-
-                foreach (KeyValuePair<ProductDTO, int> p in currProducts)
+                string token = userDTO.AccessToken;
+                using (HttpClient client = new HttpClient())
                 {
-                    ProductDTO currP = p.Key;
-                    userService.cart_remove_product(currP, userDTO.AccessToken);
+                    var payload = new { ProductId = item.ID, Token = token, Item = item };
+                    HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/remove_from_cart", payload);
+                    string response1 = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                    return JsonConvert.DeserializeObject<Response>(response1);
                 }
             }
 
@@ -537,20 +879,225 @@ namespace Sadna_17_B_Frontend.Controllers
 
         // ---------- checkout -----------------------------------
 
-        public double process_store_order(Basket basket)
+        public async /*   ???   */ Task<Response> completePurchase(Dictionary<string,string> supply, Dictionary<string,string> payment)
         {
-            Response response = storeService.calculate_products_prices(basket);
-            if (response.Success)
-            {
-                return (response.Data as Mini_Checkout).price_after_discount();
+            Response response;
+
+            //we want this function to return amount to pay
+            response = await process_order(supply, payment);                     // backend
+            if (!response.Success)
+                return response;
+            else {
+                double priceToPay = double.Parse(response.Data.ToString());
+                payment["amount"] = priceToPay.ToString(); 
             }
-            return 0;
+            
+            //WORKING
+            response = await supply_order(supply);                // external
+            if (!response.Success)
+                return response;
+
+            //WORKING
+            response = await pay_order(payment);                  // external
+            if (!response.Success)
+                return response;
+
+            //need to reduce from store here?
+            response = await reduce_order();                     // backend
+            if (!response.Success)
+                return response;
+
+            
+            return new Response("Purchase Completed Successfully", true);
         }
 
-        public Response completePurchase(string token, string destAddr, string creditCardInfo)
+        public async /*   ???   */ Task<Response> process_order(Dictionary<string, string> supply, Dictionary<string, string> payment)
+
         {
-            return userService.CompletePurchase(token, destAddr, creditCardInfo);
+            using (HttpClient client = new HttpClient())
+            {
+                string token = userDTO.AccessToken;
+                var payload = new
+                {
+                    Supply = supply,
+                    Payment = payment,
+                    AccessToken = userDTO.AccessToken
+                };
+
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/process_order", payload);
+                string responseContent = await response.Content.ReadAsStringAsync();
+                Response responseObj = JsonConvert.DeserializeObject<Response>(responseContent);
+
+                return responseObj;
+            }
+
+            
         }
+
+
+        public async /*   int   */ Task<Response> pay_order(Dictionary<string,string> payment)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                var payload = new FormUrlEncodedContent(payment);
+                HttpResponseMessage response = await client.PostAsync("https://damp-lynna-wsep-1984852e.koyeb.app/", payload); // add relative path
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseContent = await response.Content.ReadAsStringAsync();
+                    int transaction_id = JsonConvert.DeserializeObject<int>(responseContent);
+                    if (transaction_id > 0)
+                        return new Response("Payment succeeded", true);
+
+                    return new Response("Payment Failed", false, transaction_id);
+                }
+
+                else
+                {
+                    string errorMessage = await response.Content.ReadAsStringAsync();
+                    return new Response(errorMessage, false);
+                }
+            }
+        }
+
+        public async /*   int   */ Task<Response> supply_order(Dictionary<string,string> supply)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                var payload = new FormUrlEncodedContent(supply);
+                HttpResponseMessage response = await client.PostAsync("https://damp-lynna-wsep-1984852e.koyeb.app/", payload); // add relative path
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseContent = await response.Content.ReadAsStringAsync();
+                    int transaction_id = JsonConvert.DeserializeObject<int>(responseContent);
+                    return new Response("Transaction Completed", transaction_id != -1, transaction_id); 
+                }
+
+                else
+                {
+                    string errorMessage = await response.Content.ReadAsStringAsync();
+                    return new Response(errorMessage, false);
+                }
+            }
+        }
+
+        public async /*   bool  */ Task<Response> reduce_order()
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/reduce_order", userDTO.AccessToken); // add relative path
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseContent = await response.Content.ReadAsStringAsync();
+                    Response res = JsonConvert.DeserializeObject<Response>(responseContent);
+                    if (res.Success)
+                        return new Response("Payment and delivery succeeded", true);
+                    else
+                        return new Response(res.Message, false);
+                }
+                else
+                {
+                    string errorMessage = await response.Content.ReadAsStringAsync();
+                    return new Response("reduction was not successful", false);
+                }
+            }
+        }
+
+
+        public async Task<Response> handshake()
+        {
+            using (HttpClient client = new HttpClient())
+            {
+
+                handshakeDTO handshake = new handshakeDTO();
+
+                HttpResponseMessage response = await client.PostAsJsonAsync("https://damp-lynna-wsep-1984852e.koyeb.app/", handshake); // add relative path
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseContent = response.Content.ReadAsStringAsync().Result;
+                    string success_status = JsonConvert.DeserializeObject<string>(responseContent);
+                    return new Response(success_status, success_status == "OK");
+                }
+
+                else
+                {
+                    string errorMessage = await response.Content.ReadAsStringAsync();
+                    return new Response(errorMessage, false);
+                }
+            }
+        }
+
+        public async Task<Response> cancel_supply(cancel_supply_DTO cancel)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                HttpResponseMessage response = await client.PostAsJsonAsync("https://damp-lynna-wsep-1984852e.koyeb.app/", cancel); // add relative path
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseContent = response.Content.ReadAsStringAsync().Result;
+                    int cancelation_status = JsonConvert.DeserializeObject<int>(responseContent);
+                    return new Response("",cancelation_status != -1,cancelation_status);
+                }
+
+                else
+                {
+                    string errorMessage = await response.Content.ReadAsStringAsync();
+                    return new Response(errorMessage, false);
+                }
+            }
+        }
+
+        public async Task<Response> cancel_payment(cancel_pay_DTO cancel)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                HttpResponseMessage response = await client.PostAsJsonAsync("https://damp-lynna-wsep-1984852e.koyeb.app/", cancel); // add relative path
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseContent = response.Content.ReadAsStringAsync().Result;
+                    int cancelation_status = JsonConvert.DeserializeObject<int>(responseContent);
+                    return new Response("", cancelation_status != -1, cancelation_status);
+                }
+
+                else
+                {
+                    string errorMessage = await response.Content.ReadAsStringAsync();
+                    return new Response(errorMessage, false);
+                }
+            }
+        }
+        public async Task<Response> GetProductRating(int productId)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                var requestDetails = new
+                {
+                    ProductId = productId,
+                    AccessToken = userDTO.AccessToken
+                };
+
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/getProductRating", requestDetails);
+                string responseContent = await response.Content.ReadAsStringAsync();
+                Response responseObj = JsonConvert.DeserializeObject<Response>(responseContent);
+
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    return responseObj;
+                }
+                else
+                {
+                    return responseObj;
+                }
+            }
+        }
+
+
 
 
         // ---------- produt -----------------------------------
@@ -558,62 +1105,307 @@ namespace Sadna_17_B_Frontend.Controllers
 
 
 
-        public Product get_product_by_id(int productId)
+        public async Task<Product> get_product_by_id(int productId)
         {
-            Response response = storeService.get_product_by_id(productId);
-            if (response.Success)
+            using (HttpClient client = new HttpClient())
             {
-                return response.Data as Product;
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/get_product_by_id", productId);
+                string response1 = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                Response response2 = JsonConvert.DeserializeObject<Response>(response1);
+                if (response2.Success)
+                    return JsonConvert.DeserializeObject<Product>(response2.Data.ToString());
+                return null;
             }
-            return null;
-        }
-
-  
-
-
-/*
-        // Todo impliment 
-        public Response add_to_cart(int productId)
-        {
-            //  return userService.AddToCart(userDTO.AccessToken, productId);
-            return new Response("succes", true);
-        }*/
-
-
-       
-
-        public Response add_product_rating(int storeID, int productID, int rating)
-        {
-            return storeService.add_product_rating(storeID, productID, rating);
-        }
-
-        public Response add_product_review(int storeID, int productID, string review)
-        {
-            return storeService.add_product_review(storeID, productID, review);
         }
 
 
-    /*    public Response add_product_rating(int storeID, int productID, int rating)
+        public async Task<Response> add_product_to_cart_async(Dictionary<string, string> doc, int change)
         {
-            return storeService.add_product_rating(storeID, productID, rating);
+            using (HttpClient client = new HttpClient())
+            {
+                try
+                {
+                    var addToCartDTO = new AddToCartDTO
+                    {
+                        Doc = doc,
+                        Change = change
+                    };
+
+                    HttpResponseMessage response = await client.PostAsJsonAsync($"{prefix}/RestAPI/add_product_to_cart", addToCartDTO);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        string responseContent = await response.Content.ReadAsStringAsync();
+                        return JsonConvert.DeserializeObject<Response>(responseContent);
+                    }
+                    else
+                    {
+                        string errorMessage = await response.Content.ReadAsStringAsync();
+                        return new Response($"An error occurred while adding to cart: {errorMessage}", false, null);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    return new Response($"An exception occurred while adding to cart: {ex.Message}", false, null);
+                }
+            }
         }
 
-        public Response add_product_review(int storeID, int productID, string review)
+        public async Task<Product> get_product_by_id_async(int productId)
         {
-            return storeService.add_product_review(storeID, productID, review);
+            using (HttpClient client = new HttpClient())
+            {
+                try
+                {
+                    HttpResponseMessage response = await client.GetAsync($"{prefix}/RestAPI/get_product_by_id/{productId}");
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        string responseContent = await response.Content.ReadAsStringAsync();
+                        Response responseObject = JsonConvert.DeserializeObject<Response>(responseContent);
+
+                        if (responseObject.Success)
+                        {
+                            return JsonConvert.DeserializeObject<Product>(responseObject.Data.ToString());
+                        }
+                        else
+                        {
+                            Console.WriteLine($"Error getting product: {responseObject.Message}");
+                            return null;
+                        }
+                    }
+                    else
+                    {
+                        string errorMessage = await response.Content.ReadAsStringAsync();
+                        Console.WriteLine($"Error getting product: {errorMessage}");
+                        return null;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Exception occurred while getting product: {ex.Message}");
+                    return null;
+                }
+            }
         }
 
-        public Response search_products_by(Dictionary<string, string> doc)
+        public async Task<Response> show_purchase_policy(Dictionary<string, string> policy)
         {
-            return storeService.search_product_by(doc);
-        }*/
+            using (HttpClient client = new HttpClient())
+            {
+
+                // Send the POST request
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/show_purchase_policy", policy); // add relative path
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseString = await response.Content.ReadAsStringAsync();
+                    Response responseObj = JsonConvert.DeserializeObject<Response>(responseString);
+                    return responseObj;
+                }
+                else
+                {
+                    string errorMessage = await response.Content.ReadAsStringAsync();
+                    throw new Exception("An error occurred while showing purchase policy: " + errorMessage);
+                }
+            }
+        }
+
+        public async Task<Response> edit_discount_policy(Dictionary<string, string> doc)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                // Send the POST request
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/edit_discount_policy", doc); // add relative path
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseString = await response.Content.ReadAsStringAsync();
+                    Response responseObj = JsonConvert.DeserializeObject<Response>(responseString);
+                    return responseObj;
+                }
+                else
+                {
+                    string errorMessage = await response.Content.ReadAsStringAsync();
+                    throw new Exception("An error occurred while showing purchase policy: " + errorMessage);
+                }
+
+            }
+
+        }
+
+        public async Task<Response> edit_Purchase_policy(Dictionary<string, string> doc)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                // Send the POST request
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/edit_purchase_policy", doc); // add relative path
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseString = await response.Content.ReadAsStringAsync();
+                    Response responseObj = JsonConvert.DeserializeObject<Response>(responseString);
+                    return responseObj;
+                }
+                else
+                {
+                    string errorMessage = await response.Content.ReadAsStringAsync();
+                    throw new Exception("An error occurred while showing purchase policy: " + errorMessage);
+                }
+
+            }
+
+        }
+        public async Task<Response> show_discount_policy(Dictionary<string, string> policy)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                // Serialize the policy dictionary to JSON
+                var jsonPayload = JsonConvert.SerializeObject(policy);
+                var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
+
+                // Send the POST request
+                HttpResponseMessage response = await client.PostAsync(prefix + "/RestAPI/show_discount_policy", content); // add relative path
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseString = await response.Content.ReadAsStringAsync();
+                    Response responseObj = JsonConvert.DeserializeObject<Response>(responseString);
+                    return responseObj;
+                }
+                else
+                {
+                    string errorMessage = await response.Content.ReadAsStringAsync();
+                    throw new Exception("An error occurred while showing discount policy: " + errorMessage);
+                }
+            }
+        }
+        public async Task<Response> GetStoreOrderHistory(int orderId)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                var dto = new { AccessToken = userDTO.AccessToken, OrderId = orderId };
+
+                // Send the POST request
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/get_store_order_history", dto); // add relative path
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseString = await response.Content.ReadAsStringAsync();
+                    Response responseObj = JsonConvert.DeserializeObject<Response>(responseString);
+                    return responseObj;
+                }
+                else
+                {
+                    string errorMessage = await response.Content.ReadAsStringAsync();
+                    throw new Exception("An error occurred while retrieving store order history: " + errorMessage);
+                }
+            }
+        }
+
+        public async Task<Response> GetUserOrderHistory(string username)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                var dto = new
+                {
+                    Token = userDTO.AccessToken,
+                    Username = username
+                };
+
+                // Serialize the DTO object to JSON
+                var jsonPayload = JsonConvert.SerializeObject(dto);
+                var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
+
+                // Send the POST request
+                HttpResponseMessage response = await client.PostAsync(prefix + "/RestAPI/get_user_order_history", content); // add relative path
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseString = await response.Content.ReadAsStringAsync();
+                    Response responseObj = JsonConvert.DeserializeObject<Response>(responseString);
+                    return responseObj;
+                }
+                else
+                {
+                    string errorMessage = await response.Content.ReadAsStringAsync();
+                    throw new Exception("An error occurred while retrieving user order history: " + errorMessage);
+                }
+            }
+        }
+
+        public async Task<Response> AddProductRating(int storeID, int productID, double rating)
+        {
+            int round = (int)rating;
+            using (HttpClient client = new HttpClient())
+            {
+                var ratingDetails = new
+                {
+                    StoreID = storeID,
+                    ProductID = productID,
+                    Rating = rating,
+                    AccessToken = userDTO.AccessToken
+                };
+
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/addProductRating", ratingDetails);
+                string responseContent = await response.Content.ReadAsStringAsync();
+                Response responseObj = JsonConvert.DeserializeObject<Response>(responseContent);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    return responseObj; 
+                }
+                else
+                {
+                    return responseObj;
+                }
+            }
+        }
 
 
+        //    public Response add_product_rating(int storeID, int productID, int rating)
+        //    {
+        //        return storeService.add_product_rating(storeID, productID, rating);
+        //    }
+        //
+        //add_product_review - name of function :)
+        public async Task<Response> add_product_review(int storeID, int productID, string review)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                var reviewDetails = new
+                {
+                    StoreID = storeID,
+                    ProductID = productID,
+                    Review = review,
+                    AccessToken = userDTO.AccessToken
+                };
 
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/addProductReview", reviewDetails);
+                string responseContent = await response.Content.ReadAsStringAsync();
+                Response responseObj = JsonConvert.DeserializeObject<Response>(responseContent);
 
+                if (!response.IsSuccessStatusCode)
+                {
+                    return responseObj;
+                }
+                else
+                {
+                    return responseObj;
+                }
+            }
+        }
+    }
 
+    public class ItemDTO
+    {
+        public int ID { get; set; }
+        public string Name { get; set; }
+        public string Category { get; set; }
+        public int Amount { get; set; }
+        public int StoreId { get; set; }
+        public double Price { get; set; }
+        public int Quantity { get; set; }
 
-
+        public ItemDTO() { }
     }
 }
 
