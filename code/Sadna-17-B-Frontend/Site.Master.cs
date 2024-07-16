@@ -1,8 +1,11 @@
-﻿using Sadna_17_B_Frontend.Controllers;
+﻿using Sadna_17_B.Utils;
+using Sadna_17_B_Frontend.Controllers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Web;
+using System.Web.Optimization;
 using System.Web.Services;
 using System.Web.UI;
 using System.Web.UI.WebControls;
@@ -14,6 +17,7 @@ namespace Sadna_17_B_Frontend
         BackendController backendController = BackendController.get_instance();
 
         protected string _loginLogoutButtons;
+        private static int count = 0;
         protected void Page_Load(object sender, EventArgs e)
         {
             MyCartBtn.Visible = true;
@@ -24,14 +28,11 @@ namespace Sadna_17_B_Frontend
                 LogoutBtn.Visible = true;
                 LblHello.Text = "Hello " + backendController.get_username() + "!";
                 LblHello.Visible = true;
+                NotificationBtn.Visible = true;
                 LoginBtn.Visible = false;
                 SignUpBtn.Visible = false;
-                //bool is_admin = backendController.admin().GetAwaiter().GetResult();
-                //   if (is_admin)
-                //       SystemAdminBtn.Visible = true;
-                //   else
-                //       SystemAdminBtn.Visible = false;
-                CheckAdminStatusAsync();
+                CheckAdminStatusAsync();                
+
                 //_loginLogoutButtons =
                 //   "<ul class=\"nav navbar-nav\" style=\"float: right\">" +
                 //   "<li><a runat=\"server\" onclick=\"Logout_Click\">Log Out</a></li>" +
@@ -42,6 +43,8 @@ namespace Sadna_17_B_Frontend
                 MyStoresBtn.Visible = false;
                 LogoutBtn.Visible = false;
                 LblHello.Visible = false;
+                NotificationBtn.Visible = false;
+
                 SystemAdminBtn.Visible = false;
                 LoginBtn.Visible = true;
                 SignUpBtn.Visible = true;
@@ -51,6 +54,31 @@ namespace Sadna_17_B_Frontend
                 //    "<li><a runat=\"server\" href=\"SignUp\"> Sign Up </a></li>" +
                 //    "</ul>";
             }
+            string script = @"const socket = new WebSocket('wss://localhost:7093/ws?username=sub');
+
+                                socket.onopen = function (event) {
+                                    console.log('WebSocket connection opened');
+                                };
+
+                                socket.onclose = function (event) {
+                                    console.log('WebSocket connection closed:', event);
+                                    alert('sdf');
+                                };
+
+                                socket.onerror = function (error) {
+                                    console.log('WebSocket error: ', error);
+                                };
+
+                                socket.onmessage = function (event) {
+                                    const message = event.data;
+                                    console.log('WebSocket message: ', message);
+                                    const no = JSON.parse(message)
+                                    console.log(no) 
+                                };
+                                ";
+            Page.ClientScript.RegisterStartupScript(this.GetType(), "WebSocketScript", script, true);
+            count++;
+
         }
         private void CheckAdminStatusAsync()
         {
@@ -59,8 +87,15 @@ namespace Sadna_17_B_Frontend
         }
         protected void NotificationsBtn_Click(object sender, EventArgs e)
         {
-            NotificationsContainer.Visible = !NotificationsContainer.Visible;
+            Response.Redirect("Notifications");
+
         }
+
+        //protected List<Notification> get_notifications()
+        //{
+        //    List<Notification> notifications = (backendController.get_notifications().GetAwaiter().GetResult()).Data as List<Notification>;
+        //    return notifications;
+        //}
 
         protected void NotificationsRepeater_ItemCommand(object source, RepeaterCommandEventArgs e)
         {
@@ -79,20 +114,21 @@ namespace Sadna_17_B_Frontend
         private void LoadNotifications()
         {
             List<Notification> notifications = new List<Notification>
-    {
-        new Notification { ID = 1, Message = "New message from John Doe", IsRead = false },
-        new Notification { ID = 2, Message = "Your order #12345 has been shipped", IsRead = false },
-        new Notification { ID = 3, Message = "Price drop alert on your wishlist item", IsRead = true },
-        new Notification { ID = 4, Message = "Reminder: Upcoming sale starts tomorrow", IsRead = false },
-        new Notification { ID = 5, Message = "Your account password was changed", IsRead = true }
-    };
+            {
+                new Notification { ID = 1, Message = "New message from John Doe", IsRead = false },
+                new Notification { ID = 2, Message = "Your order #12345 has been shipped", IsRead = false },
+                new Notification { ID = 3, Message = "Price drop alert on your wishlist item", IsRead = true },
+                new Notification { ID = 4, Message = "Reminder: Upcoming sale starts tomorrow", IsRead = false },
+                new Notification { ID = 5, Message = "Your account password was changed", IsRead = true }
+            };
 
-            NotificationsRepeater.DataSource = notifications;
-            NotificationsRepeater.DataBind();
+            ////List<Notification> notifications = get_notifications();
+            //NotificationsRepeater.DataSource = notifications;
+            //NotificationsRepeater.DataBind();
 
-            int unreadCount = notifications.Count(n => !n.IsRead);
-            UnreadNotificationsCount.InnerText = unreadCount.ToString();
-            UnreadNotificationsCount.Visible = unreadCount > 0;
+            //int unreadCount = notifications.Count(n => !n.IsRead);
+            //UnreadNotificationsCount.InnerText = unreadCount.ToString();
+            //UnreadNotificationsCount.Visible = unreadCount > 0;
         }
 
         [WebMethod]
@@ -152,6 +188,8 @@ namespace Sadna_17_B_Frontend
             Response.Redirect("SystemAdmin_page", false);
         }
     }
+
+    [Serializable]
     public class Notification
     {
         public int ID { get; set; }

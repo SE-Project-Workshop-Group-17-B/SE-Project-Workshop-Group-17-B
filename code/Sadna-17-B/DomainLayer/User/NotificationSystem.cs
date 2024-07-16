@@ -3,11 +3,20 @@ using System.Collections.Generic;
 
 namespace Sadna_17_B.DomainLayer.User
 {
+
+   
     public class NotificationSystem
     {
         private Dictionary<string, List<Notification>> notifications; // username -> List<Notification>
 
-        public NotificationSystem()
+        public static NotificationSystem Instance = null;
+        public static NotificationSystem getInstance()
+        {
+            if (Instance == null)
+                Instance = new NotificationSystem();
+            return Instance;
+        }
+        private NotificationSystem()
         {
             notifications = new Dictionary<string, List<Notification>>();
         }
@@ -20,6 +29,7 @@ namespace Sadna_17_B.DomainLayer.User
                 notifications[usernameToNotify] = new List<Notification>();
             }
             notifications[usernameToNotify].Add(notification);
+            NotificationsHandler.getInstance().Notify(usernameToNotify, notification);
         }
 
         public List<Notification> ReadNewNotifications(string username)
