@@ -1349,23 +1349,6 @@ namespace Sadna_17_B_Frontend.Controllers
                 }
             }
         }
-
-
-
-        /*    public Response add_product_rating(int storeID, int productID, int rating)
-            {
-                return storeService.add_product_rating(storeID, productID, rating);
-            }
-
-            public Response add_product_review(int storeID, int productID, string review)
-            {
-                return storeService.add_product_review(storeID, productID, review);
-            }
-
-            public Response search_products_by(Dictionary<string, string> doc)
-            {
-                return storeService.search_product_by(doc);
-            }*/
     }
 
     public class ItemDTO
