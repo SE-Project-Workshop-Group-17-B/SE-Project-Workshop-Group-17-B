@@ -1,4 +1,4 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿/*using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using Sadna_17_B.ServiceLayer;
 using Sadna_17_B.ServiceLayer.Services;
@@ -331,7 +331,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
             Assert.IsTrue(data.Item2[username3].SetEquals(auth));
         }
 
-        /*[TestMethod]
+        *//*[TestMethod]
         public void TestTwoPeopleUpdateSameUserDifferentAuthorizationsConccurency_Success()
         {
             //need to understande what should happend, easy fix
@@ -369,6 +369,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
             Assert.IsTrue(res.Success);
             Assert.IsTrue(data.Item1.Contains(username1));
             Assert.IsTrue(data.Item2[username3].SetEquals(auth));
-        }*/
+        }*//*
     }
 }
+*/

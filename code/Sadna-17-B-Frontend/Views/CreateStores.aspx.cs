@@ -86,7 +86,7 @@ namespace Sadna_17_B_Frontend.Views
                 if (response.Item1 == null)
                 {
                     DisplayMessage("Store created successfully. storeId = " + response.Item2, true);
-                    Response.Redirect("~/Views/StoreDetails.aspx?storeId=" + response.Item2); // Ensure the URL is correct
+                    Response.Redirect($"~/Views/Store_Page.aspx?storeId={response.Item2}");
                 }
                 else
                 {

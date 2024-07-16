@@ -17,16 +17,29 @@ namespace Sadna_17_B.DomainLayer.User
         }
 
 
-        public void add_to_cart(int sid, int amount, double price, string category, int pid, string name)
+        public void add_to_cart(int sid, int amount, double price, string category, int pid, string name,int change)
         {
-            ShoppingCart.add_product(sid, amount,  price,  category, pid, name);
+            if (!ShoppingCart.Baskets.ContainsKey(sid))
+                ShoppingCart.add_product(sid, amount, price, category, pid, name);
+            else
+            {
+                Basket b = ShoppingCart.Baskets[sid];
+                if (!b.containsProduct(pid))
+                    ShoppingCart.add_product(sid, amount, price, category, pid, name);
+                else
+                {
+                    Cart_Product cp = b.productById(pid);
+                    int oldAmount = cp.amount;
+                    update_product_in_cart(sid, cp.ID, oldAmount + change);
+                }
+            }
         }
 
         public void update_product_in_cart(int sid, int pid, int amount)
         {
             ShoppingCart.update_product(sid, pid, amount);
         }
-    
+
         public void CreateNewShoppingCart()
         {
             ShoppingCart = new Cart();

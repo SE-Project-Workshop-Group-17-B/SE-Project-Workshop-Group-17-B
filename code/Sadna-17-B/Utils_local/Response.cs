@@ -7,9 +7,13 @@ namespace Sadna_17_B.Utils
 {
     public class Response
     {
-        public string Message { get; }
-        public bool Success { get; }
-        public object Data { get; }
+        public string Message { get; set; }
+        public bool Success { get; set; }
+        public object Data { get; set; }
+
+        public Response()
+        {
+        }
 
         public Response(string message, bool success, object data)
         {

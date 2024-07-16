@@ -104,7 +104,20 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             }
             _unitOfWork.Complete();
         }
+        public void edit_product_amount(int p_id, int new_amount)
+        {
+            Product product = product_by_id(p_id);
 
+            lock (product)
+            {
+                product.locked = true;
+
+                product.amount = new_amount;
+
+                product.locked = false;
+            }
+
+        }
         public void increase_product_amount(int p_id, int increase_amount) 
         {
             Product product = product_by_id(p_id);
@@ -151,6 +164,12 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                 .ToList());
 
             return products;
+        }
+
+        public Product product_by_index(int index)
+        {
+            return id_to_product.ElementAt(index).Value;
+            //return id_to_product[index];
         }
 
         public List<Product> products_by_keyword(string[] keyWords)

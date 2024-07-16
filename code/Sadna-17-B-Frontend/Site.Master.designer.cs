@@ -24,6 +24,33 @@ namespace Sadna_17_B_Frontend
         protected global::System.Web.UI.WebControls.LinkButton MyStoresBtn;
 
         /// <summary>
+        /// SystemAdminBtn control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton SystemAdminBtn;
+
+        /// <summary>
+        /// NotificationsBtn control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton NotificationsBtn;
+
+        /// <summary>
+        /// UnreadNotificationsCount control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl UnreadNotificationsCount;
+
+        /// <summary>
         /// MyCartBtn control.
         /// </summary>
         /// <remarks>
@@ -76,5 +103,23 @@ namespace Sadna_17_B_Frontend
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.ContentPlaceHolder MainContent;
+
+        /// <summary>
+        /// NotificationsContainer control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl NotificationsContainer;
+
+        /// <summary>
+        /// NotificationsRepeater control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Repeater NotificationsRepeater;
     }
 }

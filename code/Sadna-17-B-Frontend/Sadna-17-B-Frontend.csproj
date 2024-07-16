@@ -48,6 +48,18 @@
       <HintPath>..\Sadna-17-B\packages\Microsoft.Bcl.AsyncInterfaces.1.1.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.IdentityModel.Abstractions, Version=7.6.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\Sadna-17-B\packages\Microsoft.IdentityModel.Abstractions.7.6.3\lib\net472\Microsoft.IdentityModel.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.JsonWebTokens, Version=7.6.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\Sadna-17-B\packages\Microsoft.IdentityModel.JsonWebTokens.7.6.3\lib\net472\Microsoft.IdentityModel.JsonWebTokens.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.Logging, Version=7.6.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\Sadna-17-B\packages\Microsoft.IdentityModel.Logging.7.6.3\lib\net472\Microsoft.IdentityModel.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.Tokens, Version=7.6.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\Sadna-17-B\packages\Microsoft.IdentityModel.Tokens.7.6.3\lib\net472\Microsoft.IdentityModel.Tokens.dll</HintPath>
+    </Reference>
     <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\Sadna-17-B\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
     </Reference>
@@ -56,6 +68,9 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.IdentityModel.Tokens.Jwt, Version=7.6.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\Sadna-17-B\packages\System.IdentityModel.Tokens.Jwt.7.6.3\lib\net472\System.IdentityModel.Tokens.Jwt.dll</HintPath>
+    </Reference>
     <Reference Include="System.Memory, Version=4.0.1.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\Sadna-17-B\packages\System.Memory.4.5.5\lib\net461\System.Memory.dll</HintPath>
     </Reference>
@@ -164,6 +179,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\admin.png" />
     <Content Include="Content\cart-inverted.png" />
     <Content Include="Content\cart.png" />
     <Content Include="Content\emptyProfilePic.png" />
@@ -177,8 +193,10 @@
     <Content Include="Content\store3.png" />
     <Content Include="Content\store4.png" />
     <Content Include="Content\store5.png" />
+    <Content Include="Content\store6.png" />
     <Content Include="Content\zero_stars_rating.png" />
     <Content Include="Views\About.aspx" />
+    <Content Include="Views\addProduct_page.aspx" />
     <Content Include="Views\all_product_page.aspx" />
     <Content Include="Views\Contact.aspx" />
     <Content Include="Content\bootstrap-theme.css" />
@@ -236,10 +254,13 @@
     <Content Include="Views\MyCart.aspx" />
     <Content Include="Views\MyStores.aspx" />
     <Content Include="Views\ProductDetails.aspx" />
+    <Content Include="Views\PurchaseHistoryUser_page.aspx" />
+    <Content Include="Views\purchasePolicyHistory_page.aspx" />
     <Content Include="Views\SearchProduct.aspx" />
     <Content Include="Views\SignUp.aspx" />
     <Content Include="Views\Store_Page.aspx" />
     <Content Include="Views\Stores.aspx" />
+    <Content Include="Views\SystemAdmin_page.aspx" />
     <Content Include="Web.config" />
     <Content Include="Bundle.config" />
     <Content Include="Site.Mobile.Master" />
@@ -256,6 +277,13 @@
     </Compile>
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Views\addProduct_page.aspx.cs">
+      <DependentUpon>addProduct_page.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Views\addProduct_page.aspx.designer.cs">
+      <DependentUpon>addProduct_page.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Views\all_product_page.aspx.cs">
       <DependentUpon>all_product_page.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -352,6 +380,20 @@
     <Compile Include="Views\ProductDetails.aspx.designer.cs">
       <DependentUpon>ProductDetails.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Views\PurchaseHistoryUser_page.aspx.cs">
+      <DependentUpon>PurchaseHistoryUser_page.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Views\PurchaseHistoryUser_page.aspx.designer.cs">
+      <DependentUpon>PurchaseHistoryUser_page.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Views\purchasePolicyHistory_page.aspx.cs">
+      <DependentUpon>purchasePolicyHistory_page.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Views\purchasePolicyHistory_page.aspx.designer.cs">
+      <DependentUpon>purchasePolicyHistory_page.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Views\SearchProduct.aspx.cs">
       <DependentUpon>SearchProduct.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -379,6 +421,13 @@
     </Compile>
     <Compile Include="Views\Stores.aspx.designer.cs">
       <DependentUpon>Stores.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SystemAdmin_page.aspx.cs">
+      <DependentUpon>SystemAdmin_page.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Views\SystemAdmin_page.aspx.designer.cs">
+      <DependentUpon>SystemAdmin_page.aspx</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup />

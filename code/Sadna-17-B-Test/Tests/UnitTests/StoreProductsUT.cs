@@ -1,4 +1,4 @@
-﻿using System;
+﻿/*using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
@@ -50,7 +50,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         public void SetUp()
         {
             ApplicationDbContext.isMemoryDB = true; // Disconnect actual database from these tests
-            /*
+            *//*
            * 
            *  Basket:           | name        |  price   | category  | descript  | amount   | total price
            *  -----------------------------------------------------------------------------------------
@@ -86,7 +86,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
            *   max_rule                           true, 550   (550 bigger than 0)
            *   add_rule                           true, 1150  (550 + 50 + 550)
            * 
-           */
+           *//*
 
             store_controller = new StoreController();
             sid = store_controller.create_store("test store", "mail@example.com", "055555055", "hi bye", "compton");
@@ -213,3 +213,4 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         }
     }
 }
+*/

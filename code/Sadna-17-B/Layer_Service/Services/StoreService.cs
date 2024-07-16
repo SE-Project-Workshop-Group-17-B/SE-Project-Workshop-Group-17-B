@@ -201,6 +201,26 @@ namespace Sadna_17_B.ServiceLayer.Services
 
             }
         }
+        public Response get_product_rating(int product_id)
+        {
+            double rating = 0;
+            try
+            {
+                rating = _storeController.get_product_by_id(product_id).rating;
+                return new Response("" +rating, true);
+            }
+            catch (Sadna17BException ex)
+            {
+                return new Response("" + rating, false);
+
+            }
+        }
+        public Response edit_product_amount(int storeID, int productID, int newAmount)
+        {
+            _storeController.edit_product_amount(storeID, productID, newAmount);    
+
+            return new Response("edited product amount", true);
+        }
 
         public Response edit_product_review(int storeID, int productID, string old_review, string new_review)
         {
@@ -302,7 +322,7 @@ namespace Sadna_17_B.ServiceLayer.Services
 
 
 
-        public Response add_product_rating(int storeID, int productID, int rating)
+        public Response add_product_rating(int storeID, int productID, double rating)
         {
             try
             {
@@ -408,7 +428,7 @@ namespace Sadna_17_B.ServiceLayer.Services
 
             // ---------- subscriber authentication ---------------
 
-            if (!(_userService.owner_internal(token, storeID) || _userService.authorized_internal(token, storeID, DomainLayer.User.Manager.ManagerAuthorization.UpdateSupply)))
+            if (!_userService.owner_internal(token, storeID) && !_userService.authorized_internal(token, storeID, DomainLayer.User.Manager.ManagerAuthorization.UpdateSupply))
             {
                 error_logger.Log("Store Service", " authentication error, user should be owner or founder to edit products");
                 return new Response("product edit : user should be owner or founder to edit products", false);
@@ -645,7 +665,7 @@ namespace Sadna_17_B.ServiceLayer.Services
 
         public Response get_store_name(int storeID)
         {
-            return new Response(_storeController.get_store_name(storeID), true);
+            return new Response(true, _storeController.get_store_name(storeID));
         }
 
         public Response get_store_inventory(int storeID)

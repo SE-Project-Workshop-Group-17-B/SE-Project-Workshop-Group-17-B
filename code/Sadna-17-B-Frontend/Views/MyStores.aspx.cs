@@ -1,6 +1,7 @@
 ﻿using Sadna_17_B_Frontend.Controllers;
 using System;
 using System.Collections.Generic;
+using System.Web.UI;
 using System.Web.UI.WebControls;
 
 namespace Sadna_17_B_Frontend.Views
@@ -45,10 +46,15 @@ namespace Sadna_17_B_Frontend.Views
 
         protected void btnCreateStore_Click(object sender, EventArgs e)
         {
-            Response.Redirect("~/Views/CreateStore.aspx");
+            Response.Redirect("~/Views/CreateStores.aspx");
         }
-
-        protected void btnManage_Click(object sender, EventArgs e)
+        protected void imgStore_Click(object sender, ImageClickEventArgs e)
+        {
+            ImageButton btn = (ImageButton)sender;
+            string storeId = btn.CommandArgument;
+            Response.Redirect($"~/Views/Store_Page.aspx?storeId={storeId}");
+        }
+        protected async void btnManage_Click(object sender, EventArgs e)
         {
             var button = (Button)sender;
             string storeId = button.CommandArgument;
@@ -57,7 +63,7 @@ namespace Sadna_17_B_Frontend.Views
                 ["store id"] = storeId,
                 ["roles to check"] = "founder"
             };
-            bool isFounder = backendController.has_roles(doc);
+            bool isFounder = await backendController.has_roles(doc);
 
             if (isFounder)
                 Response.Redirect($"~/Views/FounderStorePage.aspx?storeId={storeId}");

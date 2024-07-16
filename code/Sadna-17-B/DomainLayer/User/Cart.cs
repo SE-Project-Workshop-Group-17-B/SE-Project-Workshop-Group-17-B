@@ -44,16 +44,21 @@ namespace Sadna_17_B.DomainLayer.User
             ID = -1;
 
             UserAge = 18;
-            Baskets = cart.copy_baskets();
-
+            //Baskets = cart.copy_baskets();
+            Baskets = copy_baskets(cart);
         }
 
-        private Dictionary<int, Basket> copy_baskets()
+        private Dictionary<int, Basket> copy_baskets(Cart c)
         {
             Dictionary<int, Basket> copy = new Dictionary<int, Basket>();
 
-            foreach (Basket basket in Baskets.Values)
-                copy[basket.store_id] = new Basket(basket);
+            foreach(KeyValuePair<int, Basket> pair in c.Baskets)
+            {
+                copy[pair.Value.store_id] = new Basket(pair.Value);
+            }
+
+            /*foreach (Basket basket in Baskets.Values)
+                copy[basket.store_id] = new Basket(basket);*/
 
             return copy;
         }

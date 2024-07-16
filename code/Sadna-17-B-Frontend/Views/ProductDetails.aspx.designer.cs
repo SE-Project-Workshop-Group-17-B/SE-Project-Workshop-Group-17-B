@@ -42,24 +42,6 @@ namespace Sadna_17_B_Frontend.Views
         protected global::System.Web.UI.WebControls.Literal litProductPrice;
 
         /// <summary>
-        /// litProductRating control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Literal litProductRating;
-
-        /// <summary>
-        /// litRatingCount control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Literal litRatingCount;
-
-        /// <summary>
         /// litProductCategory control.
         /// </summary>
         /// <remarks>
@@ -96,13 +78,13 @@ namespace Sadna_17_B_Frontend.Views
         protected global::System.Web.UI.WebControls.Literal litProductDescription;
 
         /// <summary>
-        /// rblRating control.
+        /// productRatingValueHidden control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.RadioButtonList rblRating;
+        protected global::System.Web.UI.WebControls.HiddenField productRatingValueHidden;
 
         /// <summary>
         /// btnSubmitRating control.

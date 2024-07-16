@@ -22,7 +22,7 @@ namespace Sadna_17_B_Frontend.Views
             Response.Write(@"<script language='javascript'>alert('" + message + "')</script>");
         }
 
-        protected void btnLogin_Click(object sender, EventArgs e)
+        protected async void btnLogin_Click(object sender, EventArgs e)
         {
             string message = "";
             if (txtUsername.Text.Length == 0)
@@ -40,7 +40,7 @@ namespace Sadna_17_B_Frontend.Views
             }
             else
             {
-                message = backendController.login(txtUsername.Text, txtPassword.Text);
+                message = await backendController.login(txtUsername.Text, txtPassword.Text);
                 if (message != null)
                 {
                     //MessageBox(message);

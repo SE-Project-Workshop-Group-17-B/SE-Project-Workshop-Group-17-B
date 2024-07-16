@@ -14,7 +14,8 @@
 
     <webopt:bundlereference runat="server" path="~/Content/css" />
     <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 <body>
     <style>
@@ -31,7 +32,106 @@
             background-image: url(/Content/store-inverted.png);
             background-size: contain;
             background-repeat: no-repeat;
-            margin: 10px 5px 0 5px;
+            margin: 10px 10px 0 5px;
+        }
+        .admin-button-with-image{
+            background-image: url(/Content/admin.png);
+            background-size: contain;
+            background-repeat: no-repeat;
+            margin: 10px 0px 0 5px;
+        }
+        .notifications-button {
+            position: relative;
+            font-size: 20px;
+            color: white;
+            padding: 15px;
+        }
+
+        .notification-count {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: red;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 5px;
+            font-size: 12px;
+        }
+
+        .notifications-container {
+            position: absolute;
+            top: 50px;
+            right: 10px;
+            width: 300px;
+            max-height: 400px;
+            overflow-y: auto;
+            background-color: white;
+            border: 1px solid #ccc;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+
+        .notification {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            transition: background-color 0.3s;
+        }
+
+        .notification:hover {
+            background-color: #1a5f8d;
+            color: darkblue;
+            z-index: 99999;
+
+        }
+
+        .notification.unread {
+            background-color: #e6f3ff;
+            border-left: 4px solid #3498db;
+            z-index: 9999;
+
+        }
+
+        .notification.read {
+            background-color: white;
+            border-left: 4px solid #3498db;
+            z-index: 9999;
+        }
+
+        .notification-buttons {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 5px;
+        }
+
+        .mark-read-btn, .dismiss-btn {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 5px;
+            transition: all 0.3s;
+        }
+
+        .mark-read-btn {
+            border: 2px solid #3498db;
+            color: #3498db;
+        }
+
+        .mark-read-btn:hover {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .dismiss-btn {
+            border: 2px solid #e74c3c;
+            color: #e74c3c;
+        }
+
+        .dismiss-btn:hover {
+            background-color: #e74c3c;
+            color: white;
         }
     </style>
     <form runat="server">
@@ -74,6 +174,13 @@
                     </ul>
                     <ul class="nav navbar-nav" style="float: right" visible="false">
                         <li><asp:LinkButton id="MyStoresBtn" CssClass="stores-button-with-image" runat="server" OnClick="MyStoresBtn_Click"></asp:LinkButton></li>
+                        <li><asp:LinkButton id="SystemAdminBtn" CssClass="admin-button-with-image" runat="server" OnClick="StoreAdminBtn_Click"></asp:LinkButton></li>
+                        <li>
+                            <asp:LinkButton ID="NotificationsBtn" runat="server" OnClick="NotificationsBtn_Click" CssClass="notifications-button">
+                                <i class="fa fa-bell"></i>
+                                <span id="UnreadNotificationsCount" runat="server" class="notification-count" visible="false"></span>
+                            </asp:LinkButton>
+                        </li>
                         <li><asp:LinkButton id="MyCartBtn" CssClass="cart-button-with-image" runat="server" OnClick="MyCartBtn_Click"></asp:LinkButton></li>
                         <li><asp:LinkButton id="LblHello" runat="server">Hello </asp:LinkButton></li>
                         <li><asp:LinkButton id="LogoutBtn" runat="server" OnClick="Logout_Click">Log Out</asp:LinkButton></li>
@@ -93,5 +200,65 @@
         </div>
 
     </form>
+    <div id="NotificationsContainer" class="notifications-container" runat="server" visible="false">
+       <asp:Repeater ID="NotificationsRepeater" runat="server">
+            <ItemTemplate>
+                <div class='notification <%# ((bool)Eval("IsRead")) ? "read" : "unread" %>'>
+                    <span><%# Eval("Message") %></span>
+                    <asp:Panel ID="ButtonPanel" runat="server" CssClass="notification-buttons" Visible='<%# !(bool)Eval("IsRead") %>'>
+                        <button type="button" class="mark-read-btn" onclick="markAsRead(<%# Eval("ID") %>, this)"><i class="fa fa-check"></i></button>
+                        <button type="button" class="dismiss-btn" onclick="dismissNotification(<%# Eval("ID") %>, this)"><i class="fa fa-times"></i></button>
+                    </asp:Panel>
+                </div>
+            </ItemTemplate>
+        </asp:Repeater>
+    </div>
 </body>
+  <script type="text/javascript">
+      function markAsRead(id, element) {
+          var buttonsPanel = $(element).closest('.notification-buttons');
+          buttonsPanel.fadeOut(500, function () {
+              $.ajax({
+                  type: "POST",
+                  url: "Site.Master/MarkAsRead",
+                  data: { notificationId: id },
+                  success: function (response) {
+                      // Update UI without reloading
+                      var notification = buttonsPanel.closest('.notification');
+                      notification.removeClass('unread').addClass('read');
+                      buttonsPanel.remove();
+                  }
+              });
+          });
+      }
+
+      function dismissNotification(id, element) {
+          var buttonsPanel = $(element).closest('.notification-buttons');
+          buttonsPanel.fadeOut(500, function () {
+              $.ajax({
+                  type: "POST",
+                  url: "Site.Master/DismissNotification",
+                  data: { notificationId: id },
+                  success: function (response) {
+                      // Remove the entire notification from UI
+                      var notification = buttonsPanel.closest('.notification');
+                      notification.fadeOut(500, function () {
+                          notification.remove();
+                          updateNotificationCount();
+                      });
+                  }
+              });
+          });
+      }
+
+      function updateNotificationCount() {
+          var unreadCount = $('.notification.unread').length;
+          var countElement = $('#UnreadNotificationsCount');
+          if (unreadCount > 0) {
+              countElement.text(unreadCount).show();
+          } else {
+              countElement.hide();
+          }
+      }
+</script>
 </html>

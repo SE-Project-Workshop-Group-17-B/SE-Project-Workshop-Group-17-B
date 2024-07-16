@@ -310,12 +310,24 @@ namespace Sadna_17_B.ServiceLayer.Services
         // ----------- cart ------------------------------------------------------------------------------------
 
 
-        public Response cart_add_product(Dictionary<string,string> doc)
+        public Response cart_add_product(Dictionary<string,string> doc, int change)
         {
             try
             {
+                userController.cart_add_product(doc,change);
+                return new Response(true);
+            }
+            catch (Sadna17BException e)
+            {
+                return Response.GetErrorResponse(e);
+            }
+        }
 
-                userController.cart_add_product(doc);
+        public Response cart_remove_product(ProductDTO product, string accessToken)
+        {
+            try
+            {
+                userController.cart_remove_product(product, accessToken);
                 return new Response(true);
             }
             catch (Sadna17BException e)
@@ -327,8 +339,7 @@ namespace Sadna_17_B.ServiceLayer.Services
         public Response cart_by_token(Dictionary<string,string> doc)
         {
             try
-            {
-                
+            {               
                 string token = doc["token"];
                 Cart shoppingCart = userController.cart_by_token(token);
                 return new Response(true, new ShoppingCartDTO(shoppingCart));

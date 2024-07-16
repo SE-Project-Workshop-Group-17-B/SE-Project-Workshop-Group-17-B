@@ -1,5 +1,6 @@
 ﻿using Sadna_17_B.DomainLayer.Order;
 using Sadna_17_B.Repositories;
+using Sadna_17_B.ServiceLayer.ServiceDTOs;
 using Sadna_17_B.Utils;
 using System;
 using System.Collections.Generic;
@@ -489,7 +490,7 @@ namespace Sadna_17_B.DomainLayer.User
 
         public Cart cart_by_token(string token)
         {
-            infoLogger.Log($"Getting shopping cart - Subscriber: {GetSubscriberByToken(token).Username}");
+            infoLogger.Log($"Getting shopping cart");
             User user = GetUserByToken(token);
             return user.ShoppingCart;
         }
@@ -506,7 +507,13 @@ namespace Sadna_17_B.DomainLayer.User
             user.update_product_in_cart(sid, pid, amount);
         }
 
-        public void cart_add_product(Dictionary<string,string> doc)
+        public void cart_remove_product(ProductDTO product, string accessToken)
+        {
+            User u = GetUserByToken(accessToken);
+            u.update_product_in_cart(product.store_id,product.Id,0);
+        }
+
+        public void cart_add_product(Dictionary<string,string> doc,int change)
         {
             string token = Parser.parse_string(doc["token"]);
             int sid = Parser.parse_int(doc["store id"]);
@@ -518,7 +525,7 @@ namespace Sadna_17_B.DomainLayer.User
 
 
             User user = GetUserByToken(token);
-            user.add_to_cart(sid,amount,price,category, psid, name);
+            user.add_to_cart(sid,amount,price,category, psid, name, change);
         }
 
 

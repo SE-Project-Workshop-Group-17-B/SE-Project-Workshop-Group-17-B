@@ -48,8 +48,10 @@ namespace Sadna_17_B.DomainLayer.User
         public Basket(Basket basket)
         {
             store_id = basket.store_id;
-            id_to_product = basket.copy_id_dict();
-            category_to_products = basket.copy_category_dict();
+            //id_to_product = basket.copy_id_dict();
+            //category_to_products = basket.copy_category_dict();
+            id_to_product = copy_id_dict(basket);
+            category_to_products = copy_category_dict(basket);
             
         }
 
@@ -58,25 +60,27 @@ namespace Sadna_17_B.DomainLayer.User
             return id_to_product.Values.ToList();
         }
 
-        private Dictionary<int, Cart_Product> copy_id_dict()
+        private Dictionary<int, Cart_Product> copy_id_dict(Basket basket)
         {
             Dictionary<int, Cart_Product> copy = new Dictionary<int, Cart_Product>();
 
-            foreach (Cart_Product product in id_to_product.Values)
-                copy[product.ID] = new Cart_Product(product);
+            foreach(KeyValuePair<int,Cart_Product> entry in basket.id_to_product)
+            {
+                copy[entry.Value.ID] = new Cart_Product(entry.Value);
+            }
 
             return copy;
         }
 
-        private Dictionary<string, List<Cart_Product>> copy_category_dict()
+        private Dictionary<string, List<Cart_Product>> copy_category_dict(Basket basket)
 
         {
             Dictionary<string, List<Cart_Product>> copy = new Dictionary<string, List<Cart_Product>>();
 
-            foreach (var item in category_to_products)
+            foreach(KeyValuePair<string,List<Cart_Product>> entry in basket.category_to_products)
             {
-                string category = item.Key;
-                List<Cart_Product> products = item.Value;
+                string category = entry.Key;
+                List<Cart_Product> products = entry.Value;
                 List<Cart_Product> list = new List<Cart_Product>();
 
                 foreach (Cart_Product product in products)
@@ -128,12 +132,35 @@ namespace Sadna_17_B.DomainLayer.User
             return id_to_product.ContainsKey(pid);
         }
 
+        public bool containsProduct(int pid)
+        {
+            foreach(KeyValuePair<int,Cart_Product> entry in id_to_product)
+            {
+                Cart_Product product = entry.Value;
+                if (product.store_product_id == pid)
+                    return true;
+            }
+            return false;
+        }
+
         // ------------ basket manipulations ----------------------
 
         public Cart_Product product_by_id(int pid)
         {
             if (id_to_product.ContainsKey(pid))
                 return id_to_product[pid];
+
+            throw new Sadna17BException("Cart : no product was found");
+        }
+
+        public Cart_Product productById(int pid)
+        {
+            foreach (KeyValuePair<int, Cart_Product> entry in id_to_product)
+            {
+                Cart_Product product = entry.Value;
+                if (product.store_product_id == pid)
+                    return product;
+            }
 
             throw new Sadna17BException("Cart : no product was found");
         }

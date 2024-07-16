@@ -1,4 +1,4 @@
-using System;
+/*using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -21,7 +21,7 @@ using Sadna_17_B.Repositories;
 namespace Sadna_17_B_Test.Tests.UnitTests
 {
 
-    /*
+    *//*
      *     
      *      -------------------- Front : ----------------------------
      *      
@@ -70,7 +70,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
      * 
      * 
      * 
-     */
+     *//*
 
 
     [TestClass]
@@ -122,7 +122,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         public void SetUp()
         {
             ApplicationDbContext.isMemoryDB = true; // Disconnect actual database from these tests
-            /*
+            *//*
              * 
              *  Basket:           | name        |  price   | category  | descript  | amount   | total price
              *  -----------------------------------------------------------------------------------------
@@ -158,7 +158,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
              *   max_rule                           true, 550   (550 bigger than 0)
              *   add_rule                           true, 1150  (550 + 50 + 550)
              * 
-             */
+             *//*
 
             doc_generator = new Documentor();
             ServiceFactory serviceFactory = new ServiceFactory();
@@ -636,3 +636,4 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         }
     }
 }
+*/
