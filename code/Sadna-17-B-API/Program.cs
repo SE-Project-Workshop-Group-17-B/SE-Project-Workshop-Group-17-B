@@ -1,9 +1,16 @@
 using Microsoft.OpenApi.Models;
 using Sadna_17_B.DomainLayer.Order;
-using Sadna_17_B.DomainLayer.StoreDom;
-using Sadna_17_B.DomainLayer.User;
+using Sadna_17_B.DomainLayer;
 using Sadna_17_B.ServiceLayer;
-using Sadna_17_B.ServiceLayer.Services; 
+using Sadna_17_B.ServiceLayer.Services;
+using System.Net;
+using System.Net.WebSockets;
+using System.Text;
+using System.Web;
+using System;
+using Sadna_17_B.DomainLayer.User;
+
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -40,5 +47,39 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseWebSockets();
+int count = 0;
+NotificationSystem notificationsSystem = NotificationSystem.getInstance();
+app.Map("/ws", async context =>
+{
+    if (context.WebSockets.IsWebSocketRequest)
+    {
+        var username = context.Request.Query["username"];
+        NotificationsHandler notificationsHandler = NotificationsHandler.getInstance();
+        //if (count == 0)
+        //{
+        //    count++;
+        //    Task.Run(() =>
+        //    {
+               
+        //        Thread.Sleep(8000);
+        //        int index = 0;
+        //        while (true)
+        //        {
+        //            notificationsSystem.Notify(username, "important notification" + index);
+        //            Thread.Sleep(1000);
+        //            index++;
+        //        }
+        //    });
+
+        //}
+        var ws = await context.WebSockets.AcceptWebSocketAsync();
+        
+        await notificationsHandler.addConnection(username, ws);
+        Console.WriteLine("connected " + username);
+    }
+
+});
 
 app.Run();

@@ -30,7 +30,7 @@ namespace Sadna_17_B.DomainLayer.User
         {
             this.orderSystem = orderSystem;
             infoLogger = InfoLogger.Instance;
-            this.notificationSystem = new NotificationSystem();
+            this.notificationSystem =NotificationSystem.getInstance();
         }
 
         public void LoadData()
