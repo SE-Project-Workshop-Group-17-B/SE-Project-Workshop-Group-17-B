@@ -476,6 +476,18 @@
     <Compile Include="Migrations\202407141715446_j.cs" />
     <Compile Include="Migrations\202407141715446_j.Designer.cs">
       <DependentUpon>202407141715446_j.cs</DependentUpon>
+    <Compile Include="Layer_API\Models\FuncStoreDTO.cs" />
+    <Compile Include="Layer_API\Models\RoleCheckRequest.cs" />
+    <Compile Include="Layer_API\Models\UIStoreDTOAPI.cs" />
+    <Compile Include="Layer_API\Models\UIuserDTOAPI.cs" />
+    <Compile Include="Layer_API\Program.cs" />
+    <Compile Include="Migrations\202407111221459_InitialCreate.cs" />
+    <Compile Include="Migrations\202407111221459_InitialCreate.Designer.cs">
+      <DependentUpon>202407111221459_InitialCreate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202407111907350_initialCreate2.cs" />
+    <Compile Include="Migrations\202407111907350_initialCreate2.Designer.cs">
+      <DependentUpon>202407111907350_initialCreate2.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Utils_external\ISupplySystem.cs" />
@@ -516,6 +528,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Entities\" />
+    <Folder Include="Layer_API\Controllers\" />
     <Folder Include="Layer_DataAccess\Context\" />
     <Folder Include="Layer_DataAccess\Entities\" />
     <Folder Include="Layer_DataAccess\NewFolder1\" />

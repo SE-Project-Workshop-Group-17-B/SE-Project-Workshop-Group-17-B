@@ -11,7 +11,7 @@ namespace Sadna_17_B_Frontend.Views
     {
         BackendController backendController = BackendController.get_instance();
 
-        protected void Page_Load(object sender, EventArgs e)
+        protected async void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
             {

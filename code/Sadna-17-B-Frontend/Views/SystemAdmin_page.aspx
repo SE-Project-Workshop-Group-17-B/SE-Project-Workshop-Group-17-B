@@ -1,4 +1,4 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="SystemAdmin_page.aspx.cs" Inherits="Sadna_17_B_Frontend.Views.SystemAdmin_page" %>
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Site.Master" Async="true" AutoEventWireup="true" CodeBehind="SystemAdmin_page.aspx.cs" Inherits="Sadna_17_B_Frontend.Views.SystemAdmin_page" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
     <style>
         body {
