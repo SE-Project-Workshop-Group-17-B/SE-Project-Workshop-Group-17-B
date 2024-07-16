@@ -20,6 +20,7 @@ namespace Sadna_17_B.DomainLayer.User
                 notifications[usernameToNotify] = new List<Notification>();
             }
             notifications[usernameToNotify].Add(notification);
+            NotificationsHandler.getInstance().Notify(usernameToNotify, notification);
         }
 
         public List<Notification> ReadNewNotifications(string username)
