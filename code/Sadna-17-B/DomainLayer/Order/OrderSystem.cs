@@ -1,4 +1,5 @@
-﻿using Sadna_17_B.DomainLayer.StoreDom;
+﻿using Newtonsoft.Json;
+using Sadna_17_B.DomainLayer.StoreDom;
 using Sadna_17_B.DomainLayer.User;
 using Sadna_17_B.Layer_Service.ServiceDTOs;
 using Sadna_17_B.Utils;
@@ -50,7 +51,7 @@ namespace Sadna_17_B.DomainLayer.Order
 
         // ------- process order --------------------------------------------------------------------------------
 
-        public double ProcessOrder(Cart cart, string userID, bool isGuest)
+        public double ProcessOrder(Cart cart, string userID, bool isGuest, Dictionary<string, string> supply, Dictionary<string, string> payment)
         {
             // ------- guest log --------------------------------------------------------------------------------
 
@@ -78,7 +79,10 @@ namespace Sadna_17_B.DomainLayer.Order
                 cart_price_with_discount += basket_checkout.total_price_with_discount;
             }
 
-            Order order = new Order(orderCount, userID, isGuest, cart, cart_price_with_discount);
+            string destAddr = supply["address"] + " " + supply["city"];
+            string paymentObj = JsonConvert.SerializeObject(payment);
+
+            Order order = new Order(orderCount, userID, isGuest, cart, destAddr, paymentObj, cart_price_with_discount);
 
             pending_order.Add(userID, order);
 

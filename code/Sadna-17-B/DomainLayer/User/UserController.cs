@@ -532,7 +532,7 @@ namespace Sadna_17_B.DomainLayer.User
             user.CreateNewShoppingCart();
         }*/
 
-        public double processOrder(string token)
+        public double processOrder(string token, Dictionary<string, string> supply, Dictionary<string, string> payment)
         {
             infoLogger.Log($"Attempting to purchase - Subscriber: {GetSubscriberByToken(token).Username}");
             User user = GetUserByToken(token); // Throws an exception if the token is invalid
@@ -540,15 +540,13 @@ namespace Sadna_17_B.DomainLayer.User
 
             if (user is Guest)
             {
-                priceToPay = orderSystem.ProcessOrder(user.ShoppingCart, (user as Guest).GuestID.ToString(), true);
+                priceToPay = orderSystem.ProcessOrder(user.ShoppingCart, (user as Guest).GuestID.ToString(), true, supply, payment);
             }
             else if (user is Subscriber)
             {
 
-                priceToPay = orderSystem.ProcessOrder(user.ShoppingCart, (user as Subscriber).Username, false);
-            }
-            //TODO: CHECK IF NEEDED
-            
+                priceToPay = orderSystem.ProcessOrder(user.ShoppingCart, (user as Subscriber).Username, false, supply, payment);
+            }            
 
             return priceToPay;
         }

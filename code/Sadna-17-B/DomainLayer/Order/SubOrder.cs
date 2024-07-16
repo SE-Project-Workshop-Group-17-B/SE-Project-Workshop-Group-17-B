@@ -16,7 +16,7 @@ namespace Sadna_17_B.DomainLayer.Order
         public string UserID { get; set; } // Can be either GuestID or Username, according to the order type
         public bool IsGuestOrder { get; set; }
         public DateTime Timestamp { get; set; }
-        public Cart cart { get; set; } // ProductID -> (quantity,unitPrice)
+        public Basket basket { get; set; } // ProductID -> (quantity,unitPrice)
         public string DestinationAddress { get; set; }
         public string CreditCardInfo { get; set; }
 
@@ -31,7 +31,7 @@ namespace Sadna_17_B.DomainLayer.Order
             UserID = order.UserID;
             IsGuestOrder = order.IsGuestOrder;
             Timestamp = order.Timestamp;
-            cart = order.Cart;
+            basket = order.Cart.Baskets[storeID];
             DestinationAddress = order.DestinationAddress;
             CreditCardInfo = order.CreditCardInfo;
         }

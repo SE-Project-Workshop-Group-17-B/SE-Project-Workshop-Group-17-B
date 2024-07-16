@@ -135,6 +135,7 @@ namespace Sadna_17_B_Frontend.Views
             {
                 ScriptManager.RegisterStartupScript(this, this.GetType(), "alert",
                         "alert('Your purchase was successful!');", true);
+                //await backendController.clean_cart();
             }
             else
             {
@@ -142,7 +143,7 @@ namespace Sadna_17_B_Frontend.Views
                                 $"alert('Payment Failed, {res.Message}');", true);
             }
 
-            await backendController.clean_cart();
+            
             LoadCart();
         }
 
