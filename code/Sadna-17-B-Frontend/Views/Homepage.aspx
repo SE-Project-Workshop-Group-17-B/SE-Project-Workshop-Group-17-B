@@ -54,5 +54,5 @@
     <p>WebSocket message received:</p>
     <p id="notification-message"></p>
     </div>
-    <script src="../Scripts/script.js"  type="text/javascript"></script>
+    <!--<script src="../Scripts/script.js"  type="text/javascript"></script>-->
 </asp:Content>

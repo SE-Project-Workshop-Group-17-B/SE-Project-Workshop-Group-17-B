@@ -8,6 +8,7 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Web;
 using System;
+using Sadna_17_B.DomainLayer.User;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -48,24 +49,30 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.UseWebSockets();
-var connections = new List<WebSocket>();
+int count = 0;
+NotificationSystem notificationsSystem = new NotificationSystem();
 app.Map("/ws", async context =>
 {
     if (context.WebSockets.IsWebSocketRequest)
     {
         var username = context.Request.Query["username"];
         NotificationsHandler notificationsHandler = NotificationsHandler.getInstance();
-        Task.Run(() =>
+        if (count == 0)
         {
-            Thread.Sleep(8000);
-            int index = 0;
-            while (true)
+            Task.Run(() =>
             {
-                notificationsHandler.Notify("noam", "important notification" + index);
-                Thread.Sleep(1000);
-                index++;
-            }
-        });
+                count++;
+                Thread.Sleep(8000);
+                int index = 0;
+                while (true)
+                {
+                    notificationsSystem.Notify("noam", "important notification" + index);
+                    Thread.Sleep(1000);
+                    index++;
+                }
+            });
+
+        }
         var ws = await context.WebSockets.AcceptWebSocketAsync();
         await notificationsHandler.addConnection(username, ws);
         Console.WriteLine("connected " + username);

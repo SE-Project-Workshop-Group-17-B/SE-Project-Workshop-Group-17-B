@@ -2,7 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Web;
+using System.Web.Optimization;
 using System.Web.Services;
 using System.Web.UI;
 using System.Web.UI.WebControls;
@@ -14,6 +16,7 @@ namespace Sadna_17_B_Frontend
         BackendController backendController = BackendController.get_instance();
 
         protected string _loginLogoutButtons;
+        private static int count = 0;
         protected void Page_Load(object sender, EventArgs e)
         {
             MyCartBtn.Visible = true;
@@ -31,6 +34,42 @@ namespace Sadna_17_B_Frontend
                     SystemAdminBtn.Visible = true;
                 else
                     SystemAdminBtn.Visible = false;
+                string script = @"const socket = new WebSocket('wss://localhost:7093/ws?username=noam');
+
+                                socket.onopen = function (event) {
+                                    console.log('WebSocket connection opened');
+                                };
+
+                                socket.onclose = function (event) {
+                                    console.log('WebSocket connection closed:', event);
+                                    alert('sdf');
+                                };
+
+                                socket.onerror = function (error) {
+                                    console.log('WebSocket error: ', error);
+                                };
+
+                                socket.onmessage = function (event) {
+                                    const message = event.data;
+                                    console.log('WebSocket message: ', message);
+                                    const no = JSON.parse(message)
+                                    console.log(no)
+
+
+                                    const notificationElement = document.createElement('div');
+                                    notificationElement.className = 'notification';
+                                    notificationElement.textContent = no.Message;
+                                    document.body.appendChild(notificationElement);
+
+                                    setTimeout(() => {
+                                        document.body.removeChild(notificationElement);
+                                    }, 5000); // Remove notification after 5 seconds
+                                };
+  
+                                ";
+                Page.ClientScript.RegisterStartupScript(this.GetType(), "WebSocketScript", script, true);
+                count++;
+
                 //_loginLogoutButtons =
                 //   "<ul class=\"nav navbar-nav\" style=\"float: right\">" +
                 //   "<li><a runat=\"server\" onclick=\"Logout_Click\">Log Out</a></li>" +
@@ -50,6 +89,10 @@ namespace Sadna_17_B_Frontend
                 //    "<li><a runat=\"server\" href=\"SignUp\"> Sign Up </a></li>" +
                 //    "</ul>";
             }
+            
+                
+            
+
         }
         protected void NotificationsBtn_Click(object sender, EventArgs e)
         {

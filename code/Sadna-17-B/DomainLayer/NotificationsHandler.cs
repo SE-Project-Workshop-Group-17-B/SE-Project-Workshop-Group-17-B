@@ -43,29 +43,33 @@ namespace Sadna_17_B.DomainLayer
 
         public async Task processConnection(WebSocket ws)
         {
-            var buffer = new byte[1024 * 4];
-            while (true)
+            try
             {
-                var result = await ws.ReceiveAsync(new ArraySegment<byte>(buffer),
-            CancellationToken.None);
-                if (result.MessageType == WebSocketMessageType.Close)
+                var buffer = new byte[1024 * 4];
+                while (true)
                 {
-                    break;
+                    var result = await ws.ReceiveAsync(new ArraySegment<byte>(buffer),
+                CancellationToken.None);
+                    if (result.MessageType == WebSocketMessageType.Close)
+                    {
+                        break;
+                    }
                 }
             }
+            catch (Exception ignored) { }
         }
 
-        public async void Notify(string usernameToNotify, string message)
+        public async void Notify(string usernameToNotify, Notification notification)
         {
             try
             {
-                Console.WriteLine($"{usernameToNotify} {message}########");
-                Notification notification = new Notification(message);
-                if (!notifications.ContainsKey(usernameToNotify))
-                {
-                    notifications[usernameToNotify] = new List<Notification>();
-                }
-                notifications[usernameToNotify].Add(notification);
+                Console.WriteLine($"{usernameToNotify} message ########");
+                //Notification notification = new Notification(message);
+                //if (!notifications.ContainsKey(usernameToNotify))
+                //{
+                //    notifications[usernameToNotify] = new List<Notification>();
+                //}
+                //notifications[usernameToNotify].Add(notification);
                 string serialized = JsonSerializer.Serialize(notification);
                 var bytes = Encoding.UTF8.GetBytes(serialized);
                 var arraySegment = new ArraySegment<byte>(bytes, 0, bytes.Length);
