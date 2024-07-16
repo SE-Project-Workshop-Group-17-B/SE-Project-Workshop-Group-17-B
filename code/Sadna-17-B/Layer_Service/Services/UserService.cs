@@ -381,6 +381,19 @@ namespace Sadna_17_B.ServiceLayer.Services
             }
         }
 
+        public Response reduce_cart(string token)
+        {
+            try
+            {
+                userController.reduce_cart(token);
+                return new Response(true);
+            }
+            catch (Sadna17BException e)
+            {
+                return Response.GetErrorResponse(e);
+            }
+        }
+
         public Response /*List<OrderDTO>*/ GetMyOrderHistory(string token)
         {
             try

@@ -8,6 +8,8 @@ using Sadna_17_B.DomainLayer.User;
 using Sadna_17_B.ServiceLayer.ServiceDTOs;
 using Newtonsoft.Json;
 using Sadna_17_B.DomainLayer.StoreDom;
+using Sadna_17_B.Layer_Service.ServiceDTOs;
+using System.Threading.Channels;
 
 namespace Sadna_17_B_API.Controllers
 {
@@ -216,7 +218,8 @@ namespace Sadna_17_B_API.Controllers
         {
             var response = _userService.cart_remove_product(tempObj.p, tempObj.AccessToken);
             return response;
-        }
+        }        
+
 
         [HttpPost("remove_from_cart")]
         public Response removeFromCart([FromBody] RemoveFromCartRequest request)
@@ -258,6 +261,13 @@ namespace Sadna_17_B_API.Controllers
             //{creditCardInfo, DestInfo}
             var response = _userService.CompletePurchase(purchaseDetails.AccessToken, purchaseDetails.DestinationAddress, purchaseDetails.CreditCardInfo);
             return Ok(response);
+        }
+
+        [HttpPost("reduce_order")]
+        public Response reduce_order(PurchaseDTO purchase_details)
+        {
+            var response = _userService.reduce_cart(purchase_details.AccessToken);
+            return response;
         }
 
         [HttpPost("get_managed_stores")]

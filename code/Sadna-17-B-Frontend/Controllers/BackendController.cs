@@ -18,7 +18,12 @@ using Sadna_17_B_API.Controllers;
 using Sadna_17_B_API.Models;
 using System.Web.Caching;
 using Sadna_17_B_Frontend.Views;
+
+using Sadna_17_B.Layer_Service.ServiceDTOs;
+using Sadna_17_B.DomainLayer.Order;
+
 using System.Text;
+
 
 namespace Sadna_17_B_Frontend.Controllers
 {
@@ -771,7 +776,15 @@ namespace Sadna_17_B_Frontend.Controllers
                 }
             }
         }
+
+          List<Product> products = storeService.all_products().Data as List<Product>;
+         */
+
+      
+        public Response search_products(string keyword, string category, int minPrice, int maxPrice, int minRating, int minStoreRating, int storeId) // upgrade to search_products_by doc_doc
+
         public async Task<Response> AbandonOwnership(int storeId)
+
         {
             using (HttpClient client = new HttpClient())
             {
@@ -814,6 +827,10 @@ namespace Sadna_17_B_Frontend.Controllers
 
 
 
+        
+            
+
+       
         public async Task<Response> cart_update_product(Dictionary<string, string> doc)
         {
             string token = userDTO.AccessToken;
@@ -867,21 +884,190 @@ namespace Sadna_17_B_Frontend.Controllers
 
 
         // ---------- checkout -----------------------------------
-        public async Task<Response> completePurchase(Dictionary<string,string> creditCardInfo,Dictionary<string,string> destAddr)
+
+
+        public double process_store_order(Basket basket)
+        {
+            Response response = storeService.calculate_products_prices(basket);
+            if (response.Success)
+            {
+                return (response.Data as Mini_Checkout).price_after_discount();
+            }
+            return 0;
+        }
+
+        public async /*   ???   */ Task<Response> completePurchase( supplyDTO supply, payDTO payment)
+        {
+            Response response;
+
+            response = await process_order();                     // backend
+            if (!response.Success)
+                return response;
+
+            response = await supply_order(supply);                // external
+            if (!response.Success)
+                return response;
+
+            response = await pay_order(payment);                  // external
+            if (!response.Success)
+                return response;
+
+            response = await reduce_order();                     // backend
+            if (!response.Success)
+                return response;
+
+            return new Response("Purchase Completed Successfully", true);
+        }
+
+        public async /*   ???   */ Task<Response> process_order()
+
         {
             using (HttpClient client = new HttpClient())
             {
                 string token = userDTO.AccessToken;
                 var purchaseDetails = new
                 {
-                    DestinationAddress = destAddr, //CHANGE
-                    CreditCardInfo = creditCardInfo, //CHANGE
                     AccessToken = userDTO.AccessToken
                 };
+
                 HttpResponseMessage response = client.PostAsJsonAsync(prefix + "/RestAPI/completePurchase", purchaseDetails).GetAwaiter().GetResult();
                 string responseContent = await response.Content.ReadAsStringAsync();
                 Response responseObj = JsonConvert.DeserializeObject<Response>(responseContent);
+
                 return responseObj;
+            }
+
+            
+        }
+
+
+        public async /*   int   */ Task<Response> pay_order(payDTO payment)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                HttpResponseMessage response = await client.PostAsJsonAsync("https://damp-lynna-wsep-1984852e.koyeb.app/", payment); // add relative path
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseContent = response.Content.ReadAsStringAsync().Result;
+                    int transaction_id = JsonConvert.DeserializeObject<int>(responseContent);
+                    return new Response("Transaction Completed", transaction_id != -1, transaction_id);
+                }
+
+                else
+                {
+                    string errorMessage = await response.Content.ReadAsStringAsync();
+                    return new Response(errorMessage, false);
+                }
+            }
+        }
+
+        public async /*   int   */ Task<Response> supply_order(supplyDTO supply)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                HttpResponseMessage response = await client.PostAsJsonAsync("https://damp-lynna-wsep-1984852e.koyeb.app/", supply); // add relative path
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseContent = response.Content.ReadAsStringAsync().Result;
+                    int transaction_id = JsonConvert.DeserializeObject<int>(responseContent);
+                    return new Response("Transaction Completed", transaction_id != -1, transaction_id); 
+                }
+
+                else
+                {
+                    string errorMessage = await response.Content.ReadAsStringAsync();
+                    return new Response(errorMessage, false);
+                }
+            }
+        }
+
+        public async /*   bool  */ Task<Response> reduce_order()
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/reduce_order", ""); // add relative path
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseContent = response.Content.ReadAsStringAsync().Result;
+                    bool success_status = JsonConvert.DeserializeObject<bool>(responseContent);
+                    return new Response(" Order Completed !", success_status);
+                }
+
+                else
+                {
+                    string errorMessage = await response.Content.ReadAsStringAsync();
+                    return new Response("reduction was not successful", false);
+                }
+            }
+        }
+
+
+        public async Task<Response> handshake()
+        {
+            using (HttpClient client = new HttpClient())
+            {
+
+                handshakeDTO handshake = new handshakeDTO();
+
+                HttpResponseMessage response = await client.PostAsJsonAsync("https://damp-lynna-wsep-1984852e.koyeb.app/", handshake); // add relative path
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseContent = response.Content.ReadAsStringAsync().Result;
+                    string success_status = JsonConvert.DeserializeObject<string>(responseContent);
+                    return new Response(success_status, success_status == "OK");
+                }
+
+                else
+                {
+                    string errorMessage = await response.Content.ReadAsStringAsync();
+                    return new Response(errorMessage, false);
+                }
+            }
+        }
+
+        public async Task<Response> cancel_supply(cancel_supply_DTO cancel)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                HttpResponseMessage response = await client.PostAsJsonAsync("https://damp-lynna-wsep-1984852e.koyeb.app/", cancel); // add relative path
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseContent = response.Content.ReadAsStringAsync().Result;
+                    int cancelation_status = JsonConvert.DeserializeObject<int>(responseContent);
+                    return new Response("",cancelation_status != -1,cancelation_status);
+                }
+
+                else
+                {
+                    string errorMessage = await response.Content.ReadAsStringAsync();
+                    return new Response(errorMessage, false);
+                }
+            }
+        }
+
+        public async Task<Response> cancel_payment(cancel_pay_DTO cancel)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                HttpResponseMessage response = await client.PostAsJsonAsync("https://damp-lynna-wsep-1984852e.koyeb.app/", cancel); // add relative path
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseContent = response.Content.ReadAsStringAsync().Result;
+                    int cancelation_status = JsonConvert.DeserializeObject<int>(responseContent);
+                    return new Response("", cancelation_status != -1, cancelation_status);
+                }
+
+                else
+                {
+                    string errorMessage = await response.Content.ReadAsStringAsync();
+                    return new Response(errorMessage, false);
+                }
             }
         }
         public async Task<Response> GetProductRating(int productId)
@@ -898,6 +1084,7 @@ namespace Sadna_17_B_Frontend.Controllers
                 string responseContent = await response.Content.ReadAsStringAsync();
                 Response responseObj = JsonConvert.DeserializeObject<Response>(responseContent);
 
+
                 if (!response.IsSuccessStatusCode)
                 {
                     return responseObj;
@@ -908,6 +1095,7 @@ namespace Sadna_17_B_Frontend.Controllers
                 }
             }
         }
+
 
 
 

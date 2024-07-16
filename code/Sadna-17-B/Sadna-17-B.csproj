@@ -457,6 +457,7 @@
     <Compile Include="Layer_API\Models\UIStoreDTOAPI.cs" />
     <Compile Include="Layer_API\Models\UIuserDTOAPI.cs" />
     <Compile Include="Layer_API\Program.cs" />
+    <Compile Include="Layer_Service\ServiceDTOs\externalDTOS.cs" />
     <Compile Include="Migrations\202407111221459_InitialCreate.cs" />
     <Compile Include="Migrations\202407111221459_InitialCreate.Designer.cs">
       <DependentUpon>202407111221459_InitialCreate.cs</DependentUpon>

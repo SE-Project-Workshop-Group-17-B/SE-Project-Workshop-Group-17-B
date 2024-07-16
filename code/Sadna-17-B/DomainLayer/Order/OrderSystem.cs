@@ -1,10 +1,11 @@
 ﻿using Sadna_17_B.DomainLayer.StoreDom;
 using Sadna_17_B.DomainLayer.User;
-using Sadna_17_B.ExternalServices;
+using Sadna_17_B.Layer_Service.ServiceDTOs;
 using Sadna_17_B.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 
 namespace Sadna_17_B.DomainLayer.Order
@@ -16,14 +17,15 @@ namespace Sadna_17_B.DomainLayer.Order
 
 
         private StoreController storeController;
-        private IPaymentSystem paymentSystem = new PaymentSystemProxy();
-        private ISupplySystem supplySystem = new SupplySystemProxy();
+        //private PaymentSystem paymentSystem = new PaymentSystem();
+        //private SupplySystem supplySystem = new SupplySystem();
         private Logger infoLogger = InfoLogger.Instance;
         private Logger errorLogger = ErrorLogger.Instance;
 
-        
+
         // ------- should move to DAL --------------------------------------------------------------------------------
 
+        private Dictionary<string, Order> pending_order = new Dictionary<string, Order>();                  // uid -> Order
 
         private Dictionary<int, Order> orderHistory = new Dictionary<int, Order>();                         // OrderId -> Order
         private Dictionary<int, List<Order>> guestOrders = new Dictionary<int, List<Order>>();              // GuestID -> List<Order>
@@ -40,17 +42,17 @@ namespace Sadna_17_B.DomainLayer.Order
             this.storeController = storeController;
         }
 
-        public OrderSystem(StoreController storeController, IPaymentSystem paymentInstance)
+       /* public OrderSystem(StoreController storeController, PaymentSystem paymentInstance)
         {
             this.storeController = storeController;
             this.paymentSystem = paymentInstance;
         }
 
-        public OrderSystem(StoreController storeController, ISupplySystem supplyInstance)
+        public OrderSystem(StoreController storeController, SupplySystem supplyInstance)
         {
             this.storeController = storeController;
             this.supplySystem = supplyInstance;
-        }
+        }*/
 
         public void LoadData()
         {
@@ -98,25 +100,40 @@ namespace Sadna_17_B.DomainLayer.Order
 
             Order order = new Order(orderCount, userID, isGuest, cart, destination, credit, cart_price_with_discount);
 
+
+            // ------- before -------------------------------------------------------------------------------
+
+            /*  validate_supply_system_availability(destination, order);
+              validate_payment_system_availability(credit, order);
+              validate_price(cart_price_with_discount);
+
+              paymentSystem.ExecutePayment(credit, order.TotalPrice);
+              supplySystem.ExecuteDelivery(destination, order.GetManufacturerProductNumbers());
+  */
+            // ------- now -------------------------------------------------------------------------------
+
+        
+
+
+            pending_order.Add(userID, order);
             
-            // ------- validations -------------------------------------------------------------------------------
-
-            validate_supply_system_availability(destination, order);
-            validate_payment_system_availability(credit, order);
-            validate_price(cart_price_with_discount);
-
-            // ------- execute purchase -------------------------------------------------------------------------------
-
-            reduce_cart(cart);
-
-            paymentSystem.ExecutePayment(credit, order.TotalPrice);
-            supplySystem.ExecuteDelivery(destination, order.GetManufacturerProductNumbers());
-
-            add_to_history(order);
 
         }
 
-        public void validate_supply_system_availability(string dest, Order order)
+        public void reduce_cart(string uid, Cart cart)
+        {
+          
+            foreach (var basket in cart.baskets())
+                storeController.decrease_products_amount(basket);
+
+            add_to_history(pending_order[uid]);
+            pending_order.Remove(uid);
+        }
+
+        
+
+
+        /*public void validate_supply_system_availability(string dest, Order order)
         {
             List<int> manufacturerProductNumbers = order.GetManufacturerProductNumbers();
 
@@ -147,12 +164,7 @@ namespace Sadna_17_B.DomainLayer.Order
             }
 
         }
-
-        public void reduce_cart(Cart cart)
-        {
-            foreach (var basket in cart.baskets())
-               storeController.decrease_products_amount(basket);
-        }
+*/
 
 
         // ------- history --------------------------------------------------------------------------------

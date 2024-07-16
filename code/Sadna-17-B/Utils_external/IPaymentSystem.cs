@@ -1,4 +1,4 @@
-﻿using System;
+﻿/*using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,3 +12,4 @@ namespace Sadna_17_B.ExternalServices
         bool ExecutePayment(string creditCardInfo, double amount);
     }
 }
+*/
