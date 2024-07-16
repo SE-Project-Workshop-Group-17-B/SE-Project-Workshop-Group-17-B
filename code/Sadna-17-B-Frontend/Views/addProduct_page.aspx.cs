@@ -28,7 +28,7 @@ namespace Sadna_17_B_Frontend.Views
             int.TryParse(Request.QueryString["storeId"], out storeId);
         }
 
-        protected void btnAddProduct_Click(object sender, EventArgs e)
+        protected async void btnAddProduct_Click(object sender, EventArgs e)
         {
             string productName = txtProductName.Text;
             string category = ddlCategory.SelectedValue;
@@ -62,7 +62,7 @@ namespace Sadna_17_B_Frontend.Views
             {
                 string token = backendController.userDTO.AccessToken;
 
-                Response res = backendController.add_store_product(token, storeId, productName, price, category, details, amount);
+                Response res = await backendController.add_store_product(token, storeId, productName, price, category, details, amount);
                 
                 if (res.Success)
                     Response.Write("<script>alert('Product added successfully!');</script>");

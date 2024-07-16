@@ -10,6 +10,7 @@ using System.Web.UI.WebControls;
 using Sadna_17_B.Utils;
 using Sadna_17_B.ServiceLayer.ServiceDTOs;
 using Sadna_17_B.DomainLayer.User;
+using System.Threading.Tasks;
 
 namespace Sadna_17_B_Frontend.Views
 {
@@ -19,13 +20,12 @@ namespace Sadna_17_B_Frontend.Views
         BackendController backendController = BackendController.get_instance();
         string username;
 
-        protected void Page_Load(object sender, EventArgs e)
+        protected async void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
             {
                 username = Request.QueryString["username"];
-                string token = backendController.userDTO.AccessToken;
-                Response res = backendController.userService.GetUserOrderHistory(token, username);
+                Response res = await backendController.GetUserOrderHistory(username);
                 if (res.Success)
                 {
                     List<OrderDTO> userOrders = res.Data as List<OrderDTO>;
@@ -44,7 +44,7 @@ namespace Sadna_17_B_Frontend.Views
             Response.Write(@"<script language='javascript'>alert('" + msg + "')</script>");
         }
 
-        protected List<CartItemViewDto> GetCartItems(object dataItem)
+        protected async Task<List<CartItemViewDto>> GetCartItems(object dataItem)
         {
             var order = (OrderDTO)dataItem;
             var cartItems = new List<CartItemViewDto>();
@@ -54,7 +54,7 @@ namespace Sadna_17_B_Frontend.Views
             {
                 int storeId = entry.Key;
                 Basket b = entry.Value;
-                Response nameRes = backendController.storeService.get_store_name(storeId);
+                Response nameRes = await backendController.get_store_name(storeId);
 
                 if (nameRes.Success)
                 {

@@ -18,6 +18,10 @@ namespace Sadna_17_B.ServiceLayer.ServiceDTOs
         public string DestinationAddress { get; }
         public string CreditCardInfo { get; }
 
+        public SubOrderDTO()
+        {
+        }
+      
         public SubOrderDTO(SubOrder subOrder)
         {
             StoreID = subOrder.StoreID;

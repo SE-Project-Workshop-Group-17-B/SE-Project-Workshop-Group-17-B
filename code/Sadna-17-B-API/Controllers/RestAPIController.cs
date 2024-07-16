@@ -166,17 +166,6 @@ namespace Sadna_17_B_API.Controllers
         }
 
 
-        public static T GetPropertyValue<T>(object obj, string propertyName)
-        {
-            var property = obj.GetType().GetProperty(propertyName);
-            if (property != null && property.PropertyType == typeof(T))
-            {
-                return (T)property.GetValue(obj);
-            }
-            return default(T);
-        }
-
-
         [HttpPost("process_store_order")]
         public Response ProcessStoreOrder([FromBody] Basket data)
         {
@@ -401,6 +390,102 @@ namespace Sadna_17_B_API.Controllers
             var response = _storeService.get_store_reviews_by_ID(storeId);
             return response;
         }
+        [HttpPost("show_purchase_policy")]
+        public Response ShowPurchasePolicy([FromBody] Dictionary<string, string> policy)
+        {
+            return _storeService.show_purchase_policy(policy);
+        }
+        [HttpPost("show_discount_policy")]
+        public Response ShowDiscountPolicy([FromBody] Dictionary<string, string> policy)
+        {
+            return _storeService.show_discount_policy(policy);
+        }
+        [HttpPost("get_store_order_history")]
+        public Response GetStoreOrderHistory([FromBody] orderHistoryDTO dto)
+        {
+            return _userService.GetStoreOrderHistory(dto.AccessToken, dto.OrderId);
+        }
+        [HttpPost("add_store_product")]
+        public Response AddStoreProduct([FromBody] AddProductDTO dto)
+        {
+            Response res = _storeService.add_product_to_store(dto.Token, dto.Sid, dto.Name, dto.Price, dto.Category, dto.Description, dto.Amount);
+            return res;
+        }
+        [HttpPost("editProduct")]
+        public Response EditProduct([FromBody] Dictionary<string, string> productDetails)
+        {
+            var response = _storeService.edit_product_in_store(productDetails);
+            return response;
+        }
+        [HttpPost("createStore")]
+        public Response CreateStore([FromBody] StoreDTOAPI storeDetails)
+        {
+            var response = _storeService.create_store(storeDetails.AccessToken, storeDetails.Name, storeDetails.Email, storeDetails.PhoneNumber, storeDetails.StoreDescription, storeDetails.Address);
+            return response;
+        }
+        [HttpPost("offerManagerAppointment")]
+        public Response OfferManagerAppointment([FromBody] ManagerAppointmentDTO appointmentDetails)
+        {
+            var response = _userService.OfferManagerAppointment(appointmentDetails.AccessToken, appointmentDetails.StoreId, appointmentDetails.UserName);
+            return response;
+        }
+        [HttpPost("offerOwnerAppointment")]
+        public Response OfferOwnerAppointment([FromBody] OwnerAppointmentDTO appointmentDetails)
+        {
+            var response = _userService.OfferOwnerAppointment(appointmentDetails.AccessToken, appointmentDetails.StoreId, appointmentDetails.UserName);
+            return response;
+        }
+        [HttpPost("abandonOwnership")]
+        public Response AbandonOwnership([FromBody] AbandonOwnershipDTO requestDetails)
+        {
+            string token = requestDetails.AccessToken;
+            int storeId = requestDetails.StoreId;
+            var response = _userService.AbandonOwnership(token, storeId);
+            return response;
+        }
+        [HttpPost("closeStore")]
+        public Response CloseStore([FromBody] CloseStoreDTO requestDetails)
+        {
+            string token = requestDetails.AccessToken;
+            int storeId = requestDetails.StoreId;
+            var response = _storeService.close_store(token, storeId);
+            return response;
+        }
+        [HttpPost("addProductReview")]
+        public Response AddProductReview([FromBody] ProductReviewDTO reviewDetails)
+        {
+            string token = reviewDetails.AccessToken;
+            int storeID = reviewDetails.StoreID;
+            int productID = reviewDetails.ProductID;
+            string review = reviewDetails.Review;
+            var response = _storeService.add_product_review(storeID, productID, review);
+            return response;
+        }
+        [HttpPost("getProductRating")]
+        public Response GetProductRating([FromBody] ProductRatingDTO requestDetails)
+        {
+            string token = requestDetails.AccessToken;
+            int productId = requestDetails.ProductId;
+            var response = _storeService.get_product_rating(productId);
+            return response;
+        }
+        [HttpPost("addProductRating")]
+        public Response AddProductRating([FromBody] AddProductRatingDTO ratingDetails)
+        {
+            string token = ratingDetails.AccessToken;
+            int storeID = ratingDetails.StoreID;
+            int productID = ratingDetails.ProductID;
+            int rating = ratingDetails.Rating;
+            var response = _storeService.add_product_rating(storeID, productID, rating);
+            return response;
+        }
+        [HttpPost("get_user_order_history")]
+        public Response GetUserOrderHistory([FromBody] UserOrderHistoryDTO dto)
+        {
+            Response res = _userService.GetUserOrderHistory(dto.Token, dto.Username);
+            return res;
+        }
+
     }
 
 }

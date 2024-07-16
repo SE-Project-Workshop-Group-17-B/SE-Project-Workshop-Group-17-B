@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using Sadna_17_B.DomainLayer.StoreDom;
 using Sadna_17_B.Utils;
 using System.Web.UI;
+using System.Linq;
+using Newtonsoft.Json;
 
 namespace Sadna_17_B_Frontend.Views
 {
@@ -29,11 +31,11 @@ namespace Sadna_17_B_Frontend.Views
                     Response.Redirect("~/Views/MyStores.aspx");
                 }
                 string token = backendController.userDTO.AccessToken;
-                Response isOwner = backendController.userService.owner(token, storeId);
-                Response isFounder = backendController.userService.founder(token, storeId);
-                if (isOwner.Success)
+                bool isOwner = backendController.owner(storeId);
+                bool isFounder = backendController.founder(storeId);
+                if (isOwner)
                     btnLeave.Text = "Leave";
-                if (isFounder.Success)
+                if (isFounder)
                     btnLeave.Text = "Close store";
             }
             else
@@ -42,13 +44,21 @@ namespace Sadna_17_B_Frontend.Views
             }
         }
 
+
         private async void LoadStoreData(int storeId)
         {
             var store = await backendController.get_store_details_by_id(storeId);
             if (store != null)
             {
-                Store s = store.Data as Store;
-                storeNameLiteral.Text = s.Name;
+                string breakup = store.Message;
+                string[] lines = breakup.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+                string email = lines.FirstOrDefault(line => line.Contains("Email is"))?.Split(' ').Last();
+                string phoneNumber = lines.FirstOrDefault(line => line.Contains("please call"))?.Split(' ').Last();
+                string address = lines.FirstOrDefault(line => line.Contains("Located at"))?.Split(new[] { "at " }, StringSplitOptions.None).Last().Split(new[] { " feel" }, StringSplitOptions.None).First();
+                string description = lines.FirstOrDefault(line => line.Contains("A little about us"));
+                string storeName = lines.FirstOrDefault(line => line.Contains("This is"))?.Split(' ')[2];
+                Store t = new Store(storeName, email, phoneNumber, description, address);
+                storeNameLiteral.Text = t.Name;
                 storeIdLiteral.Text = storeId.ToString();
 
                 // Load policies
@@ -56,13 +66,14 @@ namespace Sadna_17_B_Frontend.Views
                 {
                     ["store id"] = storeId.ToString()
                 };
-                var purchasePolicyResponse = backendController.storeService.show_purchase_policy(doc);
+                    
+                var purchasePolicyResponse = await backendController.show_purchase_policy(doc);
                 if (purchasePolicyResponse.Success)
                 {
                     txtPurchasePolicy.Text = purchasePolicyResponse.Data as string;
                 }
 
-                var discountPolicyResponse = backendController.storeService.show_discount_policy(doc);
+                var discountPolicyResponse = await backendController.show_discount_policy(doc);
                 if (discountPolicyResponse.Success)
                 {
                     txtDiscountPolicy.Text = discountPolicyResponse.Data as string;
@@ -108,7 +119,7 @@ namespace Sadna_17_B_Frontend.Views
             Response.Write(@"<script language='javascript'>alert('" + message + "')</script>");
         }
 
-        protected void btnEditProduct_Click(object sender, EventArgs e)
+        protected async void btnEditProduct_Click(object sender, EventArgs e)
         {
             Dictionary<string, string> doc = new Dictionary<string, string>();
             int.TryParse(Request.QueryString["storeId"], out storeId);
@@ -124,7 +135,7 @@ namespace Sadna_17_B_Frontend.Views
             doc["price"] = TxtPriceBox2.Text;
             doc["amount"] = TextAmountBox2.Text;
 
-            Response res = backendController.edit_store_product(doc);
+            Response res = await backendController.edit_store_product(doc);
             if (res.Success)
             {
                 MessageBox("Succesfully changed details of product");
@@ -165,7 +176,7 @@ namespace Sadna_17_B_Frontend.Views
             Response response = await backendController.search_products_by(searchDoc);
             if (response.Success)
             {
-                List<Product> productList = response.Data as List<Product>;
+                List<Product> productList = JsonConvert.DeserializeObject<List<Product>>(response.Data.ToString());
                 rptProducts3.DataSource = productList;
                 rptProducts3.DataBind();
             }
@@ -190,12 +201,12 @@ namespace Sadna_17_B_Frontend.Views
             ClientScript.RegisterStartupScript(this.GetType(), "Popup", script, true);
         }
 
-        protected void btnSendAppoitmentManager_Click(object sender, EventArgs e)
+        protected async void btnSendAppoitmentManager_Click(object sender, EventArgs e)
         {
             string token = backendController.userDTO.AccessToken;
             int storeId = Int32.Parse(hiddenLabel2.Text);
             string userName = managerTextBox.Text;
-            Response res = backendController.userService.OfferManagerAppointment(token, storeId, userName);
+            Response res = await backendController.OfferManagerAppointment(storeId, userName);
             if (res.Success)
             {
                 MessageBox("Succesfully offered management to the user!");
@@ -219,12 +230,12 @@ namespace Sadna_17_B_Frontend.Views
             ClientScript.RegisterStartupScript(this.GetType(), "Popup", script, true);
         }
 
-        protected void btnSendAppoitmentOwner_Click(object sender, EventArgs e)
+        protected async void btnSendAppoitmentOwner_Click(object sender, EventArgs e)
         {
             string token = backendController.userDTO.AccessToken;
             int storeId = Int32.Parse(hiddenLabel2.Text);
             string userName = managerTextBox.Text;
-            Response res = backendController.userService.OfferOwnerAppointment(token, storeId, userName);
+            Response res = await backendController.OfferOwnerAppointment(storeId, userName);
             if (res.Success)
             {
                 MessageBox("Succesfully offered ownership to the user!");
@@ -245,13 +256,13 @@ namespace Sadna_17_B_Frontend.Views
             // Implement discount policy update logic
         }
 
-        protected void btnLeave_Click(object sender, EventArgs e)
+        protected async void btnLeave_Click(object sender, EventArgs e)
         {
             string token = backendController.userDTO.AccessToken;
 
             if (btnLeave.Text == "Leave") //owner
             {
-                Response res = backendController.userService.AbandonOwnership(token, storeId);
+                Response res = await backendController.AbandonOwnership(storeId);
                 if (res.Success)
                 {
                     MessageBox("Succesfully left ownership of this store!");
@@ -264,7 +275,7 @@ namespace Sadna_17_B_Frontend.Views
                 }
             } else if (btnLeave.Text == "Close store")
             {
-                Response res = backendController.storeService.close_store(token, storeId);
+                Response res = await backendController.CloseStore(storeId);
                 if (res.Success)
                 {
                     MessageBox("Succesfully closed this store!");
