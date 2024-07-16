@@ -14,8 +14,6 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.WebPages;
-using Sadna_17_B_API.Controllers;
-using Sadna_17_B_API.Models;
 using System.Web.Caching;
 using Sadna_17_B_Frontend.Views;
 using System.Text;
@@ -1318,6 +1316,12 @@ namespace Sadna_17_B_Frontend.Controllers
         public int Quantity { get; set; }
 
         public ItemDTO() { }
+    }
+    public class UIuserDTOAPI
+    {
+        public string Username { get; set; }
+        public string Password { get; set; }
+        public string AccessToken { get; set; }
     }
 }
 
