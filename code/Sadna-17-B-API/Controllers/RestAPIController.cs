@@ -7,6 +7,7 @@ using Sadna_17_B.Utils;
 using Sadna_17_B.DomainLayer.User;
 using Sadna_17_B.ServiceLayer.ServiceDTOs;
 using Newtonsoft.Json;
+using Sadna_17_B.DomainLayer.StoreDom;
 
 namespace Sadna_17_B_API.Controllers
 {
@@ -120,12 +121,58 @@ namespace Sadna_17_B_API.Controllers
             return response;
         }
 
-        [HttpPost("search_product")]
-        public Response SearchProduct([FromBody] FuncStoreDTO storeData)
+        [HttpGet("get_product_by_id/{productId}")]
+        public Response GetProductById(int productId)
         {
-            var response = _storeService.search_product_by(storeData.doc);
+            var response = _storeService.get_product_by_id(productId);
             return response;
         }
+
+        [HttpPost("add_product_to_cart")]
+        public Response AddProductToCart([FromBody] AddToCartDTO addToCartDTO)
+        {
+            var response = _userService.cart_add_product(addToCartDTO.Doc, addToCartDTO.Change);
+            return response;
+        }
+
+        [HttpPost("search_product")]
+        public Response SearchProduct([FromBody] ProductSearchDTO searchDTO)
+        {
+            var response = _storeService.search_product_by(searchDTO.SearchCriteria);
+            if (response.Success)
+            {
+                var products = response.Data as List<Product>;
+                var productDTOs = products.Select(p => new ProductDTOAPI
+                {
+                    ID = p.ID,
+                    name = p.name,
+                    price = p.price,
+                    description = p.description,
+                    category = p.category,
+                    amount = p.amount,
+                    storeId = p.storeId,
+                    rating = p.rating,
+                    // Map other properties
+                }).ToList();
+                return new Response("Products found", true, productDTOs);
+            }
+            else
+            {
+                return new Response("Error while searching for products", false);
+            }
+        }
+
+
+        public static T GetPropertyValue<T>(object obj, string propertyName)
+        {
+            var property = obj.GetType().GetProperty(propertyName);
+            if (property != null && property.PropertyType == typeof(T))
+            {
+                return (T)property.GetValue(obj);
+            }
+            return default(T);
+        }
+
 
         [HttpPost("process_store_order")]
         public Response ProcessStoreOrder([FromBody] Basket data)
@@ -231,6 +278,7 @@ namespace Sadna_17_B_API.Controllers
         }
 
         [HttpPost("get_stores_by_id")]
+
         public Response getStoresById([FromBody] FuncStoreDTO store)
         {
             var response = _storeService.store_by_id(store.storeId);
@@ -243,14 +291,12 @@ namespace Sadna_17_B_API.Controllers
             var response = _storeService.create_store(storeDTO.AccessToken, storeDTO.Name, storeDTO.Email, storeDTO.PhoneNumber, storeDTO.StoreDescription, storeDTO.Address);
             return response;
         }
-
         [HttpPost("get_store_details")]
         public Response getStoreDetails([FromBody] int storeId)
         {
             var response = _storeService.get_store_info(storeId);
             return response;
         }
-
         [HttpPost("get_store_name")]
         public Response getStoreName([FromBody] int storeId)
         {
@@ -294,14 +340,14 @@ namespace Sadna_17_B_API.Controllers
         }
 
         [HttpPost("cart_add_product")]
-        public Response cartAddProduct([FromBody] Add2CartDTO dto)
+        public Response cartAddProduct([FromBody] AddToCartDTO dto)
         {
             var response = _userService.cart_add_product(dto.Doc, dto.Change);
             return response;
         }
 
         [HttpPost("search_product_by")]
-        public Response searchProductBy([FromBody] Dictionary<string,string> doc)
+        public Response searchProductBy([FromBody] Dictionary<string, string> doc)
         {
             var response = _storeService.search_product_by(doc);
             return response;
@@ -313,6 +359,6 @@ namespace Sadna_17_B_API.Controllers
             var response = _storeService.get_store_reviews_by_ID(storeId);
             return response;
         }
-
     }
+
 }

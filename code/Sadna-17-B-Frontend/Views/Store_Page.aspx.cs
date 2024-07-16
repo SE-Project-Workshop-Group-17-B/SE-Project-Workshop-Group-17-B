@@ -25,9 +25,9 @@ namespace Sadna_17_B_Frontend.Views
         {
             int.TryParse(Request.QueryString["storeId"], out storeId);
 
-            if ( !IsPostBack )
+            if (!IsPostBack)
             {
-                 LoadStoreData(storeId);
+                LoadStoreData(storeId);
             }
         }
 
@@ -73,7 +73,8 @@ namespace Sadna_17_B_Frontend.Views
             Response.Write(@"<script language='javascript'>alert('" + message + "')</script>");
         }
 
-        protected void btnClose_Click(object sender, EventArgs e) {
+        protected void btnClose_Click(object sender, EventArgs e)
+        {
             loadStoreRating();
         }
 
@@ -190,7 +191,7 @@ namespace Sadna_17_B_Frontend.Views
                 ["name"] = $"{product.name}"
             };
 
-            await backendController.add_product_to_cart(doc,1);
+            await backendController.add_product_to_cart(doc, 1);
             loadStoreRating();
 
         }
@@ -211,11 +212,11 @@ namespace Sadna_17_B_Frontend.Views
 
             string script = "$('#mymodal-inventory').modal('show')";
             ClientScript.RegisterStartupScript(this.GetType(), "Popup", script, true);
-            
+
             Dictionary<string, string> searchDoc = new Documentor.search_doc_builder()
                                                                     .set_search_options(sid: $"{storeId}")
                                                                     .Build();
-         
+
 
             Response response = await backendController.search_products_by(searchDoc);
             if (response.Success)
@@ -229,7 +230,7 @@ namespace Sadna_17_B_Frontend.Views
             {
                 rptProducts2.DataSource = new List<Product>();
                 rptProducts2.DataBind();
-               
+
             }
         }
 

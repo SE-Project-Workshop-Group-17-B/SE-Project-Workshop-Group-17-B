@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Founder Store Page" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="FounderStorePage.aspx.cs" Inherits="Sadna_17_B_Frontend.Views.FounderStorePage" %>
+﻿<%@ Page Title="Founder Store Page" Async="true" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="FounderStorePage.aspx.cs" Inherits="Sadna_17_B_Frontend.Views.FounderStorePage" %>
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
 <style>
     .founder-store-container {

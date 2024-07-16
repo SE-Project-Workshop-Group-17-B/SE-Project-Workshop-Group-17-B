@@ -132,7 +132,7 @@ namespace Sadna_17_B_Frontend
             }
             else
             {
-                Response.Redirect("Homepage",false); // Redirects back to the home page after logging out
+                Response.Redirect("Homepage", false); // Redirects back to the home page after logging out
             }
         }
 
@@ -143,13 +143,13 @@ namespace Sadna_17_B_Frontend
 
         protected void MyStoresBtn_Click(object sender, EventArgs e)
         {
-            Response.Redirect("MyStores");
+            Response.Redirect("MyStores", false);
         }
 
         protected void StoreAdminBtn_Click(object sender, EventArgs e)
         {
             //TODO: IMPLEMENT
-            Response.Redirect("SystemAdmin_page");
+            Response.Redirect("SystemAdmin_page", false);
         }
     }
     public class Notification

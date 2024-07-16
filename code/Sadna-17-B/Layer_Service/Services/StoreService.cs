@@ -193,7 +193,7 @@ namespace Sadna_17_B.ServiceLayer.Services
             try
             {
                 rating = _storeController.get_store_rating(storeID);
-                return new Response($"{rating}",true);
+                return new Response("" + rating, true);
             }
             catch (Sadna17BException ex)
             {
@@ -549,16 +549,26 @@ namespace Sadna_17_B.ServiceLayer.Services
                 string[] filter_product_rating = Parser.parse_array<string>(doc["product rating"]);
                 string[] filter_store_rating = Parser.parse_array<string>(doc["store rating"]);
                 string[] filter_price_range = Parser.parse_array<string>(doc["product price"]);
-                
+
+
+
+
                 // -------------- filtering ----------------------------------------------
 
+                /*
+                 {"keyword", keyword},
+                {"store id", storeId},
+                {"category", category},
+                {"product rating", productRating},
+                {"store rating", storeRating},
+                {"product price", $"{minPrice}|{maxPrice}"}
+                 */
 
-                
                 products = _storeController.search_products_by_keyword(filter_keyword);
                 products = _storeController.filter_products_by_store_id(products, Parser.parse_array<int>(filter_store)[0]);
                 products = _storeController.filter_products_by_store_rating(products, Parser.parse_array<double>(filter_store_rating)[0]);
                 products = _storeController.filter_products_by_category(products, filter_category);
-                products = _storeController.filter_products_by_price(products, Parser.parse_double(filter_price_range[0],0), Parser.parse_double(filter_price_range[1],1));
+                products = _storeController.filter_products_by_price(products, Parser.parse_double(filter_price_range[0], 0), Parser.parse_double(filter_price_range[1], 1));
                 products = _storeController.filter_products_by_product_rating(products, Parser.parse_int(filter_product_rating[0]));
 
                 return new Response("search filter succeed !!!", true, products);
@@ -575,7 +585,10 @@ namespace Sadna_17_B.ServiceLayer.Services
 
 
         // ---------------- Policy Requirements -------------------------------------------------------------------------------------------
-
+        public static bool is_none(string s)
+        {
+            return s == "";
+        }
 
         public Response edit_purchase_policy(Dictionary<string, string> doc) // doc explained on doc_doc.cs 
         {

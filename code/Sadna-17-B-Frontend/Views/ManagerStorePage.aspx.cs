@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using Sadna_17_B.DomainLayer.StoreDom;
 using Sadna_17_B.Utils;
 using System.Web.UI;
-using System.Threading.Tasks;
 
 namespace Sadna_17_B_Frontend.Views
 {
@@ -21,7 +20,7 @@ namespace Sadna_17_B_Frontend.Views
             {
                 if (int.TryParse(Request.QueryString["storeId"], out storeId))
                 {
-                    LoadStoreData(storeId).GetAwaiter().GetResult();
+                    LoadStoreData(storeId);
                     hiddenLabel2.Text = storeId.ToString();
                 }
                 else
@@ -43,7 +42,7 @@ namespace Sadna_17_B_Frontend.Views
             }
         }
 
-        private async Task LoadStoreData(int storeId)
+        private async void LoadStoreData(int storeId)
         {
             var store = await backendController.get_store_details_by_id(storeId);
             if (store != null)
@@ -85,7 +84,7 @@ namespace Sadna_17_B_Frontend.Views
             return "https://via.placeholder.com/200"; // Placeholder image for now
         }
 
-        protected async Task btnMngInv_Click(object sender, EventArgs e)
+        protected async void btnMngInv_Click(object sender, EventArgs e)
         {
             Button btn = (Button)sender;
             currProductId = Convert.ToInt32(btn.CommandArgument);
@@ -151,7 +150,7 @@ namespace Sadna_17_B_Frontend.Views
             }
         }
 
-        protected async Task btnManageInventory_Click(object sender, EventArgs e)
+        protected async void btnManageInventory_Click(object sender, EventArgs e)
         {
             int storeId = Convert.ToInt32(Request.QueryString["storeId"]);
 

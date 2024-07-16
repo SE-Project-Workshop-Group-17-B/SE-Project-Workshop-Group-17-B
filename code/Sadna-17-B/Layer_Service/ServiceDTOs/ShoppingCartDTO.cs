@@ -3,14 +3,13 @@ using Sadna_17_B.DomainLayer.User;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Serialization;
 using System.Web;
 
 namespace Sadna_17_B.ServiceLayer.ServiceDTOs
 {
     public class ShoppingCartDTO
     {
-        public Dictionary<int, ShoppingBasketDTO> ShoppingBaskets { get; set;  } // storeId -> ShoppingBasketDTO
+        public Dictionary<int, ShoppingBasketDTO> ShoppingBaskets { get; } // storeId -> ShoppingBasketDTO
 
         public ShoppingCartDTO()
         {

@@ -1,4 +1,6 @@
-﻿using Sadna_17_B.DomainLayer.StoreDom;
+﻿using Newtonsoft.Json;
+using Sadna_17_B.DomainLayer.StoreDom;
+using Sadna_17_B.ServiceLayer.ServiceDTOs;
 using Sadna_17_B.Utils;
 using Sadna_17_B_Frontend.Controllers;
 using System;
@@ -6,7 +8,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using System.Threading.Tasks;
 
 namespace Sadna_17_B_Frontend.Views
 {
@@ -19,11 +20,11 @@ namespace Sadna_17_B_Frontend.Views
         {
             if (!IsPostBack)
             {
-                //    LoadAllProducts().GetAwaiter().GetResult();
+            //    LoadAllProducts();
             }
         }
 
-        private async Task LoadAllProducts()
+        private async void LoadAllProducts()
         {
             Dictionary<string, string> emptySearch = new Dictionary<string, string>
             {
@@ -43,7 +44,7 @@ namespace Sadna_17_B_Frontend.Views
             }
         }
 
-        protected async Task btnSearch_Click(object sender, EventArgs e)
+        protected async void btnSearch_Click(object sender, EventArgs e)
         {
             string keyword = txtKeyword.Value.Trim();
             string category = txtCategory.Value.Trim();
@@ -63,10 +64,11 @@ namespace Sadna_17_B_Frontend.Views
                 {"product price", $"{minPrice}|{maxPrice}"}
             };
 
-            Response response = await backendController.search_products_by(searchDoc);
+            //Response response = backendController.search_products_by(searchDoc);
+            Response response = await backendController.search_products_async(searchDoc);
             if (response.Success)
             {
-                productList = response.Data as List<Product>;
+                productList = JsonConvert.DeserializeObject<List<Product>>(response.Data.ToString());
                 rptProducts.DataSource = productList;
                 rptProducts.DataBind();
                 lblMessage.Visible = false;
@@ -89,25 +91,55 @@ namespace Sadna_17_B_Frontend.Views
             }
         }
 
-        protected async Task btnAddToCart_Click(object sender, EventArgs e)
+        protected async void btnAddToCart_Click(object sender, EventArgs e)
         {
             Button btn = (Button)sender;
-            int productId = Convert.ToInt32(btn.CommandArgument);
-            // Implement add to cart functionality here
-            Product product =  await backendController.get_product_by_id(productId);
-
-            Dictionary<string, string> doc = new Dictionary<string, string>
+            int productId;
+            if (int.TryParse(btn.CommandArgument, out productId))
             {
-                ["token"] = $"{backendController.userDTO.AccessToken}",
-                ["store id"] = $"{product.storeId}",
-                ["product store id"] = $"{product.ID}",
-                ["price"] = $"{product.price}",
-                ["amount"] = $"{1}",
-                ["category"] = $"{product.category}",
-                ["name"] = $"{product.name}"
-            };
+                Product product = await backendController.get_product_by_id_async(productId);
+                if (product != null)
+                {
+                    Dictionary<string, string> doc = new Dictionary<string, string>
+                    {
+                        ["token"] = $"{backendController.userDTO.AccessToken}",
+                        ["store id"] = $"{product.storeId}",
+                        ["product store id"] = $"{product.ID}",
+                        ["price"] = $"{product.price}",
+                        ["amount"] = $"{1}",
+                        ["category"] = $"{product.category}",
+                        ["name"] = $"{product.name}"
+                    };
 
-            backendController.add_product_to_cart(doc,1);
+                    Response addToCartResponse = await backendController.add_product_to_cart_async(doc, 1);
+
+                    if (addToCartResponse.Success)
+                    {
+                        // Show success message
+                        ScriptManager.RegisterStartupScript(this, this.GetType(), "alert",
+                            "alert('Product added to cart successfully!');", true);
+                    }
+                    else
+                    {
+                        // Show error message
+                        ScriptManager.RegisterStartupScript(this, this.GetType(), "alert",
+                            $"alert('Failed to add product to cart: {addToCartResponse.Message}');", true);
+                    }
+                }
+                else
+                {
+                    // Show error message
+                    ScriptManager.RegisterStartupScript(this, this.GetType(), "alert",
+                        "alert('Failed to retrieve product information.');", true);
+                }
+            }
+            else
+            {
+                // Show error message
+                ScriptManager.RegisterStartupScript(this, this.GetType(), "alert",
+                    "alert('Invalid product ID.');", true);
+            }
+
             lblMessage.Text = $"Product {productId} added to cart!";
             lblMessage.Visible = true;
         }

@@ -2,9 +2,8 @@
 using System;
 using System.Web.UI.WebControls;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using Sadna_17_B.Utils;
 using Sadna_17_B.DomainLayer.StoreDom;
+
 namespace Sadna_17_B_Frontend.Views
 {
     public partial class FounderStorePage : System.Web.UI.Page
@@ -18,7 +17,7 @@ namespace Sadna_17_B_Frontend.Views
             {
                 if (int.TryParse(Request.QueryString["storeId"], out storeId))
                 {
-                    LoadStoreData(storeId).GetAwaiter().GetResult();
+                    LoadStoreData(storeId);
                 }
                 else
                 {
@@ -28,10 +27,10 @@ namespace Sadna_17_B_Frontend.Views
             }
         }
 
-        private async Task LoadStoreData(int storeId)
+        private async void LoadStoreData(int storeId)
         {
-            Response store = await backendController.get_store_details_by_id(storeId);
-            if (store.Success != null)
+            var store = await backendController.get_store_details_by_id(storeId);
+            if (store != null)
             {
                 Store s = store.Data as Store;
                 litStoreName.Text = s.Name;

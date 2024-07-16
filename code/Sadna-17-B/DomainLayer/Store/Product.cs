@@ -29,7 +29,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         public int storeId { get; set; }
 
    //     [ForeignKey("storeId")]
-        public virtual Store Store { get; set; }
+        public virtual Store Store { get; set;}
         public int amount { get; set; }
         public string name { get; set; }
         public double price { get; set; }
