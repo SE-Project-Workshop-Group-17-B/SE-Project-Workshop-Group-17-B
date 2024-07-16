@@ -33,7 +33,9 @@ namespace Sadna_17_B_Frontend
                 SignUpBtn.Visible = false;
                 CheckAdminStatusAsync();                
 
-                string script = @"const socket = new WebSocket('wss://localhost:7093/ws?username=sub');
+                string script = @"
+                                const notificationContainer = document.getElementById('notificationContainer');
+                                const socket = new WebSocket('wss://localhost:7093/ws?username=sub');
 
                                 socket.onopen = function (event) {
                                     console.log('WebSocket connection opened');
@@ -55,14 +57,30 @@ namespace Sadna_17_B_Frontend
                                     console.log(no) 
                                     
                                     // Real time
+                                    // Create notification element
                                     const notificationElement = document.createElement('div');
-                                    notificationElement.className = 'notification';
-                                    notificationElement.textContent = no.Message;
-                                    document.body.appendChild(notificationElement);
-
+                                    notificationElement.className = 'notification unread';
+                                    notificationElement.innerHTML = `
+                                        <div class='notification-content'>
+                                            <div class='notification-message'>${no.Message}</div>
+                                            <div class='notification-close'>×</div>
+                                        </div>
+                                    `;
+    
+                                    // Add notification to container
+                                    notificationContainer.appendChild(notificationElement);
+    
+                                    // Add click event to close button
+                                    notificationElement.querySelector('.notification-close').addEventListener('click', function() {
+                                        notificationContainer.removeChild(notificationElement);
+                                    });
+    
+                                    // Remove notification after 5 seconds
                                     setTimeout(() => {
-                                        document.body.removeChild(notificationElement);
-                                    }, 5000); // Remove notification after 5 seconds
+                                        if (notificationContainer.contains(notificationElement)) {
+                                            notificationContainer.removeChild(notificationElement);
+                                        }
+                                    }, 5000);
                                 };
                                 ";
                 Page.ClientScript.RegisterStartupScript(this.GetType(), "WebSocketScript", script, true);

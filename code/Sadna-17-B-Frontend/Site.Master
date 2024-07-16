@@ -47,30 +47,43 @@
             margin: 10px 0px 0 5px;
         }
 
-        .notification {
-            padding: 10px;
-            border-bottom: 1px solid #eee;
-            transition: background-color 0.3s;
+        #notificationContainer {
+            max-width: 300px;
         }
 
-        .notification:hover {
-            background-color: #1a5f8d;
-            color: darkblue;
-            z-index: 99999;
+        .notification {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 10px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
 
+        .notification-content {
+            padding: 15px;
+            position: relative;
+        }
+
+        .notification-message {
+            margin-right: 20px;
+        }
+
+        .notification-close {
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            cursor: pointer;
+            font-size: 18px;
+            color: #999;
         }
 
         .notification.unread {
-            background-color: #e6f3ff;
             border-left: 4px solid #3498db;
-            z-index: 9999;
-
         }
 
-        .notification.read {
-            background-color: white;
-            border-left: 4px solid #3498db;
-            z-index: 9999;
+        .notification:hover {
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
         }
        
     </style>
@@ -136,7 +149,7 @@
                 <p>&copy; <%: DateTime.Now.Year %> - TRADINGMARKET</p>
             </footer>
         </div>
-
+        <div id="notificationContainer" style="position: fixed; top: 70px; left: 20px; z-index: 9999;"></div>
     </form>
    
 </body>
