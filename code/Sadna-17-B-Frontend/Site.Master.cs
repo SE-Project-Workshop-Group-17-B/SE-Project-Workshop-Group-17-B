@@ -35,28 +35,9 @@ namespace Sadna_17_B_Frontend
                 //   else
                 //       SystemAdminBtn.Visible = false;
                 CheckAdminStatusAsync();
-                //_loginLogoutButtons =
-                //   "<ul class=\"nav navbar-nav\" style=\"float: right\">" +
-                //   "<li><a runat=\"server\" onclick=\"Logout_Click\">Log Out</a></li>" +
-                //   "</ul>";
-            }
-            else
-            {
-                MyStoresBtn.Visible = false;
-                LogoutBtn.Visible = false;
-                LblHello.Visible = false;
-                SystemAdminBtn.Visible = false;
-                LoginBtn.Visible = true;
-                SignUpBtn.Visible = true;
-                //_loginLogoutButtons =
-                //    "<ul class=\"nav navbar-nav\" style=\"float: right\">" +
-                //    "<li><a runat=\"server\" href=\"Login\"> Login </a></li>" +
-                //    "<li><a runat=\"server\" href=\"SignUp\"> Sign Up </a></li>" +
-                //    "</ul>";
-            }
-            string script = @"const socket = new WebSocket('wss://localhost:7093/ws?username=noam');
+                string script = $"const socket = new WebSocket('wss://localhost:7093/ws?username={backendController.get_username()}');" +
 
-                                socket.onopen = function (event) {
+                                @"socket.onopen = function (event) {
                                     console.log('WebSocket connection opened');
                                 };
 
@@ -87,8 +68,28 @@ namespace Sadna_17_B_Frontend
                                 };
   
                                 ";
-            Page.ClientScript.RegisterStartupScript(this.GetType(), "WebSocketScript", script, true);
-            count++;
+                Page.ClientScript.RegisterStartupScript(this.GetType(), "WebSocketScript", script, true);
+                count++;
+                //_loginLogoutButtons =
+                //   "<ul class=\"nav navbar-nav\" style=\"float: right\">" +
+                //   "<li><a runat=\"server\" onclick=\"Logout_Click\">Log Out</a></li>" +
+                //   "</ul>";
+            }
+            else
+            {
+                MyStoresBtn.Visible = false;
+                LogoutBtn.Visible = false;
+                LblHello.Visible = false;
+                SystemAdminBtn.Visible = false;
+                LoginBtn.Visible = true;
+                SignUpBtn.Visible = true;
+                //_loginLogoutButtons =
+                //    "<ul class=\"nav navbar-nav\" style=\"float: right\">" +
+                //    "<li><a runat=\"server\" href=\"Login\"> Login </a></li>" +
+                //    "<li><a runat=\"server\" href=\"SignUp\"> Sign Up </a></li>" +
+                //    "</ul>";
+            }
+            
 
 
 

@@ -6,10 +6,16 @@ namespace Sadna_17_B.DomainLayer.User
     public class NotificationSystem
     {
         private Dictionary<string, List<Notification>> notifications; // username -> List<Notification>
-
-        public NotificationSystem()
+        private static NotificationSystem Instance = null;
+        private NotificationSystem()
         {
             notifications = new Dictionary<string, List<Notification>>();
+        }
+        public static NotificationSystem getInstance()
+        {
+            if (Instance == null) 
+                Instance = new NotificationSystem();
+            return Instance;
         }
 
         public void Notify(string usernameToNotify, string message)
@@ -21,6 +27,18 @@ namespace Sadna_17_B.DomainLayer.User
             }
             notifications[usernameToNotify].Add(notification);
             NotificationsHandler.getInstance().Notify(usernameToNotify, notification);
+        }
+
+        public void NotifyLogin(string usernameToNotify)
+        {
+            if (notifications.ContainsKey(usernameToNotify))
+            {
+                foreach (Notification notification in notifications[usernameToNotify])
+                {
+                    if (!notification.IsMarkedAsRead)
+                        NotificationsHandler.getInstance().Notify(usernameToNotify, notification);
+                }
+            }
         }
 
         public List<Notification> ReadNewNotifications(string username)

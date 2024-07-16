@@ -36,6 +36,7 @@ namespace Sadna_17_B.DomainLayer
             //    await socket.CloseAsync();
             //}
             userSockets[username] = ws;
+            NotificationSystem.getInstance().NotifyLogin(username);
             Console.WriteLine("added socket " + username);
             await processConnection(ws);
             
