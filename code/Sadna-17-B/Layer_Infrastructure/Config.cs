@@ -15,7 +15,7 @@ namespace Sadna_17_B.Layer_Infrastructure
 
     public class Config
     {
-        public static string config_file_path = @"Layer_Infrastructure/config_requirements.json";
+        public static string config_file_path = @"../Sadna-17-B/Layer_Infrastructure/config_generate.json";
 
         // --------- json variables -------------------------------------------------------------------------
 

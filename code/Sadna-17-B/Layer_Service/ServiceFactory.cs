@@ -41,14 +41,18 @@ namespace Sadna_17_B.ServiceLayer
         public ServiceFactory()
         {
             // Read Configuration File -> isMemory = false / frue
+            Config config = read_config_data();
+            ApplicationDbContext.isMemoryDB = config.is_memory; // Updates the ApplicationDBContext.IsMemoryDB static variable
             domainFactory = new DomainFactory();
-            SetUp();
+            SetUp(config);
         }
 
-        public void SetUp()
+        public void SetUp(Config config)
         {
             BuildInstances();
-            Config config = generate_config_data(); // Updates the ApplicationDBContext.IsMemoryDB static variable
+            config.set_services(UserService, StoreService);
+            InitializeSystemFromConfig(config);
+            Console.WriteLine("Config file loaded successfully.");
         }
 
 
@@ -150,23 +154,19 @@ namespace Sadna_17_B.ServiceLayer
 
         private void BuildInstances()
         {
-            UserService = new UserService(domainFactory.UserController); ;
+            UserService = new UserService(domainFactory.UserController);
             StoreService = new StoreService(UserService, domainFactory.StoreController);
         }
 
-        public Config generate_config_data()
+        public Config read_config_data()
         {
             string config_string = File.ReadAllText(Path.GetFullPath(Config.config_file_path)); // config.requirements.json
             Config config = JsonSerializer.Deserialize<Config>(config_string);
-            config.set_services(UserService, StoreService);
-            InitializeSystemFromConfig(config);
-            Console.WriteLine("Config file loaded successfully.");
             return config;
         }
 
         public void InitializeSystemFromConfig(Config config)
         {
-            ApplicationDbContext.isMemoryDB = config.is_memory;
             if (config.loadFromDB)
             {
                 LoadData();

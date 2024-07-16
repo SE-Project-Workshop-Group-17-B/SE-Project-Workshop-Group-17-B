@@ -165,19 +165,20 @@ namespace Sadna_17_B.DataAccessLayer.DBTests
             Response res = userService.entry_subscriber(username2, password2);
             userDTO = res.Data as UserDTO;
             string token = userDTO.AccessToken;
+            int amountBuying = 10;
             Dictionary<string, string> doc = new Dictionary<string, string>()
             {
                 ["token"] = token,
                 [$"store id"] = $"{sid}",
                 [$"price"] = $"{50}",
-                [$"amount"] = $"{10}",
+                [$"amount"] = $"{amountBuying}",
                 [$"category"] = $"category",
                 [$"product store id"] = $"{pid}",
                 [$"name"] = $"{productName}"
             };
 
 
-            ignore = userService.cart_add_product(doc);
+            ignore = userService.cart_add_product(doc, amountBuying);
             Response test2 = userService.cart_by_token(doc);
             ShoppingCartDTO shoppingCart = test2.Data as ShoppingCartDTO;
             ShoppingBasketDTO shoppingBasket = shoppingCart.ShoppingBaskets[sid];
@@ -200,18 +201,19 @@ namespace Sadna_17_B.DataAccessLayer.DBTests
             string token = userDTO.AccessToken;
 
             int pid = 10; //does not exist in our store
+            int amountBuying = 10;
             Dictionary<string, string> doc = new Dictionary<string, string>()
             {
                 ["token"] = token,
                 [$"store id"] = $"{sid}",
                 [$"price"] = $"{50}",
-                [$"amount"] = $"{10}",
+                [$"amount"] = $"{amountBuying}",
                 [$"category"] = $"category",
                 [$"product store id"] = $"{pid}",
                 [$"name"] = $"{productName}"
             };
 
-            ignore = userService.cart_add_product(doc);
+            ignore = userService.cart_add_product(doc, amountBuying);
             Assert.IsTrue(ignore.Success); // The addition to cart does not enforce existence of the product in the store, it can be added later, but it is checked in complete purchase
         }
 
@@ -240,18 +242,19 @@ namespace Sadna_17_B.DataAccessLayer.DBTests
             Response ignore2 = userService.upgrade_subscriber(username2, password2);
             Response result2 = userService.entry_subscriber(username2, password2);
             UserDTO temp2 = result2.Data as UserDTO;
+            int amountBuying = quantity * 2;
             Dictionary<string, string> doc = new Dictionary<string, string>()
             {
                 ["token"] = temp1.AccessToken,
                 [$"store id"] = $"{sid}",
                 [$"price"] = $"{50}",
-                [$"amount"] = $"{quantity * 2}",
+                [$"amount"] = $"{amountBuying}",
                 [$"category"] = $"category",
                 [$"product store id"] = $"{pid}",
                 [$"name"] = $"{productName}"
             };
 
-            Response ignore = userService.cart_add_product(doc);
+            Response ignore = userService.cart_add_product(doc, amountBuying);
             Assert.IsTrue(ignore.Success);
         }
 
@@ -294,7 +297,7 @@ namespace Sadna_17_B.DataAccessLayer.DBTests
                 [$"name"] = $"{productName}"
             };
 
-            ignore = userService.cart_add_product(doc);
+            ignore = userService.cart_add_product(doc, quantity);
 
             ignore = userService.CompletePurchase(token, "someAddr", "SomeInfo");
 
@@ -345,7 +348,7 @@ namespace Sadna_17_B.DataAccessLayer.DBTests
                 [$"name"] = $"{productName}"
             };
 
-            ignore = userService.cart_add_product(doc);
+            ignore = userService.cart_add_product(doc, quantity);
             ignore = userService.CompletePurchase(token, "someAddr", "SomeInfo");
 
             Response test = userService.GetMyOrderHistory(token);
@@ -394,7 +397,7 @@ namespace Sadna_17_B.DataAccessLayer.DBTests
                 [$"name"] = $"{productName}"
             };
 
-            ignore = userService.cart_add_product(doc);
+            ignore = userService.cart_add_product(doc, quantity);
             ignore = userService.CompletePurchase(token, "someAddr", "SomeInfo");
 
             Response test = userService.GetStoreOrderHistory(temp1.AccessToken, sid);
@@ -432,19 +435,19 @@ namespace Sadna_17_B.DataAccessLayer.DBTests
             Response res = userService.entry_subscriber(username2, password2);
             userDTO = res.Data as UserDTO;
             string token = userDTO.AccessToken;
-
+           
             Dictionary<string, string> doc = new Dictionary<string, string>()
             {
                 ["token"] = token,
                 [$"store id"] = $"{sid}",
                 [$"price"] = $"{50}",
-                [$"amount"] = $"{quantity }",
+                [$"amount"] = $"{quantity}",
                 [$"category"] = $"category",
                 [$"product store id"] = $"{pid}",
                 [$"name"] = $"{productName}"
             };
 
-            ignore = userService.cart_add_product(doc);
+            ignore = userService.cart_add_product(doc, quantity);
             ignore = userService.CompletePurchase(token, "someAddr", "SomeInfo");
 
             Response test = userService.GetStoreOrderHistory(token, sid);

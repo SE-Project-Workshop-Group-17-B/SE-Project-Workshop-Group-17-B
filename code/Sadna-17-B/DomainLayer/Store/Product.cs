@@ -21,12 +21,8 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         [NotMapped]
         public static int idCounter = 1;
         
-        public  int ratingCounter = 0;
-   
-        public int ratingOverAllScore = 0;
-        [NotMapped]
         public int ratingCounter = 0;
-        [NotMapped]
+   
         public double ratingOverAllScore = 0;
 
         [Key]

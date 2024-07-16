@@ -105,7 +105,7 @@ namespace Sadna_17_B.DataAccessLayer.DBTests
                 [$"name"] = $"{productName}"
             };
 
-            ignore = userService.cart_add_product(doc);
+            ignore = userService.cart_add_product(doc, amount2Buy);
             Response completeRes = userService.CompletePurchase(token, destAddr, creditCardInfo);
             int amount = ((List<Store>)storeService.store_by_name(storeName).Data)[0].amount_by_name(productName);
             Assert.IsTrue(completeRes.Success);
@@ -134,19 +134,20 @@ namespace Sadna_17_B.DataAccessLayer.DBTests
             Response res = userService.entry_subscriber(username2, password2);
             userDTO = res.Data as UserDTO;
             string token = userDTO.AccessToken;
+            int amountBuying = quantity * 2;
 
             Dictionary<string, string> doc = new Dictionary<string, string>()
             {
                 ["token"] = token,
                 [$"store id"] = $"{sid}",
                 [$"price"] = $"{50}",
-                [$"amount"] = $"{quantity * 2}",
+                [$"amount"] = $"{amountBuying}",
                 [$"category"] = "category",
                 [$"product store id"] = $"{pid}",
                 [$"name"] = $"{productName}"
             };
 
-            ignore = userService.cart_add_product(doc);
+            ignore = userService.cart_add_product(doc, amountBuying);
 
             Response completeRes = userService.CompletePurchase(token, destAddr, creditCardInfo);
             Assert.IsFalse(completeRes.Success);
@@ -187,8 +188,8 @@ namespace Sadna_17_B.DataAccessLayer.DBTests
             };
 
 
-            ignore = userService.cart_add_product(doc);
-            ignore = userService.cart_add_product(doc1); //creating second shopping cart for different user
+            ignore = userService.cart_add_product(doc, amount2Buy);
+            ignore = userService.cart_add_product(doc1, amount2Buy); //creating second shopping cart for different user
 
             Response sc = userService.cart_by_token(doc);
             ShoppingCartDTO shoppnigCart1 = sc.Data as ShoppingCartDTO;
@@ -224,6 +225,7 @@ namespace Sadna_17_B.DataAccessLayer.DBTests
             Response res = userService.entry_subscriber(username2, password2);
             userDTO = res.Data as UserDTO;
             string token = userDTO.AccessToken;
+            int amountBuying = quantity * 2;
 
             Dictionary<string, string> doc = new Dictionary<string, string>()
             {
@@ -231,13 +233,13 @@ namespace Sadna_17_B.DataAccessLayer.DBTests
                 [$"store id"] = $"{sid}",
                 [$"price"] = $"{50}",
                 [$"category"] = $"category",
-                [$"amount"] = $"{quantity * 2}",
+                [$"amount"] = $"{amountBuying}",
                 [$"product store id"] = $"{pid}",
                 [$"name"] = $"{productName}"
             };
 
 
-            ignore = userService.cart_add_product(doc);
+            ignore = userService.cart_add_product(doc, amountBuying);
 
             Response completeRes = userService.CompletePurchase(token, destAddr, creditCardInfo);
             int amount = ((List<Store>)storeService.store_by_name(storeName).Data)[0].amount_by_name(productName);

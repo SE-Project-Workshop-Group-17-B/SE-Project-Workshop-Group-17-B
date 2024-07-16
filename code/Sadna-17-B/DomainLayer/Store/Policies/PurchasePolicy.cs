@@ -63,7 +63,12 @@ namespace Sadna_17_B.DomainLayer.StoreDom
       
 
         [NotMapped]
-        public Purchase_Rule PurchaseTree { get; set; } = new Purchase_Rule();
+        private Purchase_Rule PurchaseTree { get; set; } = new Purchase_Rule();
+
+        public Purchase_Rule GetPurchaseTree()
+        {
+            return this.PurchaseTree;
+        }
 
         public PurchasePolicy()
         {

@@ -104,7 +104,7 @@ namespace Sadna_17_B.DataAccessLayer.DBTests
                 [$"name"] = $"{productName}"
             };
 
-            ignore = userService.cart_add_product(doc);
+            ignore = userService.cart_add_product(doc, amount2Buy);
 
             string wrongCreditCardInfo = null;
             Response completeRes = userService.CompletePurchase(token, destAddr, wrongCreditCardInfo);
@@ -131,7 +131,7 @@ namespace Sadna_17_B.DataAccessLayer.DBTests
                 [$"name"] = $"{productName}"
             };
 
-            ignore = userService.cart_add_product(doc);
+            ignore = userService.cart_add_product(doc, amount2Buy);
 
             string wrongDestAddrInfo = null;
             Response completeRes = userService.CompletePurchase(token, wrongDestAddrInfo, creditCardInfo);
@@ -147,18 +147,19 @@ namespace Sadna_17_B.DataAccessLayer.DBTests
             Response res = userService.entry_subscriber(username2, password2);
             userDTO = res.Data as UserDTO;
             string token = userDTO.AccessToken;
+            int amountBuying = quantity * 2;
             Dictionary<string, string> doc = new Dictionary<string, string>()
             {
                 ["token"] = token,
                 [$"store id"] = $"{sid}",
                 [$"category"] = $"category",
                 [$"price"] = $"{50}",
-                [$"amount"] = $"{quantity * 2}",
+                [$"amount"] = $"{amountBuying}",
                 [$"product store id"] = $"{pid}",
                 [$"name"] = $"{productName}"
             };
 
-            ignore = userService.cart_add_product(doc);
+            ignore = userService.cart_add_product(doc, amountBuying);
             Response temp = userService.cart_by_token(doc);
 
             ShoppingCartDTO prevCart = temp.Data as ShoppingCartDTO;
@@ -196,18 +197,19 @@ namespace Sadna_17_B.DataAccessLayer.DBTests
             userDTO = res.Data as UserDTO;
             string token = userDTO.AccessToken;
 
+            int amountBuying = quantity * 2;
             Dictionary<string, string> doc = new Dictionary<string, string>()
             {
                 ["token"] = token,
                 [$"store id"] = $"{sid}",
                 [$"price"] = $"{50}",
-                [$"amount"] = $"{quantity * 2}",
+                [$"amount"] = $"{amountBuying}",
                 [$"category"] = $"category",
                 [$"product store id"] = $"{pid}",
                 [$"name"] = $"{productName}"
             };
 
-            ignore = userService.cart_add_product(doc);
+            ignore = userService.cart_add_product(doc, amountBuying);
 
             Response completeRes = userService.CompletePurchase(token, destAddr, creditCardInfo);
             int amount = ((List<Store>)storeService.store_by_name(storeName).Data)[0].amount_by_name(productName);

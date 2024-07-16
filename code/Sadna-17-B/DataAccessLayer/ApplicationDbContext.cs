@@ -20,7 +20,7 @@ namespace Sadna_17_B.DataAccessLayer
     {
         public static string ApplicationDbContextName = "RemoteSadna-17-B-DB";
         public static string SQLiteDbContextName = "SQLiteDB";
-        public static bool isMemoryDB = false; // Controls whether the actual database is connected or not
+        public static bool isMemoryDB = true; // Controls whether the actual database is connected or not
         public ApplicationDbContext() : base("RemoteSadna-17-B-DB")
         {
         }

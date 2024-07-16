@@ -74,7 +74,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             info.AddValue(nameof(price), price);
             info.AddValue(nameof(conditions), JsonConvert.SerializeObject(conditions));
             info.AddValue(nameof(purchase_rules), JsonConvert.SerializeObject(purchase_rules));
-            info.AddValue(nameof(aggregation_rule), JsonConvert.SerializeObject(aggregation_rule));
+            info.AddValue(nameof(aggregation_rule), null); // JsonConvert.SerializeObject(aggregation_rule));
 
             /*if (aggregation_rule != null && aggregation_rule.Method != null)
             {

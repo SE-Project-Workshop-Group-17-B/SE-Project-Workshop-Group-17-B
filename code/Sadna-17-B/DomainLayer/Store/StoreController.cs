@@ -514,7 +514,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                 }
                 catch
                 {
-                    if (store.ID == 5)
+                    if (store.StoreID == 5)
                         throw new Sadna17BException($"No product found with ID: {productId}");
                     else continue;
                 }

@@ -68,7 +68,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         public virtual Inventory Inventory { get; set; }
 
         [NotMapped]
-        public  DiscountPolicy DiscountPolicy { get;  set; }
+        private DiscountPolicy DiscountPolicy { get;  set; }
         public string DiscountPolicySerialized
         {
             get => JsonConvert.SerializeObject(DiscountPolicy);
@@ -77,7 +77,8 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
 
         [NotMapped]
-        public PurchasePolicy PurchasePolicy { get; set; }
+        private PurchasePolicy PurchasePolicy { get; set; }
+        [NotMapped]
         public string PurchasePolicySerialized
         {
             get => JsonConvert.SerializeObject(PurchasePolicy);
@@ -292,7 +293,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                 case "add":
 
                     int ancestor_id = Parser.parse_int(doc["ancestor id"]);
-                    ancestor_id = (ancestor_id == -1) ? PurchasePolicy.PurchaseTree.ID : ancestor_id;
+                    ancestor_id = (ancestor_id == -1) ? PurchasePolicy.GetPurchaseTree().ID : ancestor_id;
 
                     string name = Parser.parse_string(doc["name"]);
                     List<Func<Basket, bool>> cond_lambdas = parse_condition_lambdas(doc);

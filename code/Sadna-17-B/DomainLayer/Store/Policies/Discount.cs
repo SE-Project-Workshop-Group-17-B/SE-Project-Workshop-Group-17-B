@@ -220,14 +220,19 @@ namespace Sadna_17_B.DomainLayer.StoreDom
     public class Discount_Rule : Discount
 
     {
-        public List<Discount> discounts = new List<Discount>();
-        public string composite_name { get; private set; }
+        public List<Discount> discounts;
+        public string composite_name { get; set; }
+
+        public Discount_Rule()
+        {
+        }
 
 
         public Func<Basket, List<Discount>, Mini_Checkout> aggregation_rule { get; private set; }
 
         public Discount_Rule(Func<Basket, List<Discount>, Mini_Checkout> aggregation, string name) 
-        { 
+        {
+            discounts = new List<Discount>();
             aggregation_rule = aggregation;
             composite_name = name;
         }

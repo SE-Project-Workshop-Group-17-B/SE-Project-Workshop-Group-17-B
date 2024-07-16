@@ -89,7 +89,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             info.AddValue(nameof(discount_to_products), JsonConvert.SerializeObject(discount_to_products));
             info.AddValue(nameof(discount_to_categories), JsonConvert.SerializeObject(discount_to_categories));
             info.AddValue(nameof(discount_to_member), JsonConvert.SerializeObject(discount_to_member));
-            info.AddValue(nameof(DiscountTree), JsonConvert.SerializeObject(DiscountTree));
+            info.AddValue(nameof(DiscountTree), new Discount_Rule()); //JsonConvert.SerializeObject(DiscountTree));
         }
 
 

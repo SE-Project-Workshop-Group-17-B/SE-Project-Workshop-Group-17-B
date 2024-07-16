@@ -1,6 +1,6 @@
 ﻿{
   "generateData": true,
   "loadFromDB": false,
-  "isMemoryDB": false,
+  "isMemoryDB": true,
   "requirements":  []
 }
