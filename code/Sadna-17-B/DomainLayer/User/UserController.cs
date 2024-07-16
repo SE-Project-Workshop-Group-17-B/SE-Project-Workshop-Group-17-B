@@ -350,7 +350,7 @@ namespace Sadna_17_B.DomainLayer.User
                 throw new Sadna17BException("The user with the given username is already a manager of the store with the given storeID.");
             }
             offerSystem.AddOwnerAppointmentOffer(storeID, newOwnerUsername, requestingSubscriber.Username);
-            notificationSystem.Notify(newOwnerUsername, "A new owner appointment offer of store " + storeID + " has been received from " + requestingSubscriber.Username);
+            notificationSystem.Notify(newOwnerUsername, "A new owner appointment offer has been received from " + requestingSubscriber.Username + ", store: " + storeID);
         }
 
         public void OfferManagerAppointment(string token, int storeID, string newManagerUsername)
@@ -376,7 +376,7 @@ namespace Sadna_17_B.DomainLayer.User
                 throw new Sadna17BException("The requesting subscriber is not a store owner of the store with the given storeID, so cannot appoint new owners.");
             }
             offerSystem.AddManagerAppointmentOffer(storeID, newManagerUsername, requestingSubscriber.Username, authorizations);
-            notificationSystem.Notify(newManagerUsername, "A new manager appointment offer of store " + storeID + " has been received from " + requestingSubscriber.Username); ;
+            notificationSystem.Notify(newManagerUsername, "A new manager appointment offer has been received from " + requestingSubscriber.Username + ", store: " + storeID);
         }
 
         public void RespondToOwnerAppointmentOffer(string token, int storeID, bool offerResponse)
@@ -392,12 +392,12 @@ namespace Sadna_17_B.DomainLayer.User
                 AddOwnership(respondingSubscriber.Username, storeID);
                 requestingSubscriber.AppointOwner(storeID, respondingSubscriber.Username, respondingSubscriber.GetOwnership(storeID));
                 offerSystem.RemoveOwnerAppointmentOffer(storeID, respondingSubscriber.Username);
-                notificationSystem.Notify(appointerUsername, respondingSubscriber.Username + " has accepted your owner appointment offer in store " + storeID);
+                notificationSystem.Notify(appointerUsername, respondingSubscriber.Username + " has accepted your owner appointment offer in store: " + storeID);
             }
             else
             {
                 offerSystem.RemoveOwnerAppointmentOffer(storeID, respondingSubscriber.Username);
-                notificationSystem.Notify(requestingSubscriber.Username, respondingSubscriber.Username + " has rejected your owner appointment offer in store " + storeID);
+                notificationSystem.Notify(requestingSubscriber.Username, respondingSubscriber.Username + " has rejected your owner appointment offer in store: " + storeID);
             }
         }
 
@@ -415,13 +415,13 @@ namespace Sadna_17_B.DomainLayer.User
                 AddManagement(respondingSubscriber.Username, storeID, authorizations);
                 requestingSubscriber.AppointManager(storeID, respondingSubscriber.Username, respondingSubscriber.GetManagement(storeID));
                 offerSystem.RemoveManagerAppointmentOffer(storeID, respondingSubscriber.Username);
-                notificationSystem.Notify(appointerUsername, respondingSubscriber.Username + " has accepted your manager appointment offer in store " + storeID);
+                notificationSystem.Notify(appointerUsername, respondingSubscriber.Username + " has accepted your manager appointment offer in store: " + storeID);
 
             }
             else
             {
                 offerSystem.RemoveManagerAppointmentOffer(storeID, respondingSubscriber.Username);
-                notificationSystem.Notify(appointerUsername, respondingSubscriber.Username + " has rejected your manager appointment offer in store " + storeID);
+                notificationSystem.Notify(appointerUsername, respondingSubscriber.Username + " has rejected your manager appointment offer in store: " + storeID);
             }
         }
 
@@ -650,14 +650,14 @@ namespace Sadna_17_B.DomainLayer.User
             {
                 if (!username.Equals(user.Username))
                 {
-                    notificationSystem.Notify(user.Username, "The store " + storeID + " you own has been closed by " + user.Username);
+                    notificationSystem.Notify(user.Username, "The store " + storeID + " you own has been closed by " + user.Username + ", store: " + storeID);
                 }
             }
             foreach (string username in storeOwnersAndManagers.Item2) // Managers
             {
                 if (!username.Equals(user.Username))
                 {
-                    notificationSystem.Notify(user.Username, "The store " + storeID + " you manage has been closed by " + user.Username);
+                    notificationSystem.Notify(user.Username, "The store " + storeID + " you manage has been closed by " + user.Username + ", store: " + storeID);
                 }
             }
         }

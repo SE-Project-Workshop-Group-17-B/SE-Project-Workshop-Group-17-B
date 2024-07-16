@@ -36,15 +36,25 @@ namespace Sadna_17_B.ServiceLayer
 
 
         // --------- constructor ---------------------------------------------------------
-
+        public static bool loadConfig = false;
 
         public ServiceFactory()
         {
             // Read Configuration File -> isMemory = false / frue
-            Config config = read_config_data();
-            ApplicationDbContext.isMemoryDB = config.is_memory; // Updates the ApplicationDBContext.IsMemoryDB static variable
-            domainFactory = new DomainFactory();
-            SetUp(config);
+            if (loadConfig)
+            {
+                Config config = read_config_data();
+                ApplicationDbContext.isMemoryDB = config.is_memory; // Updates the ApplicationDBContext.IsMemoryDB static variable
+                domainFactory = new DomainFactory();
+                SetUp(config);
+            }
+            else
+            {
+                domainFactory = new DomainFactory();
+                BuildInstances();
+                CleanDatabase();
+                GenerateData();
+            }
         }
 
         public void SetUp(Config config)
@@ -188,7 +198,6 @@ namespace Sadna_17_B.ServiceLayer
         {
             if (config == null)
                 throw new Sadna17BException(" config is null ");
-
         }
 
     }

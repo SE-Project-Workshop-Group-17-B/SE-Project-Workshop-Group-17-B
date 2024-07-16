@@ -432,6 +432,7 @@
   <ItemGroup>
     <Compile Include="DataAccessLayer\ApplicationDbContext.cs" />
     <Compile Include="DataAccessLayer\DBTests\PurchaseProcessDBTest.cs" />
+    <Compile Include="DataAccessLayer\DBTests\StoreControllerUT-DBTest.cs" />
     <Compile Include="DataAccessLayer\DBTests\SystemIT-DBTest.cs" />
     <Compile Include="DataAccessLayer\DBTests\TestsDBConfig\TestsDbContext.cs" />
     <Compile Include="DataAccessLayer\DBTests\UserAT-DBTest.cs" />
