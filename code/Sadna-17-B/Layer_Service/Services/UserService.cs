@@ -386,8 +386,8 @@ namespace Sadna_17_B.ServiceLayer.Services
         {
             try
             {
-                userController.processOrder(token);
-                return new Response(true);
+                double priceToPay = userController.processOrder(token);
+                return new Response(true, priceToPay);
             }
             catch (Sadna17BException e)
             {
