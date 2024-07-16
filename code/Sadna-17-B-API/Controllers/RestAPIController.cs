@@ -189,6 +189,70 @@ namespace Sadna_17_B_API.Controllers
                 ["token"] = user.AccessToken
             };
             var response = _userService.cart_by_token(doc);
+            ShoppingCartDTO temp = response.Data as ShoppingCartDTO;
+            //string temp2 = JsonConvert.SerializeObject(temp);
+
+            List<ItemDTO> itemList = new List<ItemDTO>();
+            foreach (KeyValuePair<int, ShoppingBasketDTO> entry in temp.ShoppingBaskets)
+            {
+                ShoppingBasketDTO basket = entry.Value;
+                int storeId = entry.Key;
+                foreach (KeyValuePair<ProductDTO, int> entry2 in basket.ProductQuantities)
+                {
+                    ProductDTO product = entry2.Key;
+                    int amount = entry2.Value;
+                    //create new obejct that contains the data we need
+
+                    //product category, name, store_id,quantity, price
+                    ItemDTO payload = new ItemDTO()
+                    {
+                        ID = product.Id,
+                        Name = product.Name,
+                        Amount = product.amount,
+                        StoreId = product.store_id,
+                        Price = product.Price,
+                        Category = product.Category,
+                        Quantity = amount
+                    };
+
+                    itemList.Add(payload);
+                }
+            }
+
+            return Ok(itemList);
+        }
+
+        [HttpPost("cart_remove_product")]
+        public Response cartRemoveProduct([FromBody] temp2DTO tempObj)
+        {
+            var response = _userService.cart_remove_product(tempObj.p, tempObj.AccessToken);
+            return response;
+        }
+
+        [HttpPost("remove_from_cart")]
+        public Response removeFromCart([FromBody] RemoveFromCartRequest request)
+        {
+            //casting to product not working
+            ItemDTO i = request.Item;
+            ProductDTO product = new ProductDTO()
+            {
+                Id = i.ID,
+                store_id = i.StoreId,
+                amount = i.Amount,
+                Price = i.Price,
+                Category = i.Category,
+                Name = i.Name,
+                Description = "very good product",
+                CustomerRate = 4.5
+            };
+            var response = _userService.cart_remove_product(product, request.Token);
+            return response;
+        }
+
+        [HttpPost("cart_update_product")]
+        public Response cartRemoveProduct([FromBody] Dictionary<string, string> doc)
+        {
+            var response = _userService.cart_update_product(doc);
             return response;
         }
 
@@ -197,6 +261,13 @@ namespace Sadna_17_B_API.Controllers
         {
             var response = _userService.GetMyOwnedStores(user.AccessToken);
             return response;
+        }
+
+        [HttpPost("completePurchase")]
+        public IActionResult CompletePurchase([FromBody] PurchaseDTO purchaseDetails)
+        {
+            var response = _userService.CompletePurchase(purchaseDetails.AccessToken, purchaseDetails.DestinationAddress, purchaseDetails.CreditCardInfo);
+            return Ok(response);
         }
 
         [HttpPost("get_managed_stores")]

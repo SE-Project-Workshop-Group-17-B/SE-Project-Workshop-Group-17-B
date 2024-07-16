@@ -23,6 +23,7 @@ namespace Sadna_17_B.ServiceLayer.ServiceDTOs
       
         public string Description { get; } // up to 100 char
 
+
         public ProductDTO(int productID)
         {
             Id = productID;
