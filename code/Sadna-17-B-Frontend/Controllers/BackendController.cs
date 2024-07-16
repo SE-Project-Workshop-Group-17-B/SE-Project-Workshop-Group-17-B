@@ -867,26 +867,15 @@ namespace Sadna_17_B_Frontend.Controllers
 
 
         // ---------- checkout -----------------------------------
-
-      //  public double process_store_order(Basket basket)
-      //  {
-      //      Response response = storeService.calculate_products_prices(basket);
-      //      if (response.Success)
-      //      {
-      //          return (response.Data as Mini_Checkout).price_after_discount();
-      //      }
-      //      return 0;
-      //  }
-
-        public async Task<Response> completePurchase( string destAddr, string creditCardInfo)
+        public async Task<Response> completePurchase(Dictionary<string,string> creditCardInfo,Dictionary<string,string> destAddr)
         {
             using (HttpClient client = new HttpClient())
             {
                 string token = userDTO.AccessToken;
                 var purchaseDetails = new
                 {
-                    DestinationAddress = destAddr,
-                    CreditCardInfo = creditCardInfo,
+                    DestinationAddress = destAddr, //CHANGE
+                    CreditCardInfo = creditCardInfo, //CHANGE
                     AccessToken = userDTO.AccessToken
                 };
                 HttpResponseMessage response = client.PostAsJsonAsync(prefix + "/RestAPI/completePurchase", purchaseDetails).GetAwaiter().GetResult();

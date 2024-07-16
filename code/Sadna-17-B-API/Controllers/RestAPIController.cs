@@ -255,6 +255,7 @@ namespace Sadna_17_B_API.Controllers
         [HttpPost("completePurchase")]
         public IActionResult CompletePurchase([FromBody] PurchaseDTO purchaseDetails)
         {
+            //{creditCardInfo, DestInfo}
             var response = _userService.CompletePurchase(purchaseDetails.AccessToken, purchaseDetails.DestinationAddress, purchaseDetails.CreditCardInfo);
             return Ok(response);
         }

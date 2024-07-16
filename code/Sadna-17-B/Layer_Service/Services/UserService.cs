@@ -368,7 +368,7 @@ namespace Sadna_17_B.ServiceLayer.Services
         // ----------- cart ------------------------------------------------------------------------------------
        
 
-        public Response CompletePurchase(string token, string destinationAddress, string creditCardInfo)
+        public Response CompletePurchase(string token,  /*Dictionary<string,string>*/string destinationAddress, string creditCardInfo)
         {
             try
             {
