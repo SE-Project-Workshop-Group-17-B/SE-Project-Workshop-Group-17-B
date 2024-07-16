@@ -14,6 +14,7 @@ using Sadna_17_B.DomainLayer;
 using Sadna_17_B.DomainLayer.User;
 using System.Xml.Linq;
 using Sadna_17_B.DataAccessLayer;
+using Sadna_17_B.Repositories;
 
 namespace Sadna_17_B_Test.Tests.IntegrationTests
 {
@@ -50,6 +51,8 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
         string destAddr = "BGU Beer sheva";
         string creditCardInfo = "45805500";
         int amount2Buy = 5;
+
+        static IUnitOfWork unitOfWork = UnitOfWork.CreateCustomUnitOfWork(new TestsDbContext()); // Creates a different singleton value for the UnitOfWork DB connection
 
         [TestInitialize]
         public void SetUp()
@@ -96,7 +99,8 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
                 [$"price"] = $"{50}",
                 [$"amount"] = $"{amount2Buy}",
                 [$"category"] = "category",
-                [$"product store id"] = $"{pid}"
+                [$"product store id"] = $"{pid}",
+                [$"name"] = $"{productName}"
             };
 
             ignore = userService.cart_add_product(doc, amount2Buy);
@@ -122,7 +126,8 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
                 [$"price"] = $"{50}",
                 [$"amount"] = $"{amount2Buy}",
                 [$"category"] = $"category",
-                [$"product store id"] = $"{pid}"
+                [$"product store id"] = $"{pid}",
+                [$"name"] = $"{productName}"
             };
 
             ignore = userService.cart_add_product(doc, amount2Buy);
@@ -143,7 +148,7 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
 
             StoreController sc = new StoreController();
             sc.create_store("name", "email", "054", "desc", "addr");
-            int sid = sc.store_by_name("name")[0].ID;
+            int sid = sc.store_by_name("name")[0].StoreID;
             int pid = sc.add_store_product(sid, "prd", 5.0, "category", "desc", 10);
 
             Cart cart = new Cart();
@@ -171,7 +176,7 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
 
             StoreController sc = new StoreController();
             sc.create_store("name", "email", "054", "desc", "addr");
-            int sid = sc.store_by_name("name")[0].ID;
+            int sid = sc.store_by_name("name")[0].StoreID;
             int pid = sc.add_store_product(sid, "prd", 5.0, "category", "desc", 10);
 
             Cart cart = new Cart();
@@ -204,7 +209,8 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
                 [$"category"] = $"category",
                 [$"price"] = $"{50}",
                 [$"amount"] = $"{quantity * 2}",
-                [$"product store id"] = $"{pid}"
+                [$"product store id"] = $"{pid}",
+                [$"name"] = $"{productName}"
             };
 
             ignore = userService.cart_add_product(doc,quantity * 2);
@@ -252,7 +258,8 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
                 [$"price"] = $"{50}",
                 [$"amount"] = $"{quantity * 2}",
                 [$"category"] = $"category",
-                [$"product store id"] = $"{pid}"
+                [$"product store id"] = $"{pid}",
+                [$"name"] = $"{productName}"
             };
 
             ignore = userService.cart_add_product(doc, quantity * 2);
