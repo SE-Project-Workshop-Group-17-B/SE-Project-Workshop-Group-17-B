@@ -9,13 +9,14 @@ using Sadna_17_B.DomainLayer.User;
 using System.Web.UI.WebControls;
 using System.Web.UI;
 using Microsoft.Ajax.Utilities;
+using System.Threading.Tasks;
 
 namespace Sadna_17_B_Frontend.Views
 {
     public partial class MyCart : System.Web.UI.Page
     {
         BackendController backendController = BackendController.get_instance();
-        protected void Page_Load(object sender, EventArgs e)
+        protected async void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
             {
@@ -23,13 +24,13 @@ namespace Sadna_17_B_Frontend.Views
             }
         }
 
-        private void LoadCart()
+        private async void LoadCart()
         {
-            Dictionary<string, string> doc = new Dictionary<string, string>
-            {
-                ["token"] = $"{backendController.userDTO.AccessToken}"
-            };
-            ShoppingCartDTO cart = backendController.get_shoping_cart(doc);        
+           //Dictionary<string, string> doc = new Dictionary<string, string>
+           //{
+           //    ["token"] = $"{backendController.userDTO.AccessToken}"
+           //};
+            ShoppingCartDTO cart = await backendController.get_shoping_cart();        
             if (cart != null)
             {
                 var products = FlattenProducts(cart);
@@ -39,14 +40,14 @@ namespace Sadna_17_B_Frontend.Views
             }
         }
 
-        private ProductDTO getProduct(int pid)
+        private async Task<ProductDTO> getProduct(int pid)
         {
             Dictionary<string, string> doc = new Dictionary<string, string>
             {
                 ["token"] = $"{backendController.userDTO.AccessToken}"
             };
 
-            ShoppingCartDTO cart = backendController.get_shoping_cart(doc);
+            ShoppingCartDTO cart = await backendController.get_shoping_cart();
             if (cart != null)
             {
                 foreach (var basket in cart.ShoppingBaskets.Values)
@@ -107,9 +108,8 @@ namespace Sadna_17_B_Frontend.Views
             ClientScript.RegisterStartupScript(this.GetType(), "Popup", script, true);
         }
 
-        protected void btnPurchase_Click(object sender, EventArgs e)
+        protected async void btnPurchase_Click(object sender, EventArgs e)
         {
-            string token = backendController.userDTO.AccessToken;
             string cardNum = cardNumber.Value.Trim();
             string cardDate = txtCardExpiryDate.Value.Trim();
             string cardCVV = txtCardCVVNum.Value.Trim();
@@ -118,7 +118,7 @@ namespace Sadna_17_B_Frontend.Views
 
             string destShipp = textDestInfro.Value.Trim();
 
-            Response res = backendController.completePurchase(token,destShipp, creditDetails);
+            Response res = await backendController.completePurchase(destShipp, creditDetails);
             if (res.Success)
             {
                 string script = "alert('Your purchase was successful!');";
@@ -134,14 +134,14 @@ namespace Sadna_17_B_Frontend.Views
             LoadCart();
         }
 
-        protected void rptCartItems_ItemCommand(object source, System.Web.UI.WebControls.RepeaterCommandEventArgs e)
+        protected async void rptCartItems_ItemCommand(object source, System.Web.UI.WebControls.RepeaterCommandEventArgs e)
         {
             int productId = Convert.ToInt32(e.CommandArgument);
-            ProductDTO product = getProduct(productId);
+            ProductDTO product = await getProduct(productId);
             if (e.CommandName == "Remove")
             {
                 int productIndex = Convert.ToInt32(e.CommandArgument);
-                Response ignore = backendController.remove_from_cart(productIndex);
+                Response ignore = await backendController.remove_from_cart(productIndex);
             }
             else if (e.CommandName == "Increase" || e.CommandName == "Decrease")
             {
@@ -154,10 +154,10 @@ namespace Sadna_17_B_Frontend.Views
             RefreshPage();
         }
 
-        public void increase_decrease_product_amount_by_1(int productId, int change)
+        public async void increase_decrease_product_amount_by_1(int productId, int change)
         {
 
-            ProductDTO product = getProduct(productId);
+            ProductDTO product = await getProduct(productId);
             int newAmount = product.amount + change;
             Dictionary<string, string> doc = new Dictionary<string, string>
             {
@@ -171,7 +171,7 @@ namespace Sadna_17_B_Frontend.Views
             };
 
             if (newAmount == 0)
-                backendController.userService.cart_remove_product(getProduct(productId), backendController.userDTO.AccessToken);
+                backendController.userService.cart_remove_product(await getProduct(productId), backendController.userDTO.AccessToken);
             else
                 backendController.userService.cart_update_product(doc);
         }
