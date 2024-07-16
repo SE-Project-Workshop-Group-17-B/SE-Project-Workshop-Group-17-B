@@ -18,6 +18,8 @@ using Sadna_17_B_API.Controllers;
 using Sadna_17_B_API.Models;
 using System.Web.Caching;
 using Sadna_17_B_Frontend.Views;
+using Sadna_17_B.Layer_Service.ServiceDTOs;
+using Sadna_17_B.DomainLayer.Order;
 
 namespace Sadna_17_B_Frontend.Controllers
 {
@@ -643,7 +645,7 @@ namespace Sadna_17_B_Frontend.Controllers
          */
 
       
-            public Response search_products(string keyword, string category, int minPrice, int maxPrice, int minRating, int minStoreRating, int storeId) // upgrade to search_products_by doc_doc
+        public Response search_products(string keyword, string category, int minPrice, int maxPrice, int minRating, int minStoreRating, int storeId) // upgrade to search_products_by doc_doc
         {
             try
             {
@@ -742,6 +744,10 @@ namespace Sadna_17_B_Frontend.Controllers
             }
         }
 
+        
+            
+
+       
         public async Task<Response> cart_update_product(Dictionary<string, string> doc)
         {
             string token = userDTO.AccessToken;
@@ -820,12 +826,136 @@ namespace Sadna_17_B_Frontend.Controllers
                 HttpResponseMessage response = client.PostAsJsonAsync(prefix + "/RestAPI/completePurchase", purchaseDetails).GetAwaiter().GetResult();
                 string responseContent = await response.Content.ReadAsStringAsync();
                 Response responseObj = JsonConvert.DeserializeObject<Response>(responseContent);
-                return responseObj;
+
+                payDTO payment = new payDTO
+                {
+                    action_type = "pay",
+                    amount = $"20",
+                    currency = "$",
+                    card_number = creditCardInfo.Substring(16),
+                    month = creditCardInfo.Substring(16, 18),
+                    year = creditCardInfo.Substring(18, 22),
+                    holder = $"user",
+                    cvv = creditCardInfo.Substring(22, 25),
+                    ID = $"user"
+                };
+
+                response = client.PostAsJsonAsync(prefix + "/RestAPI/pay_for_cart", payment).GetAwaiter().GetResult();
+                responseContent = await response.Content.ReadAsStringAsync();
+                int transaction_id_payment = JsonConvert.DeserializeObject<int>(responseContent);
+
+
+                supplyDTO supply = new supplyDTO
+                {
+                    action_type = "supply",
+                    name = $"user",
+                    address = "rager",
+                    city = "beer sheva",
+                    country = "israel",
+                    zip = "555",
+
+                };
+
+                response = client.PostAsJsonAsync(prefix + "/RestAPI/supply_cart", supply).GetAwaiter().GetResult();
+                responseContent = await response.Content.ReadAsStringAsync();
+                int transaction_id_supply = JsonConvert.DeserializeObject<int>(responseContent);
+
+                if (transaction_id_payment < 0 || transaction_id_supply < 0)
+                    return new Response("Purchase Failed", false);
+
+                return new Response("Purchase Successful",true);
             }
         }
 
 
-            // ---------- produt -----------------------------------
+
+
+        public async Task<int> supply(supplyDTO supply)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix, supply); // add relative path
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseContent = response.Content.ReadAsStringAsync().Result;
+                    int transaction_id = JsonConvert.DeserializeObject<int>(responseContent);
+                    return transaction_id;
+                }
+
+                else
+                {
+                    string errorMessage = await response.Content.ReadAsStringAsync();
+                    throw new Sadna17BException(errorMessage);
+                }
+            }
+        }
+
+        public async Task<int> cancel_supply(cancel_supply_DTO cancel)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix, cancel); // add relative path
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseContent = response.Content.ReadAsStringAsync().Result;
+                    int cancelation_status = JsonConvert.DeserializeObject<int>(responseContent);
+                    return cancelation_status;
+                }
+
+                else
+                {
+                    string errorMessage = await response.Content.ReadAsStringAsync();
+                    throw new Sadna17BException(errorMessage);
+                }
+            }
+        }
+
+        public async Task<int> pay(payDTO payment)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/pay_for_cart", payment); // add relative path
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseContent = response.Content.ReadAsStringAsync().Result;
+                    int transaction_id = JsonConvert.DeserializeObject<int>(responseContent);
+                    return transaction_id;
+                }
+
+                else
+                {
+                    string errorMessage = await response.Content.ReadAsStringAsync();
+                    throw new Sadna17BException(errorMessage);
+                }
+            }
+        }
+
+        public async Task<int> cancel_payment(cancel_pay_DTO cancel)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                HttpResponseMessage response = await client.PostAsJsonAsync("https://damp-lynna-wsep-1984852e.koyeb.app/", cancel); // add relative path
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseContent = response.Content.ReadAsStringAsync().Result;
+                    int cancelation_status = JsonConvert.DeserializeObject<int>(responseContent);
+                    return cancelation_status;
+                }
+
+                else
+                {
+                    string errorMessage = await response.Content.ReadAsStringAsync();
+                    throw new Sadna17BException(errorMessage);
+                }
+            }
+        }
+
+
+        // ---------- produt -----------------------------------
 
 
 

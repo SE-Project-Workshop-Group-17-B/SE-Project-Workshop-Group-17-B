@@ -1,38 +1,15 @@
-﻿/*using System;
+﻿using Newtonsoft.Json;
+using Sadna_17_B.Layer_Service.ServiceDTOs;
+using Sadna_17_B.Utils;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web;
-using Newtonsoft.Json;
-using Sadna_17_B.Layer_Service.ServiceDTOs;
-using Sadna_17_B.ServiceLayer.ServiceDTOs;
-using Sadna_17_B.Utils;
-using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
 
-
-
-
-namespace Sadna_17_B.ExternalServices
+namespace Sadna_17_B_Frontend.Controllers
 {
-    public class SupplySystemProxy : ISupplySystem
-    {
-        public bool IsValidDelivery(string destinationAddress, List<int> productNumbers)
-        {
-            // Should actually check valid destination Address and validity of manufacturer product numbers (MPNs)
-            // Proxy implementation:
-            return destinationAddress != null && productNumbers != null && destinationAddress.Length > 0 && productNumbers.Count > 0
-                && productNumbers.All(mpn => mpn > 0);
-        }
-        public bool ExecuteDelivery(string destinationAddress, List<int> productNumbers)
-        {
-            // Should actually check validity of destination Address and manufacturer product numbers (MPNs), execute the delivery
-            // Proxy implementation:
-            return IsValidDelivery(destinationAddress, productNumbers);
-        }
-    }
 
     public class SupplySystem
     {
@@ -80,4 +57,4 @@ namespace Sadna_17_B.ExternalServices
             }
         }
     }
-}*/
+}
