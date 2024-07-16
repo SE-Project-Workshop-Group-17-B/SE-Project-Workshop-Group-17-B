@@ -50,7 +50,7 @@ namespace Sadna_17_B.DomainLayer.Order
 
         // ------- process order --------------------------------------------------------------------------------
 
-        public void ProcessOrder(Cart cart, string userID, bool isGuest)
+        public double ProcessOrder(Cart cart, string userID, bool isGuest)
         {
             // ------- guest log --------------------------------------------------------------------------------
 
@@ -76,12 +76,13 @@ namespace Sadna_17_B.DomainLayer.Order
                 int sid = basket.store_id;
                 Checkout basket_checkout = storeController.calculate_products_prices(basket);
                 cart_price_with_discount += basket_checkout.total_price_with_discount;
-                cart_price_with_discount += basket_checkout.total_price_without_discount;
             }
 
             Order order = new Order(orderCount, userID, isGuest, cart, cart_price_with_discount);
 
-            pending_order.Add(userID, order);           
+            pending_order.Add(userID, order);
+
+            return cart_price_with_discount;
         }
 
         public void reduce_cart(string uid, Cart cart)

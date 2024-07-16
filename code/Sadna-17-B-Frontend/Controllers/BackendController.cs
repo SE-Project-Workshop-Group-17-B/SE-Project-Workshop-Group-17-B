@@ -883,21 +883,26 @@ namespace Sadna_17_B_Frontend.Controllers
         {
             Response response;
 
-
+            //we want this function to return amount to pay
             response = await process_order();                     // backend
             if (!response.Success)
                 return response;
+            else {
+                double priceToPay = double.Parse(response.Data.ToString());
+                payment["amount"] = priceToPay.ToString(); 
+            }
             
             //WORKING
             response = await supply_order(supply);                // external
             if (!response.Success)
                 return response;
 
-            //WORKING (MAYBE)
+            //WORKING
             response = await pay_order(payment);                  // external
             if (!response.Success)
                 return response;
 
+            //need to reduce from store here?
             response = await reduce_order();                     // backend
             if (!response.Success)
                 return response;
@@ -1182,15 +1187,6 @@ namespace Sadna_17_B_Frontend.Controllers
                 }
             }
         }
-
-
-        /*
-                // Todo impliment 
-                public Response add_to_cart(int productId)
-                {
-                    //  return userService.AddToCart(userDTO.AccessToken, productId);
-                    return new Response("succes", true);
-                }*/
 
         public async Task<Response> show_purchase_policy(Dictionary<string, string> policy)
         {

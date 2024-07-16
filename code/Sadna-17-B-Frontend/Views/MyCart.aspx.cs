@@ -105,7 +105,7 @@ namespace Sadna_17_B_Frontend.Views
             {
                 { "action_type", "pay" },                
                 { "currency", "USD" },
-                { "amount", "1000" }, //TODO:CHANGE AMOUNT
+                { "amount", "1000" },
                 { "card_number", cardNum },
                 { "month", month },
                 { "year", year },

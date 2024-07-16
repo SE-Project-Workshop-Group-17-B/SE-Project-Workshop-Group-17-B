@@ -24,9 +24,16 @@ namespace Sadna_17_B_Frontend.Views
             {
                 int.TryParse(Request.QueryString["storeId"], out storeId);
                 Response res = await backendController.GetStoreOrderHistory(storeId);
-                List<SubOrderDTO> purchaseHistory = JsonConvert.DeserializeObject<List<SubOrderDTO>>(res.Data.ToString());
-                PurchaseHistoryRepeater.DataSource = purchaseHistory;
-                PurchaseHistoryRepeater.DataBind();
+                if (res.Success)
+                {
+                    List<SubOrderDTO> purchaseHistory = JsonConvert.DeserializeObject<List<SubOrderDTO>>(res.Data.ToString());
+                    PurchaseHistoryRepeater.DataSource = purchaseHistory;
+                    PurchaseHistoryRepeater.DataBind();
+                }
+                else
+                {
+                    MessageBox(res.Message);
+                }
             }
         }
 
@@ -55,6 +62,11 @@ namespace Sadna_17_B_Frontend.Views
             }
 
             return cartItems;
+        }
+
+        private void MessageBox(string message)
+        {
+            Response.Write(@"<script language='javascript'>alert('" + message + "')</script>");
         }
     }
         public class CartItemViewModel
