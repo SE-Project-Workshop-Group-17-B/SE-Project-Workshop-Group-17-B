@@ -248,7 +248,8 @@ namespace Sadna_17_B_Frontend.Views
 
         protected void btnUpdatePurchasePolicy_Click(object sender, EventArgs e)
         {
-            // Implement purchase policy update logic
+            /*e.
+            backendController.add_purchasePo*/
         }
 
         protected void btnUpdateDiscountPolicy_Click(object sender, EventArgs e)
@@ -287,6 +288,12 @@ namespace Sadna_17_B_Frontend.Views
                     Response.Redirect("~/Views/MyStores.aspx");
                 }
             }
+        }
+
+        protected void txtPurchasePolicy_TextChanged(object sender, EventArgs e)
+        {
+
+
         }
     }
 }

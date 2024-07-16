@@ -378,6 +378,14 @@ namespace Sadna_17_B_API.Controllers
         {
             return _storeService.show_discount_policy(policy);
         }
+
+
+        [HttpPost("edit_discout_policy")]
+        public Response edit_discount_policy([FromBody] Dictionary<string, string> doc)
+        {
+            return _storeService.edit_discount_policy(doc);
+        }
+
         [HttpPost("get_store_order_history")]
         public Response GetStoreOrderHistory([FromBody] orderHistoryDTO dto)
         {
