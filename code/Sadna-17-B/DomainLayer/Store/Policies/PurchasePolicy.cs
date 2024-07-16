@@ -1,10 +1,12 @@
-﻿using Sadna_17_B.DomainLayer.Utils;
+﻿using Newtonsoft.Json;
+using Sadna_17_B.DomainLayer.Utils;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -50,8 +52,8 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
     // ---------------- Policy ----------------------------------------------------------------------------------------
 
-
-    public class PurchasePolicy 
+    [Serializable]
+    public class PurchasePolicy : ISerializable
     {
 
         // ---------------- variables ----------------------------------------------------
@@ -59,22 +61,43 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
      
       
- 
-   
-        [Key]
-        public int ID { get; set; }
-        public int StoreID { get; set; }
-        
 
         [NotMapped]
-        public Purchase_Rule PurchaseTree { get; set; }
+        private Purchase_Rule PurchaseTree { get; set; } = new Purchase_Rule();
+
+        public Purchase_Rule GetPurchaseTree()
+        {
+            return this.PurchaseTree;
+        }
 
         public PurchasePolicy()
         {
             this.PurchaseTree = new Purchase_Rule(lambda_purchase_rule.and(),"and");
         }
 
+
+        // ---------------- Serialization ------------------------------------------------
+
+
+
+        protected PurchasePolicy(SerializationInfo info, StreamingContext context)
+        {
+  
+            var purchaseTreeJson = info.GetString(nameof(PurchaseTree));
+            PurchaseTree = JsonConvert.DeserializeObject<Purchase_Rule>(purchaseTreeJson);
+        }
+
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            var purchaseTreeJson = JsonConvert.SerializeObject(PurchaseTree);
+            info.AddValue(nameof(PurchaseTree), purchaseTreeJson);
+        }
+
+
+       
+        
         // ---------------- functions -----------------------------------------------------
+
 
 
         public int add_rule(int ancestor_id, Purchase_Rule purchase_rule)

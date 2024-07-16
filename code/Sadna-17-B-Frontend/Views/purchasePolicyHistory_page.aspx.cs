@@ -36,7 +36,7 @@ namespace Sadna_17_B_Frontend.Views
             var order = (SubOrderDTO)dataItem;
             var cartItems = new List<CartItemViewModel>();
 
-            var basket = order.cart.Baskets[storeId];
+            var basket = order.basket;
             Dictionary<int, Cart_Product> id_to_product = basket.id_to_product;
             foreach (KeyValuePair<int, Cart_Product> entry in id_to_product)
             {

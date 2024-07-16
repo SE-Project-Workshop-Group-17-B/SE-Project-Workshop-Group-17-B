@@ -269,6 +269,7 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="Controllers\AddToCartDTO.cs" />
     <Compile Include="Controllers\doc_doc.cs" />
+    <Content Include="Scripts\script.js" />
     <Compile Include="Controllers\ProductSearchDTO.cs" />
     <Compile Include="Views\About.aspx.cs">
       <DependentUpon>About.aspx</DependentUpon>

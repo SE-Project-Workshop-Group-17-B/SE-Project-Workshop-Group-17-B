@@ -1,0 +1,134 @@
+{
+  "generateData": false,
+  "loadFromDB": false,
+  "isMemoryDB": true,
+  "register admins": {
+    "req name": "requirement : generate admins",
+    "actions": [
+      {
+        "action name": "register admin",
+        "registration type": "admin",
+        "username": "u1",
+        "password": "hi1"
+      }
+    ]
+  },
+  "register subscribers": {
+    "req name": "generate subscribers",
+    "actions": [
+      {
+        "action name": "register subscriber",
+        "registration type": "subscriber",
+        "username": "u2",
+        "password": "hi2"
+      },
+      {
+        "action name": "register subscriber",
+        "registration type": "subscriber",
+        "username": "u3",
+        "password": "hi3"
+      },
+      {
+        "action name": "register subscriber",
+        "registration type": "subscriber",
+        "username": "u4",
+        "password": "hi4"
+      },
+      {
+        "action name": "register subscriber",
+        "registration type": "subscriber",
+        "username": "u5",
+        "password": "hi5"
+      },
+      {
+        "action name": "register subscriber",
+        "registration type": "subscriber",
+        "username": "u6",
+        "password": "hi6"
+      }
+    ]
+  },
+  "open stores": [
+    {
+      "req name": "open stores",
+      "username": "u2",
+      "password": "hi2",
+      "actions": [
+        {
+          "action name": "open store",
+          "store name": "s1",
+          "store email": "s1@gmail.com",
+          "store phone": "0524950349",
+          "store description": "coffee shop: \n food \n drinks",
+          "store address": "Beer Sheva"
+        }
+      ]
+    }
+  ],
+  "add products": [
+    {
+      "req name": "add products",
+      "user type": "subscriber",
+      "store name": "s1",
+      "username": "u2",
+      "password": "hi2",
+      "actions": [
+        {
+          "action name": "add product",
+          "store name": "s1",
+          "product name": "Bamba",
+          "product description": "Bamba",
+          "product category": "Snack",
+          "product amount": 20,
+          "product price": 30
+        }
+      ]
+    }
+  ],
+  "assign managers": {
+    "req name": "assign managers",
+    "user type": "founder",
+    "username": "u2",
+    "password": "hi2",
+    "actions": [
+      {
+        "action name": "assign manager",
+        "store name": "s1",
+        "new manager": "u3",
+        "authorizations": [
+          "View",
+          "UpdateSupply"
+        ]
+      }
+    ]
+  },
+  "assign owners": {
+    "req name": "assign owners",
+    "user type": "founder",
+    "username": "u2",
+    "password": "hi2",
+    "actions": [
+      {
+        "action name": "assign owner",
+        "store name": "s1",
+        "new owner": "u4"
+      },
+      {
+        "action name": "assign owner",
+        "store name": "s1",
+        "new owner": "u5"
+      }
+    ]
+  },
+  "logout users": {
+    "req name": "logout users",
+
+    "actions": [
+      {
+        "action name": "logout user",
+        "username": "u2"
+      }
+
+    ]
+  }
+}

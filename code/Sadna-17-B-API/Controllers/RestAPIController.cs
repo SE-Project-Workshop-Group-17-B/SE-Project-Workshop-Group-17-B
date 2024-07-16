@@ -6,6 +6,9 @@ using Sadna_17_B.ServiceLayer.Services;
 using Sadna_17_B.Utils;
 using Sadna_17_B.DomainLayer.User;
 using Sadna_17_B.ServiceLayer.ServiceDTOs;
+using System.Net.WebSockets;
+using System.Net;
+using System.Text;
 using Newtonsoft.Json;
 using Sadna_17_B.DomainLayer.StoreDom;
 
@@ -280,6 +283,45 @@ namespace Sadna_17_B_API.Controllers
             var response = _storeService.create_store(storeDTO.AccessToken, storeDTO.Name, storeDTO.Email, storeDTO.PhoneNumber, storeDTO.StoreDescription, storeDTO.Address);
             return response;
         }
+        //[HttpGet("ws")]
+        //public async Task WebSocketHandler()
+        //{
+        //    if (HttpContext.WebSockets.IsWebSocketRequest)
+        //    {
+                
+        //        using var ws = await HttpContext.WebSockets.AcceptWebSocketAsync();
+        //        Console.WriteLine($"connected!");
+
+        //        var buffer = new byte[1024];
+        //        while (true)
+        //        {
+        //            var result = await ws.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
+        //            if (result.MessageType == WebSocketMessageType.Close)
+        //            {
+        //                await ws.CloseAsync(WebSocketCloseStatus.NormalClosure, "Closed by client", CancellationToken.None);
+        //                Console.WriteLine("WebSocket connection closed");
+        //                break;
+        //            }
+        //            else
+        //            {
+        //                var message = "The current time is: " + DateTime.Now.ToString("HH:mm:ss");
+        //                var bytes = Encoding.UTF8.GetBytes(message);
+        //                var arraySegment = new ArraySegment<byte>(bytes, 0, bytes.Length);
+
+        //                if (ws.State == WebSocketState.Open)
+        //                {
+        //                    await ws.SendAsync(arraySegment, WebSocketMessageType.Text, true, CancellationToken.None);
+        //                    Console.WriteLine("message was sent");
+        //                }
+        //            }
+        //            await Task.Delay(1000);  // Wait for a second before sending the next message
+        //        }
+        //    }
+        //    else
+        //    {
+        //        HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+        //    }
+        //}
         [HttpPost("get_store_details")]
         public Response getStoreDetails([FromBody] int storeId)
         {
