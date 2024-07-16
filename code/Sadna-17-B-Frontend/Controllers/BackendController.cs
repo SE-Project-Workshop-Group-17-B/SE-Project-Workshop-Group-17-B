@@ -1213,6 +1213,50 @@ namespace Sadna_17_B_Frontend.Controllers
                 }
             }
         }
+
+        public async Task<Response> edit_discount_policy(Dictionary<string, string> doc)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                // Send the POST request
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/edit_discount_policy", doc); // add relative path
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseString = await response.Content.ReadAsStringAsync();
+                    Response responseObj = JsonConvert.DeserializeObject<Response>(responseString);
+                    return responseObj;
+                }
+                else
+                {
+                    string errorMessage = await response.Content.ReadAsStringAsync();
+                    throw new Exception("An error occurred while showing purchase policy: " + errorMessage);
+                }
+
+            }
+
+        }
+
+        public async Task<Response> edit_Purchase_policy(Dictionary<string, string> doc)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                // Send the POST request
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/edit_purchase_policy", doc); // add relative path
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseString = await response.Content.ReadAsStringAsync();
+                    Response responseObj = JsonConvert.DeserializeObject<Response>(responseString);
+                    return responseObj;
+                }
+                else
+                {
+                    string errorMessage = await response.Content.ReadAsStringAsync();
+                    throw new Exception("An error occurred while showing purchase policy: " + errorMessage);
+                }
+
+            }
+
+        }
         public async Task<Response> show_discount_policy(Dictionary<string, string> policy)
         {
             using (HttpClient client = new HttpClient())

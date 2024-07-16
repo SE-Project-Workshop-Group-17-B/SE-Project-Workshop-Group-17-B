@@ -311,7 +311,7 @@
 
         <div class="card">
             <h2><i class="fas fa-file-alt"></i> Update Purchase Policy</h2>
-            <asp:TextBox ID="txtPurchasePolicy" runat="server" TextMode="MultiLine" Rows="5" CssClass="form-control"></asp:TextBox>
+            <asp:TextBox ID="txtPurchasePolicy" runat="server" TextMode="MultiLine" Rows="5" CssClass="form-control" OnTextChanged="txtPurchasePolicy_TextChanged"></asp:TextBox>
             <asp:Button ID="btnUpdatePurchasePolicy" runat="server" Text="Update Purchase Policy" OnClick="btnUpdatePurchasePolicy_Click" CssClass="btn btn-primary" />
         </div>
 
