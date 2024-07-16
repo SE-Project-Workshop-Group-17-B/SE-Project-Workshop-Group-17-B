@@ -4,5 +4,6 @@
     {
         public string Token { get; set; }
         public int ProductId { get; set; }
+        public ItemDTO Item { get; set; }
     }
 }

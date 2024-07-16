@@ -26,6 +26,7 @@ namespace Sadna_17_B.ServiceLayer.ServiceDTOs
         public ProductDTO()
         { }
 
+
         public ProductDTO(int productID)
         {
             Id = productID;
