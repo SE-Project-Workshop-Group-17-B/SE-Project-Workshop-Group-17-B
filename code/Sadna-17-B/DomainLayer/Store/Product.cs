@@ -1,10 +1,13 @@
-﻿using Sadna_17_B.DomainLayer.User;
+﻿using Newtonsoft.Json;
+using Sadna_17_B.DomainLayer.User;
 using Sadna_17_B.DomainLayer.Utils;
+using Sadna_17_B.Repositories;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using System.Text.Json.Serialization;
 using System.Web;
 
 namespace Sadna_17_B.DomainLayer.StoreDom
@@ -17,6 +20,10 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         [NotMapped]
         public static int idCounter = 1;
+        
+        public  int ratingCounter = 0;
+   
+        public int ratingOverAllScore = 0;
         [NotMapped]
         public int ratingCounter = 0;
         [NotMapped]
@@ -37,18 +44,32 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         public string category { get; set; }
         public string description { get; set; } // up to 100 char
 
-        public virtual ICollection<String> Reviews { get; set; }
 
-        public virtual ICollection<String> Complaints { get; set; }
+        [NotMapped]
+        public virtual ICollection<string> Reviews { get; set; } = new List<string>();
 
+        public string ReviewsSerialized
+        {
+            get =>   JsonConvert.SerializeObject(Reviews);
+            set => Reviews = string.IsNullOrEmpty(value) ? new List<string>() : JsonConvert.DeserializeObject<List<string>>(value);
+        }
 
-        public virtual List<int> ratings { get; set; } 
+        [NotMapped]
+        public virtual ICollection<string> Complaints { get; set; }  = new List<string>();
+     
+        public string ComplaintsSerialized
+        {
+            get => JsonConvert.SerializeObject(Complaints);
+            set => Complaints = string.IsNullOrEmpty(value) ? new List<string>() : JsonConvert.DeserializeObject<List<string>>(value);
+        }
+      
 
 
 
         [NotMapped]
         public bool locked { get; set; }
 
+        private IUnitOfWork _unitOfWork = UnitOfWork.GetInstance();
 
         // ---------------- Constructor -------------------------------------------------------------------------------------------
 
@@ -60,7 +81,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         public Product(string name, double price, string category, int store_id, string description = "", int amount = 0)
         {
             this.Reviews = new List<string>();
-            this.ratings = new List<int>();
+            this.Complaints = new List<string>();
             ID = idCounter++;
             this.storeId = store_id;
 
@@ -70,7 +91,6 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             this.price = price;
             this.amount = amount;
             this.category = category;
-            this.Reviews = new List<string>();
             this.description = description.Length <= 100 ? description : description.Substring(0, 100);
             this.locked = false;
             this.amount = amount;
@@ -87,12 +107,16 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             ratingOverAllScore += rating;
             this.rating = ratingOverAllScore / ratingCounter;
 
+            _unitOfWork.Complete();
+
             return true;
         }
 
         public bool add_review(string review)
         {
+        
             Reviews.Add(review);
+            _unitOfWork.Complete();
             return true;
         }
         
@@ -102,6 +126,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                 return false;
 
             Reviews.Remove(review);
+            _unitOfWork.Complete();
             return true;
         }
 
@@ -118,7 +143,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                     break;
                 } 
             }
-
+            _unitOfWork.Complete();
             return found;
         }
 

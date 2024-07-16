@@ -1,4 +1,4 @@
-﻿/*using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using Sadna_17_B.ServiceLayer;
 using Sadna_17_B.ServiceLayer.Services;
@@ -7,21 +7,20 @@ using Sadna_17_B.Utils;
 using System.Runtime.CompilerServices;
 using Sadna_17_B.DomainLayer.StoreDom;
 using System.Collections.Generic;
-using Moq;
 using Sadna_17_B.ExternalServices;
 using Sadna_17_B.DomainLayer.Order;
 using Sadna_17_B.DomainLayer;
 using Sadna_17_B.DomainLayer.User;
 using System.Xml.Linq;
-using Newtonsoft.Json.Linq;
-using Sadna_17_B_Test.Tests.AcceptanceTests;
 using Sadna_17_B.DataAccessLayer;
 using Sadna_17_B.Repositories;
+using System.Linq;
+using System.Web;
 
-namespace Sadna_17_B_Test.Tests.IntegrationTests
+namespace Sadna_17_B.DataAccessLayer.DBTests
 {
     [TestClass]
-    public class PurchaseProcessIT
+    public class SystemIT_DBTest
     {
         UserService userService;
         StoreService storeService;
@@ -59,7 +58,7 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
         [TestInitialize]
         public void SetUp()
         {
-            ApplicationDbContext.isMemoryDB = true; // Disconnect actual database from these tests
+            ApplicationDbContext.isMemoryDB = false; // Connect actual database for these tests
             // init services
 
             ServiceFactory serviceFactory = new ServiceFactory();
@@ -85,15 +84,15 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
             product = store.Inventory.product_by_id(pid);
         }
 
+
+
         [TestMethod]
-        public void TestSuccesfullPurchase()
+        public void TestPaymentServiceError_Fail()
         {
             Response ignore = userService.upgrade_subscriber(username2, password2);
             Response res = userService.entry_subscriber(username2, password2);
             userDTO = res.Data as UserDTO;
             string token = userDTO.AccessToken;
-
-
             Dictionary<string, string> doc = new Dictionary<string, string>()
             {
                 ["token"] = token,
@@ -105,106 +104,79 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
                 [$"name"] = $"{productName}"
             };
 
-            ignore = userService.cart_add_product(doc, amount2Buy);
-            Response completeRes = userService.CompletePurchase(token, destAddr, creditCardInfo);
+            ignore = userService.cart_add_product(doc);
+
+            string wrongCreditCardInfo = null;
+            Response completeRes = userService.CompletePurchase(token, destAddr, wrongCreditCardInfo);
             int amount = ((List<Store>)storeService.store_by_name(storeName).Data)[0].amount_by_name(productName);
-            Assert.IsTrue(completeRes.Success);
-            Assert.AreEqual(amount, quantity - amount2Buy);
-        }
-
-        [TestMethod]
-        public void TestPurhcaseFailWhenBuyingItemThatNotExist()
-        {
-            Response ignore = userService.upgrade_subscriber(username2, password2);
-            Response res = userService.entry_subscriber(username2, password2);
-            userDTO = res.Data as UserDTO;
-            string token = userDTO.AccessToken;
-
-            Response test = userService.CompletePurchase(token, destAddr, creditCardInfo);
-            int amount = ((List<Store>)storeService.store_by_name(storeName).Data)[0].amount_by_name(productName);
-
-            Assert.IsFalse(test.Success);
-            Assert.AreEqual(amount, quantity); //meaning we havent bought the only thing by default
-        }
-
-        [TestMethod]
-        public void TestPurchaseFailWhenBuyingTooMuchProducts()
-        {
-            Response ignore = userService.upgrade_subscriber(username2, password2);
-            Response res = userService.entry_subscriber(username2, password2);
-            userDTO = res.Data as UserDTO;
-            string token = userDTO.AccessToken;
-
-            Dictionary<string, string> doc = new Dictionary<string, string>()
-            {
-                ["token"] = token,
-                [$"store id"] = $"{sid}",
-                [$"price"] = $"{50}",
-                [$"amount"] = $"{quantity*2}",
-                [$"category"] = "category",
-                [$"product store id"] = $"{pid}",
-                [$"name"] = $"{productName}"
-            };
-
-            ignore = userService.cart_add_product(doc,quantity * 2);
-
-            Response completeRes = userService.CompletePurchase(token, destAddr, creditCardInfo);
             Assert.IsFalse(completeRes.Success);
+            Assert.AreEqual(amount, quantity);
         }
 
         [TestMethod]
-        public void TestPurchaseNotEffectingDifferentCarts()
+        public void TestSupplyMethodError_Fail()
         {
-            Response result1 = userService.entry_subscriber(username1, password1);
-            UserDTO userDTO = result1.Data as UserDTO;
-            string token1 = userDTO.AccessToken;
-
             Response ignore = userService.upgrade_subscriber(username2, password2);
             Response res = userService.entry_subscriber(username2, password2);
             userDTO = res.Data as UserDTO;
             string token = userDTO.AccessToken;
-
             Dictionary<string, string> doc = new Dictionary<string, string>()
             {
                 ["token"] = token,
                 [$"store id"] = $"{sid}",
                 [$"price"] = $"{50}",
                 [$"amount"] = $"{amount2Buy}",
-                [$"category"] = "category",
-                ["product store id"] = $"{pid}",
+                [$"category"] = $"category",
+                [$"product store id"] = $"{pid}",
                 [$"name"] = $"{productName}"
             };
 
-            Dictionary<string, string> doc1 = new Dictionary<string, string>()
+            ignore = userService.cart_add_product(doc);
+
+            string wrongDestAddrInfo = null;
+            Response completeRes = userService.CompletePurchase(token, wrongDestAddrInfo, creditCardInfo);
+            int amount = ((List<Store>)storeService.store_by_name(storeName).Data)[0].amount_by_name(productName);
+            Assert.IsFalse(completeRes.Success);
+            Assert.AreEqual(amount, quantity);
+        }
+
+        [TestMethod]
+        public void TestCartSameIfPurchaseFail_Success()
+        {
+            Response ignore = userService.upgrade_subscriber(username2, password2);
+            Response res = userService.entry_subscriber(username2, password2);
+            userDTO = res.Data as UserDTO;
+            string token = userDTO.AccessToken;
+            Dictionary<string, string> doc = new Dictionary<string, string>()
             {
-                ["token"] = token1,
+                ["token"] = token,
                 [$"store id"] = $"{sid}",
+                [$"category"] = $"category",
                 [$"price"] = $"{50}",
-                [$"amount"] = $"{amount2Buy}",
-                [$"category"] = "category",
-                ["product store id"] = $"{pid}",
+                [$"amount"] = $"{quantity * 2}",
+                [$"product store id"] = $"{pid}",
                 [$"name"] = $"{productName}"
             };
 
+            ignore = userService.cart_add_product(doc);
+            Response temp = userService.cart_by_token(doc);
 
-            ignore = userService.cart_add_product(doc, amount2Buy);
-            ignore = userService.cart_add_product(doc1, amount2Buy); //creating second shopping cart for different user
-            
-            Response sc = userService.cart_by_token(doc);
-            ShoppingCartDTO shoppnigCart1 = sc.Data as ShoppingCartDTO;
-
+            ShoppingCartDTO prevCart = temp.Data as ShoppingCartDTO;
             Response completeRes = userService.CompletePurchase(token, destAddr, creditCardInfo);
 
-            sc = userService.cart_by_token(doc1);
-            ShoppingCartDTO shoppingCart2 = sc.Data as ShoppingCartDTO;
+            temp = userService.cart_by_token(doc);
+            ShoppingCartDTO newCart = temp.Data as ShoppingCartDTO;
 
-            Assert.IsTrue(completeRes.Success);
+            Dictionary<int, ShoppingBasketDTO> prevCartInside = prevCart.ShoppingBaskets;
+            Dictionary<int, ShoppingBasketDTO> newCartInside = newCart.ShoppingBaskets;
 
-            *//*//for each shopping basket checking the basket inside out, the only way to check equality
-            foreach (KeyValuePair<int, ShoppingBasketDTO> entry in shoppnigCart1.ShoppingBaskets)
+            Assert.IsFalse(completeRes.Success);
+
+            //for each shopping basket checking the basket inside out, the only way to check equality
+            foreach (KeyValuePair<int, ShoppingBasketDTO> entry in prevCartInside)
             {
                 ShoppingBasketDTO prevSbd = entry.Value;
-                ShoppingBasketDTO newSbd = shoppingCart2.ShoppingBaskets[entry.Key];
+                ShoppingBasketDTO newSbd = newCartInside[entry.Key];
                 foreach (KeyValuePair<ProductDTO, int> entry2 in prevSbd.ProductQuantities)
                 {
                     foreach (KeyValuePair<ProductDTO, int> entry3 in newSbd.ProductQuantities)
@@ -213,12 +185,11 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
                         Assert.AreEqual(entry2.Value, entry3.Value);
                     }
                 }
-            }*//*
-
+            }
         }
 
         [TestMethod]
-        public void TestHistoryPurchaseSameWhenPurchaseFail()
+        public void TestWhenPurchaseFailSameAmountInStore_Success()
         {
             Response ignore = userService.upgrade_subscriber(username2, password2);
             Response res = userService.entry_subscriber(username2, password2);
@@ -230,24 +201,19 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
                 ["token"] = token,
                 [$"store id"] = $"{sid}",
                 [$"price"] = $"{50}",
+                [$"amount"] = $"{quantity * 2}",
                 [$"category"] = $"category",
-                [$"amount"] = $"{quantity*2}",
                 [$"product store id"] = $"{pid}",
                 [$"name"] = $"{productName}"
             };
 
-
-            ignore = userService.cart_add_product(doc, quantity * 2);
+            ignore = userService.cart_add_product(doc);
 
             Response completeRes = userService.CompletePurchase(token, destAddr, creditCardInfo);
             int amount = ((List<Store>)storeService.store_by_name(storeName).Data)[0].amount_by_name(productName);
-
-            Response test = userService.GetMyOrderHistory(token);
-            List<OrderDTO> listOfOrders = test.Data as List<OrderDTO>;
-
             Assert.IsFalse(completeRes.Success);
-            Assert.AreEqual(0, listOfOrders.Count);
+            Assert.AreEqual(amount, quantity);
         }
+
     }
 }
-*/

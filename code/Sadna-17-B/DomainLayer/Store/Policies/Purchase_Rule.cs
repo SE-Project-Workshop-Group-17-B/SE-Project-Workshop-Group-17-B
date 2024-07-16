@@ -1,5 +1,6 @@
 
 
+using Newtonsoft.Json;
 using Sadna_17_B.DomainLayer.Utils;
 using System;
 using System.Collections.Generic;
@@ -8,6 +9,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.Remoting.Messaging;
+using System.Runtime.Serialization;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,7 +19,9 @@ using Basket = Sadna_17_B.DomainLayer.User.Basket;
 namespace Sadna_17_B.DomainLayer.StoreDom
 {
 
-    public class Purchase_Rule
+    [Serializable]
+  
+    public class Purchase_Rule : ISerializable
     {
 
         // ------------- Variables --------------------------------------------------------------------------
@@ -26,15 +30,16 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         [Key]
         public int ID { get; set; }
-        public string Name { get; set; }
+        public string Name { get; set; } = "";
         protected double price { get; set; }
 
         
-        public virtual List<Func<Basket, bool>> conditions { get; set; }
 
-        public virtual List<Purchase_Rule> purchase_rules { get; set; }
+        public virtual List<Func<Basket, bool>> conditions { get; set; } = new List<Func<Basket, bool>>();
 
-        public virtual Func<Basket, List<Func<Basket, bool>>, bool> aggregation_rule { get; set; }
+        public virtual List<Purchase_Rule> purchase_rules { get; set; } = new List<Purchase_Rule>();
+
+        public virtual Func<Basket, List<Func<Basket, bool>>, bool> aggregation_rule { get; set; } = lambda_purchase_rule.and();
 
 
 
@@ -60,7 +65,44 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             this.conditions = conds;
         }
 
-        
+        // ------------- Serialize --------------------------------------------------------------------------
+
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            info.AddValue(nameof(ID), ID);
+            info.AddValue(nameof(Name), Name);
+            info.AddValue(nameof(price), price);
+            info.AddValue(nameof(conditions), JsonConvert.SerializeObject(conditions));
+            info.AddValue(nameof(purchase_rules), JsonConvert.SerializeObject(purchase_rules));
+            info.AddValue(nameof(aggregation_rule), JsonConvert.SerializeObject(aggregation_rule));
+
+            /*if (aggregation_rule != null && aggregation_rule.Method != null)
+            {
+                info.AddValue(nameof(aggregation_rule), aggregation_rule.Method.Name);
+                info.AddValue("DeclaringType", aggregation_rule.Method.DeclaringType.AssemblyQualifiedName);
+            }*/
+        }
+
+
+        protected Purchase_Rule(SerializationInfo info, StreamingContext context)
+        {
+            ID = info.GetInt32(nameof(ID));
+            Name = info.GetString(nameof(Name));
+            price = info.GetDouble(nameof(price));
+            conditions = JsonConvert.DeserializeObject<List<Func<Basket, bool>>>(info.GetString(nameof(conditions)));
+            purchase_rules = JsonConvert.DeserializeObject<List<Purchase_Rule>>(info.GetString(nameof(purchase_rules)));
+            //aggregation_rule = JsonConvert.DeserializeObject <Func<Basket, List<Func<Basket, bool>>, bool>>(info.GetString(nameof(aggregation_rule)));
+            aggregation_rule = lambda_purchase_rule.and(); // Possible use a different deserialization function
+
+
+            /*  var methodName = info.GetString(nameof(aggregation_rule));
+              var declaringType = Type.GetType(info.GetString("DeclaringType"));
+
+              if (declaringType != null)
+              {
+                  aggregation_rule = (Func<Basket, List<Func<Basket, bool>>, bool>)Delegate.CreateDelegate(typeof(Func<Basket, List<Func<Basket, bool>>, bool>), declaringType, methodName);
+              }*/
+        }
 
         // ------------- add / remove --------------------------------------------------------------------------
 
@@ -144,5 +186,6 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         }
 
 
+     
     }
 }

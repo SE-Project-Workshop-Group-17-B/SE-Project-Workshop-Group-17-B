@@ -16,7 +16,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
 
 
-
+    [Serializable]
     public abstract class Discount_Strategy : I_strategy
     {
 

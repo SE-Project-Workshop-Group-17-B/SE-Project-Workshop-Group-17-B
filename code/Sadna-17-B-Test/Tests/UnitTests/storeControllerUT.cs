@@ -16,6 +16,7 @@ using Sadna_17_B.Utils;
 using Sadna_17_B.ServiceLayer;
 using Newtonsoft.Json.Linq;
 using Sadna_17_B.DataAccessLayer;
+using Sadna_17_B.Repositories;
 
 namespace Sadna_17_B_Test.Tests.UnitTests
 {
@@ -114,6 +115,8 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         Func<Basket, bool> cond_category;
         Func<Basket, bool> cond_product;
         Func<Basket, bool> cond_all;
+
+        static IUnitOfWork unitOfWork = UnitOfWork.CreateCustomUnitOfWork(new TestsDbContext()); // Creates a different singleton value for the UnitOfWork DB connection
 
         [TestInitialize]
         public void SetUp()

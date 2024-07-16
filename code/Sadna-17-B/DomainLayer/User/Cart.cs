@@ -1,8 +1,10 @@
-﻿using Sadna_17_B.DomainLayer.StoreDom;
+﻿using Newtonsoft.Json;
+using Sadna_17_B.DomainLayer.StoreDom;
 using Sadna_17_B.Utils;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Web;
@@ -14,21 +16,25 @@ namespace Sadna_17_B.DomainLayer.User
 
         //  --------- variables -----------------------------------------------------------------------------------
 
-        private int counter_id = 0;
+        //private static int counter_id = 0;
         [Key]
         public int ID { get; set; }
         public int UserAge { get; set; }
 
+        [NotMapped]
         public virtual Dictionary<int, Basket> Baskets { get; set; } // StoreID -> Basket
- 
-
+        public string BasketsReceiptSerialized
+        {
+            get => JsonConvert.SerializeObject(Baskets);
+            set => Baskets = string.IsNullOrEmpty(value) ? new Dictionary<int, Basket>() : JsonConvert.DeserializeObject<Dictionary<int, Basket>>(value);
+        }
 
 
         public Cart() 
         {
             Baskets = new Dictionary<int, Basket>();
-            counter_id++;
-            ID = counter_id;
+            //counter_id++;
+            ID = -1; //counter_id;
 
             UserAge = 18; 
         }
@@ -38,8 +44,8 @@ namespace Sadna_17_B.DomainLayer.User
             ID = -1;
 
             UserAge = 18;
+            //Baskets = cart.copy_baskets();
             Baskets = copy_baskets(cart);
-
         }
 
         private Dictionary<int, Basket> copy_baskets(Cart c)
@@ -174,6 +180,10 @@ namespace Sadna_17_B.DomainLayer.User
         public double price { get; set; }
         public string category { get; set; }
         public string name { get; set; }
+
+        public Cart_Product()
+        {
+        }
 
         public Cart_Product(int sid, int amount, double price, string category, int store_product_id, string name)
         {
