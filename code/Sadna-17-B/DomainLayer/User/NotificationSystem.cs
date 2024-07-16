@@ -73,6 +73,7 @@ namespace Sadna_17_B.DomainLayer.User
             userNotificationsEntry = userNotifications[usernameToNotify];
             userNotificationsEntry.Notifications.Add(notification);
             _unitOfWork.UserNotifications.Update(userNotificationsEntry); // Updates the user notifications entry in the database
+          NotificationsHandler.getInstance().Notify(usernameToNotify, notification);
         }
 
         public List<Notification> ReadNewNotifications(string username)
