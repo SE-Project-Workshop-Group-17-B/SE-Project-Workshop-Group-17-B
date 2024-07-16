@@ -87,7 +87,7 @@ namespace Sadna_17_B_Frontend.Views
             if (e.CommandName == "ViewDetails")
             {
                 int productId = Convert.ToInt32(e.CommandArgument);
-                Response.Redirect($"ProductDetails.aspx?productId={productId}");
+                Response.Redirect($"ProductDetails.aspx?productId={productId}",false);
             }
         }
 

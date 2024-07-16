@@ -120,6 +120,29 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             this.RatingCounter = 0;
         }
 
+        public Store(string name, string email, string phone_number, string store_description, string address,int id)
+        {
+            this.ID = id;
+
+            this.Name = name;
+            this.Email = email;
+            this.PhoneNumber = phone_number;
+            this.Description = store_description;
+            this.Address = address;
+
+            this.Inventory = new Inventory(ID);
+            this.DiscountPolicy = new DiscountPolicy("default policy");
+            this.PurchasePolicy = new PurchasePolicy();
+
+            this.Rating = 0;
+            this.RatingOverallScore = 0;
+            this.Reviews = new List<string>();
+            this.Complaints = new List<string>();
+
+
+            this.RatingCounter = 0;
+        }
+
         public bool add_rating(double ratingInput)
         {
             if (ratingInput < 0) ratingInput = 0;
