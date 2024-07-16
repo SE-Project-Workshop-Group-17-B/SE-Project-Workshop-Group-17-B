@@ -22,7 +22,7 @@ namespace Sadna_17_B_Frontend.Views
             Response.Write(@"<script language='javascript'>alert('" + message + "')</script>");
         }
 
-        protected void btnSignUp_Click(object sender, EventArgs e)
+        protected async void btnSignUp_Click(object sender, EventArgs e)
         {
             string message = "";
             if (txtUsername.Text.Length == 0)
@@ -47,7 +47,7 @@ namespace Sadna_17_B_Frontend.Views
             }
             else
             {
-                message = backendController.sign_up(txtUsername.Text, txtPassword.Text);
+                message = await backendController.sign_up(txtUsername.Text, txtPassword.Text);
                 if (message != null)
                 {
                     lblMessage.Text = message;

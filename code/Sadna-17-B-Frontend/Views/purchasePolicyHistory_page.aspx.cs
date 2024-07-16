@@ -9,6 +9,7 @@ using Sadna_17_B_Frontend.Controllers;
 using Sadna_17_B.Utils;
 using Sadna_17_B.DomainLayer.StoreDom;
 using Sadna_17_B.DomainLayer.User;
+using Newtonsoft.Json;
 
 namespace Sadna_17_B_Frontend.Views
 {
@@ -17,14 +18,14 @@ namespace Sadna_17_B_Frontend.Views
         BackendController backendController = BackendController.get_instance();
         private int storeId;
 
-        protected void Page_Load(object sender, EventArgs e)
+        protected async void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
             {
                 int.TryParse(Request.QueryString["storeId"], out storeId);
                 string token = backendController.userDTO.AccessToken;
-                Response res = backendController.userService.GetStoreOrderHistory(token,storeId);
-                List<SubOrderDTO> purchaseHistory = res.Data as List<SubOrderDTO>;
+                Response res = await backendController.GetStoreOrderHistory(storeId);
+                List<SubOrderDTO> purchaseHistory = JsonConvert.DeserializeObject<List<SubOrderDTO>>(res.Data.ToString());
                 PurchaseHistoryRepeater.DataSource = purchaseHistory;
                 PurchaseHistoryRepeater.DataBind();
             }

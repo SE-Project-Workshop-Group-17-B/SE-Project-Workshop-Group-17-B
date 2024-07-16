@@ -1,4 +1,4 @@
-﻿<%@ Page Title="My Cart" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="MyCart.aspx.cs" Inherits="Sadna_17_B_Frontend.Views.MyCart" %>
+﻿<%@ Page Title="My Cart" Language="C#" EnableEventValidation="false" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="MyCart.aspx.cs" Inherits="Sadna_17_B_Frontend.Views.MyCart" Async="true" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
     <style>
         :root {
@@ -157,13 +157,13 @@
             <ItemTemplate>
                 <div class="cart-item">
                     <div class="item-image">
-                        <img src="<%# GetProductImage(Eval("category").ToString()) %>" alt="<%# Eval("name") %>" />
+                        <img src="<%# GetProductImage(Eval("Category").ToString()) %>" alt="<%# Eval("Name") %>" />
                     </div>
                     <div class="item-details">
-                        <div class="item-name"><%# Eval("name") %></div>
+                        <div class="item-name"><%# Eval("Name") %></div>
                         <div class="item-info">
-                            <p>Category: <%# Eval("category") %></p>
-                            <p>Store ID: <%# Eval("store_id") %></p>
+                            <p>Category: <%# Eval("Category") %></p>
+                            <p>Store ID: <%# Eval("StoreId") %></p>
                         </div>
                         <div class="item-quantity">
                             <asp:Button ID="btnDecrease" runat="server" Text="-" CssClass="quantity-btn" 
@@ -176,7 +176,7 @@
                             CommandName="Remove" CommandArgument='<%# Eval("ID") %>'>Remove</asp:LinkButton>
                     </div>
                     <div class="item-price">
-                        <p><%# Eval("price", "{0:C}") %></p>
+                        <p><%# Eval("Price", "{0:C}") %></p>
                     </div>
                 </div>
             </ItemTemplate>

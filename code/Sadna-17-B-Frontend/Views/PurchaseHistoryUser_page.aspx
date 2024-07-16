@@ -1,4 +1,4 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="PurchaseHistoryUser_page.aspx.cs" Inherits="Sadna_17_B_Frontend.Views.PurchaseHistoryUser_page" %>
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="PurchaseHistoryUser_page.aspx.cs" Async="true" Inherits="Sadna_17_B_Frontend.Views.PurchaseHistoryUser_page" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
 
     <style>

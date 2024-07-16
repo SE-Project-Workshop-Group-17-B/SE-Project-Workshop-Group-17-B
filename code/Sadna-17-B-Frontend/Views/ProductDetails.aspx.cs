@@ -7,7 +7,6 @@ using Sadna_17_B.Utils;
 using System.Collections.Generic;
 using System.Web.UI.WebControls;
 using Sadna_17_B.ServiceLayer.Services;
-
 using System.Web;
 using System.Web.Razor.Tokenizer.Symbols;
 
@@ -36,9 +35,9 @@ namespace Sadna_17_B_Frontend.Views
             
         }
 
-        private void LoadProductDetails(int productId)
+        private async void LoadProductDetails(int productId)
         {
-            currentProduct = backendController.get_product_by_id(productId);
+            currentProduct = await backendController.get_product_by_id(productId);
             if (currentProduct != null)
             {
                 imgProduct.ImageUrl = GetProductImage(currentProduct.category);
@@ -59,11 +58,11 @@ namespace Sadna_17_B_Frontend.Views
             }
         }
 
-        protected void btnAddToCart_Click(object sender, EventArgs e)
+        protected async void btnAddToCart_Click(object sender, EventArgs e)
         {
             Button btn = (Button)sender;
             // Implement add to cart functionality here
-            Product product = backendController.get_product_by_id(product_id);
+            Product product = await backendController.get_product_by_id(product_id);
 
             Dictionary<string, string> doc = new Dictionary<string, string>
             {
@@ -76,7 +75,7 @@ namespace Sadna_17_B_Frontend.Views
                 ["name"] = $"{product.name}"
             };
 
-            backendController.add_product_to_cart(doc,1);
+            await backendController.add_product_to_cart(doc,1);
 
         }
 
@@ -86,12 +85,11 @@ namespace Sadna_17_B_Frontend.Views
             Response.Redirect(Request.RawUrl);
         }
 
-        protected void loadProductRating()
+        protected async void loadProductRating()
         {
             // Load and display store rating
-            StoreService storeService = backendController.storeService;
 
-            Response ratingResponse = storeService.get_product_rating(product_id);
+            Response ratingResponse = await backendController.GetProductRating(product_id);
             if (ratingResponse.Success)
             {
                 double rating = double.Parse(ratingResponse.Message);
@@ -105,9 +103,9 @@ namespace Sadna_17_B_Frontend.Views
             string script = $"document.addEventListener('DOMContentLoaded', function() {{ setInitialProductRating({rating.ToString(System.Globalization.CultureInfo.InvariantCulture)}); }});";
             ClientScript.RegisterStartupScript(this.GetType(), "setInitialProductRating", script, true);
         }
-        protected void btnSubmitRating_Click(object sender, EventArgs e)
+        protected async void btnSubmitRating_Click(object sender, EventArgs e)
         {
-            Product product = backendController.get_product_by_id(product_id);
+            Product product = await backendController.get_product_by_id(product_id);
 
             // Retrieve the rating value from the hidden field
 
@@ -115,10 +113,10 @@ namespace Sadna_17_B_Frontend.Views
            
             // Retrieve the complaint value from the hidden field
 
-            StoreService storeService = backendController.storeService;
+            //StoreService storeService = backendController.storeService;
 
             // Add store rating
-            Response ratingResponse = storeService.add_product_rating(product.storeId, product.ID, rating);
+            Response ratingResponse = await backendController.AddProductRating(product.storeId, product.ID, rating);
 
             if (ratingResponse.Success)
             {
@@ -144,12 +142,12 @@ namespace Sadna_17_B_Frontend.Views
         {
 
         }
-        protected void btnSubmitReview_Click(object sender, EventArgs e)
+        protected async void btnSubmitReview_Click(object sender, EventArgs e)
         {
             string review = txtReview.Text.Trim();
             if (!string.IsNullOrEmpty(review))
             {
-                Response response = backendController.add_product_review(currentProduct.storeId, currentProduct.ID, review);
+                Response response = await backendController.add_product_review(currentProduct.storeId, currentProduct.ID, review);
                 if (response.Success)
                 {
                     LoadProductDetails(currentProduct.ID);

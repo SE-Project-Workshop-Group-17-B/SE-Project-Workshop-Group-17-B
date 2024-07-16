@@ -18,10 +18,10 @@ namespace Sadna_17_B_Frontend.Views
             }
         }
 
-        private void LoadStores()
+        private async void LoadStores()
         {
-            var managedStores = backendController.get_managed_store();
-            var ownedStores = backendController.got_owned_stores();
+            var managedStores = await backendController.get_managed_store();
+            var ownedStores = await backendController.got_owned_stores();
 
             if (managedStores != null && managedStores.Count > 0)
             {
@@ -54,7 +54,7 @@ namespace Sadna_17_B_Frontend.Views
             string storeId = btn.CommandArgument;
             Response.Redirect($"~/Views/Store_Page.aspx?storeId={storeId}");
         }
-        protected async void btnManage_Click(object sender, EventArgs e)
+        protected void btnManage_Click(object sender, EventArgs e)
         {
             var button = (Button)sender;
             string storeId = button.CommandArgument;
@@ -63,12 +63,12 @@ namespace Sadna_17_B_Frontend.Views
                 ["store id"] = storeId,
                 ["roles to check"] = "founder"
             };
-            bool isFounder = await backendController.has_roles(doc);
+            bool isFounder = backendController.has_roles(doc);
 
             if (isFounder)
-                Response.Redirect($"~/Views/FounderStorePage.aspx?storeId={storeId}");
+                Response.Redirect($"~/Views/FounderStorePage.aspx?storeId={storeId}",false);
             else
-                Response.Redirect($"~/Views/ManagerStorePage.aspx?storeId={storeId}");
+                Response.Redirect($"~/Views/ManagerStorePage.aspx?storeId={storeId}",false);
         }
     }
 }

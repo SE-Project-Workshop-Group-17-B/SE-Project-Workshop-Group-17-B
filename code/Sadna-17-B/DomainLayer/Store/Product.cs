@@ -23,13 +23,13 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         public double ratingOverAllScore = 0;
 
         [Key]
-        public int ID { get; private set; }
+        public int ID { get; set; }
 
      
-        public int storeId { get; private set; }
+        public int storeId { get; set; }
 
    //     [ForeignKey("storeId")]
-        public virtual Store Store { get; set; }
+        public virtual Store Store { get; set;}
         public int amount { get; set; }
         public string name { get; set; }
         public double price { get; set; }

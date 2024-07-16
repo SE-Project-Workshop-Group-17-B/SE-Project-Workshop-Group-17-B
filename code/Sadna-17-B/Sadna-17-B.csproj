@@ -453,6 +453,11 @@
     <Compile Include="DomainLayer\User\Subscriber.cs" />
     <Compile Include="DomainLayer\User\User.cs" />
     <Compile Include="DomainLayer\User\UserController.cs" />
+    <Compile Include="Layer_API\Models\FuncStoreDTO.cs" />
+    <Compile Include="Layer_API\Models\RoleCheckRequest.cs" />
+    <Compile Include="Layer_API\Models\UIStoreDTOAPI.cs" />
+    <Compile Include="Layer_API\Models\UIuserDTOAPI.cs" />
+    <Compile Include="Layer_API\Program.cs" />
     <Compile Include="Migrations\202407111221459_InitialCreate.cs" />
     <Compile Include="Migrations\202407111221459_InitialCreate.Designer.cs">
       <DependentUpon>202407111221459_InitialCreate.cs</DependentUpon>
@@ -499,6 +504,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Entities\" />
+    <Folder Include="Layer_API\Controllers\" />
     <Folder Include="Layer_DataAccess\Context\" />
     <Folder Include="Layer_DataAccess\Entities\" />
     <Folder Include="Layer_DataAccess\NewFolder1\" />

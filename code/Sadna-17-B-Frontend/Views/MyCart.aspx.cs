@@ -9,13 +9,14 @@ using Sadna_17_B.DomainLayer.User;
 using System.Web.UI.WebControls;
 using System.Web.UI;
 using Microsoft.Ajax.Utilities;
+using System.Threading.Tasks;
 
 namespace Sadna_17_B_Frontend.Views
 {
     public partial class MyCart : System.Web.UI.Page
     {
         BackendController backendController = BackendController.get_instance();
-        protected void Page_Load(object sender, EventArgs e)
+        protected async void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
             {
@@ -23,13 +24,9 @@ namespace Sadna_17_B_Frontend.Views
             }
         }
 
-        private void LoadCart()
+        private async void LoadCart()
         {
-            Dictionary<string, string> doc = new Dictionary<string, string>
-            {
-                ["token"] = $"{backendController.userDTO.AccessToken}"
-            };
-            ShoppingCartDTO cart = backendController.get_shoping_cart(doc);        
+            List<ItemDTO> cart = await backendController.get_shoping_cart_products();        
             if (cart != null)
             {
                 var products = FlattenProducts(cart);
@@ -39,55 +36,39 @@ namespace Sadna_17_B_Frontend.Views
             }
         }
 
-        private ProductDTO getProduct(int pid)
+        private async Task<ItemDTO> getProduct(int pid)
         {
-            Dictionary<string, string> doc = new Dictionary<string, string>
-            {
-                ["token"] = $"{backendController.userDTO.AccessToken}"
-            };
-
-            ShoppingCartDTO cart = backendController.get_shoping_cart(doc);
+            List<ItemDTO> cart = await backendController.get_shoping_cart_products();
             if (cart != null)
             {
-                foreach (var basket in cart.ShoppingBaskets.Values)
+                foreach (var item in cart)
                 {
-                    foreach (var kvp in basket.ProductQuantities)
-                    {
-                        var product = kvp.Key;
-                        if (product.Id == pid)
-                            return product;
-                    }
+                    if (item.ID == pid)
+                        return item;
+         
                 }
             }
             return null;
         }
 
-        private List<dynamic> FlattenProducts(ShoppingCartDTO cart)
+        private List<dynamic> FlattenProducts(List<ItemDTO> cart)
         {
             var products = new List<dynamic>();
 
-            Dictionary<string, string> doc = new Dictionary<string, string>
+            foreach (ItemDTO item in cart)
             {
-                ["token"] = backendController.userDTO.AccessToken
-            };
-
-            foreach (var basket in cart.ShoppingBaskets.Values)
-            {
-                foreach (var kvp in basket.ProductQuantities)
+                products.Add(new
                 {
-                    var product = kvp.Key;
-                    products.Add(new
-                    {
-                        product.Id,
-                        product.Name,
-                        product.Category,
-                        product.store_id,
-                        product.Price,
-                        product.amount,
-                        quantity = kvp.Value
-                    });
-                }
+                    item.ID,
+                    item.Name,
+                    item.Category,
+                    item.StoreId,
+                    item.Price,
+                    item.Amount,
+                    item.Quantity
+                });
             }
+
             return products;
         }
 
@@ -96,7 +77,7 @@ namespace Sadna_17_B_Frontend.Views
 
             double price = 0;
             foreach (var product in products)
-                price += product.Price * product.amount;
+                price += product.Price * product.Amount;
 
             return price;
         }
@@ -107,9 +88,8 @@ namespace Sadna_17_B_Frontend.Views
             ClientScript.RegisterStartupScript(this.GetType(), "Popup", script, true);
         }
 
-        protected void btnPurchase_Click(object sender, EventArgs e)
+        protected async void btnPurchase_Click(object sender, EventArgs e)
         {
-            string token = backendController.userDTO.AccessToken;
             string cardNum = cardNumber.Value.Trim();
             string cardDate = txtCardExpiryDate.Value.Trim();
             string cardCVV = txtCardCVVNum.Value.Trim();
@@ -118,52 +98,56 @@ namespace Sadna_17_B_Frontend.Views
 
             string destShipp = textDestInfro.Value.Trim();
 
-            Response res = backendController.completePurchase(token,destShipp, creditDetails);
+            Response res = await backendController.completePurchase(destShipp, creditDetails);
             if (res.Success)
             {
-                string script = "alert('Your purchase was successful!');";
-                ScriptManager.RegisterStartupScript(this, GetType(), "ServerControlScript", script, true);
+                ScriptManager.RegisterStartupScript(this, this.GetType(), "alert",
+    "alert('Your purchase was successful!');", true);
+
+                //string script = "alert('Your purchase was successful!');";
+                //ScriptManager.RegisterStartupScript(this, GetType(), "ServerControlScript", script, true);
             }
             else
             {
-                string script = $"alert('Payment Failed, {res.Message}');";
-                ScriptManager.RegisterStartupScript(this, GetType(), "ServerControlScript", script, true);
+                ScriptManager.RegisterStartupScript(this, this.GetType(), "alert",
+    $"alert('Payment Failed, {res.Message}');", true);
+                //string script = $"alert('Payment Failed, {res.Message}');";
+                //ScriptManager.RegisterStartupScript(this, GetType(), "ServerControlScript", script, true);
             }
 
             backendController.clean_cart();
             LoadCart();
         }
 
-        protected void rptCartItems_ItemCommand(object source, System.Web.UI.WebControls.RepeaterCommandEventArgs e)
+        protected async void rptCartItems_ItemCommand(object source, System.Web.UI.WebControls.RepeaterCommandEventArgs e)
         {
             int productId = Convert.ToInt32(e.CommandArgument);
-            ProductDTO product = getProduct(productId);
             if (e.CommandName == "Remove")
             {
                 int productIndex = Convert.ToInt32(e.CommandArgument);
-                Response ignore = backendController.remove_from_cart(productIndex);
+                Response ignore = await backendController.remove_from_cart(productIndex);
             }
             else if (e.CommandName == "Increase" || e.CommandName == "Decrease")
             {
                 int change = e.CommandName == "Increase" ? 1 : -1;
 
                 // Call your backend method to update the quantity
-                increase_decrease_product_amount_by_1(productId, change);
+                int a = await increase_decrease_product_amount_by_1(productId, change);
             }
             LoadCart(); // Reload the cart after removing an item
             RefreshPage();
         }
 
-        public void increase_decrease_product_amount_by_1(int productId, int change)
+        public async Task<int> increase_decrease_product_amount_by_1(int productId, int change)
         {
 
-            ProductDTO product = getProduct(productId);
-            int newAmount = product.amount + change;
+            ItemDTO product = await getProduct(productId);
+            int newAmount = product.Amount + change;
             Dictionary<string, string> doc = new Dictionary<string, string>
             {
                 ["token"] = $"{backendController.userDTO.AccessToken}",
-                ["store id"] = $"{product.store_id}",
-                ["product id"] = $"{product.Id}",
+                ["store id"] = $"{product.StoreId}",
+                ["product id"] = $"{product.ID}",
                 ["price"] = $"{product.Price}",
                 ["amount"] = $"{newAmount}",
                 ["category"] = $"{product.Category}",
@@ -171,9 +155,28 @@ namespace Sadna_17_B_Frontend.Views
             };
 
             if (newAmount == 0)
-                backendController.userService.cart_remove_product(getProduct(productId), backendController.userDTO.AccessToken);
+            {
+                ItemDTO i = await getProduct(productId);
+                ProductDTO p = new ProductDTO()
+                {
+                    Id = i.ID,
+                    store_id = i.StoreId,
+                    Name = i.Name,
+                    amount = i.Amount,
+                    Price = i.Price,
+                    Category = i.Category,
+                    CustomerRate = 4.5,
+                    Description = "amazing product"
+                };
+
+                await backendController.cart_remove_product(p);
+                //backendController.userService.cart_remove_product(p, backendController.userDTO.AccessToken);
+            }
             else
-                backendController.userService.cart_update_product(doc);
+                await backendController.cart_update_product(doc);
+            //backendController.userService.cart_update_product(doc);
+
+            return 0;
         }
 
         

@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Product Details" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="ProductDetails.aspx.cs" Inherits="Sadna_17_B_Frontend.Views.ProductDetails" %>
+﻿<%@ Page Title="Product Details"  Async="true" EnableEventValidation="false" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="ProductDetails.aspx.cs" Inherits="Sadna_17_B_Frontend.Views.ProductDetails" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
    <style>
        .product-details {

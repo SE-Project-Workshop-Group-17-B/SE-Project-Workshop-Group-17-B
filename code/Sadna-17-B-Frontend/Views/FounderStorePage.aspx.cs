@@ -2,6 +2,7 @@
 using System;
 using System.Web.UI.WebControls;
 using System.Collections.Generic;
+using Sadna_17_B.DomainLayer.StoreDom;
 
 namespace Sadna_17_B_Frontend.Views
 {
@@ -26,12 +27,13 @@ namespace Sadna_17_B_Frontend.Views
             }
         }
 
-        private void LoadStoreData(int storeId)
+        private async void LoadStoreData(int storeId)
         {
-            var store = backendController.get_store_details_by_id(storeId);
+            var store = await backendController.get_store_details_by_id(storeId);
             if (store != null)
             {
-                litStoreName.Text = store.Name;
+                Store s = store.Data as Store;
+                litStoreName.Text = s.Name;
                 litStoreId.Text = storeId.ToString();
 
                 // Load policies
@@ -39,13 +41,13 @@ namespace Sadna_17_B_Frontend.Views
                 {
                     ["store id"] = storeId.ToString()
                 };
-                var purchasePolicyResponse = backendController.storeService.show_purchase_policy(doc);
+                var purchasePolicyResponse = await backendController.show_purchase_policy(doc);
                 if (purchasePolicyResponse.Success)
                 {
                     txtPurchasePolicy.Text = purchasePolicyResponse.Data as string;
                 }
 
-                var discountPolicyResponse = backendController.storeService.show_discount_policy(doc);
+                var discountPolicyResponse = await backendController.show_discount_policy(doc);
                 if (discountPolicyResponse.Success)
                 {
                     txtDiscountPolicy.Text = discountPolicyResponse.Data as string;
