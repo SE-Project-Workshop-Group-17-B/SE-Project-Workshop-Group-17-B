@@ -38,6 +38,18 @@ namespace Sadna_17_B.DomainLayer.Order
             TotalPrice = totalPrice;
         }
 
+        public Order(int orderID, string userID, bool isGuestOrder, Cart cart, double totalPrice)
+        {
+            OrderID = orderID;
+            UserID = userID;
+            IsGuestOrder = isGuestOrder;
+            Cart = cart;
+            Timestamp = DateTime.Now;
+            DestinationAddress = null;
+            CreditCardInfo = null;
+            TotalPrice = totalPrice;
+        }
+
         public List<int> GetManufacturerProductNumbers()
         {
             

@@ -42,31 +42,16 @@ namespace Sadna_17_B.DomainLayer.Order
             this.storeController = storeController;
         }
 
-       /* public OrderSystem(StoreController storeController, PaymentSystem paymentInstance)
-        {
-            this.storeController = storeController;
-            this.paymentSystem = paymentInstance;
-        }
-
-        public OrderSystem(StoreController storeController, SupplySystem supplyInstance)
-        {
-            this.storeController = storeController;
-            this.supplySystem = supplyInstance;
-        }*/
-
         public void LoadData()
         {
 
         }
 
 
-
         // ------- process order --------------------------------------------------------------------------------
 
-
-        public void ProcessOrder(Cart cart, string userID, bool isGuest, string destination, string credit)
+        public void ProcessOrder(Cart cart, string userID, bool isGuest)
         {
-
             // ------- guest log --------------------------------------------------------------------------------
 
             if (isGuest)
@@ -76,19 +61,15 @@ namespace Sadna_17_B.DomainLayer.Order
 
 
             // ------- shoping cart validations -----------------------------------------------------------------
-
-
             bool inventory_blocked_order = !storeController.validate_inventories(cart);
             bool policies_blocked_order = !storeController.validate_policies(cart);
 
             if (inventory_blocked_order | policies_blocked_order)
                 throw new Sadna17BException("Order is not valid");
 
-
             // ------- shoping cart final price -----------------------------------------------------------------
 
             double cart_price_with_discount = 0;
-            double cart_price_without_discount = 0;
 
             foreach (var basket in cart.baskets())
             {
@@ -98,26 +79,9 @@ namespace Sadna_17_B.DomainLayer.Order
                 cart_price_with_discount += basket_checkout.total_price_without_discount;
             }
 
-            Order order = new Order(orderCount, userID, isGuest, cart, destination, credit, cart_price_with_discount);
+            Order order = new Order(orderCount, userID, isGuest, cart, cart_price_with_discount);
 
-
-            // ------- before -------------------------------------------------------------------------------
-
-            /*  validate_supply_system_availability(destination, order);
-              validate_payment_system_availability(credit, order);
-              validate_price(cart_price_with_discount);
-
-              paymentSystem.ExecutePayment(credit, order.TotalPrice);
-              supplySystem.ExecuteDelivery(destination, order.GetManufacturerProductNumbers());
-  */
-            // ------- now -------------------------------------------------------------------------------
-
-        
-
-
-            pending_order.Add(userID, order);
-            
-
+            pending_order.Add(userID, order);           
         }
 
         public void reduce_cart(string uid, Cart cart)

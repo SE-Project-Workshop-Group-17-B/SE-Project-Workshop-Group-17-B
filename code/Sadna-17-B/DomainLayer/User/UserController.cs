@@ -517,7 +517,7 @@ namespace Sadna_17_B.DomainLayer.User
 
 
 
-        public void CompletePurchase(string token, string destinationAddress, string creditCardInfo)
+        /*public void CompletePurchase(string token, string destinationAddress, string creditCardInfo)
         {
             infoLogger.Log($"Attempting to purchase - Subscriber: {GetSubscriberByToken(token).Username}");
             User user = GetUserByToken(token); // Throws an exception if the token is invalid
@@ -530,6 +530,24 @@ namespace Sadna_17_B.DomainLayer.User
                 orderSystem.ProcessOrder(user.ShoppingCart, (user as Subscriber).Username, false, destinationAddress, creditCardInfo);
             }
             user.CreateNewShoppingCart();
+        }*/
+
+        public void processOrder(string token)
+        {
+            infoLogger.Log($"Attempting to purchase - Subscriber: {GetSubscriberByToken(token).Username}");
+            User user = GetUserByToken(token); // Throws an exception if the token is invalid
+
+            if (user is Guest)
+            {
+                orderSystem.ProcessOrder(user.ShoppingCart, (user as Guest).GuestID.ToString(), true);
+            }
+            else if (user is Subscriber)
+            {
+                
+                orderSystem.ProcessOrder(user.ShoppingCart, (user as Subscriber).Username, false);
+            }
+            //TODO: CHECK IF NEEDED
+            //user.CreateNewShoppingCart();
         }
 
         public void reduce_cart(string token)

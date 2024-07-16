@@ -368,17 +368,32 @@ namespace Sadna_17_B.ServiceLayer.Services
         // ----------- cart ------------------------------------------------------------------------------------
        
 
-        public Response CompletePurchase(string token,  /*Dictionary<string,string>*/string destinationAddress, string creditCardInfo)
+        /*public Response CompletePurchase(string token,  *//*Dictionary<string,string>*//*string destinationAddress, string creditCardInfo)
         {
             try
             {
-                userController.CompletePurchase(token, destinationAddress, creditCardInfo);
+                userController.processOrder(token);
+                //zuserController.CompletePurchase(token, destinationAddress, creditCardInfo);
                 return new Response(true);
             }
             catch (Sadna17BException e)
             {
                 return Response.GetErrorResponse(e);
             }
+        }*/
+
+        public Response Process_order(string token)
+        {
+            try
+            {
+                userController.processOrder(token);
+                return new Response(true);
+            }
+            catch (Sadna17BException e)
+            {
+                return Response.GetErrorResponse(e);
+            }
+
         }
 
         public Response reduce_cart(string token)

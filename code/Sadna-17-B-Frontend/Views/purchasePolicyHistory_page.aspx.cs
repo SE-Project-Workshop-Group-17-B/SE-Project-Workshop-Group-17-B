@@ -23,7 +23,6 @@ namespace Sadna_17_B_Frontend.Views
             if (!IsPostBack)
             {
                 int.TryParse(Request.QueryString["storeId"], out storeId);
-                string token = backendController.userDTO.AccessToken;
                 Response res = await backendController.GetStoreOrderHistory(storeId);
                 List<SubOrderDTO> purchaseHistory = JsonConvert.DeserializeObject<List<SubOrderDTO>>(res.Data.ToString());
                 PurchaseHistoryRepeater.DataSource = purchaseHistory;

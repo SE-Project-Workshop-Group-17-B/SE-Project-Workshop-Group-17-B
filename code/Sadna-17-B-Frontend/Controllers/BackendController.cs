@@ -777,12 +777,6 @@ namespace Sadna_17_B_Frontend.Controllers
             }
         }
 
-          List<Product> products = storeService.all_products().Data as List<Product>;
-         */
-
-      
-        public Response search_products(string keyword, string category, int minPrice, int maxPrice, int minRating, int minStoreRating, int storeId) // upgrade to search_products_by doc_doc
-
         public async Task<Response> AbandonOwnership(int storeId)
 
         {
@@ -885,29 +879,21 @@ namespace Sadna_17_B_Frontend.Controllers
 
         // ---------- checkout -----------------------------------
 
-
-        public double process_store_order(Basket basket)
-        {
-            Response response = storeService.calculate_products_prices(basket);
-            if (response.Success)
-            {
-                return (response.Data as Mini_Checkout).price_after_discount();
-            }
-            return 0;
-        }
-
-        public async /*   ???   */ Task<Response> completePurchase( supplyDTO supply, payDTO payment)
+        public async /*   ???   */ Task<Response> completePurchase(Dictionary<string,string> supply, Dictionary<string,string> payment)
         {
             Response response;
+
 
             response = await process_order();                     // backend
             if (!response.Success)
                 return response;
-
+            
+            //WORKING
             response = await supply_order(supply);                // external
             if (!response.Success)
                 return response;
 
+            //WORKING (MAYBE)
             response = await pay_order(payment);                  // external
             if (!response.Success)
                 return response;
@@ -916,6 +902,7 @@ namespace Sadna_17_B_Frontend.Controllers
             if (!response.Success)
                 return response;
 
+            
             return new Response("Purchase Completed Successfully", true);
         }
 
@@ -925,12 +912,12 @@ namespace Sadna_17_B_Frontend.Controllers
             using (HttpClient client = new HttpClient())
             {
                 string token = userDTO.AccessToken;
-                var purchaseDetails = new
+                var payload = new
                 {
                     AccessToken = userDTO.AccessToken
                 };
 
-                HttpResponseMessage response = client.PostAsJsonAsync(prefix + "/RestAPI/completePurchase", purchaseDetails).GetAwaiter().GetResult();
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/process_order", payload);
                 string responseContent = await response.Content.ReadAsStringAsync();
                 Response responseObj = JsonConvert.DeserializeObject<Response>(responseContent);
 
@@ -941,17 +928,21 @@ namespace Sadna_17_B_Frontend.Controllers
         }
 
 
-        public async /*   int   */ Task<Response> pay_order(payDTO payment)
+        public async /*   int   */ Task<Response> pay_order(Dictionary<string,string> payment)
         {
             using (HttpClient client = new HttpClient())
             {
-                HttpResponseMessage response = await client.PostAsJsonAsync("https://damp-lynna-wsep-1984852e.koyeb.app/", payment); // add relative path
+                var payload = new FormUrlEncodedContent(payment);
+                HttpResponseMessage response = await client.PostAsync("https://damp-lynna-wsep-1984852e.koyeb.app/", payload); // add relative path
 
                 if (response.IsSuccessStatusCode)
                 {
-                    string responseContent = response.Content.ReadAsStringAsync().Result;
+                    string responseContent = await response.Content.ReadAsStringAsync();
                     int transaction_id = JsonConvert.DeserializeObject<int>(responseContent);
-                    return new Response("Transaction Completed", transaction_id != -1, transaction_id);
+                    if (transaction_id > 0)
+                        return new Response("Payment succeeded", true);
+
+                    return new Response("Payment Failed", false, transaction_id);
                 }
 
                 else
@@ -962,15 +953,16 @@ namespace Sadna_17_B_Frontend.Controllers
             }
         }
 
-        public async /*   int   */ Task<Response> supply_order(supplyDTO supply)
+        public async /*   int   */ Task<Response> supply_order(Dictionary<string,string> supply)
         {
             using (HttpClient client = new HttpClient())
             {
-                HttpResponseMessage response = await client.PostAsJsonAsync("https://damp-lynna-wsep-1984852e.koyeb.app/", supply); // add relative path
+                var payload = new FormUrlEncodedContent(supply);
+                HttpResponseMessage response = await client.PostAsync("https://damp-lynna-wsep-1984852e.koyeb.app/", payload); // add relative path
 
                 if (response.IsSuccessStatusCode)
                 {
-                    string responseContent = response.Content.ReadAsStringAsync().Result;
+                    string responseContent = await response.Content.ReadAsStringAsync();
                     int transaction_id = JsonConvert.DeserializeObject<int>(responseContent);
                     return new Response("Transaction Completed", transaction_id != -1, transaction_id); 
                 }
@@ -987,15 +979,18 @@ namespace Sadna_17_B_Frontend.Controllers
         {
             using (HttpClient client = new HttpClient())
             {
-                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/reduce_order", ""); // add relative path
+                var payload = new { AccessToken = userDTO.AccessToken };
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/reduce_order", payload); // add relative path
 
                 if (response.IsSuccessStatusCode)
                 {
-                    string responseContent = response.Content.ReadAsStringAsync().Result;
-                    bool success_status = JsonConvert.DeserializeObject<bool>(responseContent);
-                    return new Response(" Order Completed !", success_status);
+                    string responseContent = await response.Content.ReadAsStringAsync();
+                    Response res = JsonConvert.DeserializeObject<Response>(responseContent);
+                    if (res.Success)
+                        return new Response("Payment and delivery succeeded", true);
+                    else
+                        return new Response(res.Message, false);
                 }
-
                 else
                 {
                     string errorMessage = await response.Content.ReadAsStringAsync();

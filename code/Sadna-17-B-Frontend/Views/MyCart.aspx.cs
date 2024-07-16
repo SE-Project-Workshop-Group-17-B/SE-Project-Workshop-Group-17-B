@@ -110,7 +110,7 @@ namespace Sadna_17_B_Frontend.Views
                 { "month", month },
                 { "year", year },
                 { "holder", CardHolderName },
-                { "ccv", cardCVV },
+                { "cvv", cardCVV },
                 { "id", CardHolderId }
             };
 
@@ -130,8 +130,7 @@ namespace Sadna_17_B_Frontend.Views
                 { "zip", addressZip },
             };
 
-            //TODO: it should recieve something else
-            Response res = await backendController.completePurchase(addressStreet, cardNum);
+            Response res = await backendController.completePurchase(shippmentDetails, creditDetails);
             if (res.Success)
             {
                 ScriptManager.RegisterStartupScript(this, this.GetType(), "alert",

@@ -255,12 +255,21 @@ namespace Sadna_17_B_API.Controllers
             return response;
         }
 
-        [HttpPost("completePurchase")]
+/*        [HttpPost("completePurchase")]
         public IActionResult CompletePurchase([FromBody] PurchaseDTO purchaseDetails)
         {
             //{creditCardInfo, DestInfo}
             var response = _userService.CompletePurchase(purchaseDetails.AccessToken, purchaseDetails.DestinationAddress, purchaseDetails.CreditCardInfo);
             return Ok(response);
+        }*/
+
+        [HttpPost("process_order")]
+        public Response ProcessOrder([FromBody] PurchaseDTO userData)
+        {
+            string token = userData.AccessToken;
+            var response = _userService.Process_order(token);
+            return response;
+
         }
 
         [HttpPost("reduce_order")]
@@ -372,7 +381,8 @@ namespace Sadna_17_B_API.Controllers
         [HttpPost("get_store_order_history")]
         public Response GetStoreOrderHistory([FromBody] orderHistoryDTO dto)
         {
-            return _userService.GetStoreOrderHistory(dto.AccessToken, dto.OrderId);
+            var response = _userService.GetStoreOrderHistory(dto.AccessToken, dto.OrderId);
+            return response;
         }
         [HttpPost("add_store_product")]
         public Response AddStoreProduct([FromBody] AddProductDTO dto)
