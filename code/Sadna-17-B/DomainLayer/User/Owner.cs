@@ -70,7 +70,7 @@ namespace Sadna_17_B.DomainLayer.User
             set
             {
                 Dictionary<string, Owner> newAppointedOwners = new Dictionary<string, Owner>();
-                List<OwnerAppointmentEntry> entries = JsonConvert.DeserializeObject<List<OwnerAppointmentEntry>>(value);
+                List<OwnerAppointmentEntry> entries = string.IsNullOrEmpty(value) ? new List<OwnerAppointmentEntry>() :  JsonConvert.DeserializeObject<List<OwnerAppointmentEntry>>(value);
                 foreach (OwnerAppointmentEntry entry in entries)
                 {
                     newAppointedOwners[entry.AppointedOwnerUsername] = _unitOfWork.Owners.Get(entry.AppointedOwnerID);
