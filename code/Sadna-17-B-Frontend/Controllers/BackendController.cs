@@ -364,7 +364,7 @@ namespace Sadna_17_B_Frontend.Controllers
             using (HttpClient client = new HttpClient())
             {
                 HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/get_store_details", storeId);
-                string response1 = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                string response1 = await response.Content.ReadAsStringAsync();
                 return JsonConvert.DeserializeObject<Response>(response1);
             }
         }
@@ -374,7 +374,7 @@ namespace Sadna_17_B_Frontend.Controllers
             using (HttpClient client = new HttpClient())
             {
                 HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/get_store_name", storeId);
-                string response1 = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                string response1 = await response.Content.ReadAsStringAsync();
                 return JsonConvert.DeserializeObject<Response>(response1);
             }
         }
@@ -384,7 +384,7 @@ namespace Sadna_17_B_Frontend.Controllers
             using (HttpClient client = new HttpClient())
             {
                 HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/get_store_rating_by_id", storeId);
-                string response1 = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                string response1 = await response.Content.ReadAsStringAsync();
                 return JsonConvert.DeserializeObject<Response>(response1);
             }
         }
@@ -395,7 +395,7 @@ namespace Sadna_17_B_Frontend.Controllers
             {
                 var payload = new { ID = storeId, Data = rating.ToString() };
                 HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/add_store_rating", payload);
-                string response1 = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                string response1 = await response.Content.ReadAsStringAsync();
                 return JsonConvert.DeserializeObject<Response>(response1);
             }
         }
@@ -406,7 +406,7 @@ namespace Sadna_17_B_Frontend.Controllers
             {
                 var payload = new { ID = storeId, Data = complaint };
                 HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/add_store_complaint", payload);
-                string response1 = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                string response1 = await response.Content.ReadAsStringAsync();
                 return JsonConvert.DeserializeObject<Response>(response1);
             }
         }
@@ -418,7 +418,7 @@ namespace Sadna_17_B_Frontend.Controllers
                 //review saved as complaint for more nice code
                 var payload = new { ID = storeId, Data = review };
                 HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/add_store_review", payload);
-                string response1 = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                string response1 = await response.Content.ReadAsStringAsync();
                 return JsonConvert.DeserializeObject<Response>(response1);
             }
         }
@@ -723,115 +723,7 @@ namespace Sadna_17_B_Frontend.Controllers
                     return new Tuple<string, int>(null, (int)(responseObj.Data));
                 }
             }
-        }
-
-
-        // ---------- order -----------------------------------
-        /*
-         public async Task<string> login(string username, string password)
-        {
-            using (HttpClient client = new HttpClient())
-            {
-                var user = new UIuserDTOAPI { Username = username, Password = password, AccessToken = "" };
-
-                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/login", user); // add relative path
-
-                if (response.IsSuccessStatusCode)
-                {
-                    //userDTO = response.Content as UserDTO;
-                    string response1 = await response.Content.ReadAsStringAsync();
-                    Response response2 = JsonConvert.DeserializeObject<Response>(response1);
-                    userDTO = JsonConvert.DeserializeObject<UserDTO>(response2.Data.ToString());
-                    return null; // Login successful
-                }
-                else
-                {
-                    string errorMessage = await response.Content.ReadAsStringAsync();
-
-                    return $"Login failed: {errorMessage}";
-                }
-            }
-        }
-          List<Product> products = storeService.all_products().Data as List<Product>;
-         */
-
-      
-       //     public Response search_products(string keyword, string category, int minPrice, int maxPrice, int minRating, int minStoreRating, int storeId) // upgrade to search_products_by doc_doc
-       // {
-       //     try
-       //     {
-       //         List<Product> products = storeService.all_products().Data as List<Product>;
-       //
-       //         // Determine the initial set of products based on keyword or category.
-       //         if (!string.IsNullOrEmpty(keyword))
-       //         {
-       //             var response = storeService.search_product_by(new Dictionary<string, string>());
-       //             if (!response.Success)
-       //             {
-       //                 products = new List<Product>();
-       //             }
-       //
-       //             products = response.Data as List<Product>;
-       //         }
-       //         else if (!string.IsNullOrEmpty(category))
-       //         {
-       //             var response = storeService.search_product_by(new Dictionary<string, string>());
-       //             if (!response.Success)
-       //             {
-       //                 products = new List<Product>();
-       //             }
-       //             products = response.Data as List<Product>;
-       //         }
-       //
-       //         // Filter by Store ID if provided
-       //         //if (storeId != -1 && products != null)
-       //         //{
-       //         //    var response = storeService.filter_search_by_store_id(products, storeId);
-       //         //    if (!response.Success) return response;
-       //         //    products = response.Data as Dictionary<Product, int>;
-       //         //}
-       //
-       //         // Filter by price range if valid
-       //         else if ((minPrice > 0 || maxPrice > 0) && products != null)
-       //         {
-       //             var response = storeService.search_product_by(new Dictionary<string, string>());
-       //             if (!response.Success)
-       //             {
-       //                 products = new List<Product>();
-       //             }
-       //             products = response.Data as List<Product>;
-       //         }
-       //
-       //         //// Filter by product rating if valid
-       //         //if (minRating != -1 && products != null)
-       //         //{
-       //         //    var response = storeService.filter_search_by_product_rating(products, minRating);
-       //         //    if (!response.Success) return response;
-       //         //    products = response.Data as Dictionary<Product, int>;
-       //         //}
-       //
-       //         //// Filter by store rating if valid
-       //         //if (minStoreRating != -1 && products != null)
-       //         //{
-       //         //    var response = storeService.filter_search_by_store_rating(products, minStoreRating);
-       //         //    if (!response.Success) return response;
-       //         //    products = response.Data as Dictionary<Product, int>;
-       //         //}
-       //
-       //         // Final check if any products are found after all filters
-       //         if (products == null || products.Count == 0)
-       //         {
-       //             return new Response("No products found with the specified filters.", false, null);
-       //         }
-       //
-       //         return new Response("Products found successfully.", true, products);
-       //     }
-       //     catch (Exception ex)
-       //     {
-       //         // Log exception details here to diagnose issues.
-       //         return new Response("An error occurred while searching for products: " + ex.Message, false, null);
-       //     }
-       // }
+        }       
 
         public async Task<Response> search_products_by(Dictionary<string, string> doc) // implement with doc_doc documentation
         {

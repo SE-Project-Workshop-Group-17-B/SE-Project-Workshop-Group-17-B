@@ -68,7 +68,7 @@ namespace Sadna_17_B_Frontend.Views
                 }
                 else
                 {
-                    Response.Redirect($"~/Views/purchaseHistoryUser_page?username={username}"); //purchase history page of store
+                    Response.Redirect($"~/Views/PurchaseHistoryUser_page?username={username}"); //purchase history page of store
                 }
             }
         }
