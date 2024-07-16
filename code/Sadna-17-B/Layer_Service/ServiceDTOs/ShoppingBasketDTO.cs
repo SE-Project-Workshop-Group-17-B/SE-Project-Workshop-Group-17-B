@@ -9,7 +9,7 @@ namespace Sadna_17_B.ServiceLayer.ServiceDTOs
 {
     public class ShoppingBasketDTO
     {
-        public Dictionary<ProductDTO, int> ProductQuantities { get; }
+        public Dictionary<ProductDTO, int> ProductQuantities { get; set;  }
 
         public ShoppingBasketDTO()
         {

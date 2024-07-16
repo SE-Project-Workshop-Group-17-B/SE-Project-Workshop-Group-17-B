@@ -185,13 +185,12 @@ namespace Sadna_17_B_Frontend.Controllers
             using (HttpClient client = new HttpClient())
             {
                 var user = new UIuserDTOAPI { Username = "", Password = "", AccessToken = userDTO.AccessToken };
-                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/get_Shoping_cart", user); // add relative path
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/get_shoping_cart", user); // add relative path
 
                 if (response.IsSuccessStatusCode)
                 {
                     string response1 = await response.Content.ReadAsStringAsync();
-                    Response response2 = JsonConvert.DeserializeObject<Response>(response1);
-                    return JsonConvert.DeserializeObject<ShoppingCartDTO>(response2.Data.ToString());
+                    return JsonConvert.DeserializeObject<ShoppingCartDTO>(response1);
                 }
                 else
                 {

@@ -6,6 +6,7 @@ using Sadna_17_B.ServiceLayer.Services;
 using Sadna_17_B.Utils;
 using Sadna_17_B.DomainLayer.User;
 using Sadna_17_B.ServiceLayer.ServiceDTOs;
+using Newtonsoft.Json;
 
 namespace Sadna_17_B_API.Controllers
 {
@@ -134,14 +135,42 @@ namespace Sadna_17_B_API.Controllers
         }
 
         [HttpPost("get_shoping_cart")]
-        public Response getShopingCart([FromBody] UIuserDTOAPI user)
+        public IActionResult getShopingCart([FromBody] UIuserDTOAPI user)
         {
             Dictionary<string, string> doc = new Dictionary<string, string>()
             {
                 ["token"] = user.AccessToken
             };
             var response = _userService.cart_by_token(doc);
-            return response;
+            ShoppingCartDTO temp = response.Data as ShoppingCartDTO;
+            string temp2 = JsonConvert.SerializeObject(temp);
+
+            /*List<ItemDTO> itemList = new List<ItemDTO>();
+            foreach(KeyValuePair<int,ShoppingBasketDTO> entry in temp.ShoppingBaskets)
+            {
+                ShoppingBasketDTO basket = entry.Value;
+                int storeId = entry.Key;
+                foreach (KeyValuePair<ProductDTO, int> entry2 in basket.ProductQuantities)
+                {
+                    ProductDTO product = entry2.Key;
+                    int amount = entry2.Value;
+                    //create new obejct that contains the data we need
+
+                    //product category, name, store_id,quantity, price
+                    ItemDTO payload = new ItemDTO()
+                    {
+                        Name = product.Name,
+                        Amount = product.amount,
+                        StoreId = product.store_id,
+                        Price = product.Price,
+                        Category = product.Category
+                    };
+
+                    itemList.Add(payload);
+                }
+            }*/
+
+            return Ok(temp2);
         }
 
         [HttpPost("get_owned_stores")]
