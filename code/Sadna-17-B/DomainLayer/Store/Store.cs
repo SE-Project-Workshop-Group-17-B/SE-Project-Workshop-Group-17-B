@@ -68,24 +68,38 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         public virtual Inventory Inventory { get; set; }
 
         [NotMapped]
-        private DiscountPolicy DiscountPolicy { get;  set; }
+        private DiscountPolicy DiscountPolicy; //= new DiscountPolicy();
+        [NotMapped]
+        private List<Dictionary<string, string>> discount_rule_history { get; set; }
         public string DiscountPolicySerialized
         {
-            get => JsonConvert.SerializeObject(DiscountPolicy);
-            set => DiscountPolicy = string.IsNullOrEmpty(value) ? new DiscountPolicy() : JsonConvert.DeserializeObject<DiscountPolicy>(value);
+            get => JsonConvert.SerializeObject(discount_rule_history);
+            set
+            {
+                discount_rule_history = string.IsNullOrEmpty(value) ? new List<Dictionary<string, string>>() : JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(value);
+                DiscountPolicy = new DiscountPolicy("default policy");
+                recover_discount_policy();
+            }
         }
 
 
         [NotMapped]
-        private PurchasePolicy PurchasePolicy { get; set; }
-        [NotMapped]
+        private PurchasePolicy PurchasePolicy;// = new PurchasePolicy();
         public string PurchasePolicySerialized
         {
-            get => JsonConvert.SerializeObject(PurchasePolicy);
-            set => PurchasePolicy = string.IsNullOrEmpty(value) ? new PurchasePolicy() : JsonConvert.DeserializeObject<PurchasePolicy>(value);
+            get => JsonConvert.SerializeObject(purchase_rule_history);
+            set
+            {
+                purchase_rule_history = string.IsNullOrEmpty(value) ? new List<Dictionary<string, string>>() : JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(value);
+                PurchasePolicy = new PurchasePolicy();
+                recover_purchase_policy();
+            }
         }
 
-
+        public DiscountPolicy GetDiscountPolicy()
+        {
+            return this.DiscountPolicy;
+        }
 
         public double Rating { get; set; }
 
@@ -128,10 +142,8 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         private IUnitOfWork _unitOfWork = UnitOfWork.GetInstance();
 
-
-        public List<Dictionary<string, string>> purchase_rule_history;
-
-        public List<Dictionary<string, string>> discount_rule_history;
+        [NotMapped]
+        private List<Dictionary<string, string>> purchase_rule_history { get; set; }
 
 
         // ---------------- Constructor & store management -------------------------------------------------------------------------------------------
@@ -155,6 +167,8 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             this.Inventory = new Inventory(StoreID);
             this.DiscountPolicy = new DiscountPolicy("default policy");
             this.PurchasePolicy = new PurchasePolicy();
+            this.discount_rule_history = new List<Dictionary<string, string>>();
+            this.purchase_rule_history = new List<Dictionary<string, string>>();
 
             this.Rating = 0;
             this.RatingOverallScore = 0;
@@ -191,15 +205,17 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return true;
         }
 
-        public void recover_docs()
+        public void recover_discount_policy()
         {
             foreach (var doc in discount_rule_history)
-                edit_discount_policy(doc);
-
-            foreach (var doc in discount_rule_history)
-                edit_purchase_policy(doc);
+                edit_discount_policy(doc, true);
         }
 
+        public void recover_purchase_policy()
+        {
+            foreach (var doc in purchase_rule_history)
+                edit_purchase_policy(doc, true);
+        }
 
         // ---------------- Inventory ----------------------------------------------------------------------------------------
 
@@ -268,9 +284,10 @@ namespace Sadna_17_B.DomainLayer.StoreDom
            Inventory.edit_product_amount(pid, new_amount);
         }
         
-        public int edit_discount_policy(Dictionary<string, string> doc)
+        public int edit_discount_policy(Dictionary<string, string> doc, bool recovering = false)
         {
-            discount_rule_history.Add(doc);
+            if (!recovering)
+                discount_rule_history.Add(doc);
 
             string type = Parser.parse_string(doc["edit type"]);
 
@@ -284,27 +301,24 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                     Discount_Strategy strategy = parse_discount_strategy(doc);
                     Func<Basket, double> relevant_product_lambda = parse_relevant_lambdas(doc);
                     List<Func<Basket, bool>> condition_lambdas = parse_condition_lambdas(doc);
-                    _unitOfWork.Complete();
                     return DiscountPolicy.add_discount(ancestor_id, start, end, strategy, relevant_product_lambda, condition_lambdas);
 
 
                 case "remove":
 
                     int id = Parser.parse_int(doc["discount id"]);
-                    _unitOfWork.Complete();
                     return DiscountPolicy.remove_discount(id) ? 0 : -1;
 
                 default:
-                    _unitOfWork.Complete();
                     throw new Sadna17BException("Store : illegal edit type");
                 
             }
         }
 
-        public int edit_purchase_policy(Dictionary<string, string> doc)
+        public int edit_purchase_policy(Dictionary<string, string> doc, bool recovering = false)
         {
-
-            purchase_rule_history.Add(doc);
+            if (!recovering)
+                purchase_rule_history.Add(doc);
 
             string type = Parser.parse_string(doc["edit type"]);
 
@@ -318,10 +332,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                     string name = Parser.parse_string(doc["name"]);
                     List<Func<Basket, bool>> cond_lambdas = parse_condition_lambdas(doc);
                     Func<Basket, List<Func<Basket, bool>>, bool> rule_lambda = parse_purchase_rule_lambdas(doc);
-
                     Purchase_Rule purchase = new Purchase_Rule(rule_lambda, cond_lambdas, name);
-
-                    _unitOfWork.Complete();
                     return PurchasePolicy.add_rule(ancestor_id, purchase);
 
 
@@ -329,11 +340,9 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                 case "remove":
 
                     int purchase_id = Parser.parse_int(doc["purchase rule id"]);
-                    _unitOfWork.Complete();
                     return PurchasePolicy.remove_rule(purchase_id) ? 0 : -1;
 
                 default:
-                    _unitOfWork.Complete();
                     throw new Sadna17BException("Store : illegal edit type");
 
             }

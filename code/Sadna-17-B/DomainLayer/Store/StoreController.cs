@@ -187,7 +187,8 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
             temporary_closed_stores.Remove(store.StoreID);
             store.status = Store.Status.Active;
-            _unitOfWork.Complete();
+            _unitOfWork.Stores.Update(store);
+            //_unitOfWork.Complete();
             active_stores.Add(store.StoreID, store);
         }
 
@@ -199,9 +200,9 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                 throw new Sadna17BException("The store with storeID " + storeID + " is already closed.");
 
             temporary_closed_stores.Add(store.StoreID,store);
-            store.status = Store.Status.TemporaryClosed;
-            _unitOfWork.Complete();
             active_stores.Remove(store.StoreID);
+            store.status = Store.Status.TemporaryClosed;
+            _unitOfWork.Stores.Update(store);
         }
 
         public void clear_stores()
@@ -209,6 +210,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             active_stores.Clear();
             temporary_closed_stores.Clear();
             permanently_closed_stores.Clear();
+            _unitOfWork.Stores.DeleteAll();
         }
 
 
@@ -436,7 +438,11 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
             foreach (Store store in active_stores.Values)
                 if (store_id == store.StoreID)
-                    return store.edit_discount_policy(doc);
+                {
+                    int result = store.edit_discount_policy(doc);
+                    _unitOfWork.Stores.Update(store);
+                    return result;
+                }
 
             return -1;
         }
@@ -447,7 +453,11 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
             foreach (Store store in active_stores.Values)
                 if (store_id == store.StoreID)
-                    return store.edit_purchase_policy(doc);
+                {
+                    int result = store.edit_purchase_policy(doc);
+                    _unitOfWork.Stores.Update(store);
+                    return result;
+                }
 
             return -1;
         }
