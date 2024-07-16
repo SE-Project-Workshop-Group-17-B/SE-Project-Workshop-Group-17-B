@@ -128,6 +128,12 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         private IUnitOfWork _unitOfWork = UnitOfWork.GetInstance();
 
+
+        public List<Dictionary<string, string>> purchase_rule_history;
+
+        public List<Dictionary<string, string>> discount_rule_history;
+
+
         // ---------------- Constructor & store management -------------------------------------------------------------------------------------------
 
 
@@ -185,6 +191,14 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             return true;
         }
 
+        public void recover_docs()
+        {
+            foreach (var doc in discount_rule_history)
+                edit_discount_policy(doc);
+
+            foreach (var doc in discount_rule_history)
+                edit_purchase_policy(doc);
+        }
 
 
         // ---------------- Inventory ----------------------------------------------------------------------------------------
@@ -253,8 +267,11 @@ namespace Sadna_17_B.DomainLayer.StoreDom
         {
            Inventory.edit_product_amount(pid, new_amount);
         }
+        
         public int edit_discount_policy(Dictionary<string, string> doc)
         {
+            discount_rule_history.Add(doc);
+
             string type = Parser.parse_string(doc["edit type"]);
 
             switch (type)
@@ -280,12 +297,15 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                 default:
                     _unitOfWork.Complete();
                     throw new Sadna17BException("Store : illegal edit type");
-
+                
             }
         }
 
         public int edit_purchase_policy(Dictionary<string, string> doc)
         {
+
+            purchase_rule_history.Add(doc);
+
             string type = Parser.parse_string(doc["edit type"]);
 
             switch (type)
