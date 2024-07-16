@@ -28,7 +28,7 @@
             background-repeat: no-repeat;
             margin: 10px 5px 0 5px;
         }
-        notification-button-with-image {
+        .notification-button-with-image {
              background-image: url(/Content/notification-bell.png);
              background-size: contain;
              background-repeat: no-repeat;
@@ -45,6 +45,32 @@
             background-size: contain;
             background-repeat: no-repeat;
             margin: 10px 0px 0 5px;
+        }
+
+        .notification {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            transition: background-color 0.3s;
+        }
+
+        .notification:hover {
+            background-color: #1a5f8d;
+            color: darkblue;
+            z-index: 99999;
+
+        }
+
+        .notification.unread {
+            background-color: #e6f3ff;
+            border-left: 4px solid #3498db;
+            z-index: 9999;
+
+        }
+
+        .notification.read {
+            background-color: white;
+            border-left: 4px solid #3498db;
+            z-index: 9999;
         }
        
     </style>

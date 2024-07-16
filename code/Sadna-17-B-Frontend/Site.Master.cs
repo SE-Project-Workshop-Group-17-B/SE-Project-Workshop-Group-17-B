@@ -53,10 +53,20 @@ namespace Sadna_17_B_Frontend
                                     console.log('WebSocket message: ', message);
                                     const no = JSON.parse(message)
                                     console.log(no) 
+                                    
+                                    // Real time
+                                    const notificationElement = document.createElement('div');
+                                    notificationElement.className = 'notification';
+                                    notificationElement.textContent = no.Message;
+                                    document.body.appendChild(notificationElement);
+
+                                    setTimeout(() => {
+                                        document.body.removeChild(notificationElement);
+                                    }, 5000); // Remove notification after 5 seconds
                                 };
                                 ";
-            Page.ClientScript.RegisterStartupScript(this.GetType(), "WebSocketScript", script, true);
-            count++;
+                Page.ClientScript.RegisterStartupScript(this.GetType(), "WebSocketScript", script, true);
+                count++;
             }
             else
             {
@@ -83,7 +93,7 @@ namespace Sadna_17_B_Frontend
         }
         protected void NotificationsBtn_Click(object sender, EventArgs e)
         {
-            Response.Redirect("Notifications");
+            Response.Redirect("Notifications", false);
 
         }
 
