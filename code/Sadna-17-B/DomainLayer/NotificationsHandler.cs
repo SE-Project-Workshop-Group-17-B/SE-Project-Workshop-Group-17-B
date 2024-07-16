@@ -29,14 +29,15 @@ namespace Sadna_17_B.DomainLayer
             return Instance;
         }
 
-        public async Task addConnection(string username, WebSocket ws)
+        public async Task addConnection(string username, WebSocket ws, bool login)
         {
             //if (userSockets.TryGetValue(username, out WebSocket socket))
             //{
             //    await socket.CloseAsync();
             //}
             userSockets[username] = ws;
-            NotificationSystem.getInstance().NotifyLogin(username);
+            if (login)
+                NotificationSystem.getInstance().NotifyLogin(username);
             Console.WriteLine("added socket " + username);
             await processConnection(ws);
             

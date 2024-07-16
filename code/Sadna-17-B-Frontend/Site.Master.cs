@@ -17,7 +17,7 @@ namespace Sadna_17_B_Frontend
         BackendController backendController = BackendController.get_instance();
 
         protected string _loginLogoutButtons;
-        private static int count = 0;
+        private static bool first = true;
         protected void Page_Load(object sender, EventArgs e)
         {
             MyCartBtn.Visible = true;
@@ -31,13 +31,15 @@ namespace Sadna_17_B_Frontend
                 NotificationBtn.Visible = true;
                 LoginBtn.Visible = false;
                 SignUpBtn.Visible = false;
-                CheckAdminStatusAsync();                
-
+                CheckAdminStatusAsync();
+                string login = "false";
+                if (first)
+                    login = "true";
                 string script = @"
-                                const notificationContainer = document.getElementById('notificationContainer');
-                                const socket = new WebSocket('wss://localhost:7093/ws?username=sub');
+                                const notificationContainer = document.getElementById('notificationContainer');" + 
+                                 $"const socket = new WebSocket('wss://localhost:7093/ws?username={backendController.get_username()}&login={login}');" + 
 
-                                socket.onopen = function (event) {
+                                @"socket.onopen = function (event) {
                                     console.log('WebSocket connection opened');
                                 };
 
@@ -84,7 +86,7 @@ namespace Sadna_17_B_Frontend
                                 };
                                 ";
                 Page.ClientScript.RegisterStartupScript(this.GetType(), "WebSocketScript", script, true);
-                count++;
+                first = false;
             }
             else
             {
@@ -192,6 +194,7 @@ namespace Sadna_17_B_Frontend
             }
             else
             {
+                first = true;
                 Response.Redirect("Homepage", false); // Redirects back to the home page after logging out
             }
         }

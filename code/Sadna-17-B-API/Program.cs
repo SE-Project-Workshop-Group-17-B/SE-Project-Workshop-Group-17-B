@@ -56,26 +56,28 @@ app.Map("/ws", async context =>
     if (context.WebSockets.IsWebSocketRequest)
     {
         var username = context.Request.Query["username"];
+        bool login = context.Request.Query["login"].Equals("true") ? true : false;
         NotificationsHandler notificationsHandler = NotificationsHandler.getInstance();
-        if (count == 0)
-        {
-            count++;
-            Task.Run(() =>
-            {
 
-                Thread.Sleep(8000);
-                int index = 0;
-                while (true)
-                {
-                    notificationsSystem.Notify(username, "important notification" + index);
-                    Thread.Sleep(1000);
-                    index++;
-                }
-            });
-        }
+        //if (count == 0)
+        //{
+        //    count++;
+        //    Task.Run(() =>
+        //    {
+
+        //        Thread.Sleep(8000);
+        //        int index = 0;
+        //        while (true)
+        //        {
+        //            notificationsSystem.Notify(username, "important notification" + index);
+        //            Thread.Sleep(1000);
+        //            index++;
+        //        }
+        //    });
+        //}
         var ws = await context.WebSockets.AcceptWebSocketAsync();
-        
-        await notificationsHandler.addConnection(username, ws);
+
+        await notificationsHandler.addConnection(username, ws, login);
         Console.WriteLine("connected " + username);
     }
 
