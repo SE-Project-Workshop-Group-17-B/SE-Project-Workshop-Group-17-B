@@ -123,33 +123,33 @@ namespace Sadna_17_B_Frontend
             Response.Write(@"<script language='javascript'>alert('" + message + "')</script>");
         }
 
-        protected void Logout_Click(object sender, EventArgs e)
+        protected async void Logout_Click(object sender, EventArgs e)
         {
-            string message = backendController.logout();
+            string message = await backendController.logout();
             if (message != null)
             {
                 MessageBox(message);
             }
             else
             {
-                Response.Redirect("Homepage"); // Redirects back to the home page after logging out
+                Response.Redirect("Homepage", false); // Redirects back to the home page after logging out
             }
         }
 
         protected void MyCartBtn_Click(object sender, EventArgs e)
         {
-            Response.Redirect("MyCart");
+            Response.Redirect("MyCart", false);
         }
 
         protected void MyStoresBtn_Click(object sender, EventArgs e)
         {
-            Response.Redirect("MyStores");
+            Response.Redirect("MyStores", false);
         }
 
         protected void StoreAdminBtn_Click(object sender, EventArgs e)
         {
             //TODO: IMPLEMENT
-            Response.Redirect("SystemAdmin_page");
+            Response.Redirect("SystemAdmin_page", false);
         }
     }
     public class Notification

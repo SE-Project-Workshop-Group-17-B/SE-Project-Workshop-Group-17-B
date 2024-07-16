@@ -24,7 +24,7 @@ namespace Sadna_17_B_Frontend.Views
             }
         }
 
-        private void LoadAllProducts()
+        private async void LoadAllProducts()
         {
             Dictionary<string, string> emptySearch = new Dictionary<string, string>
             {
@@ -35,7 +35,7 @@ namespace Sadna_17_B_Frontend.Views
                 {"store rating", ""},
                 {"product price", ""}
             };
-            Response response = backendController.search_products_by(emptySearch);
+            Response response = await backendController.search_products_by(emptySearch);
             if (response.Success)
             {
                 productList = response.Data as List<Product>;

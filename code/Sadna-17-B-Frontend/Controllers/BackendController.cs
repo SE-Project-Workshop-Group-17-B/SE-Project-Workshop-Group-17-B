@@ -301,7 +301,7 @@ namespace Sadna_17_B_Frontend.Controllers
         {
             using (HttpClient client = new HttpClient())
             {
-                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/get_store_details",storeId);
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/get_store_details", storeId);
                 string response1 = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
                 return JsonConvert.DeserializeObject<Response>(response1);
             }

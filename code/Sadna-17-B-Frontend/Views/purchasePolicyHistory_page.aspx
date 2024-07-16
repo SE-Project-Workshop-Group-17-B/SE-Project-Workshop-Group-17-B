@@ -1,4 +1,4 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="purchasePolicyHistory_page.aspx.cs" Inherits="Sadna_17_B_Frontend.Views.purchasePolicyHistory_page" %>
+﻿<%@ Page Title="" Language="C#" Async="true" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="purchasePolicyHistory_page.aspx.cs" Inherits="Sadna_17_B_Frontend.Views.purchasePolicyHistory_page" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
     <style>
         table { border-collapse: collapse; width: 100%; }

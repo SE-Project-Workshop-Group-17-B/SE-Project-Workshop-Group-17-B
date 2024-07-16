@@ -18,10 +18,10 @@ namespace Sadna_17_B_Frontend.Views
             }
         }
 
-        private void LoadStores()
+        private async void LoadStores()
         {
-            var managedStores = backendController.get_managed_store();
-            var ownedStores = backendController.got_owned_stores();
+            var managedStores = await backendController.get_managed_store();
+            var ownedStores = await backendController.got_owned_stores();
 
             if (managedStores != null && managedStores.Count > 0)
             {
