@@ -355,6 +355,15 @@ namespace Sadna_17_B_API.Controllers
             return response;
         }
 
+        [HttpPost("add_discount_policy")]
+        public Response add_discount_policy([FromBody] Dictionary<string, string> doc)
+        {
+
+            var response = _storeService.edit_discount_policy(doc);
+            return response;
+        }
+
+
         [HttpPost("search_product_by")]
         public Response searchProductBy([FromBody] Dictionary<string, string> doc)
         {
@@ -380,10 +389,16 @@ namespace Sadna_17_B_API.Controllers
         }
 
 
-        [HttpPost("edit_discout_policy")]
+        [HttpPost("edit_discount_policy")]
         public Response edit_discount_policy([FromBody] Dictionary<string, string> doc)
         {
             return _storeService.edit_discount_policy(doc);
+        }
+
+        [HttpPost("edit_purchase_policy")]
+        public Response edit_purchase_policy([FromBody] Dictionary<string, string> doc)
+        {
+            return _storeService.edit_purchase_policy(doc);
         }
 
         [HttpPost("get_store_order_history")]

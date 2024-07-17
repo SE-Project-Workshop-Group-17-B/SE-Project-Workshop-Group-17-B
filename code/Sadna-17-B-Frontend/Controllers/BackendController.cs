@@ -529,7 +529,45 @@ namespace Sadna_17_B_Frontend.Controllers
                 }
             }
         }
+        public async Task<Response> edit_discount_policy(Dictionary<string, string> doc)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/edit_discount_policy", doc);
 
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseString = await response.Content.ReadAsStringAsync();
+                    Response responseObj = JsonConvert.DeserializeObject<Response>(responseString);
+                    return responseObj;
+                }
+                else
+                {
+                    string errorMessage = await response.Content.ReadAsStringAsync();
+                    throw new Exception("An error occurred while editing store discount policy: " + errorMessage);
+                }
+            }
+        }
+
+        public async Task<Response> edit_purchase_policy(Dictionary<string, string> doc)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/edit_purchase_policy", doc);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseString = await response.Content.ReadAsStringAsync();
+                    Response responseObj = JsonConvert.DeserializeObject<Response>(responseString);
+                    return responseObj;
+                }
+                else
+                {
+                    string errorMessage = await response.Content.ReadAsStringAsync();
+                    throw new Exception("An error occurred while editing store purchase policy: " + errorMessage);
+                }
+            }
+        }
         public async Task<string> logout()
         {
             using (HttpClient client = new HttpClient())
@@ -1210,27 +1248,7 @@ namespace Sadna_17_B_Frontend.Controllers
             }
         }
 
-        public async Task<Response> edit_discount_policy(Dictionary<string, string> doc)
-        {
-            using (HttpClient client = new HttpClient())
-            {
-                // Send the POST request
-                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/edit_discount_policy", doc); // add relative path
-                if (response.IsSuccessStatusCode)
-                {
-                    string responseString = await response.Content.ReadAsStringAsync();
-                    Response responseObj = JsonConvert.DeserializeObject<Response>(responseString);
-                    return responseObj;
-                }
-                else
-                {
-                    string errorMessage = await response.Content.ReadAsStringAsync();
-                    throw new Exception("An error occurred while showing purchase policy: " + errorMessage);
-                }
-
-            }
-
-        }
+     
 
         public async Task<Response> edit_Purchase_policy(Dictionary<string, string> doc)
         {

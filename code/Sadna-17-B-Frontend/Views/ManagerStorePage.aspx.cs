@@ -67,17 +67,11 @@ namespace Sadna_17_B_Frontend.Views
                     ["store id"] = storeId.ToString()
                 };
                     
-                var purchasePolicyResponse = await backendController.show_purchase_policy(doc);
-                if (purchasePolicyResponse.Success)
-                {
-                    txtPurchasePolicy.Text = purchasePolicyResponse.Data as string;
-                }
+                //var purchasePolicyResponse = await backendController.show_purchase_policy(doc);
 
-                var discountPolicyResponse = await backendController.show_discount_policy(doc);
-                if (discountPolicyResponse.Success)
-                {
-                    txtDiscountPolicy.Text = discountPolicyResponse.Data as string;
-                }
+
+                //var discountPolicyResponse = await backendController.show_discount_policy(doc);
+               
 
                 // Load managers and owners (you need to implement these methods in your BackendController)
                 // LoadManagers(storeId);
@@ -209,7 +203,7 @@ namespace Sadna_17_B_Frontend.Views
             Response res = await backendController.OfferManagerAppointment(storeId, userName);
             if (res.Success)
             {
-                MessageBox("Succesfully offered management to the user!");
+                MessageBox("Successfully offered management to the user!");
             }
             else
             {
@@ -248,52 +242,294 @@ namespace Sadna_17_B_Frontend.Views
 
         protected void btnUpdatePurchasePolicy_Click(object sender, EventArgs e)
         {
-            /*e.
-            backendController.add_purchasePo*/
+            ScriptManager.RegisterStartupScript(this, this.GetType(), "Pop", "openModal('mymodal-update-purchase-policy-container');", true);
+
         }
 
         protected void btnUpdateDiscountPolicy_Click(object sender, EventArgs e)
         {
+            ScriptManager.RegisterStartupScript(this, this.GetType(), "Pop", "openModal('mymodal-update-discount-policy-container');", true);
+
+        }
+        protected void btnEdit_Click_DiscountPolicy(object sender, EventArgs e)
+        {
             // Implement discount policy update logic
+        }
+       
+        protected void btnAdd_Click_DiscountPolicy(object sender, EventArgs e)
+        {
+            ScriptManager.RegisterStartupScript(this, this.GetType(), "Pop", "openModal('addDiscountPolicyModal');", true);
+        }
+        protected void btnRemove_Click_DiscountPolicy(object sender, EventArgs e)
+        {
+            ScriptManager.RegisterStartupScript(this, this.GetType(), "Pop", "openModal('removeDiscountPolicyModal');", true);
+        }
+        protected void btnAdd_Click_PurchasePolicy(object sender, EventArgs e)
+        {
+            ScriptManager.RegisterStartupScript(this, this.GetType(), "Pop", "openModal('addPurchasePolicyModal');", true);
+        }
+        protected void btnRemove_Click_PurchasePolicy(object sender, EventArgs e)
+        {
+            ScriptManager.RegisterStartupScript(this, this.GetType(), "Pop", "openModal('removePurchasePolicyModal');", true);
+        }
+        protected void btnEdit_Click_PurchasePolicy(object sender, EventArgs e)
+        {
+            // Implement discount policy update logic
+        }
+        protected void btnDiscountType_Click(object sender, EventArgs e)
+        {
+            Button clickedButton = (Button)sender;
+            btnFlat.CssClass = btnFlat.CssClass.Replace(" active", "");
+            btnPercentage.CssClass = btnPercentage.CssClass.Replace(" active", "");
+            btnMembership.CssClass = btnMembership.CssClass.Replace(" active", "");
+            clickedButton.CssClass += " active";
+        }
+
+        protected void btnDiscountTarget_Click(object sender, EventArgs e)
+        {
+            Button clickedButton = (Button)sender;
+            btnProduct.CssClass = btnProduct.CssClass.Replace(" active", "");
+            btnCategory.CssClass = btnCategory.CssClass.Replace(" active", "");
+            clickedButton.CssClass += " active";
+        }
+        private string GetSelectedButtonText(params LinkButton[] buttons)
+        {
+            foreach (var button in buttons)
+            {
+                if (button.CssClass.Contains("active"))
+                {
+                    return button.Text;
+                }
+            }
+            return string.Empty;
+        }
+
+        protected async void btnSaveDiscountPolicy_Click(object sender, EventArgs e)
+        {
+            string selectedDiscountType = GetSelectedButtonText(btnFlat, btnPercentage, btnMembership).ToLower();
+            string selectedDiscountTarget = GetSelectedButtonText(btnProduct, btnCategory).ToLower();
+
+            // ---------------------------------------------------------------------------
+
+            string flat = "";
+            string precentage = "";
+           
+            string cond_product = "";
+            string cond_category = "";
+           
+            string cond_price = "";
+            string cond_amount = "";
+            string cond_date = "";
+
+            // ----------- from ui -------------------
+
+            string edit_type = "add";
+            string store_id = storeId.ToString();
+            string ancestor_id = txtAncestorId.Text;
+            string discount_id = "";
+            string start_date = txtStartDate.Text;
+            string end_date = txtEndDate.Text;
+            string strategy = "flat";
+            string relevant_type = selectedDiscountTarget.ToLower();
+            string relevant_factors = selectedDiscountTarget.ToLower();
+            string cond_type = "product amount";
+            string cond_op = ddlConstraint.SelectedValue;
+
+            string factor_strategy = txtElement.Text;
+            string factor_item = relevant_factors;
+            string factor_price_amount_date = txtConstraintFactor.Text;
+
+
+            // ----------- conditions -------------------
+
+            if (strategy == "flat")
+                flat = factor_strategy;
+            if (strategy == "percentage")
+                precentage = factor_strategy;
+
+            if (cond_type == "category" || cond_type == "categories")
+                cond_category = factor_item;
+            if (cond_type == "product" || cond_type == "products")
+                cond_product = factor_item;
+
+
+
+            Dictionary<string, string> discount_doc = new Dictionary<string, string>
+            {
+                ["edit type"] = edit_type,
+                ["store id"] = store_id.ToString(),
+                ["ancestor id"] = ancestor_id,
+                ["discount id"] = discount_id,
+
+                ["start date"] = start_date,
+                ["end date"] = end_date,
+                ["strategy"] = strategy,
+                ["flat"] = flat,
+                ["percentage"] = precentage,
+
+                ["relevant type"] = relevant_type,
+                ["relevant factors"] = relevant_factors,
+
+                ["cond type"] = cond_type,
+                ["cond product"] = cond_product,
+                ["cond category"] = cond_category,
+                ["cond op"] = cond_op,
+                ["cond price"] = cond_price,
+                ["cond amount"] = cond_amount,
+                ["cond date"] = cond_date
+            };
+            try
+            {
+                Response response = await backendController.edit_discount_policy(discount_doc);
+            }
+            catch (Exception ex) { }
+        }
+
+        protected async void btnRemoveDiscountPolicy_Click(object sender, EventArgs e)
+        {
+            Dictionary<string, string> discount_doc = new Dictionary<string, string>
+            {
+                ["edit type"] = "remove",
+                ["store id"] = storeId.ToString(),
+                ["discount id"] = txtDiscountId.Text,
+            };
+
+            Response response = await backendController.edit_discount_policy(discount_doc);
+        }
+
+
+        protected async void btnSavePurchasePolicy_Click(object sender, EventArgs e)
+        {
+            string selectedPurchaseType = GetSelectedButtonText(btnFlat, btnPercentage, btnMembership).ToLower();
+            string selectedPurchaseTarget = GetSelectedButtonText(btnProduct, btnCategory).ToLower();
+
+            // ---------------------------------------------------------------------------
+
+            string flat = "";
+            string precentage = "";
+
+            string cond_product = "";
+            string cond_category = "";
+
+            string cond_price = "";
+            string cond_amount = "";
+            string cond_date = "";
+
+            // ----------- from ui -------------------
+
+            string edit_type = "add";
+            string store_id = storeId.ToString();
+            string ancestor_id = txtAncestorId.Text;
+            string Purchase_id = "";
+            string start_date = txtStartDate.Text;
+            string end_date = txtEndDate.Text;
+            string strategy = "flat";
+            string relevant_type = selectedPurchaseTarget.ToLower();
+            string relevant_factors = selectedPurchaseTarget.ToLower();
+            string cond_type = "product amount";
+            string cond_op = ddlConstraint.SelectedValue;
+
+            string factor_strategy = txtElement.Text;
+            string factor_item = relevant_factors;
+            string factor_price_amount_date = txtConstraintFactor.Text;
+
+
+            // ----------- conditions -------------------
+
+            if (strategy == "flat")
+                flat = factor_strategy;
+            if (strategy == "percentage")
+                precentage = factor_strategy;
+
+            if (cond_type == "category" || cond_type == "categories")
+                cond_category = factor_item;
+            if (cond_type == "product" || cond_type == "products")
+                cond_product = factor_item;
+
+
+
+            Dictionary<string, string> Purchase_doc = new Dictionary<string, string>
+            {
+                ["edit type"] = edit_type,
+                ["store id"] = store_id.ToString(),
+                ["ancestor id"] = ancestor_id,
+                ["Purchase id"] = Purchase_id,
+
+                ["start date"] = start_date,
+                ["end date"] = end_date,
+                ["strategy"] = strategy,
+                ["flat"] = flat,
+                ["percentage"] = precentage,
+
+                ["relevant type"] = relevant_type,
+                ["relevant factors"] = relevant_factors,
+
+                ["cond type"] = cond_type,
+                ["cond product"] = cond_product,
+                ["cond category"] = cond_category,
+                ["cond op"] = cond_op,
+                ["cond price"] = cond_price,
+                ["cond amount"] = cond_amount,
+                ["cond date"] = cond_date
+            };
+            try
+            {
+                Response response = await backendController.edit_Purchase_policy(Purchase_doc);
+            }
+            catch (Exception ex) { }
+
+
+        }
+
+        protected async void btnRemovePurchasePolicy_Click(object sender, EventArgs e)
+        {
+            Dictionary<string, string> Purchase_doc = new Dictionary<string, string>
+            {
+                ["edit type"] = "remove",
+                ["store id"] = storeId.ToString(),
+                ["Purchase id"] = txtpurchaseId.Text,
+            };
+
+            Response response = await backendController.edit_Purchase_policy(Purchase_doc);
         }
 
         protected async void btnLeave_Click(object sender, EventArgs e)
         {
             string token = backendController.userDTO.AccessToken;
+            try
+            {
+                if (btnLeave.Text == "Leave") //owner
+                {
+                    Response res = await backendController.AbandonOwnership(storeId);
+                    if (res.Success)
+                    {
+                        MessageBox("Succesfully left ownership of this store!");
+                        Response.Redirect("~/Views/MyStores.aspx");
+                    }
+                    else
+                    {
+                        MessageBox($"We had a problem...{res.Message}");
+                        Response.Redirect("~/Views/MyStores.aspx");
+                    }
+                }
+                else if (btnLeave.Text == "Close store")
+                {
 
-            if (btnLeave.Text == "Leave") //owner
-            {
-                Response res = await backendController.AbandonOwnership(storeId);
-                if (res.Success)
-                {
-                    MessageBox("Succesfully left ownership of this store!");
-                    Response.Redirect("~/Views/MyStores.aspx");
-                }
-                else
-                {
-                    MessageBox($"We had a problem...{res.Message}");
-                    Response.Redirect("~/Views/MyStores.aspx");
-                }
-            } else if (btnLeave.Text == "Close store")
-            {
-                Response res = await backendController.CloseStore(storeId);
-                if (res.Success)
-                {
-                    MessageBox("Succesfully closed this store!");
-                    Response.Redirect("~/Views/MyStores.aspx");
-                }
-                else
-                {
-                    MessageBox($"We had a problem...{res.Message}");
-                    Response.Redirect("~/Views/MyStores.aspx");
+                    Response res = await backendController.CloseStore(storeId);
+
+                    if (res.Success)
+                    {
+                        MessageBox("Succesfully closed this store!");
+                        Response.Redirect("~/Views/MyStores.aspx");
+                    }
+                    else
+                    {
+                        MessageBox($"We had a problem...{res.Message}");
+                        Response.Redirect("~/Views/MyStores.aspx");
+                    }
                 }
             }
-        }
-
-        protected void txtPurchasePolicy_TextChanged(object sender, EventArgs e)
-        {
-
-
+            catch (Exception ex) { }
         }
     }
 }

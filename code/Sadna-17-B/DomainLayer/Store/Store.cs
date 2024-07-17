@@ -262,7 +262,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
                     throw new Sadna17BException("Store : illegal edit type");
 
             }
-        }
+        }       
 
         public int edit_purchase_policy(Dictionary<string, string> doc)
         {
