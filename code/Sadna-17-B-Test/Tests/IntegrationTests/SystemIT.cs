@@ -1,4 +1,4 @@
-/*using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using Sadna_17_B.ServiceLayer;
 using Sadna_17_B.ServiceLayer.Services;
@@ -8,7 +8,6 @@ using System.Runtime.CompilerServices;
 using Sadna_17_B.DomainLayer.StoreDom;
 using System.Collections.Generic;
 using Moq;
-using Sadna_17_B.ExternalServices;
 using Sadna_17_B.DomainLayer.Order;
 using Sadna_17_B.DomainLayer;
 using Sadna_17_B.DomainLayer.User;
@@ -47,7 +46,7 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
         string descr = "test store for testing";
         string addr = "BGU Beer sheva st.3";
 
-        
+
         string destAddr = "BGU Beer sheva";
         string creditCardInfo = "45805500";
         int amount2Buy = 5;
@@ -83,9 +82,9 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
             product = store.Inventory.product_by_id(pid);
         }
 
-        
 
-        [TestMethod]
+
+        /*[TestMethod]
         public void TestPaymentServiceError_Fail()
         {
             Response ignore = userService.upgrade_subscriber(username2, password2);
@@ -106,7 +105,44 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
             ignore = userService.cart_add_product(doc, amount2Buy);
 
             string wrongCreditCardInfo = null;
-            Response completeRes = userService.CompletePurchase(token, destAddr, wrongCreditCardInfo);
+
+            string month = "1";
+            string year = "22";
+            string CardHolderName = username2;
+            string cardCVV = "234";
+            string CardHolderId = "123456789";
+            Dictionary<string, string> creditDetails = new Dictionary<string, string>()
+            {
+                { "action_type", "pay" },
+                { "currency", "USD" },
+                { "amount", "1000" },
+                { "card_number", "4580555511112222" },
+                { "month", month },
+                { "year", year },
+                { "holder", CardHolderName },
+                { "cvv", cardCVV },
+                { "id", CardHolderId }
+            };
+
+            string destName = "Dan";
+            string addressStreet = "Avraham avinu 41";
+            string addressCity = "Beer sheve";
+            string addressCountry = "Israel";
+            string addressZip = "4953108";
+
+            Dictionary<string, string> shipmentDetails = new Dictionary<string, string>()
+            {
+                { "action_type", "supply" },
+                { "name", destName },
+                { "address", addressStreet },
+                { "city", addressCity },
+                { "country", addressCountry },
+                { "zip", addressZip },
+            };
+
+
+            ignore = userService.Process_order(token, shipmentDetails, creditDetails);
+            Response completeRes = userService.reduce_cart(token);
             int amount = ((List<Store>)storeService.store_by_name(storeName).Data)[0].amount_by_name(productName);
             Assert.IsFalse(completeRes.Success);
             Assert.AreEqual(amount, quantity);
@@ -133,13 +169,50 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
             ignore = userService.cart_add_product(doc, amount2Buy);
 
             string wrongDestAddrInfo = null;
-            Response completeRes = userService.CompletePurchase(token, wrongDestAddrInfo, creditCardInfo);
+
+            string month = "1";
+            string year = "22";
+            string CardHolderName = username2;
+            string cardCVV = "234";
+            string CardHolderId = "123456789";
+            Dictionary<string, string> creditDetails = new Dictionary<string, string>()
+            {
+                { "action_type", "pay" },
+                { "currency", "USD" },
+                { "amount", "1000" },
+                { "card_number", "4580555511112222" },
+                { "month", month },
+                { "year", year },
+                { "holder", CardHolderName },
+                { "cvv", cardCVV },
+                { "id", CardHolderId }
+            };
+
+            string destName = "Dan";
+            string addressStreet = "Avraham avinu 41";
+            string addressCity = "Beer sheve";
+            string addressCountry = "Israel";
+            string addressZip = "4953108";
+
+            Dictionary<string, string> shipmentDetails = new Dictionary<string, string>()
+            {
+                { "action_type", "supply" },
+                { "name", destName },
+                { "address", addressStreet },
+                { "city", addressCity },
+                { "country", addressCountry },
+                { "zip", addressZip },
+            };
+
+
+            ignore = userService.Process_order(token, shipmentDetails, creditDetails);
+            Response completeRes = userService.reduce_cart(token);
             int amount = ((List<Store>)storeService.store_by_name(storeName).Data)[0].amount_by_name(productName);
             Assert.IsFalse(completeRes.Success);
             Assert.AreEqual(amount, quantity);
-        }       
+        }*/
 
-        [TestMethod]
+        /*[TestMethod]
         public void TestSupplySystem_FailThrowException()
         {
             var testObject = new Mock<ISupplySystem>();
@@ -154,7 +227,7 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
             Cart cart = new Cart();
             cart.add_product(new Cart_Product(sid, 10, 5.0, "category", pid, "product1"));
 
-            OrderSystem os = new OrderSystem(sc, testObject.Object);
+            OrderSystem os = new OrderSystem(sc);
             try
             {
                 //should throw exception
@@ -180,9 +253,9 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
             int pid = sc.add_store_product(sid, "prd", 5.0, "category", "desc", 10);
 
             Cart cart = new Cart();
-            cart.add_product(new Cart_Product(sid,20, 10, "category", pid, "product1"));
+            cart.add_product(new Cart_Product(sid, 20, 10, "category", pid, "product1"));
 
-            OrderSystem os = new OrderSystem(sc, testObject.Object);
+            OrderSystem os = new OrderSystem(sc);
             try
             {
                 //should throw exception
@@ -193,7 +266,7 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
             {
                 Assert.IsTrue(true);
             }
-        }
+        }*/
 
         [TestMethod]
         public void TestCartSameIfPurchaseFail_Success()
@@ -213,11 +286,48 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
                 [$"name"] = $"{productName}"
             };
 
-            ignore = userService.cart_add_product(doc,quantity * 2);
+            ignore = userService.cart_add_product(doc, quantity * 2);
             Response temp = userService.cart_by_token(doc);
 
             ShoppingCartDTO prevCart = temp.Data as ShoppingCartDTO;
-            Response completeRes = userService.CompletePurchase(token, destAddr, creditCardInfo);
+
+            string month = "1";
+            string year = "22";
+            string CardHolderName = username2;
+            string cardCVV = "234";
+            string CardHolderId = "123456789";
+            Dictionary<string, string> creditDetails = new Dictionary<string, string>()
+            {
+                { "action_type", "pay" },
+                { "currency", "USD" },
+                { "amount", "1000" },
+                { "card_number", "4580555511112222" },
+                { "month", month },
+                { "year", year },
+                { "holder", CardHolderName },
+                { "cvv", cardCVV },
+                { "id", CardHolderId }
+            };
+
+            string destName = "Dan";
+            string addressStreet = "Avraham avinu 41";
+            string addressCity = "Beer sheve";
+            string addressCountry = "Israel";
+            string addressZip = "4953108";
+
+            Dictionary<string, string> shipmentDetails = new Dictionary<string, string>()
+            {
+                { "action_type", "supply" },
+                { "name", destName },
+                { "address", addressStreet },
+                { "city", addressCity },
+                { "country", addressCountry },
+                { "zip", addressZip },
+            };
+
+
+            ignore = userService.Process_order(token, shipmentDetails, creditDetails);
+            Response completeRes = userService.reduce_cart(token);
 
             temp = userService.cart_by_token(doc);
             ShoppingCartDTO newCart = temp.Data as ShoppingCartDTO;
@@ -237,7 +347,7 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
                     foreach (KeyValuePair<ProductDTO, int> entry3 in newSbd.ProductQuantities)
                     {
                         Assert.AreEqual(entry2.Key.Id, entry3.Key.Id);
-                        Assert.AreEqual(entry2.Value,entry3.Value);
+                        Assert.AreEqual(entry2.Value, entry3.Value);
                     }
                 }
             }
@@ -264,7 +374,44 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
 
             ignore = userService.cart_add_product(doc, quantity * 2);
 
-            Response completeRes = userService.CompletePurchase(token, destAddr, creditCardInfo);
+            string month = "1";
+            string year = "22";
+            string CardHolderName = username2;
+            string cardCVV = "234";
+            string CardHolderId = "123456789";
+            Dictionary<string, string> creditDetails = new Dictionary<string, string>()
+            {
+                { "action_type", "pay" },
+                { "currency", "USD" },
+                { "amount", "1000" },
+                { "card_number", "4580555511112222" },
+                { "month", month },
+                { "year", year },
+                { "holder", CardHolderName },
+                { "cvv", cardCVV },
+                { "id", CardHolderId }
+            };
+
+            string destName = "Dan";
+            string addressStreet = "Avraham avinu 41";
+            string addressCity = "Beer sheve";
+            string addressCountry = "Israel";
+            string addressZip = "4953108";
+
+            Dictionary<string, string> shipmentDetails = new Dictionary<string, string>()
+            {
+                { "action_type", "supply" },
+                { "name", destName },
+                { "address", addressStreet },
+                { "city", addressCity },
+                { "country", addressCountry },
+                { "zip", addressZip },
+            };
+
+
+            ignore = userService.Process_order(token, shipmentDetails, creditDetails);
+            Response completeRes = userService.reduce_cart(token);
+
             int amount = ((List<Store>)storeService.store_by_name(storeName).Data)[0].amount_by_name(productName);
             Assert.IsFalse(completeRes.Success);
             Assert.AreEqual(amount, quantity);
@@ -272,4 +419,3 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
 
     }
 }
-*/
