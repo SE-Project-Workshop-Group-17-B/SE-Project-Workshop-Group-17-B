@@ -150,7 +150,7 @@
                         <div class="notification-content">
                             <span class="notification-message"><%# Eval("Message") %></span>
                         </div>
-                        <asp:Panel ID="ButtonPanel" runat="server" CssClass="notification-buttons" Visible='<%# !(bool)Eval("IsRead") %>'>
+                        <asp:Panel ID="ButtonPanel" runat="server" CssClass="notification-buttons" Visible='<%# !(bool)Eval("IsPressed") %>'>
                             <asp:LinkButton ID="AcceptBtn" runat="server" CssClass="accept-btn" CommandName="Accept" CommandArgument='<%# Eval("Message") %>'><i class="fa fa-check"></i></asp:LinkButton>
                             <asp:LinkButton ID="DismissBtn" runat="server" CssClass="dismiss-btn" CommandName="Dismiss" CommandArgument='<%# Eval("Message") %>'><i class="fa fa-times"></i></asp:LinkButton>
                         </asp:Panel>

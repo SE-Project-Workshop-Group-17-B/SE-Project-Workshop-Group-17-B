@@ -65,12 +65,12 @@ app.Map("/ws", async context =>
         //    Task.Run(() =>
         //    {
 
-        //        Thread.Sleep(8000);
+        //        Thread.Sleep(10000);
         //        int index = 0;
-        //        while (true)
+        //        while (index < 5)
         //        {
         //            notificationsSystem.Notify(username, "important notification" + index);
-        //            Thread.Sleep(1000);
+        //            Thread.Sleep(10000);
         //            index++;
         //        }
         //    });

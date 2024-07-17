@@ -4,6 +4,7 @@ using Sadna_17_B_Frontend.Controllers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Web.Services.Description;
 using System.Web.UI.WebControls;
@@ -14,20 +15,23 @@ namespace Sadna_17_B_Frontend.Views
     {
         BackendController backendController = BackendController.get_instance();
 
-        private List<Notification> all_notifications
+        private List<NotificationView> all_notifications
         {
             get
             {
-                return ViewState["AllNotifications"] as List<Notification> ?? new List<Notification>();
+                if (Session["AllNotifications"] == null)
+                    Session["AllNotifications"] = new List<NotificationView>();
+                return (List<NotificationView>)Session["AllNotifications"];
             }
             set
             {
-                ViewState["AllNotifications"] = value;
+                Session["AllNotifications"] = value;
             }
         }
 
         protected async void Page_Load(object sender, EventArgs e)
         {
+            
             if (!IsPostBack)
             {
                 await LoadNotifications();
@@ -50,8 +54,16 @@ namespace Sadna_17_B_Frontend.Views
         {
             try
             {
+                
                 Response response = await backendController.get_notifications();
-                all_notifications = response.Data as List<Notification>;
+                List<Notification> temp = response.Data as List<Notification>;
+                foreach (Notification notification in temp)
+                {
+                    var noti = all_notifications.FirstOrDefault(n => n.Message == notification.Message);
+                    if(noti == null)
+                        all_notifications.Add(new NotificationView(notification, false, backendController.get_username()));
+                }
+               
                 BindNotifications();
             }
             catch (Exception ex)
@@ -83,22 +95,28 @@ namespace Sadna_17_B_Frontend.Views
         }
         private void BindNotifications()
         {
-            var unreadNotifications = all_notifications.Where(n => !n.IsRead).ToList();
-            var readNotifications = all_notifications.Where(n => n.IsRead).ToList();
+            //var unreadNotifications = all_notifications.Where(n => !n.IsPressed).ToList();
+            //var pressed = all_notifications.Where(n => n.IsRead).ToList();
 
-            NotificationsRepeater.DataSource = unreadNotifications.Concat(readNotifications);
+            List<NotificationView> list = new List<NotificationView>();
+            foreach(NotificationView notification in all_notifications)
+            {
+                if(notification.username.Equals(backendController.get_username()))
+                    list.Add(notification);
+            }
+            NotificationsRepeater.DataSource = list;//unreadNotifications.Concat(pressed);
             NotificationsRepeater.DataBind();
         }
         private async void DismissNotification(string Message)
         {
             Response res = new Response();
-            if (Message.Contains("owner appointment"))
+            if (Message.Contains("owner appointment") && !Message.Contains("rejected"))
             {
                 string[] splitted = Message.Split(' ');
                 int storeID = Convert.ToInt32(splitted[splitted.Length - 1]);
                 res = await backendController.respond_offer_owner(storeID, false);
             }
-            else if (Message.Contains("manager appointment"))
+            else if (Message.Contains("manager appointment") && !Message.Contains("rejected"))
             {
                 string[] splitted = Message.Split(' ');
                 int storeID = Convert.ToInt32(splitted[splitted.Length - 1]);
@@ -112,13 +130,13 @@ namespace Sadna_17_B_Frontend.Views
         private async void AcceptOffer(string Message)
         {
             Response res = new Response();
-            if (Message.Contains("owner appointment"))
+            if (Message.Contains("owner appointment") && !Message.Contains("accepted"))
             {
                 string[] splitted = Message.Split(' ');
                 int storeID =Convert.ToInt32(splitted[splitted.Length - 1]);
                 res = await backendController.respond_offer_owner(storeID, true);
             }
-            else if (Message.Contains("manager appointment"))
+            else if (Message.Contains("manager appointment") && !Message.Contains("accepted"))
             {
                 string[] splitted = Message.Split(' ');
                 int storeID = Convert.ToInt32(splitted[splitted.Length - 1]);
@@ -144,7 +162,23 @@ namespace Sadna_17_B_Frontend.Views
             if (notification != null)
             {
                 notification.IsRead = true;
+                notification.IsPressed = true;
             }
+        }
+    }
+    [Serializable]
+    public partial class NotificationView
+    {
+        public bool IsRead { get; set; }
+        public string Message { get; set; }
+        public bool IsPressed { get; set; }
+        public string username;
+        public NotificationView(Notification notification, bool isPressed, string username)
+        {
+            this.IsRead = notification.IsRead;
+            this.Message = notification.Message;
+            this.IsPressed = isPressed;
+            this.username = username;
         }
     }
 }
