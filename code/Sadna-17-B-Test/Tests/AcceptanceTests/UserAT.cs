@@ -1,4 +1,4 @@
-﻿/*using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using Sadna_17_B.ServiceLayer;
 using Sadna_17_B.ServiceLayer.Services;
@@ -81,7 +81,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
             userDTO = res.Data as UserDTO;
             Response res2 = userService.exit_subscriber(userDTO.AccessToken);
             Assert.IsTrue(res2.Success);
-        }       
+        }
 
         [TestMethod]
         public void TestSuccessfullGuestEntry()
@@ -128,11 +128,11 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
             Response res = userService.upgrade_admin(username1, password1);
 
             Assert.IsFalse(res.Success);
-        }       
+        }
 
         [TestMethod]
         public void TestBadCaseRegisterSameUserTwice()
-        {          
+        {
             Response ignore = userService.upgrade_subscriber(username1, password1);
             Response res = userService.upgrade_subscriber(username1, password1);
             Assert.IsFalse(res.Success);
@@ -176,8 +176,8 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
                 [$"name"] = $"{productName}"
             };
 
-        
-            ignore = userService.cart_add_product(doc,10);
+
+            ignore = userService.cart_add_product(doc, 10);
             Response test2 = userService.cart_by_token(doc);
             ShoppingCartDTO shoppingCart = test2.Data as ShoppingCartDTO;
             ShoppingBasketDTO shoppingBasket = shoppingCart.ShoppingBaskets[sid];
@@ -188,12 +188,12 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
 
         [TestMethod]
         public void TestBadCaseAddToCartWrongProduct()
-        {          
+        {
             Response ignore = userService.upgrade_subscriber(username1, password1);
             ignore = userService.entry_subscriber(username1, password1);
             UserDTO temp = ignore.Data as UserDTO;
-            sid = (int) storeService.create_store(temp.AccessToken, name, email, phonenumber, storeDescr, addr).Data;
-            
+            sid = (int)storeService.create_store(temp.AccessToken, name, email, phonenumber, storeDescr, addr).Data;
+
             ignore = userService.upgrade_subscriber(username2, password2);
             Response res = userService.entry_subscriber(username2, password2);
             userDTO = res.Data as UserDTO;
@@ -211,7 +211,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
                 [$"name"] = $"{productName}"
             };
 
-            ignore = userService.cart_add_product(doc,10);
+            ignore = userService.cart_add_product(doc, 10);
             Assert.IsTrue(ignore.Success); // The addition to cart does not enforce existence of the product in the store, it can be added later, but it is checked in complete purchase
         }
 
@@ -229,11 +229,11 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
             // init store service
 
             Response store_response = storeService.create_store(temp1.AccessToken, name, email, phonenumber, storeDescr, addr);
-            int sid = (int) store_response.Data;
-            Store store = (Store) storeService.store_by_id(sid).Data;
+            int sid = (int)store_response.Data;
+            Store store = (Store)storeService.store_by_id(sid).Data;
 
             Response product_response = storeService.add_product_to_store(temp1.AccessToken, sid, productName, productPrice, productCategory, "description", quantity);
-            int pid = (int) product_response.Data;
+            int pid = (int)product_response.Data;
             Product product = store.Inventory.product_by_id(pid);
 
 
@@ -258,7 +258,6 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         [TestMethod]
         public void TestSuccesfullGetPurchaseHistory()
         {
-
             // init user service
 
             int quantity = 10;
@@ -276,7 +275,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
             Response product_response = storeService.add_product_to_store(temp1.AccessToken, sid, productName, productPrice, productCategory, "description", quantity);
             int pid = (int)product_response.Data;
             Product product = store.Inventory.product_by_id(pid);
-            
+
             // rest
 
             Response ignore = userService.upgrade_subscriber(username2, password2);
@@ -295,8 +294,47 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
             };
 
             ignore = userService.cart_add_product(doc, quantity);
-            
-            ignore = userService.CompletePurchase(token, "someAddr", "SomeInfo");
+
+
+            string month = "1";
+            string year = "22";
+            string CardHolderName = username2;
+            string cardCVV = "234";
+            string CardHolderId = "123456789";
+            Dictionary<string, string> creditDetails = new Dictionary<string, string>()
+            {
+                { "action_type", "pay" },
+                { "currency", "USD" },
+                { "amount", "1000" },
+                { "card_number", "4580555511112222" },
+                { "month", month },
+                { "year", year },
+                { "holder", CardHolderName },
+                { "cvv", cardCVV },
+                { "id", CardHolderId }
+            };
+
+            string destName = "Dan";
+            string addressStreet = "Avraham avinu 41";
+            string addressCity = "Beer sheve";
+            string addressCountry = "Israel";
+            string addressZip = "4953108";
+
+            Dictionary<string, string> shipmentDetails = new Dictionary<string, string>()
+            {
+                { "action_type", "supply" },
+                { "name", destName },
+                { "address", addressStreet },
+                { "city", addressCity },
+                { "country", addressCountry },
+                { "zip", addressZip },
+            };
+
+
+            ignore = userService.Process_order(token, shipmentDetails, creditDetails);
+            ignore = userService.reduce_cart(token);
+
+            //ignore = userService.CompletePurchase(token, shipmentDetails, creditDetails);
 
             Response test = userService.GetMyOrderHistory(token);
             List<OrderDTO> listOfOrders = test.Data as List<OrderDTO>;
@@ -304,6 +342,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
             Assert.IsTrue(test.Success);
             Assert.AreEqual(1, listOfOrders.Count);
         }
+        
 
         [TestMethod]
         public void TestBadCaseGetPurchaseHistory()
@@ -346,7 +385,43 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
             };
 
             ignore = userService.cart_add_product(doc, quantity);
-            ignore = userService.CompletePurchase(token, "someAddr", "SomeInfo");
+            string month = "1";
+            string year = "22";
+            string CardHolderName = username2;
+            string cardCVV = "234";
+            string CardHolderId = "123456789";
+            Dictionary<string, string> creditDetails = new Dictionary<string, string>()
+            {
+                { "action_type", "pay" },
+                { "currency", "USD" },
+                { "amount", "1000" },
+                { "card_number", "4580555511112222" },
+                { "month", month },
+                { "year", year },
+                { "holder", CardHolderName },
+                { "cvv", cardCVV },
+                { "id", CardHolderId }
+            };
+
+            string destName = "Dan";
+            string addressStreet = "Avraham avinu 41";
+            string addressCity = "Beer sheve";
+            string addressCountry = "Israel";
+            string addressZip = "4953108";
+
+            Dictionary<string, string> shipmentDetails = new Dictionary<string, string>()
+            {
+                { "action_type", "supply" },
+                { "name", destName },
+                { "address", addressStreet },
+                { "city", addressCity },
+                { "country", addressCountry },
+                { "zip", addressZip },
+            };
+
+
+            ignore = userService.Process_order(token, shipmentDetails, creditDetails);
+            ignore = userService.reduce_cart(token);
 
             Response test = userService.GetMyOrderHistory(token);
             List<OrderDTO> listOfOrders = test.Data as List<OrderDTO>;
@@ -395,7 +470,43 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
             };
 
             ignore = userService.cart_add_product(doc, quantity);
-            ignore = userService.CompletePurchase(token, "someAddr", "SomeInfo");
+            string month = "1";
+            string year = "22";
+            string CardHolderName = username2;
+            string cardCVV = "234";
+            string CardHolderId = "123456789";
+            Dictionary<string, string> creditDetails = new Dictionary<string, string>()
+            {
+                { "action_type", "pay" },
+                { "currency", "USD" },
+                { "amount", "1000" },
+                { "card_number", "4580555511112222" },
+                { "month", month },
+                { "year", year },
+                { "holder", CardHolderName },
+                { "cvv", cardCVV },
+                { "id", CardHolderId }
+            };
+
+            string destName = "Dan";
+            string addressStreet = "Avraham avinu 41";
+            string addressCity = "Beer sheve";
+            string addressCountry = "Israel";
+            string addressZip = "4953108";
+
+            Dictionary<string, string> shipmentDetails = new Dictionary<string, string>()
+            {
+                { "action_type", "supply" },
+                { "name", destName },
+                { "address", addressStreet },
+                { "city", addressCity },
+                { "country", addressCountry },
+                { "zip", addressZip },
+            };
+
+
+            ignore = userService.Process_order(token, shipmentDetails, creditDetails);
+            ignore = userService.reduce_cart(token);
 
             Response test = userService.GetStoreOrderHistory(temp1.AccessToken, sid);
             List<SubOrderDTO> listOfOrders = test.Data as List<SubOrderDTO>;
@@ -438,19 +549,54 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
                 ["token"] = token,
                 [$"store id"] = $"{sid}",
                 [$"price"] = $"{50}",
-                [$"amount"] = $"{quantity }",
+                [$"amount"] = $"{quantity}",
                 [$"category"] = $"category",
                 [$"product store id"] = $"{pid}",
                 [$"name"] = $"{productName}"
             };
 
             ignore = userService.cart_add_product(doc, quantity);
-            ignore = userService.CompletePurchase(token, "someAddr", "SomeInfo");
+            string month = "1";
+            string year = "22";
+            string CardHolderName = username2;
+            string cardCVV = "234";
+            string CardHolderId = "123456789";
+            Dictionary<string, string> creditDetails = new Dictionary<string, string>()
+            {
+                { "action_type", "pay" },
+                { "currency", "USD" },
+                { "amount", "1000" },
+                { "card_number", "4580555511112222" },
+                { "month", month },
+                { "year", year },
+                { "holder", CardHolderName },
+                { "cvv", cardCVV },
+                { "id", CardHolderId }
+            };
+
+            string destName = "Dan";
+            string addressStreet = "Avraham avinu 41";
+            string addressCity = "Beer sheve";
+            string addressCountry = "Israel";
+            string addressZip = "4953108";
+
+            Dictionary<string, string> shipmentDetails = new Dictionary<string, string>()
+            {
+                { "action_type", "supply" },
+                { "name", destName },
+                { "address", addressStreet },
+                { "city", addressCity },
+                { "country", addressCountry },
+                { "zip", addressZip },
+            };
+
+
+            ignore = userService.Process_order(token, shipmentDetails, creditDetails);
+            ignore = userService.reduce_cart(token);
 
             Response test = userService.GetStoreOrderHistory(token, sid);
 
             Assert.IsFalse(test.Success);
-        }      
+        }
     }
 }
-*/

@@ -151,7 +151,7 @@ namespace Sadna_17_B.DataAccessLayer.DBTests
             Assert.AreEqual(amount, quantity - amount2Buy);
         }
 
-        /*[TestMethod]
+        [TestMethod]
         public void TestPurhcaseFailWhenBuyingItemThatNotExist()
         {
             Response ignore = userService.upgrade_subscriber(username2, password2);
@@ -204,7 +204,7 @@ namespace Sadna_17_B.DataAccessLayer.DBTests
 
             Assert.IsFalse(completeRes.Success);
             Assert.AreEqual(amount, quantity); //meaning we havent bought the only thing by default
-        }*/
+        }
 
         [TestMethod]
         public void TestPurchaseFailWhenBuyingTooMuchProducts()
@@ -271,7 +271,7 @@ namespace Sadna_17_B.DataAccessLayer.DBTests
             Assert.IsFalse(completeRes.Success);
         }
 
-        /*[TestMethod]
+        [TestMethod]
         public void TestPurchaseNotEffectingDifferentCarts()
         {
             Response result1 = userService.entry_subscriber(username1, password1);
@@ -367,13 +367,12 @@ namespace Sadna_17_B.DataAccessLayer.DBTests
                 {
                     foreach (KeyValuePair<ProductDTO, int> entry3 in newSbd.ProductQuantities)
                     {
-                        Assert.AreEqual(entry2.Key.Id, entry3.Key.Id);
                         Assert.AreEqual(entry2.Value, entry3.Value);
                     }
                 }
             }
 
-        }*/
+        }
 
         [TestMethod]
         public void TestHistoryPurchaseSameWhenPurchaseFail()

@@ -25,18 +25,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
     {
 
-        // ---------------- Variables -------------------------------------------------------------------------------------------
-
-
-
-
-
-
-
-
-
-
-     
+        // ---------------- Variables ------------------------------------------------------------------------------------------- 
      
             /*public virtual Inventory Inventory { get; set; }
             public virtual DiscountPolicy DiscountPolicy { get; set; }

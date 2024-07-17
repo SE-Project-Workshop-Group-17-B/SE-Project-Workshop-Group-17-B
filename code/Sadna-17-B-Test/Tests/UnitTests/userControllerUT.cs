@@ -1,4 +1,4 @@
-﻿/*using System;
+﻿using System;
 using System.Collections.Generic;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -61,7 +61,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
 
         [TestMethod]
         public void TestSuccesfullCreateAdmin()
-        {           
+        {
             _userController.CreateAdmin(username1, password1);
 
             string token = _userController.Login(username1, password1);
@@ -73,7 +73,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
 
         [TestMethod]
         public void TestSuccesfullGuestExit()
-        {           
+        {
             string token = _userController.CreateGuest();
 
             _userController.GuestExit(token);
@@ -83,7 +83,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
 
         [TestMethod]
         public void TestSuccesfullSubsriberLogout()
-        {           
+        {
             _userController.CreateAdmin(username1, password1);
 
             string token = _userController.Login(username1, password1);
@@ -94,10 +94,10 @@ namespace Sadna_17_B_Test.Tests.UnitTests
 
         [TestMethod]
         public void TestSuccesfullCreateFounder()
-        {            
+        {
             //creating and logging in users
             _userController.CreateSubscriber(username1, password1);
-            string token1 = _userController.Login(username1, password1);            
+            string token1 = _userController.Login(username1, password1);
 
             _userController.CreateSubscriber(username2, password2);
             string token2 = _userController.Login(username2, password2);
@@ -110,7 +110,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
 
         [TestMethod]
         public void TestSuccesfullOwnershipOfferAccept()
-        {            
+        {
             _userController.CreateSubscriber(username1, password1);
             string token1 = _userController.Login(username1, password1);
 
@@ -126,7 +126,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
 
         [TestMethod]
         public void TestSuccesfullOwnershipOfferDecline()
-        {           
+        {
             _userController.CreateSubscriber(username1, password1);
             string token1 = _userController.Login(username1, password1);
 
@@ -142,7 +142,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
 
         [TestMethod]
         public void TestSuccesfullManagementOfferAccept()
-        {           
+        {
             _userController.CreateSubscriber(username1, password1);
             string token1 = _userController.Login(username1, password1);
 
@@ -158,7 +158,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
 
         [TestMethod]
         public void TestSuccesfullManagementOfferDecline()
-        {           
+        {
             _userController.CreateSubscriber(username1, password1);
             string token1 = _userController.Login(username1, password1);
 
@@ -174,7 +174,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
 
         [TestMethod]
         public void TestSuccesfullRevokeManager()
-        {            
+        {
             _userController.CreateSubscriber(username1, password1);
             string token1 = _userController.Login(username1, password1);
 
@@ -192,7 +192,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
 
         [TestMethod]
         public void TestSuccesfullRevokeOwner()
-        {            
+        {
             _userController.CreateSubscriber(username1, password1);
             string token1 = _userController.Login(username1, password1);
 
@@ -208,9 +208,9 @@ namespace Sadna_17_B_Test.Tests.UnitTests
             Assert.IsFalse(_userController.IsOwner(token2, storeId));
         }
 
-        *//*[TestMethod]
+        [TestMethod]
         public void TestSuccesfullAddToCart()
-        {           
+        {
             _userController.CreateSubscriber(username1, password1);
             string token1 = _userController.Login(username1, password1);
 
@@ -221,18 +221,16 @@ namespace Sadna_17_B_Test.Tests.UnitTests
                 [$"price"] = $"{50}",
                 [$"amount"] = "2",
                 [$"category"] = "category",
-                [$"product store id"] = $"{productId}"
+                [$"product store id"] = $"{productId}",
+                [$"name"] = "store0"
             };
 
-
-            _userController.cart_add_product(doc);
+            _userController.cart_add_product(doc, 1);
             Cart sc = _userController.cart_by_token(token1);
-            Assert.IsNotNull(sc.sid_to_basket);
 
-            Basket basket = sc.sid_to_basket[storeId];
+            Basket basket = sc.Baskets[storeId];
             Dictionary<int, int> products = basket.basket_products();
             Assert.AreEqual(2, products[productId]);
-        }*//*
+        }
     }
 }
-*/

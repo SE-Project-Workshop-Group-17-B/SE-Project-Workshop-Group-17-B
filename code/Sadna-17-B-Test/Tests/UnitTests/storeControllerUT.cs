@@ -1,4 +1,4 @@
-/*using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -20,59 +20,6 @@ using Sadna_17_B.Repositories;
 
 namespace Sadna_17_B_Test.Tests.UnitTests
 {
-
-    *//*
-     *     
-     *      -------------------- Front : ----------------------------
-     *      
-     *      1. add Checkout Page for the user's Basket
-     *      
-     *          - products ( name | amount | price )
-     *          - discounts
-     *          - final price
-     *      
-     *      2. add Product mini page
-     *      
-     *      3. edit store page
-     *          
-     *          - add button for discount policy and purchase policy in store page
-     *          - connect store inventory to store products
-     *      
-     *      4. edit search page
-     *      
-     *          - add to basket button
-     *          - view product button
-     *      
-     *      4. discount policy mini page
-     *      
-     *          - show all available discounts
-     *          
-     *      
-     *      5. purchase policy mini page
-     *      
-     *          - show all purchase rules
-     *      
-     *      
-     *      -------------------- Backend : ----------------------------
-     *      
-     *      
-     *      1. make search product work
-     *      
-     *      2. add product info functionality
-     *      
-     *      3. make purchase policy informative for ui
-     *      
-     *      4. make discount policy informative for ui
-     *      
-     *      5. add Data Base
-     *      
-     * 
-     * 
-     * 
-     * 
-     *//*
-
-
     [TestClass]
     public class StoreControllerTests
     {
@@ -82,7 +29,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         private UserService user_service;
         private StoreController store_controller;
 
-        private Store store1;
+        public Store store1;
         private int sid;
         private int sid2;
 
@@ -122,7 +69,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         public void SetUp()
         {
             ApplicationDbContext.isMemoryDB = true; // Disconnect actual database from these tests
-            *//*
+           /**
              * 
              *  Basket:           | name        |  price   | category  | descript  | amount   | total price
              *  -----------------------------------------------------------------------------------------
@@ -158,7 +105,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
              *   max_rule                           true, 550   (550 bigger than 0)
              *   add_rule                           true, 1150  (550 + 50 + 550)
              * 
-             *//*
+             * */
 
             doc_generator = new Documentor();
             ServiceFactory serviceFactory = new ServiceFactory();
@@ -192,7 +139,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
             basket.add_product(cart_product3);
 
 
-            discount_policy = store1.DiscountPolicy;
+            discount_policy = store1.GetDiscountPolicy();
             strategy_flat = new Discount_Flat(50);
             strategy_precentage = new Discount_Percentage(10);
             strategy_membership = new Discount_Membership();
@@ -636,4 +583,3 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         }
     }
 }
-*/

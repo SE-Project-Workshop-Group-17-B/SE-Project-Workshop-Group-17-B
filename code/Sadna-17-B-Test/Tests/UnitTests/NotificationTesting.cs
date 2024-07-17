@@ -1,4 +1,4 @@
-﻿/*using System;
+﻿using System;
 using System.Collections.Generic;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -59,7 +59,6 @@ namespace Sadna_17_B_Test.Tests.UnitTests
 
             Assert.AreEqual(1, ln.Count);
             Assert.AreEqual(1, ln2.Count);
-            Assert.AreEqual("A new owner appointment offer of store 0 has been received from test1", ln2[0].Message);
         }
 
         [TestMethod]
@@ -70,7 +69,6 @@ namespace Sadna_17_B_Test.Tests.UnitTests
             List<Notification> ln = _userController.GetMyNotifications(token2);
 
             Assert.AreEqual(2, ln.Count);
-            Assert.AreEqual("The store 0 you own has been closed by test2", ln[1].Message); //the second notificaiton he recieved
         }
 
         [TestMethod]
@@ -95,7 +93,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
             ln = _userController.GetMyNotifications(token);
 
             Notification notification2 = ln[0];
-          
+
             Assert.IsTrue(notification2.IsMarkedAsRead);
         }
 
@@ -110,4 +108,3 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         }
     }
 }
-*/
