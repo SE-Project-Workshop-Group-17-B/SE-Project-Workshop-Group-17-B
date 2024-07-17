@@ -80,11 +80,10 @@ namespace Sadna_17_B.Utils
 
         public static DateTime parse_date(string s)
         {
-
         if (is_none(s))
             return DateTime.Now;
 
-        DateTime parsed = DateTime.ParseExact(s, "dd/MM/yyyy", CultureInfo.InvariantCulture);
+        DateTime parsed = DateTime.ParseExact(s, "yyyy-MM-dd", CultureInfo.InvariantCulture);
             return parsed;
         }
 
