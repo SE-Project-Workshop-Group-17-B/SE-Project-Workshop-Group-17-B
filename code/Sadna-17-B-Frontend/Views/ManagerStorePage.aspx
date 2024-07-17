@@ -284,7 +284,7 @@
                             </asp:DropDownList>
                         </div>
                         <div class="actions">
-                            <asp:Button ID="btnRemoveManager" runat="server" Text="Remove Appointment" OnClick="btnRemoveManager_Click" CommandArgument='<%# Eval("ID") %>' CssClass="btn btn-primary" />
+                            <asp:Button ID="btnRemoveManager" runat="server" Text="Remove Appointment" OnClick="btnRemoveManager_Click" CommandArgument='<%# Eval("StoreID") %>' CssClass="btn btn-primary" />
                         </div>
                     </div>
                 </ItemTemplate>
@@ -301,7 +301,7 @@
                             <strong><%# Eval("Name") %></strong>
                         </div>
                         <div class="actions">
-                            <asp:Button ID="btnRemoveOwner" runat="server" Text="Remove Appointment" OnClick="btnRemoveOwner_Click" CommandArgument='<%# Eval("ID") %>' CssClass="btn btn-primary" />
+                            <asp:Button ID="btnRemoveOwner" runat="server" Text="Remove Appointment" OnClick="btnRemoveOwner_Click" CommandArgument='<%# Eval("StoreID") %>' CssClass="btn btn-primary" />
                         </div>
                     </div>
                 </ItemTemplate>
@@ -341,7 +341,7 @@
                             <asp:Repeater ID="rptProducts3" runat="server" OnItemCommand="rptProducts_ItemCommand">
                                 <ItemTemplate>
                                     <div class="product-card">
-                                        <asp:LinkButton ID="lnkProductDetails" runat="server" CssClass="product-link" CommandName="ViewDetails" CommandArgument='<%# Eval("ID") %>'>
+                                        <asp:LinkButton ID="lnkProductDetails" runat="server" CssClass="product-link" CommandName="ViewDetails" CommandArgument='<%# Eval("StoreID") %>'>
                                             <div class="product-image-container">
                                                 <img src="<%# GetProductImage(Eval("category").ToString()) %>" alt="<%# Eval("name") %>" class="product-image">
                                             </div>
@@ -352,7 +352,7 @@
                                                 <p class="product-store">Store ID: <%# Eval("storeId") %></p>
                                             </div>
                                         </asp:LinkButton>
-                                        <asp:Button ID="btnMngInv" runat="server" Text="Manage Product" CssClass="btn btn-primary" OnClick="btnMngInv_Click" CommandArgument='<%# Eval("ID") %>'/>
+                                        <asp:Button ID="btnMngInv" runat="server" Text="Manage Product" CssClass="btn btn-primary" OnClick="btnMngInv_Click" CommandArgument='<%# Eval("StoreID") %>'/>
                                         <asp:Literal runat="server" Text="<br />" />
                                         <asp:Literal runat="server" Text="<br />" />
                                     </div>

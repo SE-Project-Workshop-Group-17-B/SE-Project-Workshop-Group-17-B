@@ -107,12 +107,13 @@ namespace Sadna_17_B.DataAccessLayer
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             //base.OnModelCreating(modelBuilder);
-            
+
             // ... other configurations ...
             //
-          //Store Configuration
+            //Store Configuration
             modelBuilder.Entity<Store>()
                 .HasKey(s => s.StoreID); // Primary Key - Disable Auto Increment (sort of?)
+
 
             // OwnerAppointmentOffer Configuration - Composite Primary Key
             modelBuilder.Entity<OwnerAppointmentOffer>()

@@ -87,14 +87,26 @@ namespace Sadna_17_B_Frontend.Views
             string script = "$('#mymodal').modal('show')";
             ClientScript.RegisterStartupScript(this.GetType(), "Popup", script, true);
         }
+        private void MessageBox(string message)
+        {
+            Response.Write(@"<script language='javascript'>alert('" + message + "')</script>");
+        }
 
         protected async void btnPurchase_Click(object sender, EventArgs e)
         {
             string cardNum = cardNumber.Value.Trim();
 
             string cardDate = txtCardExpiryDate.Value.Trim();
-            string month = cardDate.Split('/')[0];
-            string year = cardDate.Split('/')[1];
+            string month, year;
+            try
+            {
+                month = cardDate.Split('/')[0];
+                year = cardDate.Split('/')[1];
+            } catch (Exception)
+            {
+                MessageBox("Invalid expiration date given.");
+                return;
+            }
 
             string cardCVV = txtCardCVVNum.Value.Trim();
 

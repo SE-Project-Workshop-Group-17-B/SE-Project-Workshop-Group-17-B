@@ -14,8 +14,6 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.WebPages;
-using Sadna_17_B_API.Controllers;
-using Sadna_17_B_API.Models;
 using System.Web.Caching;
 using Sadna_17_B_Frontend.Views;
 
@@ -191,7 +189,7 @@ namespace Sadna_17_B_Frontend.Controllers
         {
             using (HttpClient client = new HttpClient())
             {
-                var user = new UIuserDTOAPI { Username = "", Password = "", AccessToken = userDTO.AccessToken };
+                var user = new { Username = "", Password = "", AccessToken = userDTO.AccessToken };
                 HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/get_shoping_cart", user); // add relative path
 
                 if (response.IsSuccessStatusCode)
@@ -211,7 +209,7 @@ namespace Sadna_17_B_Frontend.Controllers
         {
             using (HttpClient client = new HttpClient())
             {
-                var user = new UIuserDTOAPI { Username = "", Password = "", AccessToken = userDTO.AccessToken };
+                var user = new { Username = "", Password = "", AccessToken = userDTO.AccessToken };
                 HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/get_shoping_cart", user); // add relative path
 
                 if (response.IsSuccessStatusCode)
@@ -294,7 +292,7 @@ namespace Sadna_17_B_Frontend.Controllers
             //var user = new UIuserDTOAPI { Username = username, Password = password, AccessToken = "" };
             using (HttpClient client = new HttpClient())
             {
-                var user = new UIuserDTOAPI { Username = "", Password = "", AccessToken = userDTO.AccessToken };
+                var user = new { Username = "", Password = "", AccessToken = userDTO.AccessToken };
 
                 HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/get_owned_stores", user); // add relative path
 
@@ -316,7 +314,7 @@ namespace Sadna_17_B_Frontend.Controllers
         {
             using (HttpClient client = new HttpClient())
             {
-                var user = new UIuserDTOAPI { Username = "", Password = "", AccessToken = userDTO.AccessToken };
+                var user = new { Username = "", Password = "", AccessToken = userDTO.AccessToken };
 
                 HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/get_managed_stores", user); // add relative path
 
@@ -516,7 +514,7 @@ namespace Sadna_17_B_Frontend.Controllers
         {
             using (HttpClient client = new HttpClient())
             {
-                var user = new UIuserDTOAPI { Username = username, Password = password, AccessToken = "" };
+                var user = new { Username = username, Password = password, AccessToken = "" };
                 HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/signup", user); // add relative path
                 if (response.IsSuccessStatusCode)   
                 {
@@ -534,7 +532,7 @@ namespace Sadna_17_B_Frontend.Controllers
         {
             using (HttpClient client = new HttpClient())
             {
-                var user = new UIuserDTOAPI { Username = "", Password = "", AccessToken = userDTO.AccessToken };
+                var user = new { Username = "", Password = "", AccessToken = userDTO.AccessToken };
                 HttpResponseMessage response = client.PostAsJsonAsync(prefix + "/RestAPI/logout", user).GetAwaiter().GetResult();
                 string responseContent = await response.Content.ReadAsStringAsync();
                 Response responseObj = JsonConvert.DeserializeObject<Response>(responseContent);

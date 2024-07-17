@@ -182,7 +182,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         public Store(string name, string email, string phone_number, string store_description, string address,int id)
         {
-            this.ID = id;
+            this.StoreID = id;
 
             this.Name = name;
             this.Email = email;
@@ -190,7 +190,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             this.Description = store_description;
             this.Address = address;
 
-            this.Inventory = new Inventory(ID);
+            this.Inventory = new Inventory(StoreID);
             this.DiscountPolicy = new DiscountPolicy("default policy");
             this.PurchasePolicy = new PurchasePolicy();
 

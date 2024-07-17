@@ -43,7 +43,7 @@ namespace Sadna_17_B_Frontend.Views
                 List<Store> stores = res.Data as List<Store>;
                 ddlStores.DataSource = stores;
                 ddlStores.DataTextField = "Name";
-                ddlStores.DataValueField = "ID";
+                ddlStores.DataValueField = "StoreID";//"ID";
                 ddlStores.DataBind();
             }
 

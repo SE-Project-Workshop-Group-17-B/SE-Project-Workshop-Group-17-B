@@ -80,8 +80,8 @@
             <ItemTemplate>
                 <div class="store-item">
                     <strong><%# Eval("Name") %></strong>
-                    <small>ID: <%# Eval("ID") %></small>
-                    <asp:Button ID="btnRemoveManager" runat="server" Text="Remove Manager" CssClass="btn-primary btn-danger" OnClick="btnRemoveManager_Click" CommandArgument='<%# Eval("ID") %>' />
+                    <small>ID: <%# Eval("StoreID") %></small>
+                    <asp:Button ID="btnRemoveManager" runat="server" Text="Remove Manager" CssClass="btn-primary btn-danger" OnClick="btnRemoveManager_Click" CommandArgument='<%# Eval("StoreID") %>' />
                 </div>
             </ItemTemplate>
         </asp:Repeater>
@@ -94,8 +94,8 @@
             <ItemTemplate>
                 <div class="store-item">
                     <strong><%# Eval("Name") %></strong>
-                    <small>ID: <%# Eval("ID") %></small>
-                    <asp:Button ID="btnRemoveOwner" runat="server" Text="Remove Owner" CssClass="btn-primary btn-danger" OnClick="btnRemoveOwner_Click" CommandArgument='<%# Eval("ID") %>' />
+                    <small>ID: <%# Eval("StoreID") %></small>
+                    <asp:Button ID="btnRemoveOwner" runat="server" Text="Remove Owner" CssClass="btn-primary btn-danger" OnClick="btnRemoveOwner_Click" CommandArgument='<%# Eval("StoreID") %>' />
                 </div>
             </ItemTemplate>
         </asp:Repeater>

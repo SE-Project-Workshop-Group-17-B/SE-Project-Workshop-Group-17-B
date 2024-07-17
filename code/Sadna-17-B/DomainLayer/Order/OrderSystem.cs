@@ -2,7 +2,6 @@
 using Sadna_17_B.DomainLayer.StoreDom;
 using Sadna_17_B.DomainLayer.User;
 using Sadna_17_B.Layer_Service.ServiceDTOs;
-using Sadna_17_B.ExternalServices;
 using Sadna_17_B.Repositories;
 using Sadna_17_B.Utils;
 using System;
@@ -130,9 +129,21 @@ namespace Sadna_17_B.DomainLayer.Order
 
         public void reduce_cart(string uid, Cart cart)
         {
-          
+            if (cart.baskets().Count == 0)
+            {
+                throw new Sadna17BException("Cart is empty");
+            }
             foreach (var basket in cart.baskets())
+            {
+                // ------- shoping cart validations -----------------------------------------------------------------
+                bool inventory_blocked_order = !storeController.validate_inventories(cart);
+                bool policies_blocked_order = !storeController.validate_policies(cart);
+
+                if (inventory_blocked_order | policies_blocked_order)
+                    throw new Sadna17BException("Order is not valid");
+
                 storeController.decrease_products_amount(basket);
+            }
 
             add_to_history(pending_order[uid]);
             pending_order.Remove(uid);
