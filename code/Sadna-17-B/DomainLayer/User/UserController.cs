@@ -572,6 +572,7 @@ namespace Sadna_17_B.DomainLayer.User
         public void reduce_cart(string token)
         {
             infoLogger.Log($"Attempting to purchase - Subscriber: {GetSubscriberByToken(token).Username}");
+
             User user = GetUserByToken(token); // Throws an exception if the token is invalid
             if (user is Guest)
             {

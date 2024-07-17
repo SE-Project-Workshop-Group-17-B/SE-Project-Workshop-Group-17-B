@@ -55,7 +55,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 */
 
         [Key]
-        public int ID { get; set; }  // Change here: { get; private set; } to { get; set; }
+        public int StoreID { get; set; }  // Change here: { get; private set; } to { get; set; }
 
         public string Name { get; set; }
         public string Email { get; set; }
@@ -156,7 +156,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         public Store(string name, string email, string phone_number, string store_description, string address)
         {
-            this.ID = IdCounter++;
+            this.StoreID = IdCounter++;
 
             this.Name = name;
             this.Email = email;
@@ -164,7 +164,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             this.Description = store_description;
             this.Address = address;
 
-            this.Inventory = new Inventory(ID);
+            this.Inventory = new Inventory(StoreID);
             this.DiscountPolicy = new DiscountPolicy("default policy");
             this.PurchasePolicy = new PurchasePolicy();
             this.discount_rule_history = new List<Dictionary<string, string>>();
@@ -182,7 +182,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
 
         public Store(string name, string email, string phone_number, string store_description, string address,int id)
         {
-            this.ID = id;
+            this.StoreID = id;
 
             this.Name = name;
             this.Email = email;
@@ -190,7 +190,7 @@ namespace Sadna_17_B.DomainLayer.StoreDom
             this.Description = store_description;
             this.Address = address;
 
-            this.Inventory = new Inventory(ID);
+            this.Inventory = new Inventory(StoreID);
             this.DiscountPolicy = new DiscountPolicy("default policy");
             this.PurchasePolicy = new PurchasePolicy();
 

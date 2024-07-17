@@ -89,7 +89,7 @@
                 <ItemTemplate>
                     <div class="product-row">
                         <div>
-                            <p><strong>Product ID:</strong> <%# Eval("ID") %></p>
+                            <p><strong>Product ID:</strong> <%# Eval("StoreID") %></p>
                             <p><strong>Name:</strong> <%# Eval("name") %></p>
                             <p><strong>Price:</strong> <%# Eval("price") %></p>
                             <p><strong>Category:</strong> <%# Eval("category") %></p>
@@ -97,7 +97,7 @@
                             <p><strong>Description:</strong> <%# Eval("description") %></p>
                             <p><strong>Store ID:</strong> <%# Eval("StoreID") %></p>
                         </div>
-                        <button type="button" onclick="addToCart(<%# Eval("ID") %>)">Add to Cart</button>
+                        <button type="button" onclick="addToCart(<%# Eval("StoreID") %>)">Add to Cart</button>
                     </div>
                 </ItemTemplate>
             </asp:Repeater>

@@ -1,4 +1,4 @@
-﻿/*using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using Sadna_17_B.ServiceLayer;
 using Sadna_17_B.ServiceLayer.Services;
@@ -301,7 +301,48 @@ namespace Sadna_17_B.DataAccessLayer.DBTests
 
             ignore = userService.cart_add_product(doc, quantity);
 
-            ignore = userService.CompletePurchase(token, "someAddr", "SomeInfo");
+            //ignore = userService.CompletePurchase(token, "someAddr", "SomeInfo");
+            // START FIX COMPLETE PURCHASE
+            string month = "1";
+            string year = "22";
+            string CardHolderName = username2;
+            string cardCVV = "234";
+            string CardHolderId = "123456789";
+            string creditCardInfo = "SomeInfo";
+            Dictionary<string, string> creditDetails = new Dictionary<string, string>()
+            {
+                { "action_type", "pay" },
+                { "currency", "USD" },
+                { "amount", "1000" },
+                { "card_number", creditCardInfo },
+                { "month", month },
+                { "year", year },
+                { "holder", CardHolderName },
+                { "cvv", cardCVV },
+                { "id", CardHolderId }
+            };
+
+            string shipmentDetails = "someAddr";
+
+            string destName = shipmentDetails;
+            string addressStreet = shipmentDetails;
+            string addressCity = shipmentDetails;
+            string addressCountry = shipmentDetails;
+            string addressZip = shipmentDetails;
+
+            Dictionary<string, string> shipmentDetailsDoc = new Dictionary<string, string>()
+            {
+                { "action_type", "supply" },
+                { "name", destName },
+                { "address", addressStreet },
+                { "city", addressCity },
+                { "country", addressCountry },
+                { "zip", addressZip },
+            };
+
+            Response processOrder = userService.Process_order(token, shipmentDetailsDoc, creditDetails);
+            Response completeRes = userService.reduce_cart(token);
+            // END FIX COMPLETE PURCHASE
 
             Response test = userService.GetMyOrderHistory(token);
             List<OrderDTO> listOfOrders = test.Data as List<OrderDTO>;
@@ -351,7 +392,48 @@ namespace Sadna_17_B.DataAccessLayer.DBTests
             };
 
             ignore = userService.cart_add_product(doc, quantity);
-            ignore = userService.CompletePurchase(token, "someAddr", "SomeInfo");
+            //ignore = userService.CompletePurchase(token, "someAddr", "SomeInfo");
+            // START FIX COMPLETE PURCHASE
+            string month = "1";
+            string year = "22";
+            string CardHolderName = username2;
+            string cardCVV = "234";
+            string CardHolderId = "123456789";
+            string creditCardInfo = "SomeInfo";
+            Dictionary<string, string> creditDetails = new Dictionary<string, string>()
+            {
+                { "action_type", "pay" },
+                { "currency", "USD" },
+                { "amount", "1000" },
+                { "card_number", creditCardInfo },
+                { "month", month },
+                { "year", year },
+                { "holder", CardHolderName },
+                { "cvv", cardCVV },
+                { "id", CardHolderId }
+            };
+
+            string shipmentDetails = "someAddr";
+
+            string destName = shipmentDetails;
+            string addressStreet = shipmentDetails;
+            string addressCity = shipmentDetails;
+            string addressCountry = shipmentDetails;
+            string addressZip = shipmentDetails;
+
+            Dictionary<string, string> shipmentDetailsDoc = new Dictionary<string, string>()
+            {
+                { "action_type", "supply" },
+                { "name", destName },
+                { "address", addressStreet },
+                { "city", addressCity },
+                { "country", addressCountry },
+                { "zip", addressZip },
+            };
+
+            Response processOrder = userService.Process_order(token, shipmentDetailsDoc, creditDetails);
+            Response completeRes = userService.reduce_cart(token);
+            // END FIX COMPLETE PURCHASE
 
             Response test = userService.GetMyOrderHistory(token);
             List<OrderDTO> listOfOrders = test.Data as List<OrderDTO>;
@@ -400,7 +482,48 @@ namespace Sadna_17_B.DataAccessLayer.DBTests
             };
 
             ignore = userService.cart_add_product(doc, quantity);
-            ignore = userService.CompletePurchase(token, "someAddr", "SomeInfo");
+            //ignore = userService.CompletePurchase(token, "someAddr", "SomeInfo");
+            // START FIX COMPLETE PURCHASE
+            string month = "1";
+            string year = "22";
+            string CardHolderName = username2;
+            string cardCVV = "234";
+            string CardHolderId = "123456789";
+            string creditCardInfo = "SomeInfo";
+            Dictionary<string, string> creditDetails = new Dictionary<string, string>()
+            {
+                { "action_type", "pay" },
+                { "currency", "USD" },
+                { "amount", "1000" },
+                { "card_number", creditCardInfo },
+                { "month", month },
+                { "year", year },
+                { "holder", CardHolderName },
+                { "cvv", cardCVV },
+                { "id", CardHolderId }
+            };
+
+            string shipmentDetails = "someAddr";
+
+            string destName = shipmentDetails;
+            string addressStreet = shipmentDetails;
+            string addressCity = shipmentDetails;
+            string addressCountry = shipmentDetails;
+            string addressZip = shipmentDetails;
+
+            Dictionary<string, string> shipmentDetailsDoc = new Dictionary<string, string>()
+            {
+                { "action_type", "supply" },
+                { "name", destName },
+                { "address", addressStreet },
+                { "city", addressCity },
+                { "country", addressCountry },
+                { "zip", addressZip },
+            };
+
+            Response processOrder = userService.Process_order(token, shipmentDetailsDoc, creditDetails);
+            Response completeRes = userService.reduce_cart(token);
+            // END FIX COMPLETE PURCHASE
 
             Response test = userService.GetStoreOrderHistory(temp1.AccessToken, sid);
             List<SubOrderDTO> listOfOrders = test.Data as List<SubOrderDTO>;
@@ -437,7 +560,7 @@ namespace Sadna_17_B.DataAccessLayer.DBTests
             Response res = userService.entry_subscriber(username2, password2);
             userDTO = res.Data as UserDTO;
             string token = userDTO.AccessToken;
-           
+
             Dictionary<string, string> doc = new Dictionary<string, string>()
             {
                 ["token"] = token,
@@ -450,7 +573,48 @@ namespace Sadna_17_B.DataAccessLayer.DBTests
             };
 
             ignore = userService.cart_add_product(doc, quantity);
-            ignore = userService.CompletePurchase(token, "someAddr", "SomeInfo");
+            //ignore = userService.CompletePurchase(token, "someAddr", "SomeInfo");
+            // START FIX COMPLETE PURCHASE
+            string month = "1";
+            string year = "22";
+            string CardHolderName = username2;
+            string cardCVV = "234";
+            string CardHolderId = "123456789";
+            string creditCardInfo = "SomeInfo";
+            Dictionary<string, string> creditDetails = new Dictionary<string, string>()
+            {
+                { "action_type", "pay" },
+                { "currency", "USD" },
+                { "amount", "1000" },
+                { "card_number", creditCardInfo },
+                { "month", month },
+                { "year", year },
+                { "holder", CardHolderName },
+                { "cvv", cardCVV },
+                { "id", CardHolderId }
+            };
+
+            string shipmentDetails = "someAddr";
+
+            string destName = shipmentDetails;
+            string addressStreet = shipmentDetails;
+            string addressCity = shipmentDetails;
+            string addressCountry = shipmentDetails;
+            string addressZip = shipmentDetails;
+
+            Dictionary<string, string> shipmentDetailsDoc = new Dictionary<string, string>()
+            {
+                { "action_type", "supply" },
+                { "name", destName },
+                { "address", addressStreet },
+                { "city", addressCity },
+                { "country", addressCountry },
+                { "zip", addressZip },
+            };
+
+            Response processOrder = userService.Process_order(token, shipmentDetailsDoc, creditDetails);
+            Response completeRes = userService.reduce_cart(token);
+            // END FIX COMPLETE PURCHASE
 
             Response test = userService.GetStoreOrderHistory(token, sid);
 
@@ -458,4 +622,3 @@ namespace Sadna_17_B.DataAccessLayer.DBTests
         }
     }
 }
-*/
