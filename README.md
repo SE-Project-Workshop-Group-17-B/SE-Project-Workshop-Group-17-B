@@ -6,6 +6,20 @@ Comprehensive framework for managing trading activities, from user registration 
 ## Group Members
 Gal Pinto - pigal@post.bgu.ac.il
 
+Yossi Hadad - hayos@post.bgu.ac.il
+
+Elay Dadon - elaydad@post.bgu.ac.il
+
+Yuval Goldstein - golyuval@post.bgu.ac.il
+
+Omer Tarshish - omertar@post.bgu.ac.il
+
+Eden Nahum - edennahu@post.bgu.ac.il
+
+Daniel Bril - brildan@post.bgu.ac.il
+
+Evyatar Kopans - kopansev@post.bgu.ac.il
+
 ## Features
 
 The Trade System Project is a versatile system designed to streamline trading activities. It includes features such as:
