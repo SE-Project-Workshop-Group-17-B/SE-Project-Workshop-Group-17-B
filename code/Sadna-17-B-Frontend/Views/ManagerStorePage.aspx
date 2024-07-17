@@ -371,7 +371,7 @@
             </div>
             <div class="modal-body">
                <div class="form-group">
-                    <label>Discount Type:</label>
+                    <label>Discount Strategy:</label>
                     <div class="btn-group d-flex" role="group">
                         <asp:LinkButton ID="btnFlat" runat="server" Text="Flat" CssClass="btn btn-outline-primary w-100" OnClientClick="toggleActive(this, 'discountType'); return false;" />
                         <asp:LinkButton ID="btnPercentage" runat="server" Text="Percentage" CssClass="btn btn-outline-primary w-100" OnClientClick="toggleActive(this, 'discountType'); return false;" />
@@ -388,12 +388,12 @@
                 </div>
 
                 <div class="form-group mt-3">
-                    <label for="txtFactor">Factor:</label>
+                    <label for="txtFactor">Strategy Factor:</label>
                     <asp:TextBox ID="txtFactor" runat="server" CssClass="form-control" />
                 </div>
 
                 <div class="form-group">
-                    <label for="txtElement">Element:</label>
+                    <label for="txtElement">Target Element:</label>
                     <asp:TextBox ID="txtElement" runat="server" CssClass="form-control" />
                 </div>
 

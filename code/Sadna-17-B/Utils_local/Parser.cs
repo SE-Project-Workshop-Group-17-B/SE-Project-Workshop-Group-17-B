@@ -88,7 +88,6 @@ namespace Sadna_17_B.Utils
         }
 
 
-
         // ------------------- non - primitive ---------------------------------------------------------------------------------
 
         public static T parse_the_string<T>(string s)

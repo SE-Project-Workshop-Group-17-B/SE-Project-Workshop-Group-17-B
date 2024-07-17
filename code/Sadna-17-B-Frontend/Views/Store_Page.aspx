@@ -154,6 +154,20 @@
         .all-review-container .user-review {
             font-style: italic;
         }
+        .all-purchase-container {
+            display: flex;
+            flex-direction: column; /* Ensure purchase are displayed vertically */
+            margin-bottom: 15px;
+        }
+        .all-purchase-container .purchase-item {
+            display: flex;
+            flex-direction: row; /* username and review are side by side */
+            margin-bottom: 10px;
+            align-items: center; /* Align items vertically in the center */
+        }
+        .all-purchase-container .purchase-review {
+            font-style: italic;
+        }
         .product-container {
              display: flex;
              flex-direction: column; /* Ensure reviews are displayed vertically */
@@ -218,6 +232,20 @@
             text-decoration: none;
             color: inherit;
         }       
+        .all-discount-container {
+            display: flex;
+            flex-direction: column; /* Ensure discount are displayed vertically */
+            margin-bottom: 15px;
+        }
+        .all-discount-container .discount-item {
+            display: flex;
+            flex-direction: row; /* username and review are side by side */
+            margin-bottom: 10px;
+            align-items: center; /* Align items vertically in the center */
+        }
+        .all-discount-container .discount-review {
+            font-style: italic;
+        }
     </style>
 
     <!-- Fading messages (is not) implemented rn -->
@@ -319,7 +347,27 @@
             </div>
         </div>
     </div>                                                                      <!-- all reviews pop-up option starts here -->
-
+        <div class="all-purchase-container">                                         <!-- all purchase pop-up option starts here -->
+       <div class="modal fade" id="mymodal-all-purchase" data-backdrop="false" role="dialog">
+           <div class="modal-dialog modal-dialog-centered">
+               <div class="modal-content">
+                   <div class="modal-header">
+                       <h4 class="modal-title">Our Purchase Policies</h4>
+                       <asp:Label ID="Label3" Text="" runat="server" />
+                       <button type="button" class="close" data-dismiss="modal">&times;</button>
+                   </div>
+                   <div class="modal-body">
+                       <div class="all-purchase-container" id="allPurchaseContainer">
+                           <!-- Reviews will be inserted here dynamically -->
+                       </div>
+                   </div>
+                   <div class="modal-footer">
+                       <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                   </div>
+               </div>
+           </div>
+       </div>
+   </div>                                                                      <!-- all purchase pop-up option starts here -->
     <div class="inventory_container">                                          <!-- inventory pop-up option starts here -->
     <div class="modal fade" id="mymodal-inventory" data-backdrop="false" role="dialog">
         <div class="modal-dialog modal-dialog-centered">
@@ -363,6 +411,28 @@
        </div>                                                                     
     </div>                                                                      <!-- inventory pop-up option ends here -->
 
+    <div class="all-discount-container">                                         <!-- all discount pop-up option starts here -->
+        <div class="modal fade" id="mymodal-all-discount" data-backdrop="false" role="dialog">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Our discount Policies</h4>
+                        <asp:Label ID="Label4" Text="" runat="server" />
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="all-discount-container" id="alldiscountContainer">
+                            <!-- Reviews will be inserted here dynamically -->
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>                                                                      <!-- all purchase pop-up option starts here -->
+
     <div class="storepage-container">                                           <!-- actual store page starts here -->
         <header class="storepage-header">
             <h1>Welcome to Store: <asp:Literal ID="storeNameLiteral" runat="server"></asp:Literal></h1>
@@ -376,13 +446,14 @@
                 <asp:Button CssClass="storepage-actions-btn" ID="toStoreInventory" OnClick="toStoreInventory_Click" runat="server" Text="Go to Store Inventory"></asp:Button>
                 <asp:Button CssClass="storepage-actions-btn" ID="sendComplaintBtn" OnClick="sendComplaintBtn_Click" runat="server" Text="Submit Complaint"></asp:Button>
                 <asp:Button CssClass="storepage-actions-btn" ID="rateStoreBtn" OnClick="rateStoreBtn_Click" runat="server" Text="Rate the Store"></asp:Button>
+                <asp:Button CssClass="storepage-actions-btn" ID="purchasePolicyBtn" OnClick="purchasePolicyBtn_Click" runat="server" Text="Purchase Policies"></asp:Button>
+                <asp:Button CssClass="storepage-actions-btn" ID="discountPolicyBtn" OnClick="discountPolicyBtn_Click" runat="server" Text="Discount Policies"></asp:Button>
             </div>
             <div class="storepage-rating-container" id="overAllRatingContainer">
                 <img src="/Content/zero_stars_rating.png" class="zero-stars-bottom" id="zeroStarsImg2"/>
                 <img src="/Content/five_stars_rating.png" class="five-stars-bottom" id="fiveStarsImg2" />
             </div>
             <div class="rating-text" id="ratingText"></div> <!-- displays the rating text -->
-
         </div>
     </div>                                                                      <!-- actual store page ends here -->
 
@@ -398,7 +469,7 @@
         var ratingValueHidden = document.getElementById('<%= ratingValueHidden.ClientID %>');
         var complaintValueHidden = document.getElementById('<%= complaintValueHidden.ClientID %>');
         var postReviewValueHidden = document.getElementById('<%= postReviewValueHidden.ClientID %>');
-        
+
         var clickCounter = 0;
 
         function setRating(event) {
@@ -451,6 +522,11 @@
             eval(script);
         }
 
+        function openPolicyModal() {
+            var script = "$('#mymodal-all-purchase').modal('show')";
+            eval(script);
+        }
+
         function setInitialRating(rating) {
             var fiveStarsImgBottom = document.getElementById('fiveStarsImg2');
             var zeroStarsImgBottom = document.getElementById('zeroStarsImg2');
@@ -481,6 +557,22 @@
                 ratingText.textContent = rating.toFixed(1) + '/5';
             });
         }
+        function displayPolicies(policies) {
+            var policyContainer = document.getElementById('allPurchaseContainer');
+            reviewsContainer.innerHTML = ''; // Clear previous reviews
 
+            policies.forEach(function (policy) {
+                var policyDiv = document.createElement('div');
+                policyDiv.classList.add('purchase-item'); // Add purchase-item class to each review
+
+                policyDiv.innerHTML = `
+                 <div class="purchase-review">
+                     <p>${policy}</p>
+                 </div>
+            `;
+
+                policyContainer.appendChild(policyDiv);
+            });
+        }
     </script>
 </asp:Content>
