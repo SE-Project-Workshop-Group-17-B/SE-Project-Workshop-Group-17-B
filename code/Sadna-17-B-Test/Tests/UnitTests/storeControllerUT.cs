@@ -59,7 +59,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         Func<Basket, double> relevant_price_by_all;
 
         Func<Basket, bool> cond_all_true;
-        private Func<Basket, bool> cond_;
+        //until this part it is working
         Func<Basket, bool> cond_all_false;
 
         Func<Basket, bool> cond_category;
