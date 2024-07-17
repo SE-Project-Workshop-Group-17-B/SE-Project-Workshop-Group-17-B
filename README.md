@@ -1,6 +1,8 @@
 # SE-Project-Workshop-Group-17-B
 Workshop on Software Engineering Project for Group 17-B
 
+![image](https://github.com/SE-Project-Workshop-Group-17-B/SE-Project-Workshop-Group-17-B/blob/main/ProjectPhoto.jpg)
+
 ## Group Members
 Gal Pinto - pigal@post.bgu.ac.il
 
