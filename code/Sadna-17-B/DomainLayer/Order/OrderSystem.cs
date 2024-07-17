@@ -1,10 +1,13 @@
-﻿using Sadna_17_B.DomainLayer.StoreDom;
+﻿using Newtonsoft.Json;
+using Sadna_17_B.DomainLayer.StoreDom;
 using Sadna_17_B.DomainLayer.User;
-using Sadna_17_B.ExternalServices;
+using Sadna_17_B.Layer_Service.ServiceDTOs;
+using Sadna_17_B.Repositories;
 using Sadna_17_B.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 
 namespace Sadna_17_B.DomainLayer.Order
@@ -16,14 +19,15 @@ namespace Sadna_17_B.DomainLayer.Order
 
 
         private StoreController storeController;
-        private IPaymentSystem paymentSystem = new PaymentSystemProxy();
-        private ISupplySystem supplySystem = new SupplySystemProxy();
+        //private PaymentSystem paymentSystem = new PaymentSystem();
+        //private SupplySystem supplySystem = new SupplySystem();
         private Logger infoLogger = InfoLogger.Instance;
         private Logger errorLogger = ErrorLogger.Instance;
 
-        
+
         // ------- should move to DAL --------------------------------------------------------------------------------
 
+        private Dictionary<string, Order> pending_order = new Dictionary<string, Order>();                  // uid -> Order
 
         private Dictionary<int, Order> orderHistory = new Dictionary<int, Order>();                         // OrderId -> Order
         private Dictionary<int, List<Order>> guestOrders = new Dictionary<int, List<Order>>();              // GuestID -> List<Order>
@@ -34,37 +38,59 @@ namespace Sadna_17_B.DomainLayer.Order
 
         // ------- should move to DAL --------------------------------------------------------------------------------
 
+        // DAL Repository:
+        IUnitOfWork _unitOfWork = UnitOfWork.GetInstance();
 
         public OrderSystem(StoreController storeController)
         {
             this.storeController = storeController;
         }
 
-        public OrderSystem(StoreController storeController, IPaymentSystem paymentInstance)
-        {
-            this.storeController = storeController;
-            this.paymentSystem = paymentInstance;
-        }
-
-        public OrderSystem(StoreController storeController, ISupplySystem supplyInstance)
-        {
-            this.storeController = storeController;
-            this.supplySystem = supplyInstance;
-        }
-
         public void LoadData()
         {
+            IEnumerable<Order> orderHistoryTable = _unitOfWork.Orders.GetAll();
+            IEnumerable<SubOrder> subOrdersTable = _unitOfWork.SubOrders.GetAll();
 
+            foreach (Order order in orderHistoryTable)
+            {
+                orderHistory[order.OrderID] = order;
+                if (order.IsGuestOrder)
+                {
+                    int guestId = int.Parse(order.UserID);
+                    if (!guestOrders.ContainsKey(guestId))
+                    {
+                        guestOrders[guestId] = new List<Order>();
+                    }
+                    guestOrders[guestId].Add(order);
+                }
+                else
+                {
+                    if (!subscriberOrders.ContainsKey(order.UserID))
+                    {
+                        subscriberOrders[order.UserID] = new List<Order>();
+                    }
+                    subscriberOrders[order.UserID].Add(order);
+                }
+            }
+
+            foreach (SubOrder subOrder in subOrdersTable)
+            {
+                if (!storeOrders.ContainsKey(subOrder.StoreID))
+                {
+                    storeOrders[subOrder.StoreID] = new List<SubOrder>();
+                }
+                storeOrders[subOrder.StoreID].Add(subOrder);
+                //orderHistory[subOrder.OrderID].AddSubOrder(subOrder); // or AddBasket(new Basket(subOrder));
+            }
+
+            orderCount = orderHistory.Count; // Or 1 + max(orderId)
         }
-
 
 
         // ------- process order --------------------------------------------------------------------------------
 
-
-        public void ProcessOrder(Cart cart, string userID, bool isGuest, string destination, string credit)
+        public double ProcessOrder(Cart cart, string userID, bool isGuest, Dictionary<string, string> supply, Dictionary<string, string> payment)
         {
-
             // ------- guest log --------------------------------------------------------------------------------
 
             if (isGuest)
@@ -74,8 +100,43 @@ namespace Sadna_17_B.DomainLayer.Order
 
 
             // ------- shoping cart validations -----------------------------------------------------------------
+            bool inventory_blocked_order = !storeController.validate_inventories(cart);
+            bool policies_blocked_order = !storeController.validate_policies(cart);
 
+            if (inventory_blocked_order | policies_blocked_order)
+                throw new Sadna17BException("Order is not valid");
 
+            // ------- shoping cart final price -----------------------------------------------------------------
+
+            double cart_price_with_discount = 0;
+
+            foreach (var basket in cart.baskets())
+            {
+                int sid = basket.store_id;
+                Checkout basket_checkout = storeController.calculate_products_prices(basket);
+                cart_price_with_discount += basket_checkout.total_price_with_discount;
+            }
+
+            string destAddr = supply["address"] + " " + supply["city"];
+            string paymentObj = JsonConvert.SerializeObject(payment);
+
+            Order order = new Order(orderCount, userID, isGuest, cart, destAddr, paymentObj, cart_price_with_discount);
+
+            pending_order[userID] = order;
+            
+                
+
+            return cart_price_with_discount;
+        }
+
+        public void reduce_cart(string uid, Cart cart)
+        {
+            if (cart.baskets().Count == 0)
+            {
+                throw new Sadna17BException("Cart is empty");
+            }
+        
+            // ------- shoping cart validations -----------------------------------------------------------------
             bool inventory_blocked_order = !storeController.validate_inventories(cart);
             bool policies_blocked_order = !storeController.validate_policies(cart);
 
@@ -83,40 +144,21 @@ namespace Sadna_17_B.DomainLayer.Order
                 throw new Sadna17BException("Order is not valid");
 
 
-            // ------- shoping cart final price -----------------------------------------------------------------
-
-            double cart_price_with_discount = 0;
-            double cart_price_without_discount = 0;
-
             foreach (var basket in cart.baskets())
-            {
-                int sid = basket.store_id;
-                Checkout basket_checkout = storeController.calculate_products_prices(basket);
-                cart_price_with_discount += basket_checkout.total_price_with_discount;
-                cart_price_with_discount += basket_checkout.total_price_without_discount;
-            }
-
-            Order order = new Order(orderCount, userID, isGuest, cart, destination, credit, cart_price_with_discount);
-
+                storeController.decrease_products_amount(basket);
             
-            // ------- validations -------------------------------------------------------------------------------
-
-            validate_supply_system_availability(destination, order);
-            validate_payment_system_availability(credit, order);
-            validate_price(cart_price_with_discount);
-
-            // ------- execute purchase -------------------------------------------------------------------------------
-
-            reduce_cart(cart);
-
-            paymentSystem.ExecutePayment(credit, order.TotalPrice);
-            supplySystem.ExecuteDelivery(destination, order.GetManufacturerProductNumbers());
-
-            add_to_history(order);
-
+            add_to_history(pending_order[uid]);
+            pending_order.Remove(uid);
         }
 
-        public void validate_supply_system_availability(string dest, Order order)
+        public void cancel_order(string uid)
+        {
+            if (pending_order.ContainsKey(uid))
+                pending_order.Remove(uid);
+        }
+
+
+        /*public void validate_supply_system_availability(string dest, Order order)
         {
             List<int> manufacturerProductNumbers = order.GetManufacturerProductNumbers();
 
@@ -147,12 +189,7 @@ namespace Sadna_17_B.DomainLayer.Order
             }
 
         }
-
-        public void reduce_cart(Cart cart)
-        {
-            foreach (var basket in cart.baskets())
-               storeController.decrease_products_amount(basket);
-        }
+*/
 
 
         // ------- history --------------------------------------------------------------------------------
@@ -175,8 +212,8 @@ namespace Sadna_17_B.DomainLayer.Order
                 }
                 catch (Exception e)
                 {
-                    errorLogger.Log("Invalid Guest ID given when inserting order to history: " + order.UserID);
-                    throw new Sadna17BException("Invalid Guest ID given when inserting order to history: " + order.UserID, e);
+                    errorLogger.Log("Invalid Guest StoreID given when inserting order to history: " + order.UserID);
+                    throw new Sadna17BException("Invalid Guest StoreID given when inserting order to history: " + order.UserID, e);
                 }
             }
             else // Insert to subscribers order history
@@ -187,6 +224,9 @@ namespace Sadna_17_B.DomainLayer.Order
                 }
                 subscriberOrders[order.UserID].Add(order);
             }
+
+            _unitOfWork.Orders.Add(order); // Insert the order into the orders table in database
+
             foreach (SubOrder subOrder in order.GetSubOrders())
             { // insert to store sub-orders history
                 if (!storeOrders.ContainsKey(subOrder.StoreID))
@@ -194,6 +234,7 @@ namespace Sadna_17_B.DomainLayer.Order
                     storeOrders[subOrder.StoreID] = new List<SubOrder>();
                 }
                 storeOrders[subOrder.StoreID].Add(subOrder);
+                _unitOfWork.SubOrders.Add(subOrder); // Insert the SubOrder into the orders table in database
             }
         }
 

@@ -87,35 +87,75 @@ namespace Sadna_17_B_Frontend.Views
             string script = "$('#mymodal').modal('show')";
             ClientScript.RegisterStartupScript(this.GetType(), "Popup", script, true);
         }
+        private void MessageBox(string message)
+        {
+            Response.Write(@"<script language='javascript'>alert('" + message + "')</script>");
+        }
 
         protected async void btnPurchase_Click(object sender, EventArgs e)
         {
             string cardNum = cardNumber.Value.Trim();
+
             string cardDate = txtCardExpiryDate.Value.Trim();
+            string month, year;
+            try
+            {
+                month = cardDate.Split('/')[0];
+                year = cardDate.Split('/')[1];
+            } catch (Exception)
+            {
+                MessageBox("Invalid expiration date given.");
+                return;
+            }
+
             string cardCVV = txtCardCVVNum.Value.Trim();
 
-            string creditDetails = cardNum + cardCVV + cardDate;
+            string CardHolderName = cardHolderName.Value.Trim();
+            string CardHolderId = cardHolderId.Value.Trim();
 
-            string destShipp = textDestInfro.Value.Trim();
+            Dictionary<string, string> creditDetails = new Dictionary<string, string>()
+            {
+                { "action_type", "pay" },                
+                { "currency", "USD" },
+                { "amount", "1000" },
+                { "card_number", cardNum },
+                { "month", month },
+                { "year", year },
+                { "holder", CardHolderName },
+                { "cvv", cardCVV },
+                { "id", CardHolderId }
+            };
 
-            Response res = await backendController.completePurchase(destShipp, creditDetails);
+            string destName = shippingName.Value.Trim();
+            string addressStreet = shippingStreet.Value.Trim();
+            string addressCity = shippingCity.Value.Trim();
+            string addressCountry = shippingCountry.Value.Trim();
+            string addressZip = shippingZipCode.Value.Trim();
+
+            Dictionary<string, string> shippmentDetails = new Dictionary<string, string>()
+            {
+                { "action_type", "supply" },
+                { "name", destName },
+                { "address", addressStreet },
+                { "city", addressCity },
+                { "country", addressCountry },
+                { "zip", addressZip },
+            };
+
+            Response res = await backendController.completePurchase(shippmentDetails, creditDetails);
             if (res.Success)
             {
                 ScriptManager.RegisterStartupScript(this, this.GetType(), "alert",
-    "alert('Your purchase was successful!');", true);
-
-                //string script = "alert('Your purchase was successful!');";
-                //ScriptManager.RegisterStartupScript(this, GetType(), "ServerControlScript", script, true);
+                        "alert('Your purchase was successful!');", true);
+                //await backendController.clean_cart();
             }
             else
             {
                 ScriptManager.RegisterStartupScript(this, this.GetType(), "alert",
-    $"alert('Payment Failed, {res.Message}');", true);
-                //string script = $"alert('Payment Failed, {res.Message}');";
-                //ScriptManager.RegisterStartupScript(this, GetType(), "ServerControlScript", script, true);
+                                $"alert('Payment Failed, {res.Message}');", true);
             }
 
-            backendController.clean_cart();
+            
             LoadCart();
         }
 
@@ -170,11 +210,9 @@ namespace Sadna_17_B_Frontend.Views
                 };
 
                 await backendController.cart_remove_product(p);
-                //backendController.userService.cart_remove_product(p, backendController.userDTO.AccessToken);
             }
             else
                 await backendController.cart_update_product(doc);
-            //backendController.userService.cart_update_product(doc);
 
             return 0;
         }

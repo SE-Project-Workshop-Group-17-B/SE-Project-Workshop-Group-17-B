@@ -1,4 +1,4 @@
-/*using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -16,62 +16,10 @@ using Sadna_17_B.Utils;
 using Sadna_17_B.ServiceLayer;
 using Newtonsoft.Json.Linq;
 using Sadna_17_B.DataAccessLayer;
+using Sadna_17_B.Repositories;
 
 namespace Sadna_17_B_Test.Tests.UnitTests
 {
-
-    *//*
-     *     
-     *      -------------------- Front : ----------------------------
-     *      
-     *      1. add Checkout Page for the user's Basket
-     *      
-     *          - products ( name | amount | price )
-     *          - discounts
-     *          - final price
-     *      
-     *      2. add Product mini page
-     *      
-     *      3. edit store page
-     *          
-     *          - add button for discount policy and purchase policy in store page
-     *          - connect store inventory to store products
-     *      
-     *      4. edit search page
-     *      
-     *          - add to basket button
-     *          - view product button
-     *      
-     *      4. discount policy mini page
-     *      
-     *          - show all available discounts
-     *          
-     *      
-     *      5. purchase policy mini page
-     *      
-     *          - show all purchase rules
-     *      
-     *      
-     *      -------------------- Backend : ----------------------------
-     *      
-     *      
-     *      1. make search product work
-     *      
-     *      2. add product info functionality
-     *      
-     *      3. make purchase policy informative for ui
-     *      
-     *      4. make discount policy informative for ui
-     *      
-     *      5. add Data Base
-     *      
-     * 
-     * 
-     * 
-     * 
-     *//*
-
-
     [TestClass]
     public class StoreControllerTests
     {
@@ -81,7 +29,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         private UserService user_service;
         private StoreController store_controller;
 
-        private Store store1;
+        public Store store1;
         private int sid;
         private int sid2;
 
@@ -115,47 +63,50 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         Func<Basket, bool> cond_product;
         Func<Basket, bool> cond_all;
 
+        static IUnitOfWork unitOfWork = UnitOfWork.CreateCustomUnitOfWork(new TestsDbContext()); // Creates a different singleton value for the UnitOfWork DB connection
+
         [TestInitialize]
         public void SetUp()
         {
             ApplicationDbContext.isMemoryDB = true; // Disconnect actual database from these tests
-            *//*
-             * 
-             *  Basket:           | name        |  price   | category  | descript  | amount   | total price
-             *  -----------------------------------------------------------------------------------------
-             *  
-             *  - product 1 :   |   product1  |   30     |   Food    |   Nice    |  100      | 3000
-             *  
-             *  - product 2 :   |   product2  |   50     |   Drink   |   Perfect |  15       | 750
-             * 
-             *  - product 3 :   |   product3  |   10     |   Food    |   Eh      |  50       | 500
-             * 
-             * 
-             *  -------------------------------------------------------------------------------------
-             *  
-             *   relevant_price_by_category        3500
-             *   relevant_price_by_product         3000      
-             *   relevant_price_by_all             4250
-             *
-             *   condition_category                true
-             *   condition_product                 false
-             *   condition_all                     true
-             *      
-             *   
-             *   cond_flat                          true, 50                                        out of 5000  // only rules weight the conditions
-             *   cond_prec                          false, 500                                      out of 5000  
-             *   cond_member                        true, 68.5                                      out of 5000
-             *   
-             *   simple_flat                        true, 50    ( 50 flat)                          out of 5000
-             *   simple_prec                        true, 500   ( 10% of 5,000)                     out of 5000
-             *   simple_member                      true, 68.5  ( 100 days in membership )          out of 5000
-             *   
-             *   and_rule                           false, 0           
-             *   or_rule                            true, 550   (500 + 50) 
-             *   max_rule                           true, 550   (550 bigger than 0)
-             *   add_rule                           true, 1150  (550 + 50 + 550)
-             * 
-             *//*
+            ServiceFactory.loadConfig = false; // Disconnect config file from the system initialization
+            /**
+              * 
+              *  Basket:           | name        |  price   | category  | descript  | amount   | total price
+              *  -----------------------------------------------------------------------------------------
+              *  
+              *  - product 1 :   |   product1  |   30     |   Food    |   Nice    |  100      | 3000
+              *  
+              *  - product 2 :   |   product2  |   50     |   Drink   |   Perfect |  15       | 750
+              * 
+              *  - product 3 :   |   product3  |   10     |   Food    |   Eh      |  50       | 500
+              * 
+              * 
+              *  -------------------------------------------------------------------------------------
+              *  
+              *   relevant_price_by_category        3500
+              *   relevant_price_by_product         3000      
+              *   relevant_price_by_all             4250
+              *
+              *   condition_category                true
+              *   condition_product                 false
+              *   condition_all                     true
+              *      
+              *   
+              *   cond_flat                          true, 50                                        out of 5000  // only rules weight the conditions
+              *   cond_prec                          false, 500                                      out of 5000  
+              *   cond_member                        true, 68.5                                      out of 5000
+              *   
+              *   simple_flat                        true, 50    ( 50 flat)                          out of 5000
+              *   simple_prec                        true, 500   ( 10% of 5,000)                     out of 5000
+              *   simple_member                      true, 68.5  ( 100 days in membership )          out of 5000
+              *   
+              *   and_rule                           false, 0           
+              *   or_rule                            true, 550   (500 + 50) 
+              *   max_rule                           true, 550   (550 bigger than 0)
+              *   add_rule                           true, 1150  (550 + 50 + 550)
+              * 
+              * */
 
             doc_generator = new Documentor();
             ServiceFactory serviceFactory = new ServiceFactory();
@@ -189,7 +140,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
             basket.add_product(cart_product3);
 
 
-            discount_policy = store1.DiscountPolicy;
+            discount_policy = store1.GetDiscountPolicy();
             strategy_flat = new Discount_Flat(50);
             strategy_precentage = new Discount_Percentage(10);
             strategy_membership = new Discount_Membership();
@@ -434,7 +385,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
             // ----------  flat added
 
             Dictionary<string, string> add_flat_doc = new Documentor.discount_policy_doc_builder()
-                                                                       .set_base_add($"{sid}", "06/07/2024", "10/07/2024", "flat", flat: "50")
+                                                                       .set_base_add($"{sid}", "2024-07-06", "2024-07-10", "flat", flat: "50") // Fix: "2024-07-06" instead of "06/07/2024" format: "yyyy-MM-dd"
                                                                        .Build();
 
             Response response = store_service.edit_discount_policy(add_flat_doc);
@@ -633,4 +584,3 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         }
     }
 }
-*/

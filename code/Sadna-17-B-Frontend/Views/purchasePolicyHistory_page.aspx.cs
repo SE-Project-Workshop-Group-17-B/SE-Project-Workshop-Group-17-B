@@ -23,11 +23,17 @@ namespace Sadna_17_B_Frontend.Views
             if (!IsPostBack)
             {
                 int.TryParse(Request.QueryString["storeId"], out storeId);
-                string token = backendController.userDTO.AccessToken;
                 Response res = await backendController.GetStoreOrderHistory(storeId);
-                List<SubOrderDTO> purchaseHistory = JsonConvert.DeserializeObject<List<SubOrderDTO>>(res.Data.ToString());
-                PurchaseHistoryRepeater.DataSource = purchaseHistory;
-                PurchaseHistoryRepeater.DataBind();
+                if (res.Success)
+                {
+                    List<SubOrderDTO> purchaseHistory = JsonConvert.DeserializeObject<List<SubOrderDTO>>(res.Data.ToString());
+                    PurchaseHistoryRepeater.DataSource = purchaseHistory;
+                    PurchaseHistoryRepeater.DataBind();
+                }
+                else
+                {
+                    MessageBox(res.Message);
+                }
             }
         }
 
@@ -36,7 +42,7 @@ namespace Sadna_17_B_Frontend.Views
             var order = (SubOrderDTO)dataItem;
             var cartItems = new List<CartItemViewModel>();
 
-            var basket = order.cart.Baskets[storeId];
+            var basket = order.basket;
             Dictionary<int, Cart_Product> id_to_product = basket.id_to_product;
             foreach (KeyValuePair<int, Cart_Product> entry in id_to_product)
             {
@@ -56,6 +62,11 @@ namespace Sadna_17_B_Frontend.Views
             }
 
             return cartItems;
+        }
+
+        private void MessageBox(string message)
+        {
+            Response.Write(@"<script language='javascript'>alert('" + message + "')</script>");
         }
     }
         public class CartItemViewModel

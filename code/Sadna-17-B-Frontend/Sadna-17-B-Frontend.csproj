@@ -274,6 +274,9 @@
     <Content Include="Scripts\script.js" />
     <Compile Include="Controllers\ProductSearchDTO.cs" />
     <Compile Include="Controllers\RespondOfferDTO.cs" />
+    <Compile Include="Controllers\PaymentSystem.cs" />
+    <Compile Include="Controllers\ProductSearchDTO.cs" />
+    <Compile Include="Controllers\SupplySystem.cs" />
     <Compile Include="Views\About.aspx.cs">
       <DependentUpon>About.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

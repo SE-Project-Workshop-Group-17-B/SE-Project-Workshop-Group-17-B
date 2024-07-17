@@ -124,13 +124,13 @@
             <asp:Repeater ID="rptManagedStores" runat="server">
                 <ItemTemplate>
                     <div class="store-item">
-                        <asp:ImageButton ID="imgStore" runat="server" ImageUrl='<%# $"~/Content/store{Eval("ID")}.png" %>' 
-                            CssClass="store-image" OnClick="imgStore_Click" CommandArgument='<%# Eval("ID") %>' />
+                        <asp:ImageButton ID="imgStore" runat="server" ImageUrl='<%# $"~/Content/store{Eval("StoreID")}.png" %>' 
+                            CssClass="store-image" OnClick="imgStore_Click" CommandArgument='<%# Eval("StoreID") %>' />
                         <div class="store-details">
                             <div class="store-name"><%# Eval("Name") %></div>
-                            <div class="store-id">ID: <%# Eval("ID") %></div>
+                            <div class="store-id">ID: <%# Eval("StoreID") %></div>
                             <asp:Button ID="btnManage" runat="server" Text="Manage" CssClass="btn-manage" 
-                                CommandArgument='<%# Eval("ID") %>' OnClick="btnManage_Click" />
+                                CommandArgument='<%# Eval("StoreID") %>' OnClick="btnManage_Click" />
                         </div>
                     </div>
                 </ItemTemplate>
@@ -147,13 +147,13 @@
             <asp:Repeater ID="rptOwnedStores" runat="server">
                 <ItemTemplate>
                     <div class="store-item">
-                        <asp:ImageButton ID="imgStore" runat="server" ImageUrl='<%# $"~/Content/store{Eval("ID")}.png" %>' 
-                            CssClass="store-image" OnClick="imgStore_Click" CommandArgument='<%# Eval("ID") %>' />
+                        <asp:ImageButton ID="imgStore" runat="server" ImageUrl='<%# $"~/Content/store{Eval("StoreID")}.png" %>' 
+                            CssClass="store-image" OnClick="imgStore_Click" CommandArgument='<%# Eval("StoreID") %>' />
                         <div class="store-details">
                             <div class="store-name"><%# Eval("Name") %></div>
-                            <div class="store-id">ID: <%# Eval("ID") %></div>
+                            <div class="store-id">ID: <%# Eval("StoreID") %></div>
                             <asp:Button ID="btnManage" runat="server" Text="Manage" CssClass="btn-manage" 
-                                CommandArgument='<%# Eval("ID") %>' OnClick="btnManage_Click" />
+                                CommandArgument='<%# Eval("StoreID") %>' OnClick="btnManage_Click" />
                         </div>
                     </div>
                 </ItemTemplate>

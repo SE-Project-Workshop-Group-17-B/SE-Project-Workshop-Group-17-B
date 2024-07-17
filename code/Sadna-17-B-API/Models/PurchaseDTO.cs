@@ -2,8 +2,8 @@
 {
     public class PurchaseDTO
     {
-        public string DestinationAddress { get; set; }
-        public string CreditCardInfo { get; set; }
-        public string AccessToken { get; set; }
+       public Dictionary<string, string> Supply{ get; set; }
+       public Dictionary<string,string> Payment { get; set; }
+       public string AccessToken { get; set; }
     }
 }

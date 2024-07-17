@@ -1,16 +1,21 @@
 ﻿using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 using Sadna_17_B.DomainLayer.StoreDom;
 using Sadna_17_B.Utils;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Web;
 using System.Web.Caching;
 
 namespace Sadna_17_B.DomainLayer.User
 {
-    public class Basket
+
+
+    [Serializable]
+    public class Basket //: ISerializable
     {
 
         // ----------- variables + constructor -------------------------------------------------------------
@@ -20,7 +25,6 @@ namespace Sadna_17_B.DomainLayer.User
 
         // Foreign Key to Store
 
-      
         public Dictionary<int, Cart_Product> id_to_product { get; set; }
 
         public Dictionary<string, List<Cart_Product>> category_to_products { get; set; }
@@ -28,6 +32,9 @@ namespace Sadna_17_B.DomainLayer.User
 
         public Basket()
         {
+            store_id = -1;
+            id_to_product = new Dictionary<int, Cart_Product>();
+            category_to_products = new Dictionary<string, List<Cart_Product>>();
         }
 
 
@@ -43,12 +50,13 @@ namespace Sadna_17_B.DomainLayer.User
         public Basket(Basket basket)
         {
             store_id = basket.store_id;
+            //id_to_product = basket.copy_id_dict();
+            //category_to_products = basket.copy_category_dict();
             id_to_product = copy_id_dict(basket);
             category_to_products = copy_category_dict(basket);
-            
         }
 
-        public List<Cart_Product> produts()
+        public List<Cart_Product> products()
         {
             return id_to_product.Values.ToList();
         }
@@ -85,6 +93,22 @@ namespace Sadna_17_B.DomainLayer.User
             return copy;
         }
 
+
+        // ------------ Serialization -----------------------------
+
+        /*public void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            info.AddValue(nameof(store_id), store_id);
+            //info.AddValue(nameof(id_to_product), JsonConvert.SerializeObject(id_to_product));
+            //info.AddValue(nameof(category_to_products), JsonConvert.SerializeObject(category_to_products));
+        }
+
+        protected Basket(SerializationInfo info, StreamingContext context)
+        {
+            store_id = info.GetInt32(nameof(store_id));
+            //id_to_product =  JsonConvert.DeserializeObject<Dictionary<int, Cart_Product>>(info.GetString(nameof(id_to_product)));
+            //category_to_products = JsonConvert.DeserializeObject<Dictionary<string, List<Cart_Product>>>(info.GetString(nameof(category_to_products)));
+        }*/
 
 
         // ------------ contain -----------------------------------

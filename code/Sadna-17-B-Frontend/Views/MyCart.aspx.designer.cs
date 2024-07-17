@@ -60,6 +60,24 @@ namespace Sadna_17_B_Frontend.Views
         protected global::System.Web.UI.WebControls.Label labelTemp;
 
         /// <summary>
+        /// cardHolderName control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlInputText cardHolderName;
+
+        /// <summary>
+        /// cardHolderId control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlInputText cardHolderId;
+
+        /// <summary>
         /// cardNumber control.
         /// </summary>
         /// <remarks>
@@ -87,13 +105,49 @@ namespace Sadna_17_B_Frontend.Views
         protected global::System.Web.UI.HtmlControls.HtmlInputText txtCardCVVNum;
 
         /// <summary>
-        /// textDestInfro control.
+        /// shippingName control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlTextArea textDestInfro;
+        protected global::System.Web.UI.HtmlControls.HtmlInputText shippingName;
+
+        /// <summary>
+        /// shippingStreet control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlInputText shippingStreet;
+
+        /// <summary>
+        /// shippingCity control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlInputText shippingCity;
+
+        /// <summary>
+        /// shippingCountry control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlInputText shippingCountry;
+
+        /// <summary>
+        /// shippingZipCode control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlInputText shippingZipCode;
 
         /// <summary>
         /// btnsave control.

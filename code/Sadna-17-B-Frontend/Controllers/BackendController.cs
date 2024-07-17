@@ -16,7 +16,12 @@ using System.Web.Http;
 using System.Web.WebPages;
 using System.Web.Caching;
 using Sadna_17_B_Frontend.Views;
+
+using Sadna_17_B.Layer_Service.ServiceDTOs;
+using Sadna_17_B.DomainLayer.Order;
+
 using System.Text;
+
 
 namespace Sadna_17_B_Frontend.Controllers
 {
@@ -184,7 +189,7 @@ namespace Sadna_17_B_Frontend.Controllers
         {
             using (HttpClient client = new HttpClient())
             {
-                var user = new UIuserDTOAPI { Username = "", Password = "", AccessToken = userDTO.AccessToken };
+                var user = new { Username = "", Password = "", AccessToken = userDTO.AccessToken };
                 HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/get_shoping_cart", user); // add relative path
 
                 if (response.IsSuccessStatusCode)
@@ -204,7 +209,7 @@ namespace Sadna_17_B_Frontend.Controllers
         {
             using (HttpClient client = new HttpClient())
             {
-                var user = new UIuserDTOAPI { Username = "", Password = "", AccessToken = userDTO.AccessToken };
+                var user = new { Username = "", Password = "", AccessToken = userDTO.AccessToken };
                 HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/get_shoping_cart", user); // add relative path
 
                 if (response.IsSuccessStatusCode)
@@ -369,7 +374,7 @@ namespace Sadna_17_B_Frontend.Controllers
             //var user = new UIuserDTOAPI { Username = username, Password = password, AccessToken = "" };
             using (HttpClient client = new HttpClient())
             {
-                var user = new UIuserDTOAPI { Username = "", Password = "", AccessToken = userDTO.AccessToken };
+                var user = new { Username = "", Password = "", AccessToken = userDTO.AccessToken };
 
                 HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/get_owned_stores", user); // add relative path
 
@@ -391,7 +396,7 @@ namespace Sadna_17_B_Frontend.Controllers
         {
             using (HttpClient client = new HttpClient())
             {
-                var user = new UIuserDTOAPI { Username = "", Password = "", AccessToken = userDTO.AccessToken };
+                var user = new { Username = "", Password = "", AccessToken = userDTO.AccessToken };
 
                 HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/get_managed_stores", user); // add relative path
 
@@ -591,7 +596,7 @@ namespace Sadna_17_B_Frontend.Controllers
         {
             using (HttpClient client = new HttpClient())
             {
-                var user = new UIuserDTOAPI { Username = username, Password = password, AccessToken = "" };
+                var user = new { Username = username, Password = password, AccessToken = "" };
                 HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/signup", user); // add relative path
                 if (response.IsSuccessStatusCode)   
                 {
@@ -604,12 +609,50 @@ namespace Sadna_17_B_Frontend.Controllers
                 }
             }
         }
+        public async Task<Response> edit_discount_policy(Dictionary<string, string> doc)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/edit_discount_policy", doc);
 
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseString = await response.Content.ReadAsStringAsync();
+                    Response responseObj = JsonConvert.DeserializeObject<Response>(responseString);
+                    return responseObj;
+                }
+                else
+                {
+                    string errorMessage = await response.Content.ReadAsStringAsync();
+                    throw new Exception("An error occurred while editing store discount policy: " + errorMessage);
+                }
+            }
+        }
+
+        public async Task<Response> edit_purchase_policy(Dictionary<string, string> doc)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/edit_purchase_policy", doc);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseString = await response.Content.ReadAsStringAsync();
+                    Response responseObj = JsonConvert.DeserializeObject<Response>(responseString);
+                    return responseObj;
+                }
+                else
+                {
+                    string errorMessage = await response.Content.ReadAsStringAsync();
+                    throw new Exception("An error occurred while editing store purchase policy: " + errorMessage);
+                }
+            }
+        }
         public async Task<string> logout()
         {
             using (HttpClient client = new HttpClient())
             {
-                var user = new UIuserDTOAPI { Username = "", Password = "", AccessToken = userDTO.AccessToken };
+                var user = new { Username = "", Password = "", AccessToken = userDTO.AccessToken };
                 HttpResponseMessage response = client.PostAsJsonAsync(prefix + "/RestAPI/logout", user).GetAwaiter().GetResult();
                 string responseContent = await response.Content.ReadAsStringAsync();
                 Response responseObj = JsonConvert.DeserializeObject<Response>(responseContent);
@@ -851,7 +894,9 @@ namespace Sadna_17_B_Frontend.Controllers
                 }
             }
         }
+
         public async Task<Response> AbandonOwnership(int storeId)
+
         {
             using (HttpClient client = new HttpClient())
             {
@@ -894,6 +939,10 @@ namespace Sadna_17_B_Frontend.Controllers
 
 
 
+        
+            
+
+       
         public async Task<Response> cart_update_product(Dictionary<string, string> doc)
         {
             string token = userDTO.AccessToken;
@@ -948,31 +997,222 @@ namespace Sadna_17_B_Frontend.Controllers
 
         // ---------- checkout -----------------------------------
 
-      //  public double process_store_order(Basket basket)
-      //  {
-      //      Response response = storeService.calculate_products_prices(basket);
-      //      if (response.Success)
-      //      {
-      //          return (response.Data as Mini_Checkout).price_after_discount();
-      //      }
-      //      return 0;
-      //  }
+        public async /*   ???   */ Task<Response> completePurchase(Dictionary<string,string> supply, Dictionary<string,string> payment)
+        {
+            Response response;
 
-        public async Task<Response> completePurchase( string destAddr, string creditCardInfo)
+            //we want this function to return amount to pay
+            response = await process_order(supply, payment);       // backend
+            if (!response.Success)
+            {
+                cancel_order();
+                return response;
+            }
+                
+            else {
+                double priceToPay = double.Parse(response.Data.ToString());
+                payment["amount"] = priceToPay.ToString(); 
+            }
+            
+            //WORKING
+            response = await supply_order(supply);                // external
+            if (!response.Success)
+            {
+                cancel_order();
+                return response;
+            }
+
+            //WORKING
+            response = await pay_order(payment);                  // external
+            if (!response.Success)
+            {
+                cancel_order();
+                return response;
+            }
+
+            //need to reduce from store here?
+            response = await reduce_order();                     // backend
+            if (!response.Success)
+            {
+                cancel_order();
+                return response;
+            }
+
+
+            return new Response("Purchase Completed Successfully", true);
+        }
+
+        public async /*   ???   */ Task<Response> process_order(Dictionary<string, string> supply, Dictionary<string, string> payment)
+
         {
             using (HttpClient client = new HttpClient())
             {
                 string token = userDTO.AccessToken;
-                var purchaseDetails = new
+                var payload = new
                 {
-                    DestinationAddress = destAddr,
-                    CreditCardInfo = creditCardInfo,
+                    Supply = supply,
+                    Payment = payment,
                     AccessToken = userDTO.AccessToken
                 };
-                HttpResponseMessage response = client.PostAsJsonAsync(prefix + "/RestAPI/completePurchase", purchaseDetails).GetAwaiter().GetResult();
+
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/process_order", payload);
                 string responseContent = await response.Content.ReadAsStringAsync();
                 Response responseObj = JsonConvert.DeserializeObject<Response>(responseContent);
+
                 return responseObj;
+            }
+
+            
+        }
+
+
+        public async /*   int   */ Task<Response> pay_order(Dictionary<string,string> payment)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                var payload = new FormUrlEncodedContent(payment);
+                HttpResponseMessage response = await client.PostAsync("https://damp-lynna-wsep-1984852e.koyeb.app/", payload); // add relative path
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseContent = await response.Content.ReadAsStringAsync();
+                    int transaction_id = JsonConvert.DeserializeObject<int>(responseContent);
+                    if (transaction_id > 0)
+                        return new Response("Payment succeeded", true);
+
+                    return new Response("Payment Failed", false, transaction_id);
+                }
+
+                else
+                {
+                    string errorMessage = await response.Content.ReadAsStringAsync();
+                    return new Response(errorMessage, false);
+                }
+            }
+        }
+
+        public async /*   int   */ Task<Response> cancel_order()
+        {
+            using (HttpClient client = new HttpClient())
+            {
+           
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/cancel_order", userDTO.AccessToken);
+                string responseContent = await response.Content.ReadAsStringAsync();
+                Response responseObj = JsonConvert.DeserializeObject<Response>(responseContent);
+
+                return responseObj;
+            }
+        }
+
+        public async /*   int   */ Task<Response> supply_order(Dictionary<string,string> supply)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                var payload = new FormUrlEncodedContent(supply);
+                HttpResponseMessage response = await client.PostAsync("https://damp-lynna-wsep-1984852e.koyeb.app/", payload); // add relative path
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseContent = await response.Content.ReadAsStringAsync();
+                    int transaction_id = JsonConvert.DeserializeObject<int>(responseContent);
+                    return new Response("Transaction Completed", transaction_id != -1, transaction_id); 
+                }
+
+                else
+                {
+                    string errorMessage = await response.Content.ReadAsStringAsync();
+                    return new Response(errorMessage, false);
+                }
+            }
+        }
+
+        public async /*   bool  */ Task<Response> reduce_order()
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/reduce_order", userDTO.AccessToken); // add relative path
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseContent = await response.Content.ReadAsStringAsync();
+                    Response res = JsonConvert.DeserializeObject<Response>(responseContent);
+                    if (res.Success)
+                        return new Response("Payment and delivery succeeded", true);
+                    else
+                        return new Response(res.Message, false);
+                }
+                else
+                {
+                    string errorMessage = await response.Content.ReadAsStringAsync();
+                    return new Response("reduction was not successful", false);
+                }
+            }
+        }
+
+
+        public async Task<Response> handshake()
+        {
+            using (HttpClient client = new HttpClient())
+            {
+
+                handshakeDTO handshake = new handshakeDTO();
+
+                HttpResponseMessage response = await client.PostAsJsonAsync("https://damp-lynna-wsep-1984852e.koyeb.app/", handshake); // add relative path
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseContent = response.Content.ReadAsStringAsync().Result;
+                    string success_status = JsonConvert.DeserializeObject<string>(responseContent);
+                    return new Response(success_status, success_status == "OK");
+                }
+
+                else
+                {
+                    string errorMessage = await response.Content.ReadAsStringAsync();
+                    return new Response(errorMessage, false);
+                }
+            }
+        }
+
+        public async Task<Response> cancel_supply(cancel_supply_DTO cancel)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                HttpResponseMessage response = await client.PostAsJsonAsync("https://damp-lynna-wsep-1984852e.koyeb.app/", cancel); // add relative path
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseContent = response.Content.ReadAsStringAsync().Result;
+                    int cancelation_status = JsonConvert.DeserializeObject<int>(responseContent);
+                    return new Response("",cancelation_status != -1,cancelation_status);
+                }
+
+                else
+                {
+                    string errorMessage = await response.Content.ReadAsStringAsync();
+                    return new Response(errorMessage, false);
+                }
+            }
+        }
+
+        public async Task<Response> cancel_payment(cancel_pay_DTO cancel)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                HttpResponseMessage response = await client.PostAsJsonAsync("https://damp-lynna-wsep-1984852e.koyeb.app/", cancel); // add relative path
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseContent = response.Content.ReadAsStringAsync().Result;
+                    int cancelation_status = JsonConvert.DeserializeObject<int>(responseContent);
+                    return new Response("", cancelation_status != -1, cancelation_status);
+                }
+
+                else
+                {
+                    string errorMessage = await response.Content.ReadAsStringAsync();
+                    return new Response(errorMessage, false);
+                }
             }
         }
         public async Task<Response> GetProductRating(int productId)
@@ -989,6 +1229,7 @@ namespace Sadna_17_B_Frontend.Controllers
                 string responseContent = await response.Content.ReadAsStringAsync();
                 Response responseObj = JsonConvert.DeserializeObject<Response>(responseContent);
 
+
                 if (!response.IsSuccessStatusCode)
                 {
                     return responseObj;
@@ -999,6 +1240,7 @@ namespace Sadna_17_B_Frontend.Controllers
                 }
             }
         }
+
 
 
 
@@ -1091,15 +1333,6 @@ namespace Sadna_17_B_Frontend.Controllers
             }
         }
 
-
-        /*
-                // Todo impliment 
-                public Response add_to_cart(int productId)
-                {
-                    //  return userService.AddToCart(userDTO.AccessToken, productId);
-                    return new Response("succes", true);
-                }*/
-
         public async Task<Response> show_purchase_policy(Dictionary<string, string> policy)
         {
             using (HttpClient client = new HttpClient())
@@ -1120,6 +1353,30 @@ namespace Sadna_17_B_Frontend.Controllers
                     throw new Exception("An error occurred while showing purchase policy: " + errorMessage);
                 }
             }
+        }
+
+     
+
+        public async Task<Response> edit_Purchase_policy(Dictionary<string, string> doc)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                // Send the POST request
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/edit_purchase_policy", doc); // add relative path
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseString = await response.Content.ReadAsStringAsync();
+                    Response responseObj = JsonConvert.DeserializeObject<Response>(responseString);
+                    return responseObj;
+                }
+                else
+                {
+                    string errorMessage = await response.Content.ReadAsStringAsync();
+                    throw new Exception("An error occurred while showing purchase policy: " + errorMessage);
+                }
+
+            }
+
         }
         public async Task<Response> show_discount_policy(Dictionary<string, string> policy)
         {
@@ -1260,23 +1517,6 @@ namespace Sadna_17_B_Frontend.Controllers
                 }
             }
         }
-
-
-
-        /*    public Response add_product_rating(int storeID, int productID, int rating)
-            {
-                return storeService.add_product_rating(storeID, productID, rating);
-            }
-
-            public Response add_product_review(int storeID, int productID, string review)
-            {
-                return storeService.add_product_review(storeID, productID, review);
-            }
-
-            public Response search_products_by(Dictionary<string, string> doc)
-            {
-                return storeService.search_product_by(doc);
-            }*/
     }
 
     public class ItemDTO

@@ -1,4 +1,4 @@
-﻿/*using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using Sadna_17_B.ServiceLayer;
 using Sadna_17_B.ServiceLayer.Services;
@@ -12,6 +12,7 @@ using System.Diagnostics;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Sadna_17_B.DataAccessLayer;
+using Sadna_17_B.Repositories;
 
 namespace Sadna_17_B_Test.Tests.AcceptanceTests
 {
@@ -44,10 +45,14 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         int productAmount = 5;
         //category, description, amount
 
+        static IUnitOfWork unitOfWork = UnitOfWork.CreateCustomUnitOfWork(new TestsDbContext()); // Creates a different singleton value for the UnitOfWork DB connection
+
+
         [TestInitialize]
         public void SetUp()
         {
-            ApplicationDbContext.isMemoryDB = true; // Disconnect actual database from these tests
+            ApplicationDbContext.isMemoryDB = true; // Disconnect actual database from these tests - it currently cannot work with an actual database, need to move the tests into the same Backend project assembly
+            ServiceFactory.loadConfig = false; // Disconnect config file from the system initialization
             ServiceFactory serviceFactory = new ServiceFactory();
             userService = serviceFactory.UserService;
             storeService = serviceFactory.StoreService;
@@ -325,47 +330,6 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
             Assert.IsTrue(res.Success);
             Assert.IsTrue(data.Item1.Contains(username1));
             Assert.IsTrue(data.Item2[username3].SetEquals(auth));
-        }
-
-        *//*[TestMethod]
-        public void TestTwoPeopleUpdateSameUserDifferentAuthorizationsConccurency_Success()
-        {
-            //need to understande what should happend, easy fix
-            Assert.IsFalse(true);
-            Response ignore = userService.CreateSubscriber(username1, password1);
-            ignore = userService.CreateSubscriber(username2, password2);
-            ignore = userService.CreateSubscriber(username3, password3);
-            Response res1 = userService.Login(username1, password1);
-            Response res2 = userService.Login(username2, password2);
-            Response res3 = userService.Login(username3, password3);
-
-            string token1 = (res1.Data as UserDTO).AccessToken;
-            string token2 = (res2.Data as UserDTO).AccessToken;
-            string token3 = (res3.Data as UserDTO).AccessToken;
-            ((UserService)userService).CreateStoreFounder(token1, sid);
-
-            ignore = userService.OfferOwnerAppointment(token1, sid, username2);
-            ignore = userService.RespondToOwnerAppointmentOffer(token2, sid, true);
-            ignore = userService.OfferManagerAppointment(token1, sid, username3);
-            ignore = userService.RespondToManagerAppointmentOffer(token3, sid, true);
-
-            HashSet<Manager.ManagerAuthorization> auth = new HashSet<Manager.ManagerAuthorization>();
-            auth.Add(Manager.ManagerAuthorization.View);
-            auth.Add(Manager.ManagerAuthorization.UpdateDiscountPolicy);
-
-            //both users try to give the third user the same authorizations
-            Task task1 = Task.Run(() => userService.UpdateManagerAuthorizations(token1, sid, username3, auth));
-            Task task2 = Task.Run(() => userService.UpdateManagerAuthorizations(token2, sid, username3, auth));
-
-            Task.WaitAll(task1, task2);
-
-            Response res = userService.GetStoreRoles(token1, sid);
-            Tuple<HashSet<string>, Dictionary<string, HashSet<Manager.ManagerAuthorization>>> data = res.Data as Tuple<HashSet<string>, Dictionary<string, HashSet<Manager.ManagerAuthorization>>>;
-
-            Assert.IsTrue(res.Success);
-            Assert.IsTrue(data.Item1.Contains(username1));
-            Assert.IsTrue(data.Item2[username3].SetEquals(auth));
-        }*//*
+        }        
     }
 }
-*/

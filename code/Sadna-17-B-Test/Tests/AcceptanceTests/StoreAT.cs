@@ -1,4 +1,4 @@
-﻿/*using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using Sadna_17_B.ServiceLayer;
 using Sadna_17_B.ServiceLayer.Services;
@@ -11,6 +11,7 @@ using Newtonsoft.Json.Linq;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Sadna_17_B.DataAccessLayer;
+using Sadna_17_B.Repositories;
 
 namespace Sadna_17_B_Test.Tests.AcceptanceTests
 {
@@ -41,10 +42,13 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         int productAmount = 5;
         //category, description, amount
 
+        static IUnitOfWork unitOfWork = UnitOfWork.CreateCustomUnitOfWork(new TestsDbContext()); // Creates a different singleton value for the UnitOfWork DB connection
+
         [TestInitialize]
         public void SetUp()
         {
             ApplicationDbContext.isMemoryDB = true; // Disconnect actual database from these tests
+            ServiceFactory.loadConfig = false; // Disconnect config file from the system initialization
             ServiceFactory serviceFactory = new ServiceFactory();
             userService = serviceFactory.UserService;
             storeService = serviceFactory.StoreService;
@@ -105,7 +109,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
             Response ignore2 = userService.upgrade_subscriber(username2, password2);
             Response result1 = userService.entry_subscriber(username1, password1);
             UserDTO userDTO = result1.Data as UserDTO;
-            
+
             // init store service
 
             Response store_response = storeService.create_store(userDTO.AccessToken, name, email, phonenumber, storeDescr, addr);
@@ -134,7 +138,7 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
 
             Response store_response = storeService.create_store(userDTO.AccessToken, name, email, phonenumber, storeDescr, addr);
             Response store_name_response = storeService.store_by_name(name);
-            
+
             Store store = (store_name_response.Data as List<Store>)[0];
             Assert.IsTrue(store_name_response.Success);
             Assert.AreEqual(store.Name, name);
@@ -177,4 +181,3 @@ namespace Sadna_17_B_Test.Tests.AcceptanceTests
         }
     }
 }
-*/

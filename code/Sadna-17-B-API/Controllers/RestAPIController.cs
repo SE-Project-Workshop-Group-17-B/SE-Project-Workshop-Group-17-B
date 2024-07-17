@@ -11,7 +11,8 @@ using System.Net;
 using System.Text;
 using Newtonsoft.Json;
 using Sadna_17_B.DomainLayer.StoreDom;
-using Newtonsoft.Json;
+using Sadna_17_B.Layer_Service.ServiceDTOs;
+using System.Threading.Channels;
 
 namespace Sadna_17_B_API.Controllers
 {
@@ -259,7 +260,8 @@ namespace Sadna_17_B_API.Controllers
         {
             var response = _userService.cart_remove_product(tempObj.p, tempObj.AccessToken);
             return response;
-        }
+        }        
+
 
         [HttpPost("remove_from_cart")]
         public Response removeFromCart([FromBody] RemoveFromCartRequest request)
@@ -295,11 +297,35 @@ namespace Sadna_17_B_API.Controllers
             return response;
         }
 
-        [HttpPost("completePurchase")]
+/*        [HttpPost("completePurchase")]
         public IActionResult CompletePurchase([FromBody] PurchaseDTO purchaseDetails)
         {
+            //{creditCardInfo, DestInfo}
             var response = _userService.CompletePurchase(purchaseDetails.AccessToken, purchaseDetails.DestinationAddress, purchaseDetails.CreditCardInfo);
             return Ok(response);
+        }*/
+
+        [HttpPost("process_order")]
+        public Response ProcessOrder([FromBody] PurchaseDTO userData)
+        {
+            string token = userData.AccessToken;
+            var response = _userService.Process_order(token, userData.Supply, userData.Payment);
+            return response;
+
+        }
+
+        [HttpPost("reduce_order")]
+        public Response reduce_order([FromBody]string AccessToken)
+        {
+            var response = _userService.reduce_cart(AccessToken);
+            return response;
+        }
+
+        [HttpPost("cancel_order")]
+        public Response cancel_order([FromBody] string AccessToken)
+        {
+            var response = _userService.cancel_order(AccessToken);
+            return response;
         }
 
       
@@ -414,6 +440,15 @@ namespace Sadna_17_B_API.Controllers
             return response;
         }
 
+        [HttpPost("add_discount_policy")]
+        public Response add_discount_policy([FromBody] Dictionary<string, string> doc)
+        {
+
+            var response = _storeService.edit_discount_policy(doc);
+            return response;
+        }
+
+
         [HttpPost("search_product_by")]
         public Response searchProductBy([FromBody] Dictionary<string, string> doc)
         {
@@ -437,10 +472,25 @@ namespace Sadna_17_B_API.Controllers
         {
             return _storeService.show_discount_policy(policy);
         }
+
+
+        [HttpPost("edit_discount_policy")]
+        public Response edit_discount_policy([FromBody] Dictionary<string, string> doc)
+        {
+            return _storeService.edit_discount_policy(doc);
+        }
+
+        [HttpPost("edit_purchase_policy")]
+        public Response edit_purchase_policy([FromBody] Dictionary<string, string> doc)
+        {
+            return _storeService.edit_purchase_policy(doc);
+        }
+
         [HttpPost("get_store_order_history")]
         public Response GetStoreOrderHistory([FromBody] orderHistoryDTO dto)
         {
-            return _userService.GetStoreOrderHistory(dto.AccessToken, dto.OrderId);
+            var response = _userService.GetStoreOrderHistory(dto.AccessToken, dto.OrderId);
+            return response;
         }
         [HttpPost("add_store_product")]
         public Response AddStoreProduct([FromBody] AddProductDTO dto)
