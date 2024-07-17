@@ -36,7 +36,7 @@ namespace Sadna_17_B.ServiceLayer
 
 
         // --------- constructor ---------------------------------------------------------
-        public static bool loadConfig = false;
+        public static bool loadConfig = true;
 
         public ServiceFactory()
         {
