@@ -7,8 +7,14 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Sadna_17_B.DomainLayer.User
 {
+
+   
     public class NotificationSystem
     {
+        private Dictionary<string, List<Notification>> notifications; // username -> List<Notification>
+        private Dictionary<string, UserNotifications> userNotifications; // username -> List<Notification>
+        private static NotificationSystem Instance = null;
+
         public class UserNotifications
         {
             [Key]
@@ -40,14 +46,12 @@ namespace Sadna_17_B.DomainLayer.User
                 this.Notifications = notifications;
             }
         }
-        //private Dictionary<string, List<Notification>> notifications; // username -> List<Notification>
-        private Dictionary<string, UserNotifications> userNotifications; // username -> List<Notification>
 
         IUnitOfWork _unitOfWork = UnitOfWork.GetInstance();
 
-        public NotificationSystem()
+        private NotificationSystem()
         {
-            //notifications = new Dictionary<string, List<Notification>>();
+            notifications = new Dictionary<string, List<Notification>>(); // double initialization of both dictionaries
             userNotifications = new Dictionary<string, UserNotifications>();
         }
 
@@ -58,6 +62,12 @@ namespace Sadna_17_B.DomainLayer.User
             {
                 userNotifications[userNotification.Username] = userNotification;
             }
+        }
+        public static NotificationSystem getInstance()
+        {
+            if (Instance == null) 
+                Instance = new NotificationSystem();
+            return Instance;
         }
 
         public void Notify(string usernameToNotify, string message)
@@ -73,28 +83,86 @@ namespace Sadna_17_B.DomainLayer.User
             userNotificationsEntry = userNotifications[usernameToNotify];
             userNotificationsEntry.Notifications.Add(notification);
             _unitOfWork.UserNotifications.Update(userNotificationsEntry); // Updates the user notifications entry in the database
+          
+            // Double addition to both dictionaries
+            if (!notifications.ContainsKey(usernameToNotify))
+            {
+                notifications[usernameToNotify] = new List<Notification>();
+            }
+            notifications[usernameToNotify].Add(notification);
+            NotificationsHandler.getInstance().Notify(usernameToNotify, notification);
         }
 
-        public List<Notification> ReadNewNotifications(string username)
+        public void NotifyLogin(string usernameToNotify)
         {
-            if (!userNotifications.ContainsKey(username))
+            if (notifications.ContainsKey(usernameToNotify))
+            {
+                foreach (Notification notification in notifications[usernameToNotify])
+                {
+                    if (!notification.IsMarkedAsRead)
+                        NotificationsHandler.getInstance().Notify(usernameToNotify, notification);
+                }
+            }
+
+        }
+
+        public void MarkAsRead(string username,string message)
+        {
+            if (notifications.ContainsKey(username))
+            {
+                foreach (Notification notification in notifications[username])
+                {
+                    if (notification.Message.Equals(message))
+                    {
+                        notification.MarkAsRead();
+                        break;
+                    }
+                }
+            }
+        }
+
+//         public List<Notification> ReadMyNotifications(string username)
+//         {
+//             if (!userNotifications.ContainsKey(username))
+//             {
+//                 return new List<Notification>();
+//             }
+//             foreach (Notification notification in userNotifications[username].Notifications)
+//             {
+//                 notification.MarkAsRead();
+//             }
+//             return userNotifications[username].Notifications;
+//         }
+      
+//       public List<Notification> GetNotifications(string username)
+//       {
+//             if (!userNotifications.ContainsKey(username))
+//             {
+//                 return new List<Notification>();
+//             }
+//             return userNotifications[username].Notifications;
+//       }
+      
+      public List<Notification> ReadMyNotifications(string username)
+        {
+            if (!notifications.ContainsKey(username))
             {
                 return new List<Notification>();
             }
-            foreach (Notification notification in userNotifications[username].Notifications)
+            foreach (Notification notification in notifications[username])
             {
                 notification.MarkAsRead();
             }
-            return userNotifications[username].Notifications;
+            return notifications[username];
         }
 
         public List<Notification> GetNotifications(string username)
         {
-            if (!userNotifications.ContainsKey(username))
+            if (!notifications.ContainsKey(username))
             {
                 return new List<Notification>();
             }
-            return userNotifications[username].Notifications;
+            return notifications[username];
         }
     }
 }

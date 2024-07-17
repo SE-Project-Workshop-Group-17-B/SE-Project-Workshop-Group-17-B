@@ -520,16 +520,29 @@ namespace Sadna_17_B.ServiceLayer.Services
             }
         }
 
+        public Response MarkAsRead(string token, string message)
+        {
+            try
+            {
+                userController.MarkAsRead(token, message);
+                return new Response(true);
+            }
+            catch (Sadna17BException e)
+            {
+                return Response.GetErrorResponse(e);
+            }
+        }
+
         /// <summary>
         /// Attempts to mark as read and return all new notifications (unread notifications) of the subscriber with the given access token. (Requirement 1.5 & 1.6)
         /// Returns an error Response if the token doesn't correspond to a valid subscriber in the system.
         /// Otherwise, returns a Response containing a List of all the new user notifications (unread notifications), and marks them as read in the system.
         /// </summary>
-        public Response /*List<Notification>*/ ReadMyNewNotifications(string token)
+        public Response /*List<Notification>*/ ReadMyNotifications(string token)
         {
             try
             {
-                List<Notification> result = userController.ReadMyNewNotifications(token);
+                List<Notification> result = userController.ReadMyNotifications(token);
                 return new Response(true, result);
             }
             catch (Sadna17BException e)

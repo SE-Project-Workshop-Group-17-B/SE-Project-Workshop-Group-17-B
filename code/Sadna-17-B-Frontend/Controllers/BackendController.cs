@@ -285,6 +285,88 @@ namespace Sadna_17_B_Frontend.Controllers
                 }
             }
         }
+
+        public async Task<Response> get_notifications()
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                var user = new UIuserDTOAPI { Username = "", Password = "", AccessToken = userDTO.AccessToken };
+
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/get_notifications", user);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string response1 = await response.Content.ReadAsStringAsync();
+                    Response response2 = JsonConvert.DeserializeObject<Response>(response1);
+                    var notifications = JsonConvert.DeserializeObject<List<Notification>>(response2.Data.ToString());
+                    if (notifications == null || notifications.Count == 0)
+                    {
+                        return new Response("No notifications found.", false, null);
+                    }
+
+                    return new Response("Stores found successfully.", true, notifications);
+
+                }
+                else
+                {
+                    string errorMessage = await response.Content.ReadAsStringAsync();
+                    return new Response("An error occurred while retrieving stores: " + errorMessage, false, null);
+                }
+            }
+        }
+
+        public async Task<Response> respond_offer_owner(int store_Id, bool decision)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                var respondToOffer = new RespondOfferDTO
+                {
+                    accessToken = userDTO.AccessToken,
+                    storeId = store_Id,
+                    decision = decision
+                };
+
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/Owner_Appointment", respondToOffer);
+
+                if (response.IsSuccessStatusCode)
+                {
+
+                    return new Response("sent your owner appointment decision successfully.", false, null);
+                }
+                else
+                {
+                    string errorMessage = await response.Content.ReadAsStringAsync();
+                    return new Response("failed to send your owner appointment decision.\n error: " + errorMessage, true, null);
+                }
+            }
+        }
+
+        public async Task<Response> respond_offer_manager(int store_Id, bool decision)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                var respondToOffer = new RespondOfferDTO
+                {
+                    accessToken = userDTO.AccessToken,
+                    storeId = store_Id,
+                    decision = decision
+                };
+
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/Manager_Appointment", respondToOffer);
+
+                if (response.IsSuccessStatusCode)
+                {
+
+                    return new Response("sent your manager appointment decision successfully.", false, null);
+                }
+                else
+                {
+                    string errorMessage = await response.Content.ReadAsStringAsync();
+                    return new Response("failed to send your manager appointment decision.\n error: " + errorMessage, true, null);
+                }
+            }
+        }
+
         //rewrite the following functions 
         //Elay Dadon
         public async Task<List<Store>> got_owned_stores()
@@ -1448,6 +1530,12 @@ namespace Sadna_17_B_Frontend.Controllers
         public int Quantity { get; set; }
 
         public ItemDTO() { }
+    }
+    public class UIuserDTOAPI
+    {
+        public string Username { get; set; }
+        public string Password { get; set; }
+        public string AccessToken { get; set; }
     }
 }
 
