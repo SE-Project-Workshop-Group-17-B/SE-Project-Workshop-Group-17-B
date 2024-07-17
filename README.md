@@ -2,7 +2,6 @@
 # Trade System Project
 
 Comprehensive framework for managing trading activities, from user registration to store management.
-![image](https://github.com/SE-Project-Workshop-Group-17-B/SE-Project-Workshop-Group-17-B/blob/main/ProjectPhoto.jpg)
 
 ## Group Members
 Gal Pinto - pigal@post.bgu.ac.il
