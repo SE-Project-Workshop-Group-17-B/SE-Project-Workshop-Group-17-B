@@ -306,8 +306,8 @@ namespace Sadna_17_B_Frontend.Views
 
         protected async void btnSaveDiscountPolicy_Click(object sender, EventArgs e)
         {
-            string selectedDiscountType = GetSelectedButtonText(btnFlat, btnPercentage, btnMembership).ToLower();
-            string selectedDiscountTarget = GetSelectedButtonText(btnProduct, btnCategory).ToLower();
+            string selected_strategy = GetSelectedButtonText(btnFlat, btnPercentage, btnMembership).ToLower();
+            string selected_relevant = GetSelectedButtonText(btnProduct, btnCategory).ToLower();
 
             // ---------------------------------------------------------------------------
 
@@ -323,12 +323,12 @@ namespace Sadna_17_B_Frontend.Views
 
             // ----------- from ui -------------------
 
-            string edit_type = "add";
-            string store_id = storeId.ToString();
-            string ancestor_id = txtAncestorId.Text;
+            /*string edit_type = "add";
+            string store_id =;
+            string ancestor_id = ;
             string discount_id = "";
-            string start_date = txtStartDate.Text;
-            string end_date = txtEndDate.Text;
+            string start_date = ;
+            string end_date = ;
             string strategy = "flat";
             string relevant_type = selectedDiscountTarget.ToLower();
             string relevant_factors = selectedDiscountTarget.ToLower();
@@ -337,8 +337,24 @@ namespace Sadna_17_B_Frontend.Views
 
             string factor_strategy = txtElement.Text;
             string factor_item = relevant_factors;
-            string factor_price_amount_date = txtConstraintFactor.Text;
+            string factor_price_amount_date = txtConstraintFactor.Text;*/
 
+            string edit_type = "add";
+            string store_id = storeId.ToString();
+            string ancestor_id = txtAncestorId.Text;
+            string discount_id = "";
+            //string start_date = txtStartDate.Text;
+            //string end_date = txtEndDate.Text;
+            string start_date = "2024-04-12" ;
+            string end_date = "2025-05-02";
+            //string strategy = strategy_click;
+            string strategy = "flat";
+            string relevant_type = selected_relevant;
+            string relevant_factors = txtElement.Text;
+            string cond_type = txtProductAmount.Text;
+            string cond_op = ddlConstraint.Text;
+            string cond_factor = txtConstraintFactor.Text;
+            string factor_strategy = txtFactor.Text;
 
             // ----------- conditions -------------------
 
@@ -348,9 +364,9 @@ namespace Sadna_17_B_Frontend.Views
                 precentage = factor_strategy;
 
             if (cond_type == "category" || cond_type == "categories")
-                cond_category = factor_item;
+                cond_category = relevant_factors;
             if (cond_type == "product" || cond_type == "products")
-                cond_product = factor_item;
+                cond_product = relevant_factors;
 
 
 
@@ -531,5 +547,10 @@ namespace Sadna_17_B_Frontend.Views
             }
             catch (Exception ex) { }
         }
+
+        public string strategy_click="";
+
+
+       
     }
 }
