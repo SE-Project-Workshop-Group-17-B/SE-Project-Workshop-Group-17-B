@@ -67,7 +67,7 @@ namespace Sadna_17_B_Frontend.Views
             ClientScript.RegisterStartupScript(this.GetType(), "Popup", script, true);
 
         }
-
+        
         private void MessageBox(string message)
         {
             Response.Write(@"<script language='javascript'>alert('" + message + "')</script>");
@@ -262,7 +262,59 @@ namespace Sadna_17_B_Frontend.Views
                 MessageBox("Failed to load Review: " + reviewsResponse.Message);
             }
             loadStoreRating();
+        }
 
+        protected async void discountPolicyBtn_Click(object sender, EventArgs e)
+        {
+            Dictionary<string, string> policy = new Dictionary<string, string>()
+            {
+                ["store id"] = storeId.ToString()
+            };
+
+            try
+            {
+                Response discountResponse = await backendController.show_discount_policy(policy);
+
+                if (discountResponse.Success)
+                {
+                    List<string> discount_policies = JsonConvert.DeserializeObject<List<string>>(discountResponse.Data.ToString());
+
+                    string script = $"displayPolicies({Newtonsoft.Json.JsonConvert.SerializeObject(discount_policies)}'); openPolicyModal();";
+                    ClientScript.RegisterStartupScript(this.GetType(), "ShowPolicies", script, true);
+                }
+                else
+                {
+                    MessageBox("Failed to load Review: " + discountResponse.Message);
+                }
+                loadStoreRating();
+            }
+            catch (Exception ex) { MessageBox("no purchase policies yet"); }
+        }
+        protected async void purchasePolicyBtn_Click(object sender, EventArgs e)
+        {
+            Dictionary<string, string> policy = new Dictionary<string, string>()
+            {
+                ["store id"] = storeId.ToString()
+            };
+
+            try
+            {
+                Response purchaseResponse = await backendController.show_purchase_policy(policy);
+
+                if (purchaseResponse.Success)
+                {
+                    List<string> purchase_policies = JsonConvert.DeserializeObject<List<string>>(purchaseResponse.Data.ToString());
+
+                    string script = $"displayPolicies({Newtonsoft.Json.JsonConvert.SerializeObject(purchase_policies)}'); openPolicyModal();";
+                    ClientScript.RegisterStartupScript(this.GetType(), "ShowPolicies", script, true);
+                }
+                else
+                {
+                    MessageBox("Failed to load Review: " + purchaseResponse.Message);
+                }
+                loadStoreRating();
+            }
+            catch (Exception ex) { MessageBox("no purchase policies yet"); }
         }
     }
 }
