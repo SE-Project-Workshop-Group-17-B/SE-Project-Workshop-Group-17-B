@@ -11,6 +11,7 @@ using Sadna_17_B.DomainLayer.StoreDom;
 using Sadna_17_B.DomainLayer.User;
 using Sadna_17_B.DomainLayer.Utils;
 using Sadna_17_B.Repositories;
+using Sadna_17_B.ServiceLayer;
 using Sadna_17_B.Utils;
 
 namespace Sadna_17_B_Test.Tests.UnitTests
@@ -50,45 +51,46 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         public void SetUp()
         {
             ApplicationDbContext.isMemoryDB = true; // Disconnect actual database from these tests
+            ServiceFactory.loadConfig = false; // Disconnect config file from the system initialization
 
-           /**
-            *Basket:           | name | price | category | descript | amount | total price
-            * -----------------------------------------------------------------------------------------
-            *
-            *-product 1 :   | product1 | 30 | Food | Nice | 100 | 3000
-            *
-            *-product 2 :   | product2 | 50 | Drink | Perfect | 15 | 750
-            *
-            *-product 3 :   | product3 | 10 | Food | Eh | 50 | 500
-            *
-            *
-            *-------------------------------------------------------------------------------------
-            *
-            *relevant_price_by_category        3500
-            * relevant_price_by_product         3000
-            * relevant_price_by_all             4250
-            *
-            *condition_category                true
-            * condition_product                 false
-            * condition_all                     true
-            *
-            *
-            *cond_flat                          true, 50                                        out of 5000  // only rules weight the conditions
-            * cond_prec                          false, 500                                      out of 5000
-            * cond_member                        true, 68.5                                      out of 5000
-            *
-            *simple_flat                        true, 50(50 flat)                          out of 5000
-            * simple_prec                        true, 500(10 % of 5, 000)                     out of 5000
-            * simple_member                      true, 68.5(100 days in membership)          out of 5000
-            *
-            *and_rule                           false, 0
-            * or_rule                            true, 550(500 + 50)
-            * max_rule                           true, 550(550 bigger than 0)
-            * add_rule                           true, 1150(550 + 50 + 550)
-            * */
+            /**
+             *Basket:           | name | price | category | descript | amount | total price
+             * -----------------------------------------------------------------------------------------
+             *
+             *-product 1 :   | product1 | 30 | Food | Nice | 100 | 3000
+             *
+             *-product 2 :   | product2 | 50 | Drink | Perfect | 15 | 750
+             *
+             *-product 3 :   | product3 | 10 | Food | Eh | 50 | 500
+             *
+             *
+             *-------------------------------------------------------------------------------------
+             *
+             *relevant_price_by_category        3500
+             * relevant_price_by_product         3000
+             * relevant_price_by_all             4250
+             *
+             *condition_category                true
+             * condition_product                 false
+             * condition_all                     true
+             *
+             *
+             *cond_flat                          true, 50                                        out of 5000  // only rules weight the conditions
+             * cond_prec                          false, 500                                      out of 5000
+             * cond_member                        true, 68.5                                      out of 5000
+             *
+             *simple_flat                        true, 50(50 flat)                          out of 5000
+             * simple_prec                        true, 500(10 % of 5, 000)                     out of 5000
+             * simple_member                      true, 68.5(100 days in membership)          out of 5000
+             *
+             *and_rule                           false, 0
+             * or_rule                            true, 550(500 + 50)
+             * max_rule                           true, 550(550 bigger than 0)
+             * add_rule                           true, 1150(550 + 50 + 550)
+             * */
 
 
-             store_controller = new StoreController();
+            store_controller = new StoreController();
             sid = store_controller.create_store("test store", "mail@example.com", "055555055", "hi bye", "compton");
             store1 = store_controller.store_by_id(sid);
 

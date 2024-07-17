@@ -59,6 +59,7 @@ namespace Sadna_17_B_Test.Tests.IntegrationTests
         public void SetUp()
         {
             ApplicationDbContext.isMemoryDB = true; // Disconnect actual database from these tests
+            ServiceFactory.loadConfig = false; // Disconnect config file from the system initialization
             // init services
 
             ServiceFactory serviceFactory = new ServiceFactory();

@@ -11,6 +11,7 @@ using Sadna_17_B.Utils;
 using System.Security.Cryptography;
 using Sadna_17_B.DataAccessLayer;
 using Sadna_17_B.Repositories;
+using Sadna_17_B.ServiceLayer;
 
 namespace Sadna_17_B_Test.Tests.UnitTests
 {
@@ -34,6 +35,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         public void SetUp()
         {
             ApplicationDbContext.isMemoryDB = true; // Disconnect actual database from these tests
+            ServiceFactory.loadConfig = false; // Disconnect config file from the system initialization
             _storeController = new StoreController();
             _orderSystem = new OrderSystem(_storeController);
             _userController = new UserController(_orderSystem);
