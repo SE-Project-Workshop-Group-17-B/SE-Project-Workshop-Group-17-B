@@ -347,7 +347,8 @@ namespace Sadna_17_B_Frontend.Views
             //string end_date = txtEndDate.Text;
             string start_date = "2024-04-12" ;
             string end_date = "2025-05-02";
-            string strategy = strategy_click;
+            //string strategy = strategy_click;
+            string strategy = "flat";
             string relevant_type = selected_relevant;
             string relevant_factors = txtElement.Text;
             string cond_type = txtProductAmount.Text;
@@ -550,19 +551,6 @@ namespace Sadna_17_B_Frontend.Views
         public string strategy_click="";
 
 
-        protected void btnFlat_Click(object sender, EventArgs e)
-        {
-            strategy_click = btnFlat.Text.ToLower();
-        }
-
-        protected void btnPercentage_Click(object sender, EventArgs e)
-        {
-            strategy_click = btnPercentage.Text.ToLower();
-        }
-
-        protected void btnMembership_Click(object sender, EventArgs e)
-        {
-            strategy_click = btnMembership.Text.ToLower();
-        }
+       
     }
 }

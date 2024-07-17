@@ -373,9 +373,9 @@
                <div class="form-group">
                     <label>Discount Strategy:</label>
                     <div class="btn-group d-flex" role="group">
-                        <asp:LinkButton ID="btnFlat" runat="server" Text="Flat" CssClass="btn btn-outline-primary w-100" OnClick="btnFlat_Click" />
-                        <asp:LinkButton ID="btnPercentage" runat="server" Text="Percentage" CssClass="btn btn-outline-primary w-100" OnClick="btnPercentage_Click" />
-                        <asp:LinkButton ID="btnMembership" runat="server" Text="Membership" CssClass="btn btn-outline-primary w-100" OnClick="btnMembership_Click" />
+                        <asp:LinkButton ID="btnFlat" runat="server" Text="Flat" CssClass="btn btn-outline-primary w-100" OnClientClick="toggleActive(this, 'discountType'); return false;" />
+                        <asp:LinkButton ID="btnPercentage" runat="server" Text="Percentage" CssClass="btn btn-outline-primary w-100" OnClientClick="toggleActive(this, 'discountType'); return false;" />
+                        <asp:LinkButton ID="btnMembership" runat="server" Text="Membership" CssClass="btn btn-outline-primary w-100" OnClientClick="toggleActive(this, 'discountType'); return false;" />
                     </div>
                 </div>
 
