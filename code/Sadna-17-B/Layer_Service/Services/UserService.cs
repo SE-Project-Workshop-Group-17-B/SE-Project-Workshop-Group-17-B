@@ -382,11 +382,11 @@ namespace Sadna_17_B.ServiceLayer.Services
             }
         }*/
 
-        public Response Process_order(string token)
+        public Response Process_order(string token, Dictionary<string, string> supply, Dictionary<string,string> payment)
         {
             try
             {
-                double priceToPay = userController.processOrder(token);
+                double priceToPay = userController.processOrder(token, supply, payment);
                 return new Response(true, priceToPay);
             }
             catch (Sadna17BException e)

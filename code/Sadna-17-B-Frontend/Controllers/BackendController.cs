@@ -491,7 +491,7 @@ namespace Sadna_17_B_Frontend.Controllers
         {
             using (HttpClient client = new HttpClient())
             {
-                var user = new UIuserDTOAPI { Username = username, Password = password, AccessToken = "" };
+                var user = new { Username = username, Password = password, AccessToken = "" };
 
                 HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/login", user); // add relative path
 
@@ -922,7 +922,7 @@ namespace Sadna_17_B_Frontend.Controllers
             Response response;
 
             //we want this function to return amount to pay
-            response = await process_order();                     // backend
+            response = await process_order(supply, payment);                     // backend
             if (!response.Success)
                 return response;
             else {
@@ -949,7 +949,7 @@ namespace Sadna_17_B_Frontend.Controllers
             return new Response("Purchase Completed Successfully", true);
         }
 
-        public async /*   ???   */ Task<Response> process_order()
+        public async /*   ???   */ Task<Response> process_order(Dictionary<string, string> supply, Dictionary<string, string> payment)
 
         {
             using (HttpClient client = new HttpClient())
@@ -957,6 +957,8 @@ namespace Sadna_17_B_Frontend.Controllers
                 string token = userDTO.AccessToken;
                 var payload = new
                 {
+                    Supply = supply,
+                    Payment = payment,
                     AccessToken = userDTO.AccessToken
                 };
 
@@ -1022,8 +1024,7 @@ namespace Sadna_17_B_Frontend.Controllers
         {
             using (HttpClient client = new HttpClient())
             {
-                var payload = new { AccessToken = userDTO.AccessToken };
-                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/reduce_order", payload); // add relative path
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/reduce_order", userDTO.AccessToken); // add relative path
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -1410,23 +1411,6 @@ namespace Sadna_17_B_Frontend.Controllers
                 }
             }
         }
-
-
-
-        /*    public Response add_product_rating(int storeID, int productID, int rating)
-            {
-                return storeService.add_product_rating(storeID, productID, rating);
-            }
-
-            public Response add_product_review(int storeID, int productID, string review)
-            {
-                return storeService.add_product_review(storeID, productID, review);
-            }
-
-            public Response search_products_by(Dictionary<string, string> doc)
-            {
-                return storeService.search_product_by(doc);
-            }*/
     }
 
     public class ItemDTO

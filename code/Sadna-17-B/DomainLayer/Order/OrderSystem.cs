@@ -1,6 +1,9 @@
-﻿using Sadna_17_B.DomainLayer.StoreDom;
+﻿using Newtonsoft.Json;
+using Sadna_17_B.DomainLayer.StoreDom;
 using Sadna_17_B.DomainLayer.User;
 using Sadna_17_B.Layer_Service.ServiceDTOs;
+using Sadna_17_B.ExternalServices;
+using Sadna_17_B.Repositories;
 using Sadna_17_B.Utils;
 using System;
 using System.Collections.Generic;
@@ -36,6 +39,8 @@ namespace Sadna_17_B.DomainLayer.Order
 
         // ------- should move to DAL --------------------------------------------------------------------------------
 
+        // DAL Repository:
+        IUnitOfWork _unitOfWork = UnitOfWork.GetInstance();
 
         public OrderSystem(StoreController storeController)
         {
@@ -44,13 +49,48 @@ namespace Sadna_17_B.DomainLayer.Order
 
         public void LoadData()
         {
+            IEnumerable<Order> orderHistoryTable = _unitOfWork.Orders.GetAll();
+            IEnumerable<SubOrder> subOrdersTable = _unitOfWork.SubOrders.GetAll();
 
+            foreach (Order order in orderHistoryTable)
+            {
+                orderHistory[order.OrderID] = order;
+                if (order.IsGuestOrder)
+                {
+                    int guestId = int.Parse(order.UserID);
+                    if (!guestOrders.ContainsKey(guestId))
+                    {
+                        guestOrders[guestId] = new List<Order>();
+                    }
+                    guestOrders[guestId].Add(order);
+                }
+                else
+                {
+                    if (!subscriberOrders.ContainsKey(order.UserID))
+                    {
+                        subscriberOrders[order.UserID] = new List<Order>();
+                    }
+                    subscriberOrders[order.UserID].Add(order);
+                }
+            }
+
+            foreach (SubOrder subOrder in subOrdersTable)
+            {
+                if (!storeOrders.ContainsKey(subOrder.StoreID))
+                {
+                    storeOrders[subOrder.StoreID] = new List<SubOrder>();
+                }
+                storeOrders[subOrder.StoreID].Add(subOrder);
+                //orderHistory[subOrder.OrderID].AddSubOrder(subOrder); // or AddBasket(new Basket(subOrder));
+            }
+
+            orderCount = orderHistory.Count; // Or 1 + max(orderId)
         }
 
 
         // ------- process order --------------------------------------------------------------------------------
 
-        public double ProcessOrder(Cart cart, string userID, bool isGuest)
+        public double ProcessOrder(Cart cart, string userID, bool isGuest, Dictionary<string, string> supply, Dictionary<string, string> payment)
         {
             // ------- guest log --------------------------------------------------------------------------------
 
@@ -78,7 +118,10 @@ namespace Sadna_17_B.DomainLayer.Order
                 cart_price_with_discount += basket_checkout.total_price_with_discount;
             }
 
-            Order order = new Order(orderCount, userID, isGuest, cart, cart_price_with_discount);
+            string destAddr = supply["address"] + " " + supply["city"];
+            string paymentObj = JsonConvert.SerializeObject(payment);
+
+            Order order = new Order(orderCount, userID, isGuest, cart, destAddr, paymentObj, cart_price_with_discount);
 
             pending_order.Add(userID, order);
 
@@ -94,8 +137,6 @@ namespace Sadna_17_B.DomainLayer.Order
             add_to_history(pending_order[uid]);
             pending_order.Remove(uid);
         }
-
-        
 
 
         /*public void validate_supply_system_availability(string dest, Order order)
@@ -152,8 +193,8 @@ namespace Sadna_17_B.DomainLayer.Order
                 }
                 catch (Exception e)
                 {
-                    errorLogger.Log("Invalid Guest ID given when inserting order to history: " + order.UserID);
-                    throw new Sadna17BException("Invalid Guest ID given when inserting order to history: " + order.UserID, e);
+                    errorLogger.Log("Invalid Guest StoreID given when inserting order to history: " + order.UserID);
+                    throw new Sadna17BException("Invalid Guest StoreID given when inserting order to history: " + order.UserID, e);
                 }
             }
             else // Insert to subscribers order history
@@ -164,6 +205,9 @@ namespace Sadna_17_B.DomainLayer.Order
                 }
                 subscriberOrders[order.UserID].Add(order);
             }
+
+            _unitOfWork.Orders.Add(order); // Insert the order into the orders table in database
+
             foreach (SubOrder subOrder in order.GetSubOrders())
             { // insert to store sub-orders history
                 if (!storeOrders.ContainsKey(subOrder.StoreID))
@@ -171,6 +215,7 @@ namespace Sadna_17_B.DomainLayer.Order
                     storeOrders[subOrder.StoreID] = new List<SubOrder>();
                 }
                 storeOrders[subOrder.StoreID].Add(subOrder);
+                _unitOfWork.SubOrders.Add(subOrder); // Insert the SubOrder into the orders table in database
             }
         }
 

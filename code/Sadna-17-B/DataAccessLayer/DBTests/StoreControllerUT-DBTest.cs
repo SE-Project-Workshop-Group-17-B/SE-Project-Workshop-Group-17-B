@@ -1,4 +1,4 @@
-/*using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -18,65 +18,61 @@ using Newtonsoft.Json.Linq;
 using Sadna_17_B.DataAccessLayer;
 using Sadna_17_B.Repositories;
 
-namespace Sadna_17_B_Test.Tests.UnitTests
-{
-
-    *//*
-     *     
+namespace Sadna_17_B.DataAccessLayer.DBTests
+{   
+     /**     
      *      -------------------- Front : ----------------------------
      *      
      *      1. add Checkout Page for the user's Basket
-     *      
-     *          - products ( name | amount | price )
+     *
+     *          - products(name | amount | price )
      *          - discounts
      *          - final price
-     *      
+     *
      *      2. add Product mini page
-     *      
+     *
      *      3. edit store page
-     *          
+     *
      *          - add button for discount policy and purchase policy in store page
      *          - connect store inventory to store products
-     *      
+     *
      *      4. edit search page
-     *      
+     *
      *          - add to basket button
      *          - view product button
-     *      
+     *
      *      4. discount policy mini page
-     *      
+     *
      *          - show all available discounts
-     *          
-     *      
+     *
+     *
      *      5. purchase policy mini page
-     *      
+     *
      *          - show all purchase rules
-     *      
-     *      
+     *
+     *
      *      -------------------- Backend : ----------------------------
-     *      
-     *      
+     *
+     *
      *      1. make search product work
-     *      
+     *
      *      2. add product info functionality
-     *      
+     *
      *      3. make purchase policy informative for ui
-     *      
+     *
      *      4. make discount policy informative for ui
-     *      
+     *
      *      5. add Data Base
-     *      
-     * 
-     * 
-     * 
-     * 
-     *//*
-
+     *
+     *
+     *
+     *
+     **/
 
     [TestClass]
-    public class StoreControllerTests
+    public class StoreControllerUT_DBTest
     {
-        private Documentor doc_generator; 
+        private Documentor doc_generator;
         private Subscriber subscriber;
         private StoreService store_service;
         private UserService user_service;
@@ -121,50 +117,51 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         [TestInitialize]
         public void SetUp()
         {
-            ApplicationDbContext.isMemoryDB = true; // Disconnect actual database from these tests
-            *//*
-             * 
-             *  Basket:           | name        |  price   | category  | descript  | amount   | total price
-             *  -----------------------------------------------------------------------------------------
-             *  
-             *  - product 1 :   |   product1  |   30     |   Food    |   Nice    |  100      | 3000
-             *  
-             *  - product 2 :   |   product2  |   50     |   Drink   |   Perfect |  15       | 750
-             * 
-             *  - product 3 :   |   product3  |   10     |   Food    |   Eh      |  50       | 500
-             * 
-             * 
-             *  -------------------------------------------------------------------------------------
-             *  
-             *   relevant_price_by_category        3500
-             *   relevant_price_by_product         3000      
-             *   relevant_price_by_all             4250
-             *
-             *   condition_category                true
-             *   condition_product                 false
-             *   condition_all                     true
-             *      
-             *   
-             *   cond_flat                          true, 50                                        out of 5000  // only rules weight the conditions
-             *   cond_prec                          false, 500                                      out of 5000  
-             *   cond_member                        true, 68.5                                      out of 5000
-             *   
-             *   simple_flat                        true, 50    ( 50 flat)                          out of 5000
-             *   simple_prec                        true, 500   ( 10% of 5,000)                     out of 5000
-             *   simple_member                      true, 68.5  ( 100 days in membership )          out of 5000
-             *   
-             *   and_rule                           false, 0           
-             *   or_rule                            true, 550   (500 + 50) 
-             *   max_rule                           true, 550   (550 bigger than 0)
-             *   add_rule                           true, 1150  (550 + 50 + 550)
-             * 
-             *//*
+            ApplicationDbContext.isMemoryDB = false; // Disconnect actual database from these tests
+            ServiceFactory.loadConfig = false; // Disconnect config file from the system initialization
+
+            /* *
+            *    Basket:           | name | price  | category | descript | amount | total price
+            * -----------------------------------------------------------------------------------------
+            *
+            *       -product 1 :   | product1 | 30 |   Food   |   Nice   |   100  |    3000
+            *
+            *       -product 2 :   | product2 | 50 |   Drink  |  Perfect |   15   |     750
+            *
+            *       -product 3 :   | product3 | 10 |   Food   |    Eh    |   50   |     500
+            *
+            *
+            *-------------------------------------------------------------------------------------
+            *
+            *   relevant_price_by_category        3500
+            *   relevant_price_by_product         3000
+            *   relevant_price_by_all             4250
+            *
+            *   condition_category                true
+            *   condition_product                 false
+            *   condition_all                     true
+            *
+            *
+            *   cond_flat                          true, 50                                        out of 5000  // only rules weight the conditions
+            *   cond_prec                          false, 500                                      out of 5000
+            *   cond_member                        true, 68.5                                      out of 5000
+            *
+            *   simple_flat                        true, 50(50 flat)                          out of 5000
+            *   simple_prec                        true, 500(10 % of 5, 000)                     out of 5000
+            *   simple_member                      true, 68.5(100 days in membership)          out of 5000
+            *
+            *   and_rule                           false, 0
+            *   or_rule                            true, 550(500 + 50)
+            *   max_rule                           true, 550(550 bigger than 0)
+            *   add_rule                           true, 1150(550 + 50 + 550)
+            **/
+
 
             doc_generator = new Documentor();
             ServiceFactory serviceFactory = new ServiceFactory();
 
-            user_service = (UserService) serviceFactory.UserService;
-            store_service = (StoreService) serviceFactory.StoreService;
+            user_service = (UserService)serviceFactory.UserService;
+            store_service = (StoreService)serviceFactory.StoreService;
             store_controller = new StoreController();
 
             Response ignore = user_service.upgrade_subscriber("hihihi", "byebyebye");
@@ -172,8 +169,8 @@ namespace Sadna_17_B_Test.Tests.UnitTests
             sid = store_controller.create_store("test store", "mail@example.com", "055555055", "hi bye", "compton");
             store1 = store_controller.store_by_id(sid);
 
-            int pid1 = store1.add_product("product1", 30, "Food", "Nice",100);
-            int pid2 = store1.add_product("product2", 50, "Drink", "Perfect",10);
+            int pid1 = store1.add_product("product1", 30, "Food", "Nice", 100);
+            int pid2 = store1.add_product("product2", 50, "Drink", "Perfect", 10);
             int pid3 = store1.add_product("product3", 10, "Food", "Eh", 50);
 
             product1 = store1.Inventory.product_by_id(pid1);
@@ -192,7 +189,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
             basket.add_product(cart_product3);
 
 
-            discount_policy = store1.DiscountPolicy;
+            discount_policy = store1.GetDiscountPolicy();
             strategy_flat = new Discount_Flat(50);
             strategy_precentage = new Discount_Percentage(10);
             strategy_membership = new Discount_Membership();
@@ -207,10 +204,10 @@ namespace Sadna_17_B_Test.Tests.UnitTests
             relevant_price_by_category = lambda_basket_pricing.category(cart_product1.category);
 
             relevant_price_by_product = lambda_basket_pricing.product(cart_product1.ID);
-           
+
             relevant_price_by_all = lambda_basket_pricing.basket();
-            
-            
+
+
 
 
             // -------- discount conditions functions -------------------------------
@@ -226,11 +223,11 @@ namespace Sadna_17_B_Test.Tests.UnitTests
             // -------- purchase conditions functions -------------------------------
 
             cond_all_true = lambda_condition.condition_basket_price(">", 20);
-            
+
             cond_all_false = lambda_condition.condition_basket_price("<", 20);
 
 
-           
+
 
 
 
@@ -241,8 +238,8 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         [TestMethod]
         public void TestSuccesfullAddAndRemoveDiscount()
         {
-            
-            Discount_Simple discount = new Discount_Simple( start_date,
+
+            Discount_Simple discount = new Discount_Simple(start_date,
                                                             end_date,
                                                             strategy_flat,
                                                             relevant_price_by_product);
@@ -282,7 +279,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
             Assert.AreEqual(cond_applied.discounts.Count, 1, 0.01);
             Assert.AreEqual(cond_applied.discounts[0].Item2, 300, 0.01);
         }
-        
+
         [TestMethod]
         public void TestSuccessfullDiscountFlat()
         {
@@ -312,7 +309,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
             Assert.AreEqual(cond_applied.discounts[0].Item2, 50, 0.01);
 
         }
-        
+
         [TestMethod]
         public void TestSuccessfullDiscount_Membership()
         {
@@ -351,10 +348,10 @@ namespace Sadna_17_B_Test.Tests.UnitTests
             Discount_Simple simple_memb_discount = new Discount_Simple(start_date, end_date, strategy_membership, relevant_price_by_product);
 
             Discount_Conditional cond_flat_discount = new Discount_Conditional(start_date, end_date, strategy_flat, relevant_price_by_product, cond_product); // 
-            Discount_Conditional cond_prec_discount = new Discount_Conditional(start_date, end_date, strategy_precentage, relevant_price_by_product, cond_category );
+            Discount_Conditional cond_prec_discount = new Discount_Conditional(start_date, end_date, strategy_precentage, relevant_price_by_product, cond_category);
             Discount_Conditional cond_memb_discount = new Discount_Conditional(start_date, end_date, strategy_membership, relevant_price_by_product, cond_all);
 
-            Discount_Rule and_rule = new Discount_Rule(lambda_discount_rule.logic.and(),"and");
+            Discount_Rule and_rule = new Discount_Rule(lambda_discount_rule.logic.and(), "and");
             Discount_Rule or_rule = new Discount_Rule(lambda_discount_rule.logic.or(), "or");
             Discount_Rule xor_rule = new Discount_Rule(lambda_discount_rule.logic.xor(), "xor");
 
@@ -370,7 +367,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
 
             max_rule.add_discount(and_rule);
             max_rule.add_discount(or_rule);
-            
+
             add_rule.add_discount(or_rule);
             add_rule.add_discount(simple_flat_discount);
             add_rule.add_discount(max_rule);
@@ -396,7 +393,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
 
             p_or.add_condition(cond_all_true);
             p_or.add_condition(cond_all_false);
-            
+
             p_and.add_condition(cond_all_false);
             p_and.add_condition(cond_all_true);
 
@@ -442,7 +439,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
 
             Response response = store_service.edit_discount_policy(add_flat_doc);
             Console.WriteLine(response.Success);
-            int aid  = (int) store_service.edit_discount_policy(add_flat_doc).Data;
+            int aid = (int)store_service.edit_discount_policy(add_flat_doc).Data;
             policy = store_service.show_discount_policy(show_doc).Data as string;
             Console.WriteLine(policy);
 
@@ -465,7 +462,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         [TestMethod]
         public void Test_edit_purchase_policy()
         {
-            
+
             // ---------- init data
 
             Response res = user_service.entry_subscriber("hihihi", "byebyebye");
@@ -487,7 +484,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
             // ----------  flat added
 
             Dictionary<string, string> add_or_doc = new Documentor.purchase_policy_doc_builder()
-                                                                       .set_base_add($"{sid}","or","or")
+                                                                       .set_base_add($"{sid}", "or", "or")
                                                                        .Build();
 
 
@@ -535,7 +532,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
 
             // filter
 
-            Dictionary<string, string> search_doc = new Documentor.search_doc_builder().set_search_options(category:"Electronics").Build();
+            Dictionary<string, string> search_doc = new Documentor.search_doc_builder().set_search_options(category: "Electronics").Build();
 
             Response response = store_service.search_product_by(search_doc);
             List<Product> products = response.Data as List<Product>;
@@ -545,7 +542,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
                 Console.WriteLine(p.ID);
             }
 
-            Console.WriteLine("products count "+products.Count());
+            Console.WriteLine("products count " + products.Count());
 
             Assert.IsTrue(products.Count() == 3);
 
@@ -623,7 +620,7 @@ namespace Sadna_17_B_Test.Tests.UnitTests
             store_controller.clear_stores();
             int sid1 = store_controller.create_store("Test Store 1", "testemail@example.com", "1234567890", "Test Store Description1", "Test Address1");
             int sid2 = store_controller.create_store("Test Store 2", "testemail@example.com", "1234567890", "Test Store Description2", "Test Address2");
-            Store store_1 = store_controller.store_by_id(sid1); 
+            Store store_1 = store_controller.store_by_id(sid1);
             Store store_2 = store_controller.store_by_id(sid2);
 
             // Act
@@ -636,4 +633,3 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         }
     }
 }
-*/

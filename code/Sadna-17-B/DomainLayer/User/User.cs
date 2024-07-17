@@ -44,7 +44,5 @@ namespace Sadna_17_B.DomainLayer.User
         {
             ShoppingCart = new Cart();
         }
-
-
     }
 }

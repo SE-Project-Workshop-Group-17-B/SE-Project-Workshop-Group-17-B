@@ -267,15 +267,15 @@ namespace Sadna_17_B_API.Controllers
         public Response ProcessOrder([FromBody] PurchaseDTO userData)
         {
             string token = userData.AccessToken;
-            var response = _userService.Process_order(token);
+            var response = _userService.Process_order(token, userData.Supply, userData.Payment);
             return response;
 
         }
 
         [HttpPost("reduce_order")]
-        public Response reduce_order(PurchaseDTO purchase_details)
+        public Response reduce_order([FromBody]string AccessToken)
         {
-            var response = _userService.reduce_cart(purchase_details.AccessToken);
+            var response = _userService.reduce_cart(AccessToken);
             return response;
         }
 
