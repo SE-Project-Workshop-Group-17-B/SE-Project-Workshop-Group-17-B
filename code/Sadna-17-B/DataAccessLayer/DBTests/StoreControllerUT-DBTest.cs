@@ -434,7 +434,7 @@ namespace Sadna_17_B.DataAccessLayer.DBTests
             // ----------  flat added
 
             Dictionary<string, string> add_flat_doc = new Documentor.discount_policy_doc_builder()
-                                                                       .set_base_add($"{sid}", "06/07/2024", "10/07/2024", "flat", flat: "50")
+                                                                       .set_base_add($"{sid}", "2024-07-06", "2024-07-10", "flat", flat: "50") // Fix: "2024-07-06" format instead of "06/07/2024"
                                                                        .Build();
 
             Response response = store_service.edit_discount_policy(add_flat_doc);
