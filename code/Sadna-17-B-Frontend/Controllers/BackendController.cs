@@ -882,9 +882,13 @@ namespace Sadna_17_B_Frontend.Controllers
             Response response;
 
             //we want this function to return amount to pay
-            response = await process_order(supply, payment);                     // backend
+            response = await process_order(supply, payment);       // backend
             if (!response.Success)
+            {
+                cancel_order();
                 return response;
+            }
+                
             else {
                 double priceToPay = double.Parse(response.Data.ToString());
                 payment["amount"] = priceToPay.ToString(); 
@@ -893,19 +897,28 @@ namespace Sadna_17_B_Frontend.Controllers
             //WORKING
             response = await supply_order(supply);                // external
             if (!response.Success)
+            {
+                cancel_order();
                 return response;
+            }
 
             //WORKING
             response = await pay_order(payment);                  // external
             if (!response.Success)
+            {
+                cancel_order();
                 return response;
+            }
 
             //need to reduce from store here?
             response = await reduce_order();                     // backend
             if (!response.Success)
+            {
+                cancel_order();
                 return response;
+            }
 
-            
+
             return new Response("Purchase Completed Successfully", true);
         }
 
@@ -955,6 +968,19 @@ namespace Sadna_17_B_Frontend.Controllers
                     string errorMessage = await response.Content.ReadAsStringAsync();
                     return new Response(errorMessage, false);
                 }
+            }
+        }
+
+        public async /*   int   */ Task<Response> cancel_order()
+        {
+            using (HttpClient client = new HttpClient())
+            {
+           
+                HttpResponseMessage response = await client.PostAsJsonAsync(prefix + "/RestAPI/cancel_order", userDTO.AccessToken);
+                string responseContent = await response.Content.ReadAsStringAsync();
+                Response responseObj = JsonConvert.DeserializeObject<Response>(responseContent);
+
+                return responseObj;
             }
         }
 
