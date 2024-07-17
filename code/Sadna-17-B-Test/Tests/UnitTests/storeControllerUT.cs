@@ -53,10 +53,13 @@ namespace Sadna_17_B_Test.Tests.UnitTests
         private Discount_Membership strategy_membership;
 
         Func<Basket, double> relevant_price_by_category;
+
         Func<Basket, double> relevant_price_by_product;
+
         Func<Basket, double> relevant_price_by_all;
 
         Func<Basket, bool> cond_all_true;
+        private Func<Basket, bool> cond_;
         Func<Basket, bool> cond_all_false;
 
         Func<Basket, bool> cond_category;
