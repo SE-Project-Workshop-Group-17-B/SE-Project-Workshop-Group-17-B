@@ -409,6 +409,19 @@ namespace Sadna_17_B.ServiceLayer.Services
             }
         }
 
+        public Response cancel_order(string token)
+        {
+            try
+            {
+                userController.cancel_order(token);
+                return new Response(true);
+            }
+            catch (Sadna17BException e)
+            {
+                return Response.GetErrorResponse(e);
+            }
+        }
+
         public Response /*List<OrderDTO>*/ GetMyOrderHistory(string token)
         {
             try

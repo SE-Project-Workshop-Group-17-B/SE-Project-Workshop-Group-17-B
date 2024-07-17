@@ -122,7 +122,9 @@ namespace Sadna_17_B.DomainLayer.Order
 
             Order order = new Order(orderCount, userID, isGuest, cart, destAddr, paymentObj, cart_price_with_discount);
 
-            pending_order.Add(userID, order);
+            pending_order[userID] = order;
+            
+                
 
             return cart_price_with_discount;
         }
@@ -133,20 +135,26 @@ namespace Sadna_17_B.DomainLayer.Order
             {
                 throw new Sadna17BException("Cart is empty");
             }
+        
+            // ------- shoping cart validations -----------------------------------------------------------------
+            bool inventory_blocked_order = !storeController.validate_inventories(cart);
+            bool policies_blocked_order = !storeController.validate_policies(cart);
+
+            if (inventory_blocked_order | policies_blocked_order)
+                throw new Sadna17BException("Order is not valid");
+
+
             foreach (var basket in cart.baskets())
-            {
-                // ------- shoping cart validations -----------------------------------------------------------------
-                bool inventory_blocked_order = !storeController.validate_inventories(cart);
-                bool policies_blocked_order = !storeController.validate_policies(cart);
-
-                if (inventory_blocked_order | policies_blocked_order)
-                    throw new Sadna17BException("Order is not valid");
-
                 storeController.decrease_products_amount(basket);
-            }
-
+            
             add_to_history(pending_order[uid]);
             pending_order.Remove(uid);
+        }
+
+        public void cancel_order(string uid)
+        {
+            if (pending_order.ContainsKey(uid))
+                pending_order.Remove(uid);
         }
 
 
