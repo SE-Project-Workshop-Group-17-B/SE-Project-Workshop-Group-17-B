@@ -279,6 +279,13 @@ namespace Sadna_17_B_API.Controllers
             return response;
         }
 
+        [HttpPost("cancel_order")]
+        public Response cancel_order([FromBody] string AccessToken)
+        {
+            var response = _userService.cancel_order(AccessToken);
+            return response;
+        }
+
         [HttpPost("get_managed_stores")]
         public Response getManagedStores([FromBody] UIuserDTOAPI user)
         {

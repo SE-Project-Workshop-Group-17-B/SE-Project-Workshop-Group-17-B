@@ -586,6 +586,21 @@ namespace Sadna_17_B.DomainLayer.User
             user.CreateNewShoppingCart();
         }
 
+        public void cancel_order(string token)
+        {
+            infoLogger.Log($"Canceling order: {GetSubscriberByToken(token).Username}");
+
+            User user = GetUserByToken(token); // Throws an exception if the token is invalid
+            if (user is Guest)
+            {
+                orderSystem.cancel_order((user as Guest).GuestID.ToString());
+            }
+            else if (user is Subscriber)
+            {
+                orderSystem.cancel_order((user as Subscriber).Username);
+            }
+
+        }
 
         public List<Order.Order> GetOrderHistoryByToken(string token)
         {
