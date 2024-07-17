@@ -65,7 +65,7 @@ namespace Sadna_17_B_API.Controllers
         {
             // Validate userDto (consider adding data annotations to your UserDto)
 
-            var response = _userService.GetMyNotifications(userDto.AccessToken);
+            var response = _userService.ReadMyNotifications(userDto.AccessToken);
 
             if (response.Success)
             {

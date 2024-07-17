@@ -619,10 +619,10 @@ namespace Sadna_17_B.DomainLayer.User
             return notificationSystem.GetNotifications(user.Username);
         }
 
-        public List<Notification> ReadMyNewNotifications(string token)
+        public List<Notification> ReadMyNotifications(string token)
         {
             Subscriber user = GetSubscriberByToken(token);
-            return notificationSystem.ReadNewNotifications(user.Username);
+            return notificationSystem.ReadMyNotifications(user.Username);
         }
 
         public void MarkAsRead(string token, string message)

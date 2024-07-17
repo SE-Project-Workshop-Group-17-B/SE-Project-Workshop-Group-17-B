@@ -60,7 +60,7 @@ namespace Sadna_17_B.DomainLayer.User
             }
         }
 
-        public List<Notification> ReadNewNotifications(string username)
+        public List<Notification> ReadMyNotifications(string username)
         {
             if (!notifications.ContainsKey(username))
             {

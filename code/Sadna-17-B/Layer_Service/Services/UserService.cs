@@ -497,11 +497,11 @@ namespace Sadna_17_B.ServiceLayer.Services
         /// Returns an error Response if the token doesn't correspond to a valid subscriber in the system.
         /// Otherwise, returns a Response containing a List of all the new user notifications (unread notifications), and marks them as read in the system.
         /// </summary>
-        public Response /*List<Notification>*/ ReadMyNewNotifications(string token)
+        public Response /*List<Notification>*/ ReadMyNotifications(string token)
         {
             try
             {
-                List<Notification> result = userController.ReadMyNewNotifications(token);
+                List<Notification> result = userController.ReadMyNotifications(token);
                 return new Response(true, result);
             }
             catch (Sadna17BException e)
